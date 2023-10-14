@@ -1,0 +1,502 @@
+   1               		.file	"AVRISPDescriptors.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.AVRISP_GetDescriptor,"ax",@progbits
+  12               	.global	AVRISP_GetDescriptor
+  14               	AVRISP_GetDescriptor:
+  15               	.LFB97:
+  16               		.file 1 "AVRISPDescriptors.c"
+   1:AVRISPDescriptors.c **** /*
+   2:AVRISPDescriptors.c ****              LUFA Library
+   3:AVRISPDescriptors.c ****      Copyright (C) Dean Camera, 2011.
+   4:AVRISPDescriptors.c **** 
+   5:AVRISPDescriptors.c ****   dean [at] fourwalledcubicle [dot] com
+   6:AVRISPDescriptors.c ****            www.lufa-lib.org
+   7:AVRISPDescriptors.c **** */
+   8:AVRISPDescriptors.c **** 
+   9:AVRISPDescriptors.c **** /*
+  10:AVRISPDescriptors.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:AVRISPDescriptors.c **** 
+  12:AVRISPDescriptors.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:AVRISPDescriptors.c ****   software and its documentation for any purpose is hereby granted
+  14:AVRISPDescriptors.c ****   without fee, provided that the above copyright notice appear in
+  15:AVRISPDescriptors.c ****   all copies and that both that the copyright notice and this
+  16:AVRISPDescriptors.c ****   permission notice and warranty disclaimer appear in supporting
+  17:AVRISPDescriptors.c ****   documentation, and that the name of the author not be used in
+  18:AVRISPDescriptors.c ****   advertising or publicity pertaining to distribution of the
+  19:AVRISPDescriptors.c ****   software without specific, written prior permission.
+  20:AVRISPDescriptors.c **** 
+  21:AVRISPDescriptors.c ****   The author disclaim all warranties with regard to this
+  22:AVRISPDescriptors.c ****   software, including all implied warranties of merchantability
+  23:AVRISPDescriptors.c ****   and fitness.  In no event shall the author be liable for any
+  24:AVRISPDescriptors.c ****   special, indirect or consequential damages or any damages
+  25:AVRISPDescriptors.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:AVRISPDescriptors.c ****   in an action of contract, negligence or other tortious action,
+  27:AVRISPDescriptors.c ****   arising out of or in connection with the use or performance of
+  28:AVRISPDescriptors.c ****   this software.
+  29:AVRISPDescriptors.c **** */
+  30:AVRISPDescriptors.c **** 
+  31:AVRISPDescriptors.c **** /** \file
+  32:AVRISPDescriptors.c ****  *
+  33:AVRISPDescriptors.c ****  *  USB Device Descriptors, for library use when in USB device mode. Descriptors are special
+  34:AVRISPDescriptors.c ****  *  computer-readable structures which the host requests upon device enumeration, to determine
+  35:AVRISPDescriptors.c ****  *  the device's capabilities and functions.
+  36:AVRISPDescriptors.c ****  */
+  37:AVRISPDescriptors.c **** 
+  38:AVRISPDescriptors.c **** #include "AVRISPDescriptors.h"
+  39:AVRISPDescriptors.c **** 
+  40:AVRISPDescriptors.c **** /** Device descriptor structure. This descriptor, located in FLASH memory, describes the overall
+  41:AVRISPDescriptors.c ****  *  device characteristics, including the supported USB version, control endpoint size and the
+  42:AVRISPDescriptors.c ****  *  number of device configurations. The descriptor is read out by the USB host when the enumeratio
+  43:AVRISPDescriptors.c ****  *  process begins.
+  44:AVRISPDescriptors.c ****  */
+  45:AVRISPDescriptors.c **** const USB_Descriptor_Device_t PROGMEM AVRISP_DeviceDescriptor =
+  46:AVRISPDescriptors.c **** {
+  47:AVRISPDescriptors.c **** 	.Header                 = {.Size = sizeof(USB_Descriptor_Device_t), .Type = DTYPE_Device},
+  48:AVRISPDescriptors.c **** 
+  49:AVRISPDescriptors.c **** 	.USBSpecification       = VERSION_BCD(01.10),
+  50:AVRISPDescriptors.c **** 	.Class                  = USB_CSCP_VendorSpecificClass,
+  51:AVRISPDescriptors.c **** 	.SubClass               = USB_CSCP_NoDeviceSubclass,
+  52:AVRISPDescriptors.c **** 	.Protocol               = USB_CSCP_NoDeviceProtocol,
+  53:AVRISPDescriptors.c **** 
+  54:AVRISPDescriptors.c **** 	.Endpoint0Size          = FIXED_CONTROL_ENDPOINT_SIZE,
+  55:AVRISPDescriptors.c **** 
+  56:AVRISPDescriptors.c **** 	.VendorID               = 0x03EB,
+  57:AVRISPDescriptors.c **** 	.ProductID              = 0x2104,
+  58:AVRISPDescriptors.c **** 	.ReleaseNumber          = VERSION_BCD(02.00),
+  59:AVRISPDescriptors.c **** 
+  60:AVRISPDescriptors.c **** 	.ManufacturerStrIndex   = 0x01,
+  61:AVRISPDescriptors.c **** 	.ProductStrIndex        = 0x02,
+  62:AVRISPDescriptors.c **** 	.SerialNumStrIndex      = 0x03,
+  63:AVRISPDescriptors.c **** 
+  64:AVRISPDescriptors.c **** 	.NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
+  65:AVRISPDescriptors.c **** };
+  66:AVRISPDescriptors.c **** 
+  67:AVRISPDescriptors.c **** /** Configuration descriptor structure. This descriptor, located in FLASH memory, describes the usa
+  68:AVRISPDescriptors.c ****  *  of the device in one of its supported configurations, including information about any device in
+  69:AVRISPDescriptors.c ****  *  and endpoints. The descriptor is read out by the USB host during the enumeration process when s
+  70:AVRISPDescriptors.c ****  *  a configuration so that the host may correctly communicate with the USB device.
+  71:AVRISPDescriptors.c ****  */
+  72:AVRISPDescriptors.c **** const AVRISP_USB_Descriptor_Configuration_t PROGMEM AVRISP_ConfigurationDescriptor =
+  73:AVRISPDescriptors.c **** {
+  74:AVRISPDescriptors.c **** 	.Config =
+  75:AVRISPDescriptors.c **** 		{
+  76:AVRISPDescriptors.c **** 			.Header                 = {.Size = sizeof(USB_Descriptor_Configuration_Header_t), .Type = DTYPE_
+  77:AVRISPDescriptors.c **** 
+  78:AVRISPDescriptors.c **** 			.TotalConfigurationSize = sizeof(AVRISP_USB_Descriptor_Configuration_t),
+  79:AVRISPDescriptors.c **** 			.TotalInterfaces        = 1,
+  80:AVRISPDescriptors.c **** 
+  81:AVRISPDescriptors.c **** 			.ConfigurationNumber    = 1,
+  82:AVRISPDescriptors.c **** 			.ConfigurationStrIndex  = NO_DESCRIPTOR,
+  83:AVRISPDescriptors.c **** 
+  84:AVRISPDescriptors.c **** 			.ConfigAttributes       = USB_CONFIG_ATTR_BUSPOWERED,
+  85:AVRISPDescriptors.c **** 
+  86:AVRISPDescriptors.c **** 			.MaxPowerConsumption    = USB_CONFIG_POWER_MA(100)
+  87:AVRISPDescriptors.c **** 		},
+  88:AVRISPDescriptors.c **** 
+  89:AVRISPDescriptors.c **** 	.AVRISP_Interface =
+  90:AVRISPDescriptors.c **** 		{
+  91:AVRISPDescriptors.c **** 			.Header                 = {.Size = sizeof(USB_Descriptor_Interface_t), .Type = DTYPE_Interface},
+  92:AVRISPDescriptors.c **** 
+  93:AVRISPDescriptors.c **** 			.InterfaceNumber        = 0,
+  94:AVRISPDescriptors.c **** 			.AlternateSetting       = 0,
+  95:AVRISPDescriptors.c **** 
+  96:AVRISPDescriptors.c **** 			.TotalEndpoints         = 2,
+  97:AVRISPDescriptors.c **** 
+  98:AVRISPDescriptors.c **** 			.Class                  = USB_CSCP_VendorSpecificClass,
+  99:AVRISPDescriptors.c **** 			.SubClass               = 0x00,
+ 100:AVRISPDescriptors.c **** 			.Protocol               = 0x00,
+ 101:AVRISPDescriptors.c **** 
+ 102:AVRISPDescriptors.c **** 			.InterfaceStrIndex      = NO_DESCRIPTOR
+ 103:AVRISPDescriptors.c **** 		},
+ 104:AVRISPDescriptors.c **** 
+ 105:AVRISPDescriptors.c **** 	.AVRISP_DataInEndpoint =
+ 106:AVRISPDescriptors.c **** 		{
+ 107:AVRISPDescriptors.c **** 			.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
+ 108:AVRISPDescriptors.c **** 
+ 109:AVRISPDescriptors.c **** 			.EndpointAddress        = (ENDPOINT_DIR_IN | AVRISP_DATA_IN_EPNUM),
+ 110:AVRISPDescriptors.c **** 			.Attributes             = (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
+ 111:AVRISPDescriptors.c **** 			.EndpointSize           = AVRISP_DATA_EPSIZE,
+ 112:AVRISPDescriptors.c **** 			.PollingIntervalMS      = 0x0A
+ 113:AVRISPDescriptors.c **** 		},
+ 114:AVRISPDescriptors.c **** 
+ 115:AVRISPDescriptors.c **** 	.AVRISP_DataOutEndpoint =
+ 116:AVRISPDescriptors.c **** 		{
+ 117:AVRISPDescriptors.c **** 			.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
+ 118:AVRISPDescriptors.c **** 
+ 119:AVRISPDescriptors.c **** 			.EndpointAddress        = (ENDPOINT_DIR_OUT | AVRISP_DATA_OUT_EPNUM),
+ 120:AVRISPDescriptors.c **** 			.Attributes             = (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
+ 121:AVRISPDescriptors.c **** 			.EndpointSize           = AVRISP_DATA_EPSIZE,
+ 122:AVRISPDescriptors.c **** 			.PollingIntervalMS      = 0x0A
+ 123:AVRISPDescriptors.c **** 		},
+ 124:AVRISPDescriptors.c **** };
+ 125:AVRISPDescriptors.c **** 
+ 126:AVRISPDescriptors.c **** /** Language descriptor structure. This descriptor, located in FLASH memory, is returned when the h
+ 127:AVRISPDescriptors.c ****  *  the string descriptor with index 0 (the first index). It is actually an array of 16-bit integer
+ 128:AVRISPDescriptors.c ****  *  via the language ID table available at USB.org what languages the device supports for its strin
+ 129:AVRISPDescriptors.c ****  */
+ 130:AVRISPDescriptors.c **** const USB_Descriptor_String_t PROGMEM AVRISP_LanguageString =
+ 131:AVRISPDescriptors.c **** {
+ 132:AVRISPDescriptors.c **** 	.Header                 = {.Size = USB_STRING_LEN(1), .Type = DTYPE_String},
+ 133:AVRISPDescriptors.c **** 
+ 134:AVRISPDescriptors.c **** 	.UnicodeString          = {LANGUAGE_ID_ENG}
+ 135:AVRISPDescriptors.c **** };
+ 136:AVRISPDescriptors.c **** 
+ 137:AVRISPDescriptors.c **** /** Manufacturer descriptor string. This is a Unicode string containing the manufacturer's details 
+ 138:AVRISPDescriptors.c ****  *  form, and is read out upon request by the host when the appropriate string ID is requested, lis
+ 139:AVRISPDescriptors.c ****  *  Descriptor.
+ 140:AVRISPDescriptors.c ****  */
+ 141:AVRISPDescriptors.c **** const USB_Descriptor_String_t PROGMEM AVRISP_ManufacturerString =
+ 142:AVRISPDescriptors.c **** {
+ 143:AVRISPDescriptors.c **** 	.Header                 = {.Size = USB_STRING_LEN(11), .Type = DTYPE_String},
+ 144:AVRISPDescriptors.c **** 
+ 145:AVRISPDescriptors.c **** 	.UnicodeString          = L"Dean Camera"
+ 146:AVRISPDescriptors.c **** };
+ 147:AVRISPDescriptors.c **** 
+ 148:AVRISPDescriptors.c **** /** Product descriptor string. This is a Unicode string containing the product's details in human r
+ 149:AVRISPDescriptors.c ****  *  and is read out upon request by the host when the appropriate string ID is requested, listed in
+ 150:AVRISPDescriptors.c ****  *  Descriptor.
+ 151:AVRISPDescriptors.c ****  */
+ 152:AVRISPDescriptors.c **** const USB_Descriptor_String_t PROGMEM AVRISP_ProductString =
+ 153:AVRISPDescriptors.c **** {
+ 154:AVRISPDescriptors.c **** 	.Header                 = {.Size = USB_STRING_LEN(22), .Type = DTYPE_String},
+ 155:AVRISPDescriptors.c **** 
+ 156:AVRISPDescriptors.c **** 	.UnicodeString          = L"LUFA AVRISP MkII Clone"
+ 157:AVRISPDescriptors.c **** };
+ 158:AVRISPDescriptors.c **** 
+ 159:AVRISPDescriptors.c **** /** Serial number string. This is a Unicode string containing the device's unique serial number, ex
+ 160:AVRISPDescriptors.c ****  *  series of uppercase hexadecimal digits.
+ 161:AVRISPDescriptors.c ****  */
+ 162:AVRISPDescriptors.c **** const USB_Descriptor_String_t PROGMEM AVRISP_SerialString =
+ 163:AVRISPDescriptors.c **** {
+ 164:AVRISPDescriptors.c **** 	.Header                 = {.Size = USB_STRING_LEN(13), .Type = DTYPE_String},
+ 165:AVRISPDescriptors.c **** 
+ 166:AVRISPDescriptors.c **** 	.UnicodeString          = L"0000A00128255"
+ 167:AVRISPDescriptors.c **** };
+ 168:AVRISPDescriptors.c **** 
+ 169:AVRISPDescriptors.c **** /** This function is called by the library when in device mode, and must be overridden (see library
+ 170:AVRISPDescriptors.c ****  *  documentation) by the application code so that the address and size of a requested descriptor c
+ 171:AVRISPDescriptors.c ****  *  to the USB library. When the device receives a Get Descriptor request on the control endpoint, 
+ 172:AVRISPDescriptors.c ****  *  is called so that the descriptor details can be passed back and the appropriate descriptor sent
+ 173:AVRISPDescriptors.c ****  *  USB host.
+ 174:AVRISPDescriptors.c ****  */
+ 175:AVRISPDescriptors.c **** uint16_t AVRISP_GetDescriptor(const uint16_t wValue,
+ 176:AVRISPDescriptors.c ****                               const uint8_t wIndex,
+ 177:AVRISPDescriptors.c ****                               const void** const DescriptorAddress)
+ 178:AVRISPDescriptors.c **** {
+  17               		.loc 1 178 0
+  18               		.cfi_startproc
+  19               	.LVL0:
+  20               	/* prologue: function */
+  21               	/* frame size = 0 */
+  22               	/* stack size = 0 */
+  23               	.L__stack_usage = 0
+ 179:AVRISPDescriptors.c **** 	const uint8_t  DescriptorType   = (wValue >> 8);
+ 180:AVRISPDescriptors.c **** 	const uint8_t  DescriptorNumber = (wValue & 0xFF);
+ 181:AVRISPDescriptors.c **** 
+ 182:AVRISPDescriptors.c **** 	const void* Address = NULL;
+ 183:AVRISPDescriptors.c **** 	uint16_t    Size    = NO_DESCRIPTOR;
+ 184:AVRISPDescriptors.c **** 
+ 185:AVRISPDescriptors.c **** 	switch (DescriptorType)
+  24               		.loc 1 185 0
+  25 0000 292F      		mov r18,r25
+  26 0002 3327      		clr r19
+  27 0004 2230      		cpi r18,2
+  28 0006 3105      		cpc r19,__zero_reg__
+  29 0008 01F0      		breq .L3
+  30 000a 2330      		cpi r18,3
+  31 000c 3105      		cpc r19,__zero_reg__
+  32 000e 01F0      		breq .L4
+  33 0010 2130      		cpi r18,1
+  34 0012 3105      		cpc r19,__zero_reg__
+  35 0014 01F4      		brne .L13
+ 186:AVRISPDescriptors.c **** 	{
+ 187:AVRISPDescriptors.c **** 		case DTYPE_Device:
+ 188:AVRISPDescriptors.c **** 			Address = &AVRISP_DeviceDescriptor;
+ 189:AVRISPDescriptors.c **** 			Size    = sizeof(USB_Descriptor_Device_t);
+  36               		.loc 1 189 0
+  37 0016 82E1      		ldi r24,lo8(18)
+  38 0018 90E0      		ldi r25,0
+  39               	.LVL1:
+ 188:AVRISPDescriptors.c **** 			Size    = sizeof(USB_Descriptor_Device_t);
+  40               		.loc 1 188 0
+  41 001a 20E0      		ldi r18,lo8(AVRISP_DeviceDescriptor)
+  42 001c 30E0      		ldi r19,hi8(AVRISP_DeviceDescriptor)
+  43 001e 00C0      		rjmp .L2
+  44               	.LVL2:
+  45               	.L3:
+ 190:AVRISPDescriptors.c **** 			break;
+ 191:AVRISPDescriptors.c **** 		case DTYPE_Configuration:
+ 192:AVRISPDescriptors.c **** 			Address = &AVRISP_ConfigurationDescriptor;
+ 193:AVRISPDescriptors.c **** 			Size    = sizeof(AVRISP_USB_Descriptor_Configuration_t);
+  46               		.loc 1 193 0
+  47 0020 80E2      		ldi r24,lo8(32)
+  48 0022 90E0      		ldi r25,0
+  49               	.LVL3:
+ 192:AVRISPDescriptors.c **** 			Size    = sizeof(AVRISP_USB_Descriptor_Configuration_t);
+  50               		.loc 1 192 0
+  51 0024 20E0      		ldi r18,lo8(AVRISP_ConfigurationDescriptor)
+  52 0026 30E0      		ldi r19,hi8(AVRISP_ConfigurationDescriptor)
+ 194:AVRISPDescriptors.c **** 			break;
+  53               		.loc 1 194 0
+  54 0028 00C0      		rjmp .L2
+  55               	.LVL4:
+  56               	.L4:
+ 195:AVRISPDescriptors.c **** 		case DTYPE_String:
+ 196:AVRISPDescriptors.c **** 			switch (DescriptorNumber)
+  57               		.loc 1 196 0
+  58 002a 9927      		clr r25
+  59               	.LVL5:
+  60 002c 8130      		cpi r24,1
+  61 002e 9105      		cpc r25,__zero_reg__
+  62 0030 01F0      		breq .L6
+  63 0032 00F0      		brlo .L7
+  64 0034 8230      		cpi r24,2
+  65 0036 9105      		cpc r25,__zero_reg__
+  66 0038 01F0      		breq .L8
+  67 003a 0397      		sbiw r24,3
+  68 003c 01F4      		brne .L13
+  69               	.LVL6:
+  70               	.LBB2:
+ 197:AVRISPDescriptors.c **** 			{
+ 198:AVRISPDescriptors.c **** 				case 0x00:
+ 199:AVRISPDescriptors.c **** 					Address = &AVRISP_LanguageString;
+ 200:AVRISPDescriptors.c **** 					Size    = pgm_read_byte(&AVRISP_LanguageString.Header.Size);
+ 201:AVRISPDescriptors.c **** 					break;
+ 202:AVRISPDescriptors.c **** 				case 0x01:
+ 203:AVRISPDescriptors.c **** 					Address = &AVRISP_ManufacturerString;
+ 204:AVRISPDescriptors.c **** 					Size    = pgm_read_byte(&AVRISP_ManufacturerString.Header.Size);
+ 205:AVRISPDescriptors.c **** 					break;
+ 206:AVRISPDescriptors.c **** 				case 0x02:
+ 207:AVRISPDescriptors.c **** 					Address = &AVRISP_ProductString;
+ 208:AVRISPDescriptors.c **** 					Size    = pgm_read_byte(&AVRISP_ProductString.Header.Size);
+ 209:AVRISPDescriptors.c **** 					break;
+ 210:AVRISPDescriptors.c **** 				case 0x03:
+ 211:AVRISPDescriptors.c **** 					Address = &AVRISP_SerialString;
+ 212:AVRISPDescriptors.c **** 					Size    = pgm_read_byte(&AVRISP_SerialString.Header.Size);
+  71               		.loc 1 212 0
+  72 003e E0E0      		ldi r30,lo8(AVRISP_SerialString)
+  73 0040 F0E0      		ldi r31,hi8(AVRISP_SerialString)
+  74 0042 00C0      		rjmp .L14
+  75               	.LVL7:
+  76               	.L7:
+  77               	.LBE2:
+  78               	.LBB3:
+ 200:AVRISPDescriptors.c **** 					break;
+  79               		.loc 1 200 0
+  80 0044 E0E0      		ldi r30,lo8(AVRISP_LanguageString)
+  81 0046 F0E0      		ldi r31,hi8(AVRISP_LanguageString)
+  82 0048 00C0      		rjmp .L14
+  83               	.LVL8:
+  84               	.L6:
+  85               	.LBE3:
+  86               	.LBB4:
+ 204:AVRISPDescriptors.c **** 					break;
+  87               		.loc 1 204 0
+  88 004a E0E0      		ldi r30,lo8(AVRISP_ManufacturerString)
+  89 004c F0E0      		ldi r31,hi8(AVRISP_ManufacturerString)
+  90 004e 00C0      		rjmp .L14
+  91               	.LVL9:
+  92               	.L8:
+  93               	.LBE4:
+  94               	.LBB5:
+ 208:AVRISPDescriptors.c **** 					break;
+  95               		.loc 1 208 0
+  96 0050 E0E0      		ldi r30,lo8(AVRISP_ProductString)
+  97 0052 F0E0      		ldi r31,hi8(AVRISP_ProductString)
+  98               	.LVL10:
+  99               	.L14:
+ 100               	.LBE5:
+ 101               	.LBB6:
+ 102               		.loc 1 212 0
+ 103               	/* #APP */
+ 104               	 ;  212 "AVRISPDescriptors.c" 1
+ 105 0054 8491      		lpm r24, Z
+ 106               		
+ 107               	 ;  0 "" 2
+ 108               	.LVL11:
+ 109               	/* #NOAPP */
+ 110               	.LBE6:
+ 111 0056 90E0      		ldi r25,0
+ 112               	.LVL12:
+ 211:AVRISPDescriptors.c **** 					Size    = pgm_read_byte(&AVRISP_SerialString.Header.Size);
+ 113               		.loc 1 211 0
+ 114 0058 9F01      		movw r18,r30
+ 213:AVRISPDescriptors.c **** 					break;
+ 115               		.loc 1 213 0
+ 116 005a 00C0      		rjmp .L2
+ 117               	.LVL13:
+ 118               	.L13:
+ 183:AVRISPDescriptors.c **** 
+ 119               		.loc 1 183 0
+ 120 005c 80E0      		ldi r24,0
+ 121 005e 90E0      		ldi r25,0
+ 182:AVRISPDescriptors.c **** 	uint16_t    Size    = NO_DESCRIPTOR;
+ 122               		.loc 1 182 0
+ 123 0060 20E0      		ldi r18,0
+ 124 0062 30E0      		ldi r19,0
+ 125               	.LVL14:
+ 126               	.L2:
+ 214:AVRISPDescriptors.c **** 			}
+ 215:AVRISPDescriptors.c **** 
+ 216:AVRISPDescriptors.c **** 			break;
+ 217:AVRISPDescriptors.c **** 	}
+ 218:AVRISPDescriptors.c **** 
+ 219:AVRISPDescriptors.c **** 	*DescriptorAddress = Address;
+ 127               		.loc 1 219 0
+ 128 0064 FA01      		movw r30,r20
+ 129 0066 3183      		std Z+1,r19
+ 130 0068 2083      		st Z,r18
+ 220:AVRISPDescriptors.c **** 	return Size;
+ 221:AVRISPDescriptors.c **** }
+ 131               		.loc 1 221 0
+ 132 006a 0895      		ret
+ 133               		.cfi_endproc
+ 134               	.LFE97:
+ 136               	.global	AVRISP_SerialString
+ 137               		.section	.progmem.data,"a",@progbits
+ 140               	AVRISP_SerialString:
+ 141 0000 1C        		.byte	28
+ 142 0001 03        		.byte	3
+ 143 0002 3000      		.string	"0"
+ 144 0004 3000      		.string	"0"
+ 145 0006 3000      		.string	"0"
+ 146 0008 3000      		.string	"0"
+ 147 000a 4100      		.string	"A"
+ 148 000c 3000      		.string	"0"
+ 149 000e 3000      		.string	"0"
+ 150 0010 3100      		.string	"1"
+ 151 0012 3200      		.string	"2"
+ 152 0014 3800      		.string	"8"
+ 153 0016 3200      		.string	"2"
+ 154 0018 3500      		.string	"5"
+ 155 001a 3500      		.string	"5"
+ 156 001c 00        		.string	""
+ 157 001d 00        		.string	""
+ 158               	.global	AVRISP_ProductString
+ 161               	AVRISP_ProductString:
+ 162 001e 2E        		.byte	46
+ 163 001f 03        		.byte	3
+ 164 0020 4C00      		.string	"L"
+ 165 0022 5500      		.string	"U"
+ 166 0024 4600      		.string	"F"
+ 167 0026 4100      		.string	"A"
+ 168 0028 2000      		.string	" "
+ 169 002a 4100      		.string	"A"
+ 170 002c 5600      		.string	"V"
+ 171 002e 5200      		.string	"R"
+ 172 0030 4900      		.string	"I"
+ 173 0032 5300      		.string	"S"
+ 174 0034 5000      		.string	"P"
+ 175 0036 2000      		.string	" "
+ 176 0038 4D00      		.string	"M"
+ 177 003a 6B00      		.string	"k"
+ 178 003c 4900      		.string	"I"
+ 179 003e 4900      		.string	"I"
+ 180 0040 2000      		.string	" "
+ 181 0042 4300      		.string	"C"
+ 182 0044 6C00      		.string	"l"
+ 183 0046 6F00      		.string	"o"
+ 184 0048 6E00      		.string	"n"
+ 185 004a 6500      		.string	"e"
+ 186 004c 00        		.string	""
+ 187 004d 00        		.string	""
+ 188               	.global	AVRISP_ManufacturerString
+ 191               	AVRISP_ManufacturerString:
+ 192 004e 18        		.byte	24
+ 193 004f 03        		.byte	3
+ 194 0050 4400      		.string	"D"
+ 195 0052 6500      		.string	"e"
+ 196 0054 6100      		.string	"a"
+ 197 0056 6E00      		.string	"n"
+ 198 0058 2000      		.string	" "
+ 199 005a 4300      		.string	"C"
+ 200 005c 6100      		.string	"a"
+ 201 005e 6D00      		.string	"m"
+ 202 0060 6500      		.string	"e"
+ 203 0062 7200      		.string	"r"
+ 204 0064 6100      		.string	"a"
+ 205 0066 00        		.string	""
+ 206 0067 00        		.string	""
+ 207               	.global	AVRISP_LanguageString
+ 210               	AVRISP_LanguageString:
+ 211 0068 04        		.byte	4
+ 212 0069 03        		.byte	3
+ 213 006a 0904      		.word	1033
+ 214               	.global	AVRISP_ConfigurationDescriptor
+ 217               	AVRISP_ConfigurationDescriptor:
+ 218 006c 09        		.byte	9
+ 219 006d 02        		.byte	2
+ 220 006e 2000      		.word	32
+ 221 0070 01        		.byte	1
+ 222 0071 01        		.byte	1
+ 223 0072 00        		.byte	0
+ 224 0073 80        		.byte	-128
+ 225 0074 32        		.byte	50
+ 226 0075 09        		.byte	9
+ 227 0076 04        		.byte	4
+ 228 0077 00        		.byte	0
+ 229 0078 00        		.byte	0
+ 230 0079 02        		.byte	2
+ 231 007a FF        		.byte	-1
+ 232 007b 00        		.byte	0
+ 233 007c 00        		.byte	0
+ 234 007d 00        		.byte	0
+ 235 007e 07        		.byte	7
+ 236 007f 05        		.byte	5
+ 237 0080 82        		.byte	-126
+ 238 0081 02        		.byte	2
+ 239 0082 4000      		.word	64
+ 240 0084 0A        		.byte	10
+ 241 0085 07        		.byte	7
+ 242 0086 05        		.byte	5
+ 243 0087 02        		.byte	2
+ 244 0088 02        		.byte	2
+ 245 0089 4000      		.word	64
+ 246 008b 0A        		.byte	10
+ 247               	.global	AVRISP_DeviceDescriptor
+ 250               	AVRISP_DeviceDescriptor:
+ 251 008c 12        		.byte	18
+ 252 008d 01        		.byte	1
+ 253 008e 1001      		.word	272
+ 254 0090 FF        		.byte	-1
+ 255 0091 00        		.byte	0
+ 256 0092 00        		.byte	0
+ 257 0093 08        		.byte	8
+ 258 0094 EB03      		.word	1003
+ 259 0096 0421      		.word	8452
+ 260 0098 0002      		.word	512
+ 261 009a 01        		.byte	1
+ 262 009b 02        		.byte	2
+ 263 009c 03        		.byte	3
+ 264 009d 01        		.byte	1
+ 265               		.text
+ 266               	.Letext0:
+ 267               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 268               		.file 3 "/usr/lib/gcc/avr/5.4.0/include/stddef.h"
+ 269               		.file 4 "../../LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
+ 270               		.file 5 "AVRISPDescriptors.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 AVRISPDescriptors.c
+     /tmp/cc1tr4P5.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc1tr4P5.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc1tr4P5.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc1tr4P5.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc1tr4P5.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc1tr4P5.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc1tr4P5.s:14     .text.AVRISP_GetDescriptor:0000000000000000 AVRISP_GetDescriptor
+     /tmp/cc1tr4P5.s:250    .progmem.data:000000000000008c AVRISP_DeviceDescriptor
+     /tmp/cc1tr4P5.s:217    .progmem.data:000000000000006c AVRISP_ConfigurationDescriptor
+     /tmp/cc1tr4P5.s:140    .progmem.data:0000000000000000 AVRISP_SerialString
+     /tmp/cc1tr4P5.s:210    .progmem.data:0000000000000068 AVRISP_LanguageString
+     /tmp/cc1tr4P5.s:191    .progmem.data:000000000000004e AVRISP_ManufacturerString
+     /tmp/cc1tr4P5.s:161    .progmem.data:000000000000001e AVRISP_ProductString
+
+NO UNDEFINED SYMBOLS

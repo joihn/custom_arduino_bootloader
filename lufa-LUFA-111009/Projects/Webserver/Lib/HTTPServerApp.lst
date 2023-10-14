@@ -1,0 +1,1038 @@
+   1               		.file	"HTTPServerApp.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.HTTPServerApp_Init,"ax",@progbits
+  12               	.global	HTTPServerApp_Init
+  14               	HTTPServerApp_Init:
+  15               	.LFB6:
+  16               		.file 1 "Lib/HTTPServerApp.c"
+   1:Lib/HTTPServerApp.c **** /*
+   2:Lib/HTTPServerApp.c ****              LUFA Library
+   3:Lib/HTTPServerApp.c ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/HTTPServerApp.c **** 
+   5:Lib/HTTPServerApp.c ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/HTTPServerApp.c ****            www.lufa-lib.org
+   7:Lib/HTTPServerApp.c **** */
+   8:Lib/HTTPServerApp.c **** 
+   9:Lib/HTTPServerApp.c **** /*
+  10:Lib/HTTPServerApp.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/HTTPServerApp.c **** 
+  12:Lib/HTTPServerApp.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/HTTPServerApp.c ****   software and its documentation for any purpose is hereby granted
+  14:Lib/HTTPServerApp.c ****   without fee, provided that the above copyright notice appear in
+  15:Lib/HTTPServerApp.c ****   all copies and that both that the copyright notice and this
+  16:Lib/HTTPServerApp.c ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/HTTPServerApp.c ****   documentation, and that the name of the author not be used in
+  18:Lib/HTTPServerApp.c ****   advertising or publicity pertaining to distribution of the
+  19:Lib/HTTPServerApp.c ****   software without specific, written prior permission.
+  20:Lib/HTTPServerApp.c **** 
+  21:Lib/HTTPServerApp.c ****   The author disclaim all warranties with regard to this
+  22:Lib/HTTPServerApp.c ****   software, including all implied warranties of merchantability
+  23:Lib/HTTPServerApp.c ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/HTTPServerApp.c ****   special, indirect or consequential damages or any damages
+  25:Lib/HTTPServerApp.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/HTTPServerApp.c ****   in an action of contract, negligence or other tortious action,
+  27:Lib/HTTPServerApp.c ****   arising out of or in connection with the use or performance of
+  28:Lib/HTTPServerApp.c ****   this software.
+  29:Lib/HTTPServerApp.c **** */
+  30:Lib/HTTPServerApp.c **** 
+  31:Lib/HTTPServerApp.c **** /** \file
+  32:Lib/HTTPServerApp.c ****  *
+  33:Lib/HTTPServerApp.c ****  *  Simple HTTP Webserver Application. When connected to the uIP stack,
+  34:Lib/HTTPServerApp.c ****  *  this will serve out files to HTTP clients on port 80.
+  35:Lib/HTTPServerApp.c ****  */
+  36:Lib/HTTPServerApp.c **** 
+  37:Lib/HTTPServerApp.c **** #define  INCLUDE_FROM_HTTPSERVERAPP_C
+  38:Lib/HTTPServerApp.c **** #include "HTTPServerApp.h"
+  39:Lib/HTTPServerApp.c **** 
+  40:Lib/HTTPServerApp.c **** /** HTTP server response header, for transmission before the page contents. This indicates to the h
+  41:Lib/HTTPServerApp.c ****  *  given location, and gives extra connection information.
+  42:Lib/HTTPServerApp.c ****  */
+  43:Lib/HTTPServerApp.c **** const char PROGMEM HTTP200Header[] = "HTTP/1.1 200 OK\r\n"
+  44:Lib/HTTPServerApp.c ****                                      "Server: LUFA " LUFA_VERSION_STRING "\r\n"
+  45:Lib/HTTPServerApp.c ****                                      "Connection: close\r\n"
+  46:Lib/HTTPServerApp.c ****                                      "MIME-version: 1.0\r\n"
+  47:Lib/HTTPServerApp.c ****                                      "Content-Type: ";
+  48:Lib/HTTPServerApp.c **** 
+  49:Lib/HTTPServerApp.c **** /** HTTP server response header, for transmission before a resource not found error. This indicates
+  50:Lib/HTTPServerApp.c ****  *  URL is invalid, and gives extra error information.
+  51:Lib/HTTPServerApp.c ****  */
+  52:Lib/HTTPServerApp.c **** const char PROGMEM HTTP404Header[] = "HTTP/1.1 404 Not Found\r\n"
+  53:Lib/HTTPServerApp.c ****                                      "Server: LUFA " LUFA_VERSION_STRING "\r\n"
+  54:Lib/HTTPServerApp.c ****                                      "Connection: close\r\n"
+  55:Lib/HTTPServerApp.c ****                                      "MIME-version: 1.0\r\n"
+  56:Lib/HTTPServerApp.c ****                                      "Content-Type: text/plain\r\n\r\n"
+  57:Lib/HTTPServerApp.c ****                                      "Error 404: File Not Found: /";
+  58:Lib/HTTPServerApp.c **** 
+  59:Lib/HTTPServerApp.c **** /** Default filename to fetch when a directory is requested */
+  60:Lib/HTTPServerApp.c **** const char PROGMEM DefaultDirFileName[] = "index.htm";
+  61:Lib/HTTPServerApp.c **** 
+  62:Lib/HTTPServerApp.c **** /** Default MIME type sent if no other MIME type can be determined. */
+  63:Lib/HTTPServerApp.c **** const char PROGMEM DefaultMIMEType[] = "text/plain";
+  64:Lib/HTTPServerApp.c **** 
+  65:Lib/HTTPServerApp.c **** /** List of MIME types for each supported file extension. */
+  66:Lib/HTTPServerApp.c **** const MIME_Type_t MIMETypes[] =
+  67:Lib/HTTPServerApp.c **** 	{
+  68:Lib/HTTPServerApp.c **** 		{.Extension = "htm", .MIMEType = "text/html"},
+  69:Lib/HTTPServerApp.c **** 		{.Extension = "jpg", .MIMEType = "image/jpeg"},
+  70:Lib/HTTPServerApp.c **** 		{.Extension = "gif", .MIMEType = "image/gif"},
+  71:Lib/HTTPServerApp.c **** 		{.Extension = "bmp", .MIMEType = "image/bmp"},
+  72:Lib/HTTPServerApp.c **** 		{.Extension = "png", .MIMEType = "image/png"},
+  73:Lib/HTTPServerApp.c **** 		{.Extension = "ico", .MIMEType = "image/x-icon"},
+  74:Lib/HTTPServerApp.c **** 		{.Extension = "exe", .MIMEType = "application/octet-stream"},
+  75:Lib/HTTPServerApp.c **** 		{.Extension = "gz",  .MIMEType = "application/x-gzip"},
+  76:Lib/HTTPServerApp.c **** 		{.Extension = "zip", .MIMEType = "application/zip"},
+  77:Lib/HTTPServerApp.c **** 		{.Extension = "pdf", .MIMEType = "application/pdf"},
+  78:Lib/HTTPServerApp.c **** 	};
+  79:Lib/HTTPServerApp.c **** 
+  80:Lib/HTTPServerApp.c **** /** FATFs structure to hold the internal state of the FAT driver for the Dataflash contents. */
+  81:Lib/HTTPServerApp.c **** FATFS DiskFATState;
+  82:Lib/HTTPServerApp.c **** 
+  83:Lib/HTTPServerApp.c **** 
+  84:Lib/HTTPServerApp.c **** /** Initialization function for the simple HTTP webserver. */
+  85:Lib/HTTPServerApp.c **** void HTTPServerApp_Init(void)
+  86:Lib/HTTPServerApp.c **** {
+  17               		.loc 1 86 0
+  18               		.cfi_startproc
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+  87:Lib/HTTPServerApp.c **** 	/* Listen on port 80 for HTTP connections from hosts */
+  88:Lib/HTTPServerApp.c **** 	uip_listen(HTONS(HTTP_SERVER_PORT));
+  23               		.loc 1 88 0
+  24 0000 80E0      		ldi r24,0
+  25 0002 90E5      		ldi r25,lo8(80)
+  26 0004 0E94 0000 		call uip_listen
+  27               	.LVL0:
+  89:Lib/HTTPServerApp.c **** 
+  90:Lib/HTTPServerApp.c **** 	/* Mount the Dataflash disk via FatFS */
+  91:Lib/HTTPServerApp.c **** 	f_mount(0, &DiskFATState);
+  28               		.loc 1 91 0
+  29 0008 60E0      		ldi r22,lo8(DiskFATState)
+  30 000a 70E0      		ldi r23,hi8(DiskFATState)
+  31 000c 80E0      		ldi r24,0
+  32 000e 0C94 0000 		jmp f_mount
+  33               	.LVL1:
+  34               		.cfi_endproc
+  35               	.LFE6:
+  37               		.section	.rodata.str1.1,"aMS",@progbits,1
+  38               	.LC0:
+  39 0000 2000      		.string	" "
+  40               		.section	.text.HTTPServerApp_Callback,"ax",@progbits
+  41               	.global	HTTPServerApp_Callback
+  43               	HTTPServerApp_Callback:
+  44               	.LFB7:
+  92:Lib/HTTPServerApp.c **** }
+  93:Lib/HTTPServerApp.c **** 
+  94:Lib/HTTPServerApp.c **** /** uIP stack application callback for the simple HTTP webserver. This function must be called each
+  95:Lib/HTTPServerApp.c ****  *  TCP/IP stack needs a TCP packet to be processed.
+  96:Lib/HTTPServerApp.c ****  */
+  97:Lib/HTTPServerApp.c **** void HTTPServerApp_Callback(void)
+  98:Lib/HTTPServerApp.c **** {
+  45               		.loc 1 98 0
+  46               		.cfi_startproc
+  47 0000 AF92      		push r10
+  48               	.LCFI0:
+  49               		.cfi_def_cfa_offset 3
+  50               		.cfi_offset 10, -2
+  51 0002 BF92      		push r11
+  52               	.LCFI1:
+  53               		.cfi_def_cfa_offset 4
+  54               		.cfi_offset 11, -3
+  55 0004 CF92      		push r12
+  56               	.LCFI2:
+  57               		.cfi_def_cfa_offset 5
+  58               		.cfi_offset 12, -4
+  59 0006 DF92      		push r13
+  60               	.LCFI3:
+  61               		.cfi_def_cfa_offset 6
+  62               		.cfi_offset 13, -5
+  63 0008 EF92      		push r14
+  64               	.LCFI4:
+  65               		.cfi_def_cfa_offset 7
+  66               		.cfi_offset 14, -6
+  67 000a FF92      		push r15
+  68               	.LCFI5:
+  69               		.cfi_def_cfa_offset 8
+  70               		.cfi_offset 15, -7
+  71 000c 0F93      		push r16
+  72               	.LCFI6:
+  73               		.cfi_def_cfa_offset 9
+  74               		.cfi_offset 16, -8
+  75 000e 1F93      		push r17
+  76               	.LCFI7:
+  77               		.cfi_def_cfa_offset 10
+  78               		.cfi_offset 17, -9
+  79 0010 CF93      		push r28
+  80               	.LCFI8:
+  81               		.cfi_def_cfa_offset 11
+  82               		.cfi_offset 28, -10
+  83 0012 DF93      		push r29
+  84               	.LCFI9:
+  85               		.cfi_def_cfa_offset 12
+  86               		.cfi_offset 29, -11
+  87               	/* prologue: function */
+  88               	/* frame size = 0 */
+  89               	/* stack size = 10 */
+  90               	.L__stack_usage = 10
+  99:Lib/HTTPServerApp.c **** 	uip_tcp_appstate_t* const AppState = &uip_conn->appstate;
+  91               		.loc 1 99 0
+  92 0014 C091 0000 		lds r28,uip_conn
+  93 0018 D091 0000 		lds r29,uip_conn+1
+  94               	.LVL2:
+ 100:Lib/HTTPServerApp.c **** 
+ 101:Lib/HTTPServerApp.c **** 	if (uip_aborted() || uip_timedout() || uip_closed())
+  95               		.loc 1 101 0
+  96 001c 8091 0000 		lds r24,uip_flags
+  97 0020 85FD      		sbrc r24,5
+  98 0022 00C0      		rjmp .L3
+  99               		.loc 1 101 0 is_stmt 0 discriminator 1
+ 100 0024 87FD      		sbrc r24,7
+ 101 0026 00C0      		rjmp .L3
+ 102               		.loc 1 101 0 discriminator 2
+ 103 0028 84FF      		sbrs r24,4
+ 104 002a 00C0      		rjmp .L4
+ 105               	.L3:
+ 102:Lib/HTTPServerApp.c **** 	{
+ 103:Lib/HTTPServerApp.c **** 		/* Lock to the closed state so that no further processing will occur on the connection */
+ 104:Lib/HTTPServerApp.c **** 		AppState->HTTPServer.CurrentState  = WEBSERVER_STATE_Closing;
+ 106               		.loc 1 104 0 is_stmt 1
+ 107 002c 93E0      		ldi r25,lo8(3)
+ 108 002e 9C8F      		std Y+28,r25
+ 105:Lib/HTTPServerApp.c **** 		AppState->HTTPServer.NextState     = WEBSERVER_STATE_Closing;
+ 109               		.loc 1 105 0
+ 110 0030 9D8F      		std Y+29,r25
+ 111               	.L4:
+ 106:Lib/HTTPServerApp.c **** 	}
+ 107:Lib/HTTPServerApp.c **** 
+ 108:Lib/HTTPServerApp.c **** 	if (uip_connected())
+ 112               		.loc 1 108 0
+ 113 0032 86FF      		sbrs r24,6
+ 114 0034 00C0      		rjmp .L5
+ 109:Lib/HTTPServerApp.c **** 	{
+ 110:Lib/HTTPServerApp.c **** 		/* New connection - initialize connection state values */
+ 111:Lib/HTTPServerApp.c **** 		AppState->HTTPServer.CurrentState  = WEBSERVER_STATE_OpenRequestedFile;
+ 115               		.loc 1 111 0
+ 116 0036 1C8E      		std Y+28,__zero_reg__
+ 112:Lib/HTTPServerApp.c **** 		AppState->HTTPServer.NextState     = WEBSERVER_STATE_OpenRequestedFile;
+ 117               		.loc 1 112 0
+ 118 0038 1D8E      		std Y+29,__zero_reg__
+ 113:Lib/HTTPServerApp.c **** 		AppState->HTTPServer.FileOpen      = false;
+ 119               		.loc 1 113 0
+ 120 003a FE01      		movw r30,r28
+ 121 003c E659      		subi r30,-106
+ 122 003e FF4F      		sbci r31,-1
+ 123 0040 1082      		st Z,__zero_reg__
+ 114:Lib/HTTPServerApp.c **** 		AppState->HTTPServer.ACKedFilePos  = 0;
+ 124               		.loc 1 114 0
+ 125 0042 3196      		adiw r30,1
+ 126 0044 1082      		st Z,__zero_reg__
+ 127 0046 1182      		std Z+1,__zero_reg__
+ 128 0048 1282      		std Z+2,__zero_reg__
+ 129 004a 1382      		std Z+3,__zero_reg__
+ 115:Lib/HTTPServerApp.c **** 		AppState->HTTPServer.SentChunkSize = 0;
+ 130               		.loc 1 115 0
+ 131 004c 3496      		adiw r30,4
+ 132 004e 1182      		std Z+1,__zero_reg__
+ 133 0050 1082      		st Z,__zero_reg__
+ 134               	.L5:
+ 116:Lib/HTTPServerApp.c **** 	}
+ 117:Lib/HTTPServerApp.c **** 
+ 118:Lib/HTTPServerApp.c **** 	if (uip_acked())
+ 135               		.loc 1 118 0
+ 136 0052 80FF      		sbrs r24,0
+ 137 0054 00C0      		rjmp .L6
+ 119:Lib/HTTPServerApp.c **** 	{
+ 120:Lib/HTTPServerApp.c **** 		/* Add the amount of ACKed file data to the total sent file bytes counter */
+ 121:Lib/HTTPServerApp.c **** 		AppState->HTTPServer.ACKedFilePos += AppState->HTTPServer.SentChunkSize;
+ 138               		.loc 1 121 0
+ 139 0056 FE01      		movw r30,r28
+ 140 0058 E559      		subi r30,-107
+ 141 005a FF4F      		sbci r31,-1
+ 142 005c DE01      		movw r26,r28
+ 143 005e A159      		subi r26,-111
+ 144 0060 BF4F      		sbci r27,-1
+ 145 0062 2D91      		ld r18,X+
+ 146 0064 3C91      		ld r19,X
+ 147 0066 4081      		ld r20,Z
+ 148 0068 5181      		ldd r21,Z+1
+ 149 006a 6281      		ldd r22,Z+2
+ 150 006c 7381      		ldd r23,Z+3
+ 151 006e 420F      		add r20,r18
+ 152 0070 531F      		adc r21,r19
+ 153 0072 611D      		adc r22,__zero_reg__
+ 154 0074 711D      		adc r23,__zero_reg__
+ 155 0076 4083      		st Z,r20
+ 156 0078 5183      		std Z+1,r21
+ 157 007a 6283      		std Z+2,r22
+ 158 007c 7383      		std Z+3,r23
+ 122:Lib/HTTPServerApp.c **** 
+ 123:Lib/HTTPServerApp.c **** 		/* Progress to the next state once the current state's data has been ACKed */
+ 124:Lib/HTTPServerApp.c **** 		AppState->HTTPServer.CurrentState = AppState->HTTPServer.NextState;
+ 159               		.loc 1 124 0
+ 160 007e 9D8D      		ldd r25,Y+29
+ 161 0080 9C8F      		std Y+28,r25
+ 162               	.L6:
+ 125:Lib/HTTPServerApp.c **** 	}
+ 126:Lib/HTTPServerApp.c **** 
+ 127:Lib/HTTPServerApp.c **** 	if (uip_rexmit())
+ 163               		.loc 1 127 0
+ 164 0082 82FF      		sbrs r24,2
+ 165 0084 00C0      		rjmp .L7
+ 128:Lib/HTTPServerApp.c **** 	{
+ 129:Lib/HTTPServerApp.c **** 		/* Return file pointer to the last ACKed position */
+ 130:Lib/HTTPServerApp.c **** 		f_lseek(&AppState->HTTPServer.FileHandle, AppState->HTTPServer.ACKedFilePos);
+ 166               		.loc 1 130 0
+ 167 0086 FE01      		movw r30,r28
+ 168 0088 E559      		subi r30,-107
+ 169 008a FF4F      		sbci r31,-1
+ 170 008c 4081      		ld r20,Z
+ 171 008e 5181      		ldd r21,Z+1
+ 172 0090 6281      		ldd r22,Z+2
+ 173 0092 7381      		ldd r23,Z+3
+ 174 0094 CE01      		movw r24,r28
+ 175 0096 805B      		subi r24,-80
+ 176 0098 9F4F      		sbci r25,-1
+ 177 009a 0E94 0000 		call f_lseek
+ 178               	.LVL3:
+ 179               	.L7:
+ 131:Lib/HTTPServerApp.c **** 	}
+ 132:Lib/HTTPServerApp.c **** 
+ 133:Lib/HTTPServerApp.c **** 	if (uip_rexmit() || uip_acked() || uip_newdata() || uip_connected() || uip_poll())
+ 180               		.loc 1 133 0
+ 181 009e 9091 0000 		lds r25,uip_flags
+ 182 00a2 892F      		mov r24,r25
+ 183 00a4 8F74      		andi r24,lo8(79)
+ 184 00a6 01F4      		brne .+2
+ 185 00a8 00C0      		rjmp .L2
+ 134:Lib/HTTPServerApp.c **** 	{
+ 135:Lib/HTTPServerApp.c **** 		switch (AppState->HTTPServer.CurrentState)
+ 186               		.loc 1 135 0
+ 187 00aa 8C8D      		ldd r24,Y+28
+ 188 00ac 8130      		cpi r24,lo8(1)
+ 189 00ae 01F4      		brne .+2
+ 190 00b0 00C0      		rjmp .L10
+ 191 00b2 00F0      		brlo .L11
+ 192 00b4 8230      		cpi r24,lo8(2)
+ 193 00b6 01F4      		brne .+2
+ 194 00b8 00C0      		rjmp .L12
+ 195 00ba 8330      		cpi r24,lo8(3)
+ 196 00bc 01F0      		breq .+2
+ 197 00be 00C0      		rjmp .L2
+ 136:Lib/HTTPServerApp.c **** 		{
+ 137:Lib/HTTPServerApp.c **** 			case WEBSERVER_STATE_OpenRequestedFile:
+ 138:Lib/HTTPServerApp.c **** 				HTTPServerApp_OpenRequestedFile();
+ 139:Lib/HTTPServerApp.c **** 				break;
+ 140:Lib/HTTPServerApp.c **** 			case WEBSERVER_STATE_SendResponseHeader:
+ 141:Lib/HTTPServerApp.c **** 				HTTPServerApp_SendResponseHeader();
+ 142:Lib/HTTPServerApp.c **** 				break;
+ 143:Lib/HTTPServerApp.c **** 			case WEBSERVER_STATE_SendData:
+ 144:Lib/HTTPServerApp.c **** 				HTTPServerApp_SendData();
+ 145:Lib/HTTPServerApp.c **** 				break;
+ 146:Lib/HTTPServerApp.c **** 			case WEBSERVER_STATE_Closing:
+ 147:Lib/HTTPServerApp.c **** 				/* Connection is being terminated for some reason - close file handle */
+ 148:Lib/HTTPServerApp.c **** 				f_close(&AppState->HTTPServer.FileHandle);
+ 198               		.loc 1 148 0
+ 199 00c0 CE01      		movw r24,r28
+ 200 00c2 805B      		subi r24,-80
+ 201 00c4 9F4F      		sbci r25,-1
+ 202 00c6 0E94 0000 		call f_close
+ 203               	.LVL4:
+ 149:Lib/HTTPServerApp.c **** 				AppState->HTTPServer.FileOpen = false;
+ 204               		.loc 1 149 0
+ 205 00ca FE01      		movw r30,r28
+ 206 00cc E659      		subi r30,-106
+ 207 00ce FF4F      		sbci r31,-1
+ 208 00d0 1082      		st Z,__zero_reg__
+ 150:Lib/HTTPServerApp.c **** 
+ 151:Lib/HTTPServerApp.c **** 				/* If connection is not already closed, close it */
+ 152:Lib/HTTPServerApp.c **** 				uip_close();
+ 209               		.loc 1 152 0
+ 210 00d2 80E1      		ldi r24,lo8(16)
+ 211 00d4 8093 0000 		sts uip_flags,r24
+ 153:Lib/HTTPServerApp.c **** 
+ 154:Lib/HTTPServerApp.c **** 				AppState->HTTPServer.CurrentState = WEBSERVER_STATE_Closed;
+ 212               		.loc 1 154 0
+ 213 00d8 84E0      		ldi r24,lo8(4)
+ 214 00da 00C0      		rjmp .L50
+ 215               	.L11:
+ 216               	.LVL5:
+ 217               	.LBB11:
+ 218               	.LBB12:
+ 155:Lib/HTTPServerApp.c **** 				AppState->HTTPServer.NextState    = WEBSERVER_STATE_Closed;
+ 156:Lib/HTTPServerApp.c **** 				break;
+ 157:Lib/HTTPServerApp.c **** 		}
+ 158:Lib/HTTPServerApp.c **** 	}
+ 159:Lib/HTTPServerApp.c **** }
+ 160:Lib/HTTPServerApp.c **** 
+ 161:Lib/HTTPServerApp.c **** /** HTTP Server State handler for the Request Process state. This state manages the processing of i
+ 162:Lib/HTTPServerApp.c ****  *  GET requests to the server from the receiving HTTP client.
+ 163:Lib/HTTPServerApp.c ****  */
+ 164:Lib/HTTPServerApp.c **** static void HTTPServerApp_OpenRequestedFile(void)
+ 165:Lib/HTTPServerApp.c **** {
+ 166:Lib/HTTPServerApp.c **** 	uip_tcp_appstate_t* const AppState    = &uip_conn->appstate;
+ 167:Lib/HTTPServerApp.c **** 	char*               const AppData     = (char*)uip_appdata;
+ 168:Lib/HTTPServerApp.c **** 
+ 169:Lib/HTTPServerApp.c **** 	/* No HTTP header received from the client, abort processing */
+ 170:Lib/HTTPServerApp.c **** 	if (!(uip_newdata()))
+ 219               		.loc 1 170 0
+ 220 00dc 91FF      		sbrs r25,1
+ 221 00de 00C0      		rjmp .L2
+ 166:Lib/HTTPServerApp.c **** 	char*               const AppData     = (char*)uip_appdata;
+ 222               		.loc 1 166 0
+ 223 00e0 C091 0000 		lds r28,uip_conn
+ 224 00e4 D091 0000 		lds r29,uip_conn+1
+ 225               	.LVL6:
+ 171:Lib/HTTPServerApp.c **** 	  return;
+ 172:Lib/HTTPServerApp.c **** 
+ 173:Lib/HTTPServerApp.c **** 	char* RequestToken      = strtok(AppData, " ");
+ 226               		.loc 1 173 0
+ 227 00e8 60E0      		ldi r22,lo8(.LC0)
+ 228 00ea 70E0      		ldi r23,hi8(.LC0)
+ 229 00ec 8091 0000 		lds r24,uip_appdata
+ 230 00f0 9091 0000 		lds r25,uip_appdata+1
+ 231 00f4 0E94 0000 		call strtok
+ 232               	.LVL7:
+ 233 00f8 8C01      		movw r16,r24
+ 234               	.LVL8:
+ 174:Lib/HTTPServerApp.c **** 	char* RequestedFileName = strtok(NULL, " ");
+ 235               		.loc 1 174 0
+ 236 00fa 60E0      		ldi r22,lo8(.LC0)
+ 237 00fc 70E0      		ldi r23,hi8(.LC0)
+ 238 00fe 80E0      		ldi r24,0
+ 239 0100 90E0      		ldi r25,0
+ 240 0102 0E94 0000 		call strtok
+ 241               	.LVL9:
+ 242 0106 7C01      		movw r14,r24
+ 243               	.LVL10:
+ 175:Lib/HTTPServerApp.c **** 
+ 176:Lib/HTTPServerApp.c **** 	/* Must be a GET request, abort otherwise */
+ 177:Lib/HTTPServerApp.c **** 	if (strcmp_P(RequestToken, PSTR("GET")) != 0)
+ 244               		.loc 1 177 0
+ 245 0108 60E0      		ldi r22,lo8(__c.2282)
+ 246 010a 70E0      		ldi r23,hi8(__c.2282)
+ 247 010c C801      		movw r24,r16
+ 248 010e 0E94 0000 		call strcmp_P
+ 249               	.LVL11:
+ 250 0112 892B      		or r24,r25
+ 251 0114 01F0      		breq .L15
+ 178:Lib/HTTPServerApp.c **** 	{
+ 179:Lib/HTTPServerApp.c **** 		uip_abort();
+ 252               		.loc 1 179 0
+ 253 0116 80E2      		ldi r24,lo8(32)
+ 254 0118 8093 0000 		sts uip_flags,r24
+ 255 011c 00C0      		rjmp .L2
+ 256               	.L15:
+ 180:Lib/HTTPServerApp.c **** 		return;
+ 181:Lib/HTTPServerApp.c **** 	}
+ 182:Lib/HTTPServerApp.c **** 
+ 183:Lib/HTTPServerApp.c **** 	/* Copy over the requested filename */
+ 184:Lib/HTTPServerApp.c **** 	strlcpy(AppState->HTTPServer.FileName, &RequestedFileName[1], sizeof(AppState->HTTPServer.FileName
+ 257               		.loc 1 184 0
+ 258 011e 8E01      		movw r16,r28
+ 259               	.LVL12:
+ 260 0120 025E      		subi r16,-30
+ 261 0122 1F4F      		sbci r17,-1
+ 262 0124 B701      		movw r22,r14
+ 263 0126 6F5F      		subi r22,-1
+ 264 0128 7F4F      		sbci r23,-1
+ 265 012a 42E3      		ldi r20,lo8(50)
+ 266 012c 50E0      		ldi r21,0
+ 267 012e C801      		movw r24,r16
+ 268 0130 0E94 0000 		call strlcpy
+ 269               	.LVL13:
+ 185:Lib/HTTPServerApp.c **** 
+ 186:Lib/HTTPServerApp.c **** 	/* Determine the length of the URI so that it can be checked to see if it is a directory */
+ 187:Lib/HTTPServerApp.c **** 	uint8_t FileNameLen = strlen(AppState->HTTPServer.FileName);
+ 270               		.loc 1 187 0
+ 271 0134 F801      		movw r30,r16
+ 272               		0:
+ 273 0136 0190      		ld __tmp_reg__,Z+
+ 274 0138 0020      		tst __tmp_reg__
+ 275 013a 01F4      		brne 0b
+ 276 013c 3197      		sbiw r30,1
+ 277 013e CF01      		movw r24,r30
+ 278 0140 801B      		sub r24,r16
+ 279 0142 910B      		sbc r25,r17
+ 280 0144 282F      		mov r18,r24
+ 281               	.LVL14:
+ 282 0146 9927      		clr r25
+ 283               	.LVL15:
+ 188:Lib/HTTPServerApp.c **** 
+ 189:Lib/HTTPServerApp.c **** 	/* If the URI is a directory, append the default filename */
+ 190:Lib/HTTPServerApp.c **** 	if ((AppState->HTTPServer.FileName[FileNameLen - 1] == '/') || !(FileNameLen))
+ 284               		.loc 1 190 0
+ 285 0148 FE01      		movw r30,r28
+ 286               	.LVL16:
+ 287 014a E80F      		add r30,r24
+ 288 014c F91F      		adc r31,r25
+ 289 014e 358D      		ldd r19,Z+29
+ 290 0150 AE01      		movw r20,r28
+ 291 0152 445E      		subi r20,-28
+ 292 0154 5F4F      		sbci r21,-1
+ 293 0156 7A01      		movw r14,r20
+ 294               	.LVL17:
+ 295 0158 3F32      		cpi r19,lo8(47)
+ 296 015a 01F0      		breq .L16
+ 297 015c 2111      		cpse r18,__zero_reg__
+ 298 015e 00C0      		rjmp .L17
+ 299               	.L16:
+ 191:Lib/HTTPServerApp.c **** 	{
+ 192:Lib/HTTPServerApp.c **** 		strlcpy_P(&AppState->HTTPServer.FileName[FileNameLen], DefaultDirFileName,
+ 300               		.loc 1 192 0
+ 301 0160 42E3      		ldi r20,lo8(50)
+ 302 0162 50E0      		ldi r21,0
+ 303 0164 481B      		sub r20,r24
+ 304 0166 590B      		sbc r21,r25
+ 305 0168 0296      		adiw r24,2
+ 306 016a 60E0      		ldi r22,lo8(DefaultDirFileName)
+ 307 016c 70E0      		ldi r23,hi8(DefaultDirFileName)
+ 308 016e 8E0D      		add r24,r14
+ 309 0170 9F1D      		adc r25,r15
+ 310 0172 0E94 0000 		call strlcpy_P
+ 311               	.LVL18:
+ 312               	.L17:
+ 193:Lib/HTTPServerApp.c **** 		          (sizeof(AppState->HTTPServer.FileName) - FileNameLen));
+ 194:Lib/HTTPServerApp.c **** 	}
+ 195:Lib/HTTPServerApp.c **** 
+ 196:Lib/HTTPServerApp.c **** 	/* Try to open the file from the Dataflash disk */
+ 197:Lib/HTTPServerApp.c **** 	AppState->HTTPServer.FileOpen     = (f_open(&AppState->HTTPServer.FileHandle, AppState->HTTPServer
+ 313               		.loc 1 197 0
+ 314 0176 41E0      		ldi r20,lo8(1)
+ 315 0178 B801      		movw r22,r16
+ 316 017a C701      		movw r24,r14
+ 317 017c C496      		adiw r24,52
+ 318 017e 0E94 0000 		call f_open
+ 319               	.LVL19:
+ 320 0182 FE01      		movw r30,r28
+ 321 0184 E659      		subi r30,-106
+ 322 0186 FF4F      		sbci r31,-1
+ 323 0188 91E0      		ldi r25,lo8(1)
+ 324 018a 8111      		cpse r24,__zero_reg__
+ 325 018c 90E0      		ldi r25,0
+ 326               	.L18:
+ 327 018e 9083      		st Z,r25
+ 198:Lib/HTTPServerApp.c **** 	                                            (FA_OPEN_EXISTING | FA_READ)) == FR_OK);
+ 199:Lib/HTTPServerApp.c **** 
+ 200:Lib/HTTPServerApp.c **** 	/* Lock to the SendResponseHeader state until connection terminated */
+ 201:Lib/HTTPServerApp.c **** 	AppState->HTTPServer.CurrentState = WEBSERVER_STATE_SendResponseHeader;
+ 328               		.loc 1 201 0
+ 329 0190 81E0      		ldi r24,lo8(1)
+ 330 0192 00C0      		rjmp .L50
+ 331               	.LVL20:
+ 332               	.L10:
+ 333               	.LBE12:
+ 334               	.LBE11:
+ 335               	.LBB13:
+ 336               	.LBB14:
+ 202:Lib/HTTPServerApp.c **** 	AppState->HTTPServer.NextState    = WEBSERVER_STATE_SendResponseHeader;
+ 203:Lib/HTTPServerApp.c **** }
+ 204:Lib/HTTPServerApp.c **** 
+ 205:Lib/HTTPServerApp.c **** /** HTTP Server State handler for the HTTP Response Header Send state. This state manages the trans
+ 206:Lib/HTTPServerApp.c ****  *  the HTTP response header to the receiving HTTP client.
+ 207:Lib/HTTPServerApp.c ****  */
+ 208:Lib/HTTPServerApp.c **** static void HTTPServerApp_SendResponseHeader(void)
+ 209:Lib/HTTPServerApp.c **** {
+ 210:Lib/HTTPServerApp.c **** 	uip_tcp_appstate_t* const AppState    = &uip_conn->appstate;
+ 337               		.loc 1 210 0
+ 338 0194 E090 0000 		lds r14,uip_conn
+ 339 0198 F090 0000 		lds r15,uip_conn+1
+ 340               	.LVL21:
+ 211:Lib/HTTPServerApp.c **** 	char*               const AppData     = (char*)uip_appdata;
+ 341               		.loc 1 211 0
+ 342 019c C091 0000 		lds r28,uip_appdata
+ 343 01a0 D091 0000 		lds r29,uip_appdata+1
+ 344               	.LVL22:
+ 212:Lib/HTTPServerApp.c **** 
+ 213:Lib/HTTPServerApp.c **** 	char* Extension     = strpbrk(AppState->HTTPServer.FileName, ".");
+ 345               		.loc 1 213 0
+ 346 01a4 8701      		movw r16,r14
+ 347 01a6 025E      		subi r16,-30
+ 348 01a8 1F4F      		sbci r17,-1
+ 349 01aa 6EE2      		ldi r22,lo8(46)
+ 350 01ac 70E0      		ldi r23,0
+ 351 01ae C801      		movw r24,r16
+ 352 01b0 0E94 0000 		call strchr
+ 353               	.LVL23:
+ 354 01b4 6C01      		movw r12,r24
+ 355               	.LVL24:
+ 214:Lib/HTTPServerApp.c **** 	bool  FoundMIMEType = false;
+ 215:Lib/HTTPServerApp.c **** 
+ 216:Lib/HTTPServerApp.c **** 	/* If the file isn't already open, it wasn't found - send back a 404 error response and abort */
+ 217:Lib/HTTPServerApp.c **** 	if (!(AppState->HTTPServer.FileOpen))
+ 356               		.loc 1 217 0
+ 357 01b6 F701      		movw r30,r14
+ 358 01b8 E659      		subi r30,-106
+ 359 01ba FF4F      		sbci r31,-1
+ 360 01bc 8081      		ld r24,Z
+ 361 01be 8111      		cpse r24,__zero_reg__
+ 362 01c0 00C0      		rjmp .L19
+ 218:Lib/HTTPServerApp.c **** 	{
+ 219:Lib/HTTPServerApp.c **** 		/* Copy over the HTTP 404 response header and send it to the receiving client */
+ 220:Lib/HTTPServerApp.c **** 		strcpy_P(AppData, HTTP404Header);
+ 363               		.loc 1 220 0
+ 364 01c2 60E0      		ldi r22,lo8(HTTP404Header)
+ 365 01c4 70E0      		ldi r23,hi8(HTTP404Header)
+ 366 01c6 CE01      		movw r24,r28
+ 367 01c8 0E94 0000 		call strcpy_P
+ 368               	.LVL25:
+ 221:Lib/HTTPServerApp.c **** 		strcpy(&AppData[strlen(AppData)], AppState->HTTPServer.FileName);
+ 369               		.loc 1 221 0
+ 370 01cc FE01      		movw r30,r28
+ 371               		0:
+ 372 01ce 0190      		ld __tmp_reg__,Z+
+ 373 01d0 0020      		tst __tmp_reg__
+ 374 01d2 01F4      		brne 0b
+ 375 01d4 CF01      		movw r24,r30
+ 376 01d6 B801      		movw r22,r16
+ 377 01d8 0197      		sbiw r24,1
+ 378 01da 0E94 0000 		call strcpy
+ 379               	.LVL26:
+ 222:Lib/HTTPServerApp.c **** 		uip_send(AppData, strlen(AppData));
+ 380               		.loc 1 222 0
+ 381 01de FE01      		movw r30,r28
+ 382               		0:
+ 383 01e0 0190      		ld __tmp_reg__,Z+
+ 384 01e2 0020      		tst __tmp_reg__
+ 385 01e4 01F4      		brne 0b
+ 386 01e6 3197      		sbiw r30,1
+ 387 01e8 BF01      		movw r22,r30
+ 388 01ea 6C1B      		sub r22,r28
+ 389 01ec 7D0B      		sbc r23,r29
+ 390 01ee CE01      		movw r24,r28
+ 391 01f0 0E94 0000 		call uip_send
+ 392               	.LVL27:
+ 223:Lib/HTTPServerApp.c **** 
+ 224:Lib/HTTPServerApp.c **** 		AppState->HTTPServer.NextState = WEBSERVER_STATE_Closing;
+ 393               		.loc 1 224 0
+ 394 01f4 83E0      		ldi r24,lo8(3)
+ 395 01f6 00C0      		rjmp .L51
+ 396               	.L19:
+ 225:Lib/HTTPServerApp.c **** 		return;
+ 226:Lib/HTTPServerApp.c **** 	}
+ 227:Lib/HTTPServerApp.c **** 
+ 228:Lib/HTTPServerApp.c **** 	/* Copy over the HTTP 200 response header and send it to the receiving client */
+ 229:Lib/HTTPServerApp.c **** 	strcpy_P(AppData, HTTP200Header);
+ 397               		.loc 1 229 0
+ 398 01f8 60E0      		ldi r22,lo8(HTTP200Header)
+ 399 01fa 70E0      		ldi r23,hi8(HTTP200Header)
+ 400 01fc CE01      		movw r24,r28
+ 401 01fe 0E94 0000 		call strcpy_P
+ 402               	.LVL28:
+ 230:Lib/HTTPServerApp.c **** 
+ 231:Lib/HTTPServerApp.c **** 	/* Check to see if a MIME type for the requested file's extension was found */
+ 232:Lib/HTTPServerApp.c **** 	if (Extension != NULL)
+ 403               		.loc 1 232 0
+ 404 0202 C114      		cp r12,__zero_reg__
+ 405 0204 D104      		cpc r13,__zero_reg__
+ 406 0206 01F0      		breq .L20
+ 407 0208 30E0      		ldi r19,lo8(MIMETypes)
+ 408 020a A32E      		mov r10,r19
+ 409 020c 30E0      		ldi r19,hi8(MIMETypes)
+ 410 020e B32E      		mov r11,r19
+ 411 0210 00E0      		ldi r16,0
+ 412 0212 10E0      		ldi r17,0
+ 413               	.LBB15:
+ 233:Lib/HTTPServerApp.c **** 	{
+ 234:Lib/HTTPServerApp.c **** 		/* Look through the MIME type list, copy over the required MIME type if found */
+ 235:Lib/HTTPServerApp.c **** 		for (uint8_t i = 0; i < (sizeof(MIMETypes) / sizeof(MIMETypes[0])); i++)
+ 236:Lib/HTTPServerApp.c **** 		{
+ 237:Lib/HTTPServerApp.c **** 			if (strcmp(&Extension[1], MIMETypes[i].Extension) == 0)
+ 414               		.loc 1 237 0
+ 415 0214 FFEF      		ldi r31,-1
+ 416 0216 CF1A      		sub r12,r31
+ 417 0218 DF0A      		sbc r13,r31
+ 418               	.LVL29:
+ 419               	.L23:
+ 420 021a F501      		movw r30,r10
+ 421 021c 6081      		ld r22,Z
+ 422 021e 7181      		ldd r23,Z+1
+ 423 0220 C601      		movw r24,r12
+ 424 0222 0E94 0000 		call strcmp
+ 425               	.LVL30:
+ 426 0226 892B      		or r24,r25
+ 427 0228 01F4      		brne .L21
+ 238:Lib/HTTPServerApp.c **** 			{
+ 239:Lib/HTTPServerApp.c **** 				strcpy(&AppData[strlen(AppData)], MIMETypes[i].MIMEType);
+ 428               		.loc 1 239 0
+ 429 022a FE01      		movw r30,r28
+ 430               		0:
+ 431 022c 0190      		ld __tmp_reg__,Z+
+ 432 022e 0020      		tst __tmp_reg__
+ 433 0230 01F4      		brne 0b
+ 434 0232 CF01      		movw r24,r30
+ 435 0234 000F      		lsl r16
+ 436 0236 111F      		rol r17
+ 437 0238 000F      		lsl r16
+ 438 023a 111F      		rol r17
+ 439               	.LVL31:
+ 440 023c F801      		movw r30,r16
+ 441 023e E050      		subi r30,lo8(-(MIMETypes))
+ 442 0240 F040      		sbci r31,hi8(-(MIMETypes))
+ 443 0242 6281      		ldd r22,Z+2
+ 444 0244 7381      		ldd r23,Z+3
+ 445 0246 0197      		sbiw r24,1
+ 446 0248 0E94 0000 		call strcpy
+ 447               	.LVL32:
+ 448 024c 00C0      		rjmp .L22
+ 449               	.LVL33:
+ 450               	.L21:
+ 451 024e 0F5F      		subi r16,-1
+ 452 0250 1F4F      		sbci r17,-1
+ 453               	.LVL34:
+ 454 0252 F4E0      		ldi r31,4
+ 455 0254 AF0E      		add r10,r31
+ 456 0256 B11C      		adc r11,__zero_reg__
+ 235:Lib/HTTPServerApp.c **** 		{
+ 457               		.loc 1 235 0
+ 458 0258 0A30      		cpi r16,10
+ 459 025a 1105      		cpc r17,__zero_reg__
+ 460 025c 01F4      		brne .L23
+ 461               	.LVL35:
+ 462               	.L20:
+ 463               	.LBE15:
+ 240:Lib/HTTPServerApp.c **** 				FoundMIMEType = true;
+ 241:Lib/HTTPServerApp.c **** 				break;
+ 242:Lib/HTTPServerApp.c **** 			}
+ 243:Lib/HTTPServerApp.c **** 		}
+ 244:Lib/HTTPServerApp.c **** 	}
+ 245:Lib/HTTPServerApp.c **** 
+ 246:Lib/HTTPServerApp.c **** 	/* Check if a MIME type was found and copied to the output buffer */
+ 247:Lib/HTTPServerApp.c **** 	if (!(FoundMIMEType))
+ 248:Lib/HTTPServerApp.c **** 	{
+ 249:Lib/HTTPServerApp.c **** 		/* MIME type not found - copy over the default MIME type */
+ 250:Lib/HTTPServerApp.c **** 		strcpy_P(&AppData[strlen(AppData)], DefaultMIMEType);
+ 464               		.loc 1 250 0
+ 465 025e FE01      		movw r30,r28
+ 466               		0:
+ 467 0260 0190      		ld __tmp_reg__,Z+
+ 468 0262 0020      		tst __tmp_reg__
+ 469 0264 01F4      		brne 0b
+ 470 0266 CF01      		movw r24,r30
+ 471 0268 60E0      		ldi r22,lo8(DefaultMIMEType)
+ 472 026a 70E0      		ldi r23,hi8(DefaultMIMEType)
+ 473 026c 0197      		sbiw r24,1
+ 474 026e 0E94 0000 		call strcpy_P
+ 475               	.LVL36:
+ 476               	.L22:
+ 251:Lib/HTTPServerApp.c **** 	}
+ 252:Lib/HTTPServerApp.c **** 
+ 253:Lib/HTTPServerApp.c **** 	/* Add the end-of-line terminator and end-of-headers terminator after the MIME type */
+ 254:Lib/HTTPServerApp.c **** 	strcpy_P(&AppData[strlen(AppData)], PSTR("\r\n\r\n"));
+ 477               		.loc 1 254 0
+ 478 0272 FE01      		movw r30,r28
+ 479               		0:
+ 480 0274 0190      		ld __tmp_reg__,Z+
+ 481 0276 0020      		tst __tmp_reg__
+ 482 0278 01F4      		brne 0b
+ 483 027a CF01      		movw r24,r30
+ 484 027c 60E0      		ldi r22,lo8(__c.2296)
+ 485 027e 70E0      		ldi r23,hi8(__c.2296)
+ 486 0280 0197      		sbiw r24,1
+ 487 0282 0E94 0000 		call strcpy_P
+ 488               	.LVL37:
+ 255:Lib/HTTPServerApp.c **** 
+ 256:Lib/HTTPServerApp.c **** 	/* Send the MIME header to the receiving client */
+ 257:Lib/HTTPServerApp.c **** 	uip_send(AppData, strlen(AppData));
+ 489               		.loc 1 257 0
+ 490 0286 FE01      		movw r30,r28
+ 491               		0:
+ 492 0288 0190      		ld __tmp_reg__,Z+
+ 493 028a 0020      		tst __tmp_reg__
+ 494 028c 01F4      		brne 0b
+ 495 028e 3197      		sbiw r30,1
+ 496 0290 BF01      		movw r22,r30
+ 497 0292 6C1B      		sub r22,r28
+ 498 0294 7D0B      		sbc r23,r29
+ 499 0296 CE01      		movw r24,r28
+ 500 0298 0E94 0000 		call uip_send
+ 501               	.LVL38:
+ 258:Lib/HTTPServerApp.c **** 
+ 259:Lib/HTTPServerApp.c **** 	/* When the MIME header is ACKed, progress to the data send stage */
+ 260:Lib/HTTPServerApp.c **** 	AppState->HTTPServer.NextState = WEBSERVER_STATE_SendData;
+ 502               		.loc 1 260 0
+ 503 029c 82E0      		ldi r24,lo8(2)
+ 504               	.L51:
+ 505 029e F701      		movw r30,r14
+ 506 02a0 00C0      		rjmp .L49
+ 507               	.LVL39:
+ 508               	.L12:
+ 509               	.LBE14:
+ 510               	.LBE13:
+ 511               	.LBB16:
+ 512               	.LBB17:
+ 261:Lib/HTTPServerApp.c **** }
+ 262:Lib/HTTPServerApp.c **** 
+ 263:Lib/HTTPServerApp.c **** /** HTTP Server State handler for the Data Send state. This state manages the transmission of file 
+ 264:Lib/HTTPServerApp.c ****  *  to the receiving HTTP client.
+ 265:Lib/HTTPServerApp.c ****  */
+ 266:Lib/HTTPServerApp.c **** static void HTTPServerApp_SendData(void)
+ 267:Lib/HTTPServerApp.c **** {
+ 268:Lib/HTTPServerApp.c **** 	uip_tcp_appstate_t* const AppState    = &uip_conn->appstate;
+ 513               		.loc 1 268 0
+ 514 02a2 0091 0000 		lds r16,uip_conn
+ 515 02a6 1091 0000 		lds r17,uip_conn+1
+ 516               	.LVL40:
+ 269:Lib/HTTPServerApp.c **** 	char*               const AppData     = (char*)uip_appdata;
+ 517               		.loc 1 269 0
+ 518 02aa C090 0000 		lds r12,uip_appdata
+ 519 02ae D090 0000 		lds r13,uip_appdata+1
+ 520               	.LVL41:
+ 270:Lib/HTTPServerApp.c **** 
+ 271:Lib/HTTPServerApp.c **** 	/* Get the maximum segment size for the current packet */
+ 272:Lib/HTTPServerApp.c **** 	uint16_t MaxChunkSize = uip_mss();
+ 521               		.loc 1 272 0
+ 522 02b2 F801      		movw r30,r16
+ 523 02b4 E288      		ldd r14,Z+18
+ 524 02b6 F388      		ldd r15,Z+19
+ 525               	.LVL42:
+ 273:Lib/HTTPServerApp.c **** 
+ 274:Lib/HTTPServerApp.c **** 	/* Read the next chunk of data from the open file */
+ 275:Lib/HTTPServerApp.c **** 	f_read(&AppState->HTTPServer.FileHandle, AppData, MaxChunkSize, &AppState->HTTPServer.SentChunkSiz
+ 526               		.loc 1 275 0
+ 527 02b8 E801      		movw r28,r16
+ 528               	.LVL43:
+ 529 02ba C159      		subi r28,-111
+ 530 02bc DF4F      		sbci r29,-1
+ 531 02be 9E01      		movw r18,r28
+ 532 02c0 A701      		movw r20,r14
+ 533 02c2 B601      		movw r22,r12
+ 534 02c4 C801      		movw r24,r16
+ 535 02c6 805B      		subi r24,-80
+ 536 02c8 9F4F      		sbci r25,-1
+ 537 02ca 0E94 0000 		call f_read
+ 538               	.LVL44:
+ 276:Lib/HTTPServerApp.c **** 
+ 277:Lib/HTTPServerApp.c **** 	/* Send the next file chunk to the receiving client */
+ 278:Lib/HTTPServerApp.c **** 	uip_send(AppData, AppState->HTTPServer.SentChunkSize);
+ 539               		.loc 1 278 0
+ 540 02ce 6881      		ld r22,Y
+ 541 02d0 7981      		ldd r23,Y+1
+ 542 02d2 C601      		movw r24,r12
+ 543 02d4 0E94 0000 		call uip_send
+ 544               	.LVL45:
+ 279:Lib/HTTPServerApp.c **** 
+ 280:Lib/HTTPServerApp.c **** 	/* Check if we are at the last chunk of the file, if so next ACK should close the connection */
+ 281:Lib/HTTPServerApp.c **** 	if (MaxChunkSize != AppState->HTTPServer.SentChunkSize)
+ 545               		.loc 1 281 0
+ 546 02d8 8881      		ld r24,Y
+ 547 02da 9981      		ldd r25,Y+1
+ 548 02dc E816      		cp r14,r24
+ 549 02de F906      		cpc r15,r25
+ 550 02e0 01F0      		breq .L2
+ 282:Lib/HTTPServerApp.c **** 	  AppState->HTTPServer.NextState = WEBSERVER_STATE_Closing;
+ 551               		.loc 1 282 0
+ 552 02e2 83E0      		ldi r24,lo8(3)
+ 553 02e4 F801      		movw r30,r16
+ 554               	.LVL46:
+ 555               	.L49:
+ 556 02e6 858F      		std Z+29,r24
+ 557 02e8 00C0      		rjmp .L2
+ 558               	.L50:
+ 559               	.LBE17:
+ 560               	.LBE16:
+ 154:Lib/HTTPServerApp.c **** 				AppState->HTTPServer.NextState    = WEBSERVER_STATE_Closed;
+ 561               		.loc 1 154 0
+ 562 02ea 8C8F      		std Y+28,r24
+ 155:Lib/HTTPServerApp.c **** 				break;
+ 563               		.loc 1 155 0
+ 564 02ec 8D8F      		std Y+29,r24
+ 565               	.L2:
+ 566               	/* epilogue start */
+ 159:Lib/HTTPServerApp.c **** 
+ 567               		.loc 1 159 0
+ 568 02ee DF91      		pop r29
+ 569 02f0 CF91      		pop r28
+ 570 02f2 1F91      		pop r17
+ 571 02f4 0F91      		pop r16
+ 572 02f6 FF90      		pop r15
+ 573 02f8 EF90      		pop r14
+ 574 02fa DF90      		pop r13
+ 575 02fc CF90      		pop r12
+ 576 02fe BF90      		pop r11
+ 577 0300 AF90      		pop r10
+ 578 0302 0895      		ret
+ 579               		.cfi_endproc
+ 580               	.LFE7:
+ 582               		.section	.progmem.data,"a",@progbits
+ 585               	__c.2296:
+ 586 0000 0D0A 0D0A 		.string	"\r\n\r\n"
+ 586      00
+ 589               	__c.2282:
+ 590 0005 4745 5400 		.string	"GET"
+ 591               		.comm	DiskFATState,546,1
+ 592               	.global	MIMETypes
+ 593               		.section	.rodata.str1.1
+ 594               	.LC1:
+ 595 0002 6874 6D00 		.string	"htm"
+ 596               	.LC2:
+ 597 0006 7465 7874 		.string	"text/html"
+ 597      2F68 746D 
+ 597      6C00 
+ 598               	.LC3:
+ 599 0010 6A70 6700 		.string	"jpg"
+ 600               	.LC4:
+ 601 0014 696D 6167 		.string	"image/jpeg"
+ 601      652F 6A70 
+ 601      6567 00
+ 602               	.LC5:
+ 603 001f 6769 6600 		.string	"gif"
+ 604               	.LC6:
+ 605 0023 696D 6167 		.string	"image/gif"
+ 605      652F 6769 
+ 605      6600 
+ 606               	.LC7:
+ 607 002d 626D 7000 		.string	"bmp"
+ 608               	.LC8:
+ 609 0031 696D 6167 		.string	"image/bmp"
+ 609      652F 626D 
+ 609      7000 
+ 610               	.LC9:
+ 611 003b 706E 6700 		.string	"png"
+ 612               	.LC10:
+ 613 003f 696D 6167 		.string	"image/png"
+ 613      652F 706E 
+ 613      6700 
+ 614               	.LC11:
+ 615 0049 6963 6F00 		.string	"ico"
+ 616               	.LC12:
+ 617 004d 696D 6167 		.string	"image/x-icon"
+ 617      652F 782D 
+ 617      6963 6F6E 
+ 617      00
+ 618               	.LC13:
+ 619 005a 6578 6500 		.string	"exe"
+ 620               	.LC14:
+ 621 005e 6170 706C 		.string	"application/octet-stream"
+ 621      6963 6174 
+ 621      696F 6E2F 
+ 621      6F63 7465 
+ 621      742D 7374 
+ 622               	.LC15:
+ 623 0077 677A 00   		.string	"gz"
+ 624               	.LC16:
+ 625 007a 6170 706C 		.string	"application/x-gzip"
+ 625      6963 6174 
+ 625      696F 6E2F 
+ 625      782D 677A 
+ 625      6970 00
+ 626               	.LC17:
+ 627 008d 7A69 7000 		.string	"zip"
+ 628               	.LC18:
+ 629 0091 6170 706C 		.string	"application/zip"
+ 629      6963 6174 
+ 629      696F 6E2F 
+ 629      7A69 7000 
+ 630               	.LC19:
+ 631 00a1 7064 6600 		.string	"pdf"
+ 632               	.LC20:
+ 633 00a5 6170 706C 		.string	"application/pdf"
+ 633      6963 6174 
+ 633      696F 6E2F 
+ 633      7064 6600 
+ 634               		.section	.rodata
+ 637               	MIMETypes:
+ 638 0000 0000      		.word	.LC1
+ 639 0002 0000      		.word	.LC2
+ 640 0004 0000      		.word	.LC3
+ 641 0006 0000      		.word	.LC4
+ 642 0008 0000      		.word	.LC5
+ 643 000a 0000      		.word	.LC6
+ 644 000c 0000      		.word	.LC7
+ 645 000e 0000      		.word	.LC8
+ 646 0010 0000      		.word	.LC9
+ 647 0012 0000      		.word	.LC10
+ 648 0014 0000      		.word	.LC11
+ 649 0016 0000      		.word	.LC12
+ 650 0018 0000      		.word	.LC13
+ 651 001a 0000      		.word	.LC14
+ 652 001c 0000      		.word	.LC15
+ 653 001e 0000      		.word	.LC16
+ 654 0020 0000      		.word	.LC17
+ 655 0022 0000      		.word	.LC18
+ 656 0024 0000      		.word	.LC19
+ 657 0026 0000      		.word	.LC20
+ 658               	.global	DefaultMIMEType
+ 659               		.section	.progmem.data,"a",@progbits
+ 662               	DefaultMIMEType:
+ 663 0009 7465 7874 		.string	"text/plain"
+ 663      2F70 6C61 
+ 663      696E 00
+ 664               	.global	DefaultDirFileName
+ 667               	DefaultDirFileName:
+ 668 0014 696E 6465 		.string	"index.htm"
+ 668      782E 6874 
+ 668      6D00 
+ 669               	.global	HTTP404Header
+ 672               	HTTP404Header:
+ 673 001e 4854 5450 		.string	"HTTP/1.1 404 Not Found\r\nServer: LUFA 111009\r\nConnection: close\r\nMIME-version: 1.0\r
+ 673      2F31 2E31 
+ 673      2034 3034 
+ 673      204E 6F74 
+ 673      2046 6F75 
+ 674               	.global	HTTP200Header
+ 677               	HTTP200Header:
+ 678 00aa 4854 5450 		.string	"HTTP/1.1 200 OK\r\nServer: LUFA 111009\r\nConnection: close\r\nMIME-version: 1.0\r\nConte
+ 678      2F31 2E31 
+ 678      2032 3030 
+ 678      204F 4B0D 
+ 678      0A53 6572 
+ 679               		.text
+ 680               	.Letext0:
+ 681               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 682               		.file 3 "Lib/FATFs/integer.h"
+ 683               		.file 4 "Lib/FATFs/ff.h"
+ 684               		.file 5 "Lib/uip/uipopt.h"
+ 685               		.file 6 "Lib/uip/uip.h"
+ 686               		.file 7 "Lib/HTTPServerApp.h"
+ 687               		.file 8 "/usr/lib/avr/include/string.h"
+ 688               		.file 9 "/usr/lib/avr/include/avr/pgmspace.h"
+ 689               		.file 10 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 HTTPServerApp.c
+     /tmp/ccAdGveF.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccAdGveF.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccAdGveF.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccAdGveF.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccAdGveF.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccAdGveF.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccAdGveF.s:14     .text.HTTPServerApp_Init:0000000000000000 HTTPServerApp_Init
+                            *COM*:0000000000000222 DiskFATState
+     /tmp/ccAdGveF.s:43     .text.HTTPServerApp_Callback:0000000000000000 HTTPServerApp_Callback
+     /tmp/ccAdGveF.s:589    .progmem.data:0000000000000005 __c.2282
+     /tmp/ccAdGveF.s:667    .progmem.data:0000000000000014 DefaultDirFileName
+     /tmp/ccAdGveF.s:672    .progmem.data:000000000000001e HTTP404Header
+     /tmp/ccAdGveF.s:677    .progmem.data:00000000000000aa HTTP200Header
+     /tmp/ccAdGveF.s:637    .rodata:0000000000000000 MIMETypes
+     /tmp/ccAdGveF.s:662    .progmem.data:0000000000000009 DefaultMIMEType
+     /tmp/ccAdGveF.s:585    .progmem.data:0000000000000000 __c.2296
+
+UNDEFINED SYMBOLS
+uip_listen
+f_mount
+uip_conn
+uip_flags
+f_lseek
+f_close
+uip_appdata
+strtok
+strcmp_P
+strlcpy
+strlcpy_P
+f_open
+strchr
+strcpy_P
+strcpy
+uip_send
+strcmp
+f_read
+__do_copy_data
+__do_clear_bss

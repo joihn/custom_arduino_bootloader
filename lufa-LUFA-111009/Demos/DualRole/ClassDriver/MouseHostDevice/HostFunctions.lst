@@ -1,0 +1,842 @@
+   1               		.file	"HostFunctions.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.LEDs_SetAllLEDs,"ax",@progbits
+  13               	LEDs_SetAllLEDs:
+  14               	.LFB32:
+  15               		.file 1 "../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h"
+   1:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /*
+   2:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+   5:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** */
+   8:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+   9:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /*
+  10:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  12:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  21:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   this software.
+  29:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** */
+  30:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  31:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /** \file
+  32:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \brief Board specific LED driver header for the Atmel USBKEY.
+  33:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \copydetails Group_LEDs_USBKEY
+  34:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *
+  35:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  36:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *        dispatch header located in LUFA/Drivers/Board/LEDs.h.
+  37:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  */
+  38:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  39:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /** \ingroup Group_LEDs
+  40:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \defgroup Group_LEDs_USBKEY USBKEY
+  41:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \brief Board specific LED driver header for the Atmel USBKEY.
+  42:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *
+  43:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  Board specific LED driver header for the Atmel USBKEY.
+  44:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *
+  45:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  @{
+  46:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  */
+  47:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  48:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** #ifndef __LEDS_USBKEY_H__
+  49:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** #define __LEDS_USBKEY_H__
+  50:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  51:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Includes: */
+  52:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#include "../../../../Common/Common.h"
+  53:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  54:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Enable C linkage for C++ Compilers: */
+  55:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#if defined(__cplusplus)
+  56:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			extern "C" {
+  57:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#endif
+  58:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  59:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Preprocessor Checks: */
+  60:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#if !defined(__INCLUDE_FROM_LEDS_H)
+  61:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#error Do not include this file directly. Include LUFA/Drivers/Board/LEDS.h instead.
+  62:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#endif
+  63:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  64:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Public Interface - May be used in end-application: */
+  65:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		/* Macros: */
+  66:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the first LED on the board. */
+  67:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED1        (1 << 4)
+  68:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  69:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the second LED on the board. */
+  70:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED2        (1 << 5)
+  71:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  72:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the third LED on the board. */
+  73:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED3        (1 << 7)
+  74:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  75:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the fourth LED on the board. */
+  76:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED4        (1 << 6)
+  77:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  78:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for all the LEDs on the board. */
+  79:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_ALL_LEDS    (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
+  80:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  81:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for none of the board LEDs. */
+  82:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_NO_LEDS     0
+  83:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  84:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		/* Inline Functions: */
+  85:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#if !defined(__DOXYGEN__)
+  86:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_Init(void)
+  87:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  88:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				DDRD  |=  LEDS_ALL_LEDS;
+  89:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD &= ~LEDS_ALL_LEDS;
+  90:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			}
+  91:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  92:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_TurnOnLEDs(const uint8_t LEDMask)
+  93:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  94:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD |= LEDMask;
+  95:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			}
+  96:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  97:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_TurnOffLEDs(const uint8_t LEDMask)
+  98:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  99:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD &= ~LEDMask;
+ 100:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			}
+ 101:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+ 102:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_SetAllLEDs(const uint8_t LEDMask)
+ 103:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  16               		.loc 1 103 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+ 104:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD = ((PORTD & ~LEDS_ALL_LEDS) | LEDMask);
+  23               		.loc 1 104 0
+  24 0000 9BB1      		in r25,0xb
+  25 0002 9F70      		andi r25,lo8(15)
+  26 0004 892B      		or r24,r25
+  27               	.LVL1:
+  28 0006 8BB9      		out 0xb,r24
+  29 0008 0895      		ret
+  30               		.cfi_endproc
+  31               	.LFE32:
+  33               		.section	.text.EVENT_USB_Host_DeviceAttached,"ax",@progbits
+  34               	.global	EVENT_USB_Host_DeviceAttached
+  36               	EVENT_USB_Host_DeviceAttached:
+  37               	.LFB211:
+  38               		.file 2 "HostFunctions.c"
+   1:HostFunctions.c **** /*
+   2:HostFunctions.c ****              LUFA Library
+   3:HostFunctions.c ****      Copyright (C) Dean Camera, 2011.
+   4:HostFunctions.c **** 
+   5:HostFunctions.c ****   dean [at] fourwalledcubicle [dot] com
+   6:HostFunctions.c ****            www.lufa-lib.org
+   7:HostFunctions.c **** */
+   8:HostFunctions.c **** 
+   9:HostFunctions.c **** /*
+  10:HostFunctions.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:HostFunctions.c **** 
+  12:HostFunctions.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:HostFunctions.c ****   software and its documentation for any purpose is hereby granted
+  14:HostFunctions.c ****   without fee, provided that the above copyright notice appear in
+  15:HostFunctions.c ****   all copies and that both that the copyright notice and this
+  16:HostFunctions.c ****   permission notice and warranty disclaimer appear in supporting
+  17:HostFunctions.c ****   documentation, and that the name of the author not be used in
+  18:HostFunctions.c ****   advertising or publicity pertaining to distribution of the
+  19:HostFunctions.c ****   software without specific, written prior permission.
+  20:HostFunctions.c **** 
+  21:HostFunctions.c ****   The author disclaim all warranties with regard to this
+  22:HostFunctions.c ****   software, including all implied warranties of merchantability
+  23:HostFunctions.c ****   and fitness.  In no event shall the author be liable for any
+  24:HostFunctions.c ****   special, indirect or consequential damages or any damages
+  25:HostFunctions.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:HostFunctions.c ****   in an action of contract, negligence or other tortious action,
+  27:HostFunctions.c ****   arising out of or in connection with the use or performance of
+  28:HostFunctions.c ****   this software.
+  29:HostFunctions.c **** */
+  30:HostFunctions.c **** 
+  31:HostFunctions.c **** /** \file
+  32:HostFunctions.c ****  *
+  33:HostFunctions.c ****  *  Host Mode USB Mouse functionality for the MouseHostDevice demo. This file contains the Host mod
+  34:HostFunctions.c ****  *  USB Mouse related code of the demo and is responsible for all the Host mode Mouse functionality
+  35:HostFunctions.c ****  */
+  36:HostFunctions.c **** 
+  37:HostFunctions.c **** #include "HostFunctions.h"
+  38:HostFunctions.c **** 
+  39:HostFunctions.c **** /** LUFA HID Class driver interface configuration and state information. This structure is
+  40:HostFunctions.c ****  *  passed to all HID Class driver functions, so that multiple instances of the same class
+  41:HostFunctions.c ****  *  within a device can be differentiated from one another.
+  42:HostFunctions.c ****  */
+  43:HostFunctions.c **** USB_ClassInfo_HID_Host_t Mouse_HID_Host_Interface =
+  44:HostFunctions.c **** 	{
+  45:HostFunctions.c **** 		.Config =
+  46:HostFunctions.c **** 			{
+  47:HostFunctions.c **** 				.DataINPipeNumber       = 1,
+  48:HostFunctions.c **** 				.DataOUTPipeNumber      = 2,
+  49:HostFunctions.c **** 
+  50:HostFunctions.c **** 				.HIDInterfaceProtocol   = HID_CSCP_MouseBootProtocol,
+  51:HostFunctions.c **** 			},
+  52:HostFunctions.c **** 	};
+  53:HostFunctions.c **** 
+  54:HostFunctions.c **** 
+  55:HostFunctions.c **** /** Event handler for the USB_DeviceAttached event. This indicates that a device has been attached 
+  56:HostFunctions.c ****  *  starts the library USB task to begin the enumeration and USB management process.
+  57:HostFunctions.c ****  */
+  58:HostFunctions.c **** void EVENT_USB_Host_DeviceAttached(void)
+  59:HostFunctions.c **** {
+  39               		.loc 2 59 0
+  40               		.cfi_startproc
+  41               	/* prologue: function */
+  42               	/* frame size = 0 */
+  43               	/* stack size = 0 */
+  44               	.L__stack_usage = 0
+  60:HostFunctions.c **** 	puts_P(PSTR("Device Attached.\r\n"));
+  45               		.loc 2 60 0
+  46 0000 80E0      		ldi r24,lo8(__c.5241)
+  47 0002 90E0      		ldi r25,hi8(__c.5241)
+  48 0004 0E94 0000 		call puts_P
+  49               	.LVL2:
+  61:HostFunctions.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_ENUMERATING);
+  50               		.loc 2 61 0
+  51 0008 80EA      		ldi r24,lo8(-96)
+  52 000a 0C94 0000 		jmp LEDs_SetAllLEDs
+  53               	.LVL3:
+  54               		.cfi_endproc
+  55               	.LFE211:
+  57               		.section	.text.EVENT_USB_Host_DeviceUnattached,"ax",@progbits
+  58               	.global	EVENT_USB_Host_DeviceUnattached
+  60               	EVENT_USB_Host_DeviceUnattached:
+  61               	.LFB212:
+  62:HostFunctions.c **** }
+  63:HostFunctions.c **** 
+  64:HostFunctions.c **** /** Event handler for the USB_DeviceUnattached event. This indicates that a device has been removed
+  65:HostFunctions.c ****  *  stops the library USB task management process.
+  66:HostFunctions.c ****  */
+  67:HostFunctions.c **** void EVENT_USB_Host_DeviceUnattached(void)
+  68:HostFunctions.c **** {
+  62               		.loc 2 68 0
+  63               		.cfi_startproc
+  64               	/* prologue: function */
+  65               	/* frame size = 0 */
+  66               	/* stack size = 0 */
+  67               	.L__stack_usage = 0
+  69:HostFunctions.c **** 	puts_P(PSTR("\r\nDevice Unattached.\r\n"));
+  68               		.loc 2 69 0
+  69 0000 80E0      		ldi r24,lo8(__c.5246)
+  70 0002 90E0      		ldi r25,hi8(__c.5246)
+  71 0004 0E94 0000 		call puts_P
+  72               	.LVL4:
+  70:HostFunctions.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
+  73               		.loc 2 70 0
+  74 0008 80E1      		ldi r24,lo8(16)
+  75 000a 0C94 0000 		jmp LEDs_SetAllLEDs
+  76               	.LVL5:
+  77               		.cfi_endproc
+  78               	.LFE212:
+  80               		.section	.rodata.str1.1,"aMS",@progbits,1
+  81               	.LC0:
+  82 0000 4572 726F 		.string	"Error Retrieving Configuration Descriptor.\r"
+  82      7220 5265 
+  82      7472 6965 
+  82      7669 6E67 
+  82      2043 6F6E 
+  83               	.LC1:
+  84 002c 4174 7461 		.string	"Attached Device Not a Valid Mouse.\r"
+  84      6368 6564 
+  84      2044 6576 
+  84      6963 6520 
+  84      4E6F 7420 
+  85               	.LC2:
+  86 0050 4572 726F 		.string	"Error Setting Device Configuration.\r"
+  86      7220 5365 
+  86      7474 696E 
+  86      6720 4465 
+  86      7669 6365 
+  87               	.LC3:
+  88 0075 436F 756C 		.string	"Could not Set Boot Protocol Mode.\r"
+  88      6420 6E6F 
+  88      7420 5365 
+  88      7420 426F 
+  88      6F74 2050 
+  89               	.LC4:
+  90 0098 4D6F 7573 		.string	"Mouse Enumerated.\r"
+  90      6520 456E 
+  90      756D 6572 
+  90      6174 6564 
+  90      2E0D 00
+  91               		.section	.text.EVENT_USB_Host_DeviceEnumerationComplete,"ax",@progbits
+  92               	.global	EVENT_USB_Host_DeviceEnumerationComplete
+  94               	EVENT_USB_Host_DeviceEnumerationComplete:
+  95               	.LFB213:
+  71:HostFunctions.c **** }
+  72:HostFunctions.c **** 
+  73:HostFunctions.c **** /** Event handler for the USB_DeviceEnumerationComplete event. This indicates that a device has bee
+  74:HostFunctions.c ****  *  enumerated by the host and is now ready to be used by the application.
+  75:HostFunctions.c ****  */
+  76:HostFunctions.c **** void EVENT_USB_Host_DeviceEnumerationComplete(void)
+  77:HostFunctions.c **** {	
+  96               		.loc 2 77 0
+  97               		.cfi_startproc
+  98 0000 CF93      		push r28
+  99               	.LCFI0:
+ 100               		.cfi_def_cfa_offset 3
+ 101               		.cfi_offset 28, -2
+ 102 0002 DF93      		push r29
+ 103               	.LCFI1:
+ 104               		.cfi_def_cfa_offset 4
+ 105               		.cfi_offset 29, -3
+ 106 0004 CDB7      		in r28,__SP_L__
+ 107 0006 DEB7      		in r29,__SP_H__
+ 108               	.LCFI2:
+ 109               		.cfi_def_cfa_register 28
+ 110 0008 C250      		subi r28,2
+ 111 000a D240      		sbci r29,2
+ 112               	.LCFI3:
+ 113               		.cfi_def_cfa_offset 518
+ 114 000c 0FB6      		in __tmp_reg__,__SREG__
+ 115 000e F894      		cli
+ 116 0010 DEBF      		out __SP_H__,r29
+ 117 0012 0FBE      		out __SREG__,__tmp_reg__
+ 118 0014 CDBF      		out __SP_L__,r28
+ 119               	/* prologue: function */
+ 120               	/* frame size = 514 */
+ 121               	/* stack size = 516 */
+ 122               	.L__stack_usage = 516
+  78:HostFunctions.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_ENUMERATING);
+ 123               		.loc 2 78 0
+ 124 0016 80EA      		ldi r24,lo8(-96)
+ 125 0018 0E94 0000 		call LEDs_SetAllLEDs
+ 126               	.LVL6:
+  79:HostFunctions.c **** 
+  80:HostFunctions.c **** 	uint16_t ConfigDescriptorSize;
+  81:HostFunctions.c **** 	uint8_t  ConfigDescriptorData[512];
+  82:HostFunctions.c **** 
+  83:HostFunctions.c **** 	if (USB_Host_GetDeviceConfigDescriptor(1, &ConfigDescriptorSize, ConfigDescriptorData,
+ 127               		.loc 2 83 0
+ 128 001c 20E0      		ldi r18,0
+ 129 001e 32E0      		ldi r19,lo8(2)
+ 130 0020 AE01      		movw r20,r28
+ 131 0022 4F5F      		subi r20,-1
+ 132 0024 5F4F      		sbci r21,-1
+ 133 0026 BE01      		movw r22,r28
+ 134 0028 6F5F      		subi r22,-1
+ 135 002a 7D4F      		sbci r23,-3
+ 136 002c 81E0      		ldi r24,lo8(1)
+ 137 002e 0E94 0000 		call USB_Host_GetDeviceConfigDescriptor
+ 138               	.LVL7:
+ 139 0032 8823      		tst r24
+ 140 0034 01F0      		breq .L5
+  84:HostFunctions.c **** 	                                       sizeof(ConfigDescriptorData)) != HOST_GETCONFIG_Successful)
+  85:HostFunctions.c **** 	{
+  86:HostFunctions.c **** 		printf("Error Retrieving Configuration Descriptor.\r\n");
+ 141               		.loc 2 86 0
+ 142 0036 80E0      		ldi r24,lo8(.LC0)
+ 143 0038 90E0      		ldi r25,hi8(.LC0)
+ 144 003a 00C0      		rjmp .L12
+ 145               	.L5:
+  87:HostFunctions.c **** 		LEDs_SetAllLEDs(LEDMASK_USB_ERROR);
+  88:HostFunctions.c **** 		return;
+  89:HostFunctions.c **** 	}
+  90:HostFunctions.c **** 
+  91:HostFunctions.c **** 	if (HID_Host_ConfigurePipes(&Mouse_HID_Host_Interface,
+ 146               		.loc 2 91 0
+ 147 003c CF5F      		subi r28,lo8(-513)
+ 148 003e DD4F      		sbci r29,hi8(-513)
+ 149 0040 6881      		ld r22,Y
+ 150 0042 7981      		ldd r23,Y+1
+ 151 0044 C150      		subi r28,lo8(513)
+ 152 0046 D240      		sbci r29,hi8(513)
+ 153 0048 AE01      		movw r20,r28
+ 154 004a 4F5F      		subi r20,-1
+ 155 004c 5F4F      		sbci r21,-1
+ 156 004e 80E0      		ldi r24,lo8(Mouse_HID_Host_Interface)
+ 157 0050 90E0      		ldi r25,hi8(Mouse_HID_Host_Interface)
+ 158 0052 0E94 0000 		call HID_Host_ConfigurePipes
+ 159               	.LVL8:
+ 160 0056 8823      		tst r24
+ 161 0058 01F0      		breq .L7
+  92:HostFunctions.c **** 	                            ConfigDescriptorSize, ConfigDescriptorData) != HID_ENUMERROR_NoError)
+  93:HostFunctions.c **** 	{
+  94:HostFunctions.c **** 		printf("Attached Device Not a Valid Mouse.\r\n");
+ 162               		.loc 2 94 0
+ 163 005a 80E0      		ldi r24,lo8(.LC1)
+ 164 005c 90E0      		ldi r25,hi8(.LC1)
+ 165 005e 00C0      		rjmp .L12
+ 166               	.L7:
+  95:HostFunctions.c **** 		LEDs_SetAllLEDs(LEDMASK_USB_ERROR);
+  96:HostFunctions.c **** 		return;
+  97:HostFunctions.c **** 	}
+  98:HostFunctions.c **** 
+  99:HostFunctions.c **** 	if (USB_Host_SetDeviceConfiguration(1) != HOST_SENDCONTROL_Successful)
+ 167               		.loc 2 99 0
+ 168 0060 81E0      		ldi r24,lo8(1)
+ 169 0062 0E94 0000 		call USB_Host_SetDeviceConfiguration
+ 170               	.LVL9:
+ 171 0066 8823      		tst r24
+ 172 0068 01F0      		breq .L8
+ 100:HostFunctions.c **** 	{
+ 101:HostFunctions.c **** 		printf("Error Setting Device Configuration.\r\n");
+ 173               		.loc 2 101 0
+ 174 006a 80E0      		ldi r24,lo8(.LC2)
+ 175 006c 90E0      		ldi r25,hi8(.LC2)
+ 176 006e 00C0      		rjmp .L12
+ 177               	.L8:
+ 102:HostFunctions.c **** 		LEDs_SetAllLEDs(LEDMASK_USB_ERROR);
+ 103:HostFunctions.c **** 		return;
+ 104:HostFunctions.c **** 	}
+ 105:HostFunctions.c **** 
+ 106:HostFunctions.c **** 	if (HID_Host_SetBootProtocol(&Mouse_HID_Host_Interface) != HOST_SENDCONTROL_Successful)
+ 178               		.loc 2 106 0
+ 179 0070 80E0      		ldi r24,lo8(Mouse_HID_Host_Interface)
+ 180 0072 90E0      		ldi r25,hi8(Mouse_HID_Host_Interface)
+ 181 0074 0E94 0000 		call HID_Host_SetBootProtocol
+ 182               	.LVL10:
+ 183 0078 8823      		tst r24
+ 184 007a 01F0      		breq .L9
+ 107:HostFunctions.c **** 	{
+ 108:HostFunctions.c **** 		printf("Could not Set Boot Protocol Mode.\r\n");
+ 185               		.loc 2 108 0
+ 186 007c 80E0      		ldi r24,lo8(.LC3)
+ 187 007e 90E0      		ldi r25,hi8(.LC3)
+ 188               	.L12:
+ 189 0080 0E94 0000 		call puts
+ 190               	.LVL11:
+ 109:HostFunctions.c **** 		LEDs_SetAllLEDs(LEDMASK_USB_ERROR);
+ 191               		.loc 2 109 0
+ 192 0084 80E9      		ldi r24,lo8(-112)
+ 193 0086 00C0      		rjmp .L11
+ 194               	.L9:
+ 110:HostFunctions.c **** 		return;
+ 111:HostFunctions.c **** 	}
+ 112:HostFunctions.c **** 
+ 113:HostFunctions.c **** 	printf("Mouse Enumerated.\r\n");
+ 195               		.loc 2 113 0
+ 196 0088 80E0      		ldi r24,lo8(.LC4)
+ 197 008a 90E0      		ldi r25,hi8(.LC4)
+ 198 008c 0E94 0000 		call puts
+ 199               	.LVL12:
+ 114:HostFunctions.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_READY);
+ 200               		.loc 2 114 0
+ 201 0090 80E6      		ldi r24,lo8(96)
+ 202               	.L11:
+ 203 0092 0E94 0000 		call LEDs_SetAllLEDs
+ 204               	.LVL13:
+ 205               	/* epilogue start */
+ 115:HostFunctions.c **** }
+ 206               		.loc 2 115 0
+ 207 0096 CE5F      		subi r28,-2
+ 208 0098 DD4F      		sbci r29,-3
+ 209 009a 0FB6      		in __tmp_reg__,__SREG__
+ 210 009c F894      		cli
+ 211 009e DEBF      		out __SP_H__,r29
+ 212 00a0 0FBE      		out __SREG__,__tmp_reg__
+ 213 00a2 CDBF      		out __SP_L__,r28
+ 214 00a4 DF91      		pop r29
+ 215 00a6 CF91      		pop r28
+ 216 00a8 0895      		ret
+ 217               		.cfi_endproc
+ 218               	.LFE213:
+ 220               		.section	.text.EVENT_USB_Host_HostError,"ax",@progbits
+ 221               	.global	EVENT_USB_Host_HostError
+ 223               	EVENT_USB_Host_HostError:
+ 224               	.LFB214:
+ 116:HostFunctions.c **** 
+ 117:HostFunctions.c **** /** Event handler for the USB_HostError event. This indicates that a hardware error occurred while 
+ 118:HostFunctions.c **** void EVENT_USB_Host_HostError(const uint8_t ErrorCode)
+ 119:HostFunctions.c **** {
+ 225               		.loc 2 119 0
+ 226               		.cfi_startproc
+ 227               	.LVL14:
+ 228               	/* prologue: function */
+ 229               	/* frame size = 0 */
+ 230               	/* stack size = 0 */
+ 231               	.L__stack_usage = 0
+ 232 0000 C82F      		mov r28,r24
+ 120:HostFunctions.c **** 	USB_Disable();
+ 233               		.loc 2 120 0
+ 234 0002 0E94 0000 		call USB_Disable
+ 235               	.LVL15:
+ 121:HostFunctions.c **** 
+ 122:HostFunctions.c **** 	printf_P(PSTR(ESC_FG_RED "Host Mode Error\r\n"
+ 236               		.loc 2 122 0
+ 237 0006 1F92      		push __zero_reg__
+ 238               	.LCFI4:
+ 239               		.cfi_def_cfa_offset 3
+ 240 0008 CF93      		push r28
+ 241               	.LCFI5:
+ 242               		.cfi_def_cfa_offset 4
+ 243 000a 80E0      		ldi r24,lo8(__c.5256)
+ 244 000c 90E0      		ldi r25,hi8(__c.5256)
+ 245 000e 9F93      		push r25
+ 246               	.LCFI6:
+ 247               		.cfi_def_cfa_offset 5
+ 248 0010 8F93      		push r24
+ 249               	.LCFI7:
+ 250               		.cfi_def_cfa_offset 6
+ 251 0012 0E94 0000 		call printf_P
+ 252               	.LVL16:
+ 123:HostFunctions.c **** 	                         " -- Error Code %d\r\n" ESC_FG_WHITE), ErrorCode);
+ 124:HostFunctions.c **** 
+ 125:HostFunctions.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_ERROR);
+ 253               		.loc 2 125 0
+ 254 0016 80E9      		ldi r24,lo8(-112)
+ 255 0018 0E94 0000 		call LEDs_SetAllLEDs
+ 256               	.LVL17:
+ 257 001c 0F90      		pop __tmp_reg__
+ 258 001e 0F90      		pop __tmp_reg__
+ 259 0020 0F90      		pop __tmp_reg__
+ 260 0022 0F90      		pop __tmp_reg__
+ 261               	.LCFI8:
+ 262               		.cfi_def_cfa_offset 2
+ 263               	.L15:
+ 264 0024 00C0      		rjmp .L15
+ 265               		.cfi_endproc
+ 266               	.LFE214:
+ 268               		.section	.text.EVENT_USB_Host_DeviceEnumerationFailed,"ax",@progbits
+ 269               	.global	EVENT_USB_Host_DeviceEnumerationFailed
+ 271               	EVENT_USB_Host_DeviceEnumerationFailed:
+ 272               	.LFB215:
+ 126:HostFunctions.c **** 	for(;;);
+ 127:HostFunctions.c **** }
+ 128:HostFunctions.c **** 
+ 129:HostFunctions.c **** /** Event handler for the USB_DeviceEnumerationFailed event. This indicates that a problem occurred
+ 130:HostFunctions.c ****  *  enumerating an attached USB device.
+ 131:HostFunctions.c ****  */
+ 132:HostFunctions.c **** void EVENT_USB_Host_DeviceEnumerationFailed(const uint8_t ErrorCode,
+ 133:HostFunctions.c ****                                             const uint8_t SubErrorCode)
+ 134:HostFunctions.c **** {
+ 273               		.loc 2 134 0
+ 274               		.cfi_startproc
+ 275               	.LVL18:
+ 276               	/* prologue: function */
+ 277               	/* frame size = 0 */
+ 278               	/* stack size = 0 */
+ 279               	.L__stack_usage = 0
+ 135:HostFunctions.c **** 	printf_P(PSTR(ESC_FG_RED "Dev Enum Error\r\n"
+ 280               		.loc 2 135 0
+ 281 0000 9091 0000 		lds r25,USB_HostState
+ 282 0004 1F92      		push __zero_reg__
+ 283               	.LCFI9:
+ 284               		.cfi_def_cfa_offset 3
+ 285 0006 9F93      		push r25
+ 286               	.LCFI10:
+ 287               		.cfi_def_cfa_offset 4
+ 288 0008 1F92      		push __zero_reg__
+ 289               	.LCFI11:
+ 290               		.cfi_def_cfa_offset 5
+ 291 000a 6F93      		push r22
+ 292               	.LCFI12:
+ 293               		.cfi_def_cfa_offset 6
+ 294 000c 1F92      		push __zero_reg__
+ 295               	.LCFI13:
+ 296               		.cfi_def_cfa_offset 7
+ 297 000e 8F93      		push r24
+ 298               	.LCFI14:
+ 299               		.cfi_def_cfa_offset 8
+ 300 0010 80E0      		ldi r24,lo8(__c.5263)
+ 301 0012 90E0      		ldi r25,hi8(__c.5263)
+ 302               	.LVL19:
+ 303 0014 9F93      		push r25
+ 304               	.LCFI15:
+ 305               		.cfi_def_cfa_offset 9
+ 306 0016 8F93      		push r24
+ 307               	.LCFI16:
+ 308               		.cfi_def_cfa_offset 10
+ 309 0018 0E94 0000 		call printf_P
+ 310               	.LVL20:
+ 136:HostFunctions.c **** 	                         " -- Error Code %d\r\n"
+ 137:HostFunctions.c **** 	                         " -- Sub Error Code %d\r\n"
+ 138:HostFunctions.c **** 	                         " -- In State %d\r\n" ESC_FG_WHITE), ErrorCode, SubErrorCode, USB_HostSta
+ 139:HostFunctions.c **** 
+ 140:HostFunctions.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_ERROR);
+ 311               		.loc 2 140 0
+ 312 001c 8DB7      		in r24,__SP_L__
+ 313 001e 9EB7      		in r25,__SP_H__
+ 314 0020 0896      		adiw r24,8
+ 315 0022 0FB6      		in __tmp_reg__,__SREG__
+ 316 0024 F894      		cli
+ 317 0026 9EBF      		out __SP_H__,r25
+ 318 0028 0FBE      		out __SREG__,__tmp_reg__
+ 319 002a 8DBF      		out __SP_L__,r24
+ 320               	.LCFI17:
+ 321               		.cfi_def_cfa_offset 2
+ 322 002c 80E9      		ldi r24,lo8(-112)
+ 323 002e 0C94 0000 		jmp LEDs_SetAllLEDs
+ 324               	.LVL21:
+ 325               		.cfi_endproc
+ 326               	.LFE215:
+ 328               		.section	.text.MouseHost_Task,"ax",@progbits
+ 329               	.global	MouseHost_Task
+ 331               	MouseHost_Task:
+ 332               	.LFB216:
+ 141:HostFunctions.c **** }
+ 142:HostFunctions.c **** 
+ 143:HostFunctions.c **** /** Host USB management task. This task handles the control of USB Mice while in USB Host mode,
+ 144:HostFunctions.c ****  *  setting up the appropriate data pipes and processing reports from the attached device.
+ 145:HostFunctions.c ****  */
+ 146:HostFunctions.c **** void MouseHost_Task(void)
+ 147:HostFunctions.c **** {
+ 333               		.loc 2 147 0
+ 334               		.cfi_startproc
+ 335 0000 CF93      		push r28
+ 336               	.LCFI18:
+ 337               		.cfi_def_cfa_offset 3
+ 338               		.cfi_offset 28, -2
+ 339 0002 DF93      		push r29
+ 340               	.LCFI19:
+ 341               		.cfi_def_cfa_offset 4
+ 342               		.cfi_offset 29, -3
+ 343 0004 00D0      		rcall .
+ 344 0006 1F92      		push __zero_reg__
+ 345               	.LCFI20:
+ 346               		.cfi_def_cfa_offset 7
+ 347 0008 CDB7      		in r28,__SP_L__
+ 348 000a DEB7      		in r29,__SP_H__
+ 349               	.LCFI21:
+ 350               		.cfi_def_cfa_register 28
+ 351               	/* prologue: function */
+ 352               	/* frame size = 3 */
+ 353               	/* stack size = 5 */
+ 354               	.L__stack_usage = 5
+ 148:HostFunctions.c **** 	if (USB_HostState != HOST_STATE_Configured)
+ 355               		.loc 2 148 0
+ 356 000c 8091 0000 		lds r24,USB_HostState
+ 357 0010 8B30      		cpi r24,lo8(11)
+ 358 0012 01F0      		breq .+2
+ 359 0014 00C0      		rjmp .L17
+ 149:HostFunctions.c **** 	  return;
+ 150:HostFunctions.c **** 
+ 151:HostFunctions.c **** 	if (HID_Host_IsReportReceived(&Mouse_HID_Host_Interface))
+ 360               		.loc 2 151 0
+ 361 0016 80E0      		ldi r24,lo8(Mouse_HID_Host_Interface)
+ 362 0018 90E0      		ldi r25,hi8(Mouse_HID_Host_Interface)
+ 363 001a 0E94 0000 		call HID_Host_IsReportReceived
+ 364               	.LVL22:
+ 365 001e 8823      		tst r24
+ 366 0020 01F0      		breq .L17
+ 367               	.LVL23:
+ 368               	.LBB2:
+ 152:HostFunctions.c **** 	{
+ 153:HostFunctions.c **** 		uint8_t LEDMask  = LEDS_NO_LEDS;
+ 154:HostFunctions.c **** 
+ 155:HostFunctions.c **** 		USB_MouseReport_Data_t MouseReport;
+ 156:HostFunctions.c **** 		HID_Host_ReceiveReport(&Mouse_HID_Host_Interface, &MouseReport);
+ 369               		.loc 2 156 0
+ 370 0022 BE01      		movw r22,r28
+ 371 0024 6F5F      		subi r22,-1
+ 372 0026 7F4F      		sbci r23,-1
+ 373 0028 80E0      		ldi r24,lo8(Mouse_HID_Host_Interface)
+ 374 002a 90E0      		ldi r25,hi8(Mouse_HID_Host_Interface)
+ 375 002c 0E94 0000 		call HID_Host_ReceiveReport
+ 376               	.LVL24:
+ 157:HostFunctions.c **** 
+ 158:HostFunctions.c **** 		printf_P(PSTR("dX:%2d dY:%2d Button:%d\r\n"), MouseReport.X,
+ 377               		.loc 2 158 0
+ 378 0030 8981      		ldd r24,Y+1
+ 379 0032 1F92      		push __zero_reg__
+ 380 0034 8F93      		push r24
+ 381 0036 8B81      		ldd r24,Y+3
+ 382 0038 282F      		mov r18,r24
+ 383 003a 082E      		mov __tmp_reg__,r24
+ 384 003c 000C      		lsl r0
+ 385 003e 330B      		sbc r19,r19
+ 386 0040 3F93      		push r19
+ 387 0042 8F93      		push r24
+ 388 0044 8A81      		ldd r24,Y+2
+ 389 0046 282F      		mov r18,r24
+ 390 0048 082E      		mov __tmp_reg__,r24
+ 391 004a 000C      		lsl r0
+ 392 004c 330B      		sbc r19,r19
+ 393 004e 3F93      		push r19
+ 394 0050 8F93      		push r24
+ 395 0052 80E0      		ldi r24,lo8(__c.5270)
+ 396 0054 90E0      		ldi r25,hi8(__c.5270)
+ 397 0056 9F93      		push r25
+ 398 0058 8F93      		push r24
+ 399 005a 0E94 0000 		call printf_P
+ 400               	.LVL25:
+ 159:HostFunctions.c **** 		                                              MouseReport.Y,
+ 160:HostFunctions.c **** 		                                              MouseReport.Button);
+ 161:HostFunctions.c **** 		if (MouseReport.X > 0)
+ 401               		.loc 2 161 0
+ 402 005e 8A81      		ldd r24,Y+2
+ 403 0060 0FB6      		in __tmp_reg__,__SREG__
+ 404 0062 F894      		cli
+ 405 0064 DEBF      		out __SP_H__,r29
+ 406 0066 0FBE      		out __SREG__,__tmp_reg__
+ 407 0068 CDBF      		out __SP_L__,r28
+ 408 006a 1816      		cp __zero_reg__,r24
+ 409 006c 04F0      		brlt .L25
+ 162:HostFunctions.c **** 		  LEDMask |= LEDS_LED1;
+ 163:HostFunctions.c **** 		else if (MouseReport.X < 0)
+ 410               		.loc 2 163 0
+ 411 006e 8823      		tst r24
+ 412 0070 01F0      		breq .L26
+ 164:HostFunctions.c **** 		  LEDMask |= LEDS_LED2;
+ 413               		.loc 2 164 0
+ 414 0072 80E2      		ldi r24,lo8(32)
+ 415 0074 00C0      		rjmp .L21
+ 416               	.L25:
+ 162:HostFunctions.c **** 		  LEDMask |= LEDS_LED1;
+ 417               		.loc 2 162 0
+ 418 0076 80E1      		ldi r24,lo8(16)
+ 419 0078 00C0      		rjmp .L21
+ 420               	.L26:
+ 153:HostFunctions.c **** 
+ 421               		.loc 2 153 0
+ 422 007a 80E0      		ldi r24,0
+ 423               	.L21:
+ 424               	.LVL26:
+ 165:HostFunctions.c **** 
+ 166:HostFunctions.c **** 		if (MouseReport.Y > 0)
+ 425               		.loc 2 166 0
+ 426 007c 9B81      		ldd r25,Y+3
+ 427 007e 1916      		cp __zero_reg__,r25
+ 428 0080 04F4      		brge .L22
+ 167:HostFunctions.c **** 		  LEDMask |= LEDS_LED3;
+ 429               		.loc 2 167 0
+ 430 0082 8068      		ori r24,lo8(-128)
+ 431               	.LVL27:
+ 432 0084 00C0      		rjmp .L23
+ 433               	.L22:
+ 168:HostFunctions.c **** 		else if (MouseReport.Y < 0)
+ 434               		.loc 2 168 0
+ 435 0086 9111      		cpse r25,__zero_reg__
+ 169:HostFunctions.c **** 		  LEDMask |= LEDS_LED4;
+ 436               		.loc 2 169 0
+ 437 0088 8064      		ori r24,lo8(64)
+ 438               	.LVL28:
+ 439               	.L23:
+ 170:HostFunctions.c **** 
+ 171:HostFunctions.c **** 		if (MouseReport.Button)
+ 440               		.loc 2 171 0
+ 441 008a 9981      		ldd r25,Y+1
+ 442 008c 9111      		cpse r25,__zero_reg__
+ 172:HostFunctions.c **** 		  LEDMask  = LEDS_ALL_LEDS;
+ 443               		.loc 2 172 0
+ 444 008e 80EF      		ldi r24,lo8(-16)
+ 445               	.LVL29:
+ 446               	.L24:
+ 173:HostFunctions.c **** 
+ 174:HostFunctions.c **** 		LEDs_SetAllLEDs(LEDMask);
+ 447               		.loc 2 174 0 discriminator 2
+ 448 0090 0E94 0000 		call LEDs_SetAllLEDs
+ 449               	.LVL30:
+ 450               	.L17:
+ 451               	/* epilogue start */
+ 452               	.LBE2:
+ 175:HostFunctions.c **** 	}
+ 176:HostFunctions.c **** }
+ 453               		.loc 2 176 0
+ 454 0094 0F90      		pop __tmp_reg__
+ 455 0096 0F90      		pop __tmp_reg__
+ 456 0098 0F90      		pop __tmp_reg__
+ 457 009a DF91      		pop r29
+ 458 009c CF91      		pop r28
+ 459 009e 0895      		ret
+ 460               		.cfi_endproc
+ 461               	.LFE216:
+ 463               		.section	.progmem.data,"a",@progbits
+ 466               	__c.5270:
+ 467 0000 6458 3A25 		.string	"dX:%2d dY:%2d Button:%d\r\n"
+ 467      3264 2064 
+ 467      593A 2532 
+ 467      6420 4275 
+ 467      7474 6F6E 
+ 470               	__c.5263:
+ 471 001a 1B5B 3331 		.string	"\033[31mDev Enum Error\r\n -- Error Code %d\r\n -- Sub Error Code %d\r\n -- In State %d\r
+ 471      6D44 6576 
+ 471      2045 6E75 
+ 471      6D20 4572 
+ 471      726F 720D 
+ 474               	__c.5256:
+ 475 0070 1B5B 3331 		.string	"\033[31mHost Mode Error\r\n -- Error Code %d\r\n\033[37m"
+ 475      6D48 6F73 
+ 475      7420 4D6F 
+ 475      6465 2045 
+ 475      7272 6F72 
+ 478               	__c.5246:
+ 479 009f 0D0A 4465 		.string	"\r\nDevice Unattached.\r\n"
+ 479      7669 6365 
+ 479      2055 6E61 
+ 479      7474 6163 
+ 479      6865 642E 
+ 482               	__c.5241:
+ 483 00b6 4465 7669 		.string	"Device Attached.\r\n"
+ 483      6365 2041 
+ 483      7474 6163 
+ 483      6865 642E 
+ 483      0D0A 00
+ 484               	.global	Mouse_HID_Host_Interface
+ 485               		.data
+ 488               	Mouse_HID_Host_Interface:
+ 489 0000 01        		.byte	1
+ 490 0001 00        		.zero	1
+ 491 0002 02        		.byte	2
+ 492 0003 00        		.zero	1
+ 493 0004 02        		.byte	2
+ 494 0005 0000      		.zero	2
+ 495 0007 0000 0000 		.zero	12
+ 495      0000 0000 
+ 495      0000 0000 
+ 496               		.text
+ 497               	.Letext0:
+ 498               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 499               		.file 4 "/usr/lib/avr/include/stdio.h"
+ 500               		.file 5 "../../../../LUFA/Drivers/USB/Core/AVR8/../Host.h"
+ 501               		.file 6 "../../../../LUFA/Drivers/USB/Core/AVR8/../HostStandardReq.h"
+ 502               		.file 7 "../../../../LUFA/Drivers/USB/Core/ConfigDescriptor.h"
+ 503               		.file 8 "../../../../LUFA/Drivers/USB/Class/Device/../Common/HIDParser.h"
+ 504               		.file 9 "../../../../LUFA/Drivers/USB/Class/Device/../Common/HID.h"
+ 505               		.file 10 "../../../../LUFA/Drivers/USB/Class/Host/HID.h"
+ 506               		.file 11 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 507               		.file 12 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+ 508               		.file 13 "../../../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"
+ 509               		.file 14 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 HostFunctions.c
+     /tmp/ccTe4GKf.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccTe4GKf.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccTe4GKf.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccTe4GKf.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccTe4GKf.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccTe4GKf.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccTe4GKf.s:13     .text.LEDs_SetAllLEDs:0000000000000000 LEDs_SetAllLEDs
+     /tmp/ccTe4GKf.s:36     .text.EVENT_USB_Host_DeviceAttached:0000000000000000 EVENT_USB_Host_DeviceAttached
+     /tmp/ccTe4GKf.s:482    .progmem.data:00000000000000b6 __c.5241
+     /tmp/ccTe4GKf.s:60     .text.EVENT_USB_Host_DeviceUnattached:0000000000000000 EVENT_USB_Host_DeviceUnattached
+     /tmp/ccTe4GKf.s:478    .progmem.data:000000000000009f __c.5246
+     /tmp/ccTe4GKf.s:94     .text.EVENT_USB_Host_DeviceEnumerationComplete:0000000000000000 EVENT_USB_Host_DeviceEnumerationComplete
+     /tmp/ccTe4GKf.s:488    .data:0000000000000000 Mouse_HID_Host_Interface
+     /tmp/ccTe4GKf.s:223    .text.EVENT_USB_Host_HostError:0000000000000000 EVENT_USB_Host_HostError
+     /tmp/ccTe4GKf.s:474    .progmem.data:0000000000000070 __c.5256
+     /tmp/ccTe4GKf.s:271    .text.EVENT_USB_Host_DeviceEnumerationFailed:0000000000000000 EVENT_USB_Host_DeviceEnumerationFailed
+     /tmp/ccTe4GKf.s:470    .progmem.data:000000000000001a __c.5263
+     /tmp/ccTe4GKf.s:331    .text.MouseHost_Task:0000000000000000 MouseHost_Task
+     /tmp/ccTe4GKf.s:466    .progmem.data:0000000000000000 __c.5270
+
+UNDEFINED SYMBOLS
+puts_P
+USB_Host_GetDeviceConfigDescriptor
+HID_Host_ConfigurePipes
+USB_Host_SetDeviceConfiguration
+HID_Host_SetBootProtocol
+puts
+USB_Disable
+printf_P
+USB_HostState
+HID_Host_IsReportReceived
+HID_Host_ReceiveReport
+__do_copy_data

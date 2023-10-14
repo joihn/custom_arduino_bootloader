@@ -1,0 +1,2477 @@
+   1               		.file	"Webserver.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.IsHTTPCommand,"ax",@progbits
+  13               	IsHTTPCommand:
+  14               	.LFB105:
+  15               		.file 1 "Lib/Webserver.c"
+   1:Lib/Webserver.c **** /*
+   2:Lib/Webserver.c ****              LUFA Library
+   3:Lib/Webserver.c ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/Webserver.c **** 
+   5:Lib/Webserver.c ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/Webserver.c ****            www.lufa-lib.org
+   7:Lib/Webserver.c **** */
+   8:Lib/Webserver.c **** 
+   9:Lib/Webserver.c **** /*
+  10:Lib/Webserver.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/Webserver.c **** 
+  12:Lib/Webserver.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/Webserver.c ****   software and its documentation for any purpose is hereby granted
+  14:Lib/Webserver.c ****   without fee, provided that the above copyright notice appear in
+  15:Lib/Webserver.c ****   all copies and that both that the copyright notice and this
+  16:Lib/Webserver.c ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/Webserver.c ****   documentation, and that the name of the author not be used in
+  18:Lib/Webserver.c ****   advertising or publicity pertaining to distribution of the
+  19:Lib/Webserver.c ****   software without specific, written prior permission.
+  20:Lib/Webserver.c **** 
+  21:Lib/Webserver.c ****   The author disclaim all warranties with regard to this
+  22:Lib/Webserver.c ****   software, including all implied warranties of merchantability
+  23:Lib/Webserver.c ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/Webserver.c ****   special, indirect or consequential damages or any damages
+  25:Lib/Webserver.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/Webserver.c ****   in an action of contract, negligence or other tortious action,
+  27:Lib/Webserver.c ****   arising out of or in connection with the use or performance of
+  28:Lib/Webserver.c ****   this software.
+  29:Lib/Webserver.c **** */
+  30:Lib/Webserver.c **** 
+  31:Lib/Webserver.c **** /** \file
+  32:Lib/Webserver.c ****  *
+  33:Lib/Webserver.c ****  *  Simple webserver application for demonstrating the RNDIS demo and TCP/IP stack. This
+  34:Lib/Webserver.c ****  *  application will serve up a static HTTP webpage when requested by the host.
+  35:Lib/Webserver.c ****  */
+  36:Lib/Webserver.c **** 
+  37:Lib/Webserver.c **** #include "Webserver.h"
+  38:Lib/Webserver.c **** 
+  39:Lib/Webserver.c **** /** HTTP server response header, for transmission before the page contents. This indicates to the h
+  40:Lib/Webserver.c ****  *  given location, and gives extra connection information.
+  41:Lib/Webserver.c ****  */
+  42:Lib/Webserver.c **** const char PROGMEM HTTP200Header[] = "HTTP/1.1 200 OK\r\n"
+  43:Lib/Webserver.c ****                                      "Server: LUFA RNDIS\r\n"
+  44:Lib/Webserver.c ****                                      "Content-type: text/html\r\n"
+  45:Lib/Webserver.c ****                                      "Connection: close\r\n\r\n";
+  46:Lib/Webserver.c **** 
+  47:Lib/Webserver.c **** /** HTTP server response header, for transmission before a resource not found error. This indicates
+  48:Lib/Webserver.c ****  *  given URL is invalid, and gives extra error information.
+  49:Lib/Webserver.c ****  */
+  50:Lib/Webserver.c **** const char PROGMEM HTTP404Header[] = "HTTP/1.1 404 Not Found\r\n"
+  51:Lib/Webserver.c ****                                      "Server: LUFA RNDIS\r\n"
+  52:Lib/Webserver.c ****                                      "Connection: close\r\n\r\n";
+  53:Lib/Webserver.c **** 
+  54:Lib/Webserver.c **** /** HTTP page to serve to the host when a HTTP request is made. This page is too long for a single 
+  55:Lib/Webserver.c ****  *  broken up into smaller blocks and sent as a series of packets each time the webserver applicati
+  56:Lib/Webserver.c ****  */
+  57:Lib/Webserver.c **** const char PROGMEM HTTPPage[]   =
+  58:Lib/Webserver.c **** 		"<html>"
+  59:Lib/Webserver.c **** 		"	<head>"
+  60:Lib/Webserver.c **** 		"		<title>"
+  61:Lib/Webserver.c **** 		"			LUFA Webserver Demo"
+  62:Lib/Webserver.c **** 		"		</title>"
+  63:Lib/Webserver.c **** 		"	</head>"
+  64:Lib/Webserver.c **** 		"	<body>"
+  65:Lib/Webserver.c **** 		"		<h1>Hello from your USB AVR!</h1>"
+  66:Lib/Webserver.c **** 		"		<p>"
+  67:Lib/Webserver.c **** 		"			Hello! Welcome to the LUFA RNDIS Demo Webserver test page, running on your USB AVR via the LU
+  68:Lib/Webserver.c **** 		"			<br /><br />"
+  69:Lib/Webserver.c **** 		"			<small>Project Information: <a href=\"http://www.lufa-lib.org\">http://www.lufa-lib.org</a>.<
+  70:Lib/Webserver.c **** 		"			<hr />"
+  71:Lib/Webserver.c **** 		"			<i>LUFA Version: </i>" LUFA_VERSION_STRING
+  72:Lib/Webserver.c **** 		"		</p>"
+  73:Lib/Webserver.c **** 		"	</body>"
+  74:Lib/Webserver.c **** 		"</html>";
+  75:Lib/Webserver.c **** 
+  76:Lib/Webserver.c **** 
+  77:Lib/Webserver.c **** /** Initializes the Webserver application, opening the appropriate HTTP port in the TCP handler and
+  78:Lib/Webserver.c ****  *  callback routine for packets sent to the HTTP protocol port.
+  79:Lib/Webserver.c ****  */
+  80:Lib/Webserver.c **** void Webserver_Init(void)
+  81:Lib/Webserver.c **** {
+  82:Lib/Webserver.c **** 	/* Open the HTTP port in the TCP protocol so that HTTP connections to the device can be establishe
+  83:Lib/Webserver.c **** 	TCP_SetPortState(TCP_PORT_HTTP, TCP_Port_Open, Webserver_ApplicationCallback);
+  84:Lib/Webserver.c **** }
+  85:Lib/Webserver.c **** 
+  86:Lib/Webserver.c **** /** Indicates if a given request equals the given HTTP command.
+  87:Lib/Webserver.c ****  *
+  88:Lib/Webserver.c ****  *  \param[in] RequestHeader  HTTP request made by the host
+  89:Lib/Webserver.c ****  *  \param[in] Command        HTTP command to compare the request to
+  90:Lib/Webserver.c ****  *
+  91:Lib/Webserver.c ****  *  \return Boolean true if the command matches the request, false otherwise
+  92:Lib/Webserver.c ****  */
+  93:Lib/Webserver.c **** static bool IsHTTPCommand(uint8_t* RequestHeader,
+  94:Lib/Webserver.c ****                           char* Command)
+  95:Lib/Webserver.c **** {
+  16               		.loc 1 95 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+  96:Lib/Webserver.c **** 	/* Returns true if the non null terminated string in RequestHeader matches the null terminated str
+  97:Lib/Webserver.c **** 	return (strncmp((char*)RequestHeader, Command, strlen(Command)) == 0);
+  23               		.loc 1 97 0
+  24 0000 FB01      		movw r30,r22
+  25               		0:
+  26 0002 0190      		ld __tmp_reg__,Z+
+  27 0004 0020      		tst __tmp_reg__
+  28 0006 01F4      		brne 0b
+  29 0008 3197      		sbiw r30,1
+  30 000a AF01      		movw r20,r30
+  31 000c 461B      		sub r20,r22
+  32 000e 570B      		sbc r21,r23
+  33 0010 0E94 0000 		call strncmp
+  34               	.LVL1:
+  35 0014 21E0      		ldi r18,lo8(1)
+  36 0016 892B      		or r24,r25
+  37 0018 01F0      		breq .L2
+  38 001a 20E0      		ldi r18,0
+  39               	.L2:
+  98:Lib/Webserver.c **** }
+  40               		.loc 1 98 0
+  41 001c 822F      		mov r24,r18
+  42 001e 0895      		ret
+  43               		.cfi_endproc
+  44               	.LFE105:
+  46               		.section	.rodata.str1.1,"aMS",@progbits,1
+  47               	.LC0:
+  48 0000 4745 5400 		.string	"GET"
+  49               	.LC1:
+  50 0004 4745 5420 		.string	"GET / "
+  50      2F20 00
+  51               	.LC2:
+  52 000b 4845 4144 		.string	"HEAD"
+  52      00
+  53               	.LC3:
+  54 0010 4845 4144 		.string	"HEAD / "
+  54      202F 2000 
+  55               	.LC4:
+  56 0018 5452 4143 		.string	"TRACE"
+  56      4500 
+  57               		.section	.text.Webserver_ApplicationCallback,"ax",@progbits
+  58               	.global	Webserver_ApplicationCallback
+  60               	Webserver_ApplicationCallback:
+  61               	.LFB106:
+  99:Lib/Webserver.c **** 
+ 100:Lib/Webserver.c **** /** Application callback routine, executed each time the TCP processing task runs. This callback de
+ 101:Lib/Webserver.c ****  *  has been made (if any), and serves up appropriate responses.
+ 102:Lib/Webserver.c ****  *
+ 103:Lib/Webserver.c ****  *  \param[in] ConnectionState  Pointer to a TCP Connection State structure giving connection infor
+ 104:Lib/Webserver.c ****  *  \param[in,out] Buffer       Pointer to the application's send/receive packet buffer
+ 105:Lib/Webserver.c ****  */
+ 106:Lib/Webserver.c **** void Webserver_ApplicationCallback(TCP_ConnectionState_t* const ConnectionState,
+ 107:Lib/Webserver.c ****                                    TCP_ConnectionBuffer_t* const Buffer)
+ 108:Lib/Webserver.c **** {
+  62               		.loc 1 108 0
+  63               		.cfi_startproc
+  64               	.LVL2:
+  65 0000 4F92      		push r4
+  66               	.LCFI0:
+  67               		.cfi_def_cfa_offset 3
+  68               		.cfi_offset 4, -2
+  69 0002 5F92      		push r5
+  70               	.LCFI1:
+  71               		.cfi_def_cfa_offset 4
+  72               		.cfi_offset 5, -3
+  73 0004 6F92      		push r6
+  74               	.LCFI2:
+  75               		.cfi_def_cfa_offset 5
+  76               		.cfi_offset 6, -4
+  77 0006 7F92      		push r7
+  78               	.LCFI3:
+  79               		.cfi_def_cfa_offset 6
+  80               		.cfi_offset 7, -5
+  81 0008 8F92      		push r8
+  82               	.LCFI4:
+  83               		.cfi_def_cfa_offset 7
+  84               		.cfi_offset 8, -6
+  85 000a 9F92      		push r9
+  86               	.LCFI5:
+  87               		.cfi_def_cfa_offset 8
+  88               		.cfi_offset 9, -7
+  89 000c AF92      		push r10
+  90               	.LCFI6:
+  91               		.cfi_def_cfa_offset 9
+  92               		.cfi_offset 10, -8
+  93 000e BF92      		push r11
+  94               	.LCFI7:
+  95               		.cfi_def_cfa_offset 10
+  96               		.cfi_offset 11, -9
+  97 0010 CF92      		push r12
+  98               	.LCFI8:
+  99               		.cfi_def_cfa_offset 11
+ 100               		.cfi_offset 12, -10
+ 101 0012 DF92      		push r13
+ 102               	.LCFI9:
+ 103               		.cfi_def_cfa_offset 12
+ 104               		.cfi_offset 13, -11
+ 105 0014 EF92      		push r14
+ 106               	.LCFI10:
+ 107               		.cfi_def_cfa_offset 13
+ 108               		.cfi_offset 14, -12
+ 109 0016 FF92      		push r15
+ 110               	.LCFI11:
+ 111               		.cfi_def_cfa_offset 14
+ 112               		.cfi_offset 15, -13
+ 113 0018 0F93      		push r16
+ 114               	.LCFI12:
+ 115               		.cfi_def_cfa_offset 15
+ 116               		.cfi_offset 16, -14
+ 117 001a 1F93      		push r17
+ 118               	.LCFI13:
+ 119               		.cfi_def_cfa_offset 16
+ 120               		.cfi_offset 17, -15
+ 121 001c CF93      		push r28
+ 122               	.LCFI14:
+ 123               		.cfi_def_cfa_offset 17
+ 124               		.cfi_offset 28, -16
+ 125 001e DF93      		push r29
+ 126               	.LCFI15:
+ 127               		.cfi_def_cfa_offset 18
+ 128               		.cfi_offset 29, -17
+ 129               	/* prologue: function */
+ 130               	/* frame size = 0 */
+ 131               	/* stack size = 16 */
+ 132               	.L__stack_usage = 16
+ 133 0020 7C01      		movw r14,r24
+ 134 0022 8B01      		movw r16,r22
+ 109:Lib/Webserver.c **** 	char*          BufferDataStr = (char*)Buffer->Data;
+ 135               		.loc 1 109 0
+ 136 0024 EB01      		movw r28,r22
+ 137 0026 2296      		adiw r28,2
+ 138               	.LVL3:
+ 110:Lib/Webserver.c **** 	static uint8_t PageBlock     = 0;
+ 111:Lib/Webserver.c **** 
+ 112:Lib/Webserver.c **** 	/* Check to see if a packet has been received on the HTTP port from a remote host */
+ 113:Lib/Webserver.c **** 	if (TCP_APP_HAS_RECEIVED_PACKET(Buffer))
+ 139               		.loc 1 113 0
+ 140 0028 6B01      		movw r12,r22
+ 141 002a 2DEF      		ldi r18,-3
+ 142 002c C21A      		sub r12,r18
+ 143 002e D20A      		sbc r13,r18
+ 144 0030 D601      		movw r26,r12
+ 145 0032 8C91      		ld r24,X
+ 146               	.LVL4:
+ 147 0034 8823      		tst r24
+ 148 0036 01F4      		brne .+2
+ 149 0038 00C0      		rjmp .L8
+ 150               		.loc 1 113 0 is_stmt 0 discriminator 1
+ 151 003a 5B01      		movw r10,r22
+ 152 003c B2E0      		ldi r27,2
+ 153 003e AB0E      		add r10,r27
+ 154 0040 BB1E      		adc r11,r27
+ 155 0042 F501      		movw r30,r10
+ 156 0044 8081      		ld r24,Z
+ 157 0046 8111      		cpse r24,__zero_reg__
+ 158 0048 00C0      		rjmp .L7
+ 114:Lib/Webserver.c **** 	{
+ 115:Lib/Webserver.c **** 		if (IsHTTPCommand(Buffer->Data, "GET"))
+ 159               		.loc 1 115 0 is_stmt 1
+ 160 004a 60E0      		ldi r22,lo8(.LC0)
+ 161 004c 70E0      		ldi r23,hi8(.LC0)
+ 162               	.LVL5:
+ 163 004e CE01      		movw r24,r28
+ 164 0050 0E94 0000 		call IsHTTPCommand
+ 165               	.LVL6:
+ 166 0054 8823      		tst r24
+ 167 0056 01F0      		breq .L11
+ 116:Lib/Webserver.c **** 		{
+ 117:Lib/Webserver.c **** 			if (IsHTTPCommand(Buffer->Data, "GET / "))
+ 168               		.loc 1 117 0
+ 169 0058 60E0      		ldi r22,lo8(.LC1)
+ 170 005a 70E0      		ldi r23,hi8(.LC1)
+ 171 005c CE01      		movw r24,r28
+ 172 005e 0E94 0000 		call IsHTTPCommand
+ 173               	.LVL7:
+ 174 0062 8823      		tst r24
+ 175 0064 01F0      		breq .L14
+ 118:Lib/Webserver.c **** 			{
+ 119:Lib/Webserver.c **** 				PageBlock = 0;
+ 176               		.loc 1 119 0
+ 177 0066 1092 0000 		sts PageBlock.4253,__zero_reg__
+ 120:Lib/Webserver.c **** 
+ 121:Lib/Webserver.c **** 				/* Copy the HTTP 200 response header into the packet buffer */
+ 122:Lib/Webserver.c **** 				strcpy_P(BufferDataStr, HTTP200Header);
+ 178               		.loc 1 122 0
+ 179 006a 60E0      		ldi r22,lo8(HTTP200Header)
+ 180 006c 70E0      		ldi r23,hi8(HTTP200Header)
+ 181 006e CE01      		movw r24,r28
+ 182 0070 0E94 0000 		call strcpy_P
+ 183               	.LVL8:
+ 123:Lib/Webserver.c **** 
+ 124:Lib/Webserver.c **** 				/* Send the buffer contents to the host */
+ 125:Lib/Webserver.c **** 				TCP_APP_SEND_BUFFER(Buffer, strlen(BufferDataStr));
+ 184               		.loc 1 125 0
+ 185 0074 81E0      		ldi r24,lo8(1)
+ 186 0076 D501      		movw r26,r10
+ 187 0078 8C93      		st X,r24
+ 188 007a FE01      		movw r30,r28
+ 189               		0:
+ 190 007c 0190      		ld __tmp_reg__,Z+
+ 191 007e 0020      		tst __tmp_reg__
+ 192 0080 01F4      		brne 0b
+ 193 0082 3197      		sbiw r30,1
+ 194 0084 EC1B      		sub r30,r28
+ 195 0086 FD0B      		sbc r31,r29
+ 196 0088 D801      		movw r26,r16
+ 197 008a ED93      		st X+,r30
+ 198 008c FC93      		st X,r31
+ 199 008e F601      		movw r30,r12
+ 200 0090 8083      		st Z,r24
+ 126:Lib/Webserver.c **** 
+ 127:Lib/Webserver.c **** 				/* Lock the buffer to Device->Host transmissions only while we send the page contents */
+ 128:Lib/Webserver.c **** 				TCP_APP_CAPTURE_BUFFER(Buffer);
+ 201               		.loc 1 128 0
+ 202 0092 3196      		adiw r30,1
+ 203 0094 00C0      		rjmp .L26
+ 204               	.L11:
+ 129:Lib/Webserver.c **** 			}
+ 130:Lib/Webserver.c **** 			else
+ 131:Lib/Webserver.c **** 			{
+ 132:Lib/Webserver.c **** 				/* Copy the HTTP 404 response header into the packet buffer */
+ 133:Lib/Webserver.c **** 				strcpy_P(BufferDataStr, HTTP404Header);
+ 134:Lib/Webserver.c **** 
+ 135:Lib/Webserver.c **** 				/* Send the buffer contents to the host */
+ 136:Lib/Webserver.c **** 				TCP_APP_SEND_BUFFER(Buffer, strlen(BufferDataStr));
+ 137:Lib/Webserver.c **** 
+ 138:Lib/Webserver.c **** 				/* All data sent, close the connection */
+ 139:Lib/Webserver.c **** 				TCP_APP_CLOSECONNECTION(ConnectionState);
+ 140:Lib/Webserver.c **** 			}
+ 141:Lib/Webserver.c **** 		}
+ 142:Lib/Webserver.c **** 		else if (IsHTTPCommand(Buffer->Data, "HEAD"))
+ 205               		.loc 1 142 0
+ 206 0096 60E0      		ldi r22,lo8(.LC2)
+ 207 0098 70E0      		ldi r23,hi8(.LC2)
+ 208 009a CE01      		movw r24,r28
+ 209 009c 0E94 0000 		call IsHTTPCommand
+ 210               	.LVL9:
+ 211 00a0 8823      		tst r24
+ 212 00a2 01F0      		breq .L13
+ 143:Lib/Webserver.c **** 		{
+ 144:Lib/Webserver.c **** 			if (IsHTTPCommand(Buffer->Data, "HEAD / "))
+ 213               		.loc 1 144 0
+ 214 00a4 60E0      		ldi r22,lo8(.LC3)
+ 215 00a6 70E0      		ldi r23,hi8(.LC3)
+ 216 00a8 CE01      		movw r24,r28
+ 217 00aa 0E94 0000 		call IsHTTPCommand
+ 218               	.LVL10:
+ 219 00ae 8823      		tst r24
+ 220 00b0 01F0      		breq .L14
+ 145:Lib/Webserver.c **** 			{
+ 146:Lib/Webserver.c **** 				/* Copy the HTTP response header into the packet buffer */
+ 147:Lib/Webserver.c **** 				strcpy_P(BufferDataStr, HTTP200Header);
+ 221               		.loc 1 147 0
+ 222 00b2 60E0      		ldi r22,lo8(HTTP200Header)
+ 223 00b4 70E0      		ldi r23,hi8(HTTP200Header)
+ 224 00b6 00C0      		rjmp .L25
+ 225               	.L14:
+ 148:Lib/Webserver.c **** 
+ 149:Lib/Webserver.c **** 				/* Send the buffer contents to the host */
+ 150:Lib/Webserver.c **** 				TCP_APP_SEND_BUFFER(Buffer, strlen(BufferDataStr));
+ 151:Lib/Webserver.c **** 			}
+ 152:Lib/Webserver.c **** 			else
+ 153:Lib/Webserver.c **** 			{
+ 154:Lib/Webserver.c **** 				/* Copy the HTTP response header into the packet buffer */
+ 155:Lib/Webserver.c **** 				strcpy_P(BufferDataStr, HTTP404Header);
+ 226               		.loc 1 155 0
+ 227 00b8 60E0      		ldi r22,lo8(HTTP404Header)
+ 228 00ba 70E0      		ldi r23,hi8(HTTP404Header)
+ 229               	.L25:
+ 230 00bc CE01      		movw r24,r28
+ 231 00be 0E94 0000 		call strcpy_P
+ 232               	.LVL11:
+ 156:Lib/Webserver.c **** 
+ 157:Lib/Webserver.c **** 				/* Send the buffer contents to the host */
+ 158:Lib/Webserver.c **** 				TCP_APP_SEND_BUFFER(Buffer, strlen(BufferDataStr));
+ 233               		.loc 1 158 0
+ 234 00c2 81E0      		ldi r24,lo8(1)
+ 235 00c4 D501      		movw r26,r10
+ 236 00c6 8C93      		st X,r24
+ 237 00c8 FE01      		movw r30,r28
+ 238               		0:
+ 239 00ca 0190      		ld __tmp_reg__,Z+
+ 240 00cc 0020      		tst __tmp_reg__
+ 241 00ce 01F4      		brne 0b
+ 242 00d0 3197      		sbiw r30,1
+ 243 00d2 EC1B      		sub r30,r28
+ 244 00d4 FD0B      		sbc r31,r29
+ 245 00d6 D801      		movw r26,r16
+ 246 00d8 ED93      		st X+,r30
+ 247 00da FC93      		st X,r31
+ 248               	.L28:
+ 249 00dc F601      		movw r30,r12
+ 250 00de 8083      		st Z,r24
+ 251 00e0 00C0      		rjmp .L27
+ 252               	.L13:
+ 159:Lib/Webserver.c **** 			}
+ 160:Lib/Webserver.c **** 
+ 161:Lib/Webserver.c **** 			/* All data sent, close the connection */
+ 162:Lib/Webserver.c **** 			TCP_APP_CLOSECONNECTION(ConnectionState);
+ 163:Lib/Webserver.c **** 		}
+ 164:Lib/Webserver.c **** 		else if (IsHTTPCommand(Buffer->Data, "TRACE"))
+ 253               		.loc 1 164 0
+ 254 00e2 60E0      		ldi r22,lo8(.LC4)
+ 255 00e4 70E0      		ldi r23,hi8(.LC4)
+ 256 00e6 CE01      		movw r24,r28
+ 257 00e8 0E94 0000 		call IsHTTPCommand
+ 258               	.LVL12:
+ 259 00ec 8823      		tst r24
+ 260 00ee 01F0      		breq .L16
+ 165:Lib/Webserver.c **** 		{
+ 166:Lib/Webserver.c **** 			/* Echo the host's query back to the host */
+ 167:Lib/Webserver.c **** 			TCP_APP_SEND_BUFFER(Buffer, Buffer->Length);
+ 261               		.loc 1 167 0
+ 262 00f0 81E0      		ldi r24,lo8(1)
+ 263 00f2 D501      		movw r26,r10
+ 264 00f4 8C93      		st X,r24
+ 265 00f6 00C0      		rjmp .L28
+ 266               	.L16:
+ 168:Lib/Webserver.c **** 
+ 169:Lib/Webserver.c **** 			/* All data sent, close the connection */
+ 170:Lib/Webserver.c **** 			TCP_APP_CLOSECONNECTION(ConnectionState);
+ 171:Lib/Webserver.c **** 		}
+ 172:Lib/Webserver.c **** 		else
+ 173:Lib/Webserver.c **** 		{
+ 174:Lib/Webserver.c **** 			/* Unknown request, just clear the buffer (drop the packet) */
+ 175:Lib/Webserver.c **** 			TCP_APP_CLEAR_BUFFER(Buffer);
+ 267               		.loc 1 175 0
+ 268 00f8 D601      		movw r26,r12
+ 269 00fa 1C92      		st X,__zero_reg__
+ 270 00fc F801      		movw r30,r16
+ 271 00fe 1182      		std Z+1,__zero_reg__
+ 272 0100 1082      		st Z,__zero_reg__
+ 273 0102 00C0      		rjmp .L7
+ 274               	.L8:
+ 176:Lib/Webserver.c **** 		}
+ 177:Lib/Webserver.c **** 	}
+ 178:Lib/Webserver.c **** 	else if (TCP_APP_HAVE_CAPTURED_BUFFER(Buffer))
+ 275               		.loc 1 178 0 discriminator 1
+ 276 0104 2B01      		movw r4,r22
+ 277 0106 FCEF      		ldi r31,-4
+ 278 0108 4F1A      		sub r4,r31
+ 279 010a FDEF      		ldi r31,-3
+ 280 010c 5F0A      		sbc r5,r31
+ 281 010e D201      		movw r26,r4
+ 282 0110 8C91      		ld r24,X
+ 283 0112 8823      		tst r24
+ 284 0114 01F0      		breq .L7
+ 285               		.loc 1 178 0 is_stmt 0 discriminator 2
+ 286 0116 3B01      		movw r6,r22
+ 287 0118 B2E0      		ldi r27,2
+ 288 011a 6B0E      		add r6,r27
+ 289 011c 7B1E      		adc r7,r27
+ 290 011e F301      		movw r30,r6
+ 291 0120 8081      		ld r24,Z
+ 292 0122 8823      		tst r24
+ 293 0124 01F0      		breq .L7
+ 294               	.LBB7:
+ 179:Lib/Webserver.c **** 	{
+ 180:Lib/Webserver.c **** 		uint16_t RemLength = strlen_P(&HTTPPage[PageBlock * HTTP_REPLY_BLOCK_SIZE]);
+ 295               		.loc 1 180 0 is_stmt 1
+ 296 0126 A090 0000 		lds r10,PageBlock.4253
+ 297 012a F0E8      		ldi r31,lo8(-128)
+ 298 012c AF9E      		mul r10,r31
+ 299 012e C001      		movw r24,r0
+ 300 0130 1124      		clr __zero_reg__
+ 301 0132 9C01      		movw r18,r24
+ 302 0134 2050      		subi r18,lo8(-(HTTPPage))
+ 303 0136 3040      		sbci r19,hi8(-(HTTPPage))
+ 304 0138 5901      		movw r10,r18
+ 305               	.LVL13:
+ 306               	.LBB8:
+ 307               	.LBB9:
+ 308               		.file 2 "/usr/lib/avr/include/avr/pgmspace.h"
+   1:/usr/lib/avr/include/avr/pgmspace.h **** /* Copyright (c) 2002-2007  Marek Michalkiewicz
+   2:/usr/lib/avr/include/avr/pgmspace.h ****    Copyright (c) 2006, Carlos Lamas
+   3:/usr/lib/avr/include/avr/pgmspace.h ****    Copyright (c) 2009-2010, Jan Waclawek
+   4:/usr/lib/avr/include/avr/pgmspace.h ****    All rights reserved.
+   5:/usr/lib/avr/include/avr/pgmspace.h **** 
+   6:/usr/lib/avr/include/avr/pgmspace.h ****    Redistribution and use in source and binary forms, with or without
+   7:/usr/lib/avr/include/avr/pgmspace.h ****    modification, are permitted provided that the following conditions are met:
+   8:/usr/lib/avr/include/avr/pgmspace.h **** 
+   9:/usr/lib/avr/include/avr/pgmspace.h ****    * Redistributions of source code must retain the above copyright
+  10:/usr/lib/avr/include/avr/pgmspace.h ****      notice, this list of conditions and the following disclaimer.
+  11:/usr/lib/avr/include/avr/pgmspace.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:/usr/lib/avr/include/avr/pgmspace.h ****      notice, this list of conditions and the following disclaimer in
+  13:/usr/lib/avr/include/avr/pgmspace.h ****      the documentation and/or other materials provided with the
+  14:/usr/lib/avr/include/avr/pgmspace.h ****      distribution.
+  15:/usr/lib/avr/include/avr/pgmspace.h ****    * Neither the name of the copyright holders nor the names of
+  16:/usr/lib/avr/include/avr/pgmspace.h ****      contributors may be used to endorse or promote products derived
+  17:/usr/lib/avr/include/avr/pgmspace.h ****      from this software without specific prior written permission.
+  18:/usr/lib/avr/include/avr/pgmspace.h **** 
+  19:/usr/lib/avr/include/avr/pgmspace.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  20:/usr/lib/avr/include/avr/pgmspace.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  21:/usr/lib/avr/include/avr/pgmspace.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  22:/usr/lib/avr/include/avr/pgmspace.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  23:/usr/lib/avr/include/avr/pgmspace.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  24:/usr/lib/avr/include/avr/pgmspace.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  25:/usr/lib/avr/include/avr/pgmspace.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  26:/usr/lib/avr/include/avr/pgmspace.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  27:/usr/lib/avr/include/avr/pgmspace.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  28:/usr/lib/avr/include/avr/pgmspace.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  29:/usr/lib/avr/include/avr/pgmspace.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  30:/usr/lib/avr/include/avr/pgmspace.h **** 
+  31:/usr/lib/avr/include/avr/pgmspace.h **** /* $Id$ */
+  32:/usr/lib/avr/include/avr/pgmspace.h **** 
+  33:/usr/lib/avr/include/avr/pgmspace.h **** /*
+  34:/usr/lib/avr/include/avr/pgmspace.h ****    pgmspace.h
+  35:/usr/lib/avr/include/avr/pgmspace.h **** 
+  36:/usr/lib/avr/include/avr/pgmspace.h ****    Contributors:
+  37:/usr/lib/avr/include/avr/pgmspace.h ****      Created by Marek Michalkiewicz <marekm@linux.org.pl>
+  38:/usr/lib/avr/include/avr/pgmspace.h ****      Eric B. Weddington <eric@ecentral.com>
+  39:/usr/lib/avr/include/avr/pgmspace.h ****      Wolfgang Haidinger <wh@vmars.tuwien.ac.at> (pgm_read_dword())
+  40:/usr/lib/avr/include/avr/pgmspace.h ****      Ivanov Anton <anton@arc.com.ru> (pgm_read_float())
+  41:/usr/lib/avr/include/avr/pgmspace.h ****  */
+  42:/usr/lib/avr/include/avr/pgmspace.h **** 
+  43:/usr/lib/avr/include/avr/pgmspace.h **** /** \file */
+  44:/usr/lib/avr/include/avr/pgmspace.h **** /** \defgroup avr_pgmspace <avr/pgmspace.h>: Program Space Utilities
+  45:/usr/lib/avr/include/avr/pgmspace.h ****     \code
+  46:/usr/lib/avr/include/avr/pgmspace.h ****     #include <avr/io.h>
+  47:/usr/lib/avr/include/avr/pgmspace.h ****     #include <avr/pgmspace.h>
+  48:/usr/lib/avr/include/avr/pgmspace.h ****     \endcode
+  49:/usr/lib/avr/include/avr/pgmspace.h **** 
+  50:/usr/lib/avr/include/avr/pgmspace.h ****     The functions in this module provide interfaces for a program to access
+  51:/usr/lib/avr/include/avr/pgmspace.h ****     data stored in program space (flash memory) of the device.  In order to
+  52:/usr/lib/avr/include/avr/pgmspace.h ****     use these functions, the target device must support either the \c LPM or
+  53:/usr/lib/avr/include/avr/pgmspace.h ****     \c ELPM instructions.
+  54:/usr/lib/avr/include/avr/pgmspace.h **** 
+  55:/usr/lib/avr/include/avr/pgmspace.h ****     \note These functions are an attempt to provide some compatibility with
+  56:/usr/lib/avr/include/avr/pgmspace.h ****     header files that come with IAR C, to make porting applications between
+  57:/usr/lib/avr/include/avr/pgmspace.h ****     different compilers easier.  This is not 100% compatibility though (GCC
+  58:/usr/lib/avr/include/avr/pgmspace.h ****     does not have full support for multiple address spaces yet).
+  59:/usr/lib/avr/include/avr/pgmspace.h **** 
+  60:/usr/lib/avr/include/avr/pgmspace.h ****     \note If you are working with strings which are completely based in ram,
+  61:/usr/lib/avr/include/avr/pgmspace.h ****     use the standard string functions described in \ref avr_string.
+  62:/usr/lib/avr/include/avr/pgmspace.h **** 
+  63:/usr/lib/avr/include/avr/pgmspace.h ****     \note If possible, put your constant tables in the lower 64 KB and use
+  64:/usr/lib/avr/include/avr/pgmspace.h ****     pgm_read_byte_near() or pgm_read_word_near() instead of
+  65:/usr/lib/avr/include/avr/pgmspace.h ****     pgm_read_byte_far() or pgm_read_word_far() since it is more efficient that
+  66:/usr/lib/avr/include/avr/pgmspace.h ****     way, and you can still use the upper 64K for executable code.
+  67:/usr/lib/avr/include/avr/pgmspace.h ****     All functions that are suffixed with a \c _P \e require their
+  68:/usr/lib/avr/include/avr/pgmspace.h ****     arguments to be in the lower 64 KB of the flash ROM, as they do
+  69:/usr/lib/avr/include/avr/pgmspace.h ****     not use ELPM instructions.  This is normally not a big concern as
+  70:/usr/lib/avr/include/avr/pgmspace.h ****     the linker setup arranges any program space constants declared
+  71:/usr/lib/avr/include/avr/pgmspace.h ****     using the macros from this header file so they are placed right after
+  72:/usr/lib/avr/include/avr/pgmspace.h ****     the interrupt vectors, and in front of any executable code.  However,
+  73:/usr/lib/avr/include/avr/pgmspace.h ****     it can become a problem if there are too many of these constants, or
+  74:/usr/lib/avr/include/avr/pgmspace.h ****     for bootloaders on devices with more than 64 KB of ROM.
+  75:/usr/lib/avr/include/avr/pgmspace.h ****     <em>All these functions will not work in that situation.</em>
+  76:/usr/lib/avr/include/avr/pgmspace.h **** 
+  77:/usr/lib/avr/include/avr/pgmspace.h ****     \note For <b>Xmega</b> devices, make sure the NVM controller
+  78:/usr/lib/avr/include/avr/pgmspace.h ****     command register (\c NVM.CMD or \c NVM_CMD) is set to 0x00 (NOP)
+  79:/usr/lib/avr/include/avr/pgmspace.h ****     before using any of these functions.
+  80:/usr/lib/avr/include/avr/pgmspace.h **** */
+  81:/usr/lib/avr/include/avr/pgmspace.h **** 
+  82:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef __PGMSPACE_H_
+  83:/usr/lib/avr/include/avr/pgmspace.h **** #define __PGMSPACE_H_ 1
+  84:/usr/lib/avr/include/avr/pgmspace.h **** 
+  85:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef __DOXYGEN__
+  86:/usr/lib/avr/include/avr/pgmspace.h **** #define __need_size_t
+  87:/usr/lib/avr/include/avr/pgmspace.h **** #endif
+  88:/usr/lib/avr/include/avr/pgmspace.h **** #include <inttypes.h>
+  89:/usr/lib/avr/include/avr/pgmspace.h **** #include <stddef.h>
+  90:/usr/lib/avr/include/avr/pgmspace.h **** #include <avr/io.h>
+  91:/usr/lib/avr/include/avr/pgmspace.h **** 
+  92:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef __DOXYGEN__
+  93:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef __ATTR_CONST__
+  94:/usr/lib/avr/include/avr/pgmspace.h **** #define __ATTR_CONST__ __attribute__((__const__))
+  95:/usr/lib/avr/include/avr/pgmspace.h **** #endif
+  96:/usr/lib/avr/include/avr/pgmspace.h **** 
+  97:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef __ATTR_PROGMEM__
+  98:/usr/lib/avr/include/avr/pgmspace.h **** #define __ATTR_PROGMEM__ __attribute__((__progmem__))
+  99:/usr/lib/avr/include/avr/pgmspace.h **** #endif
+ 100:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 101:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef __ATTR_PURE__
+ 102:/usr/lib/avr/include/avr/pgmspace.h **** #define __ATTR_PURE__ __attribute__((__pure__))
+ 103:/usr/lib/avr/include/avr/pgmspace.h **** #endif
+ 104:/usr/lib/avr/include/avr/pgmspace.h **** #endif	/* !__DOXYGEN__ */
+ 105:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 106:/usr/lib/avr/include/avr/pgmspace.h **** /**
+ 107:/usr/lib/avr/include/avr/pgmspace.h ****    \ingroup avr_pgmspace
+ 108:/usr/lib/avr/include/avr/pgmspace.h ****    \def PROGMEM
+ 109:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 110:/usr/lib/avr/include/avr/pgmspace.h ****    Attribute to use in order to declare an object being located in
+ 111:/usr/lib/avr/include/avr/pgmspace.h ****    flash ROM.
+ 112:/usr/lib/avr/include/avr/pgmspace.h ****  */
+ 113:/usr/lib/avr/include/avr/pgmspace.h **** #define PROGMEM __ATTR_PROGMEM__
+ 114:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 115:/usr/lib/avr/include/avr/pgmspace.h **** #ifdef __cplusplus
+ 116:/usr/lib/avr/include/avr/pgmspace.h **** extern "C" {
+ 117:/usr/lib/avr/include/avr/pgmspace.h **** #endif
+ 118:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 119:/usr/lib/avr/include/avr/pgmspace.h **** #if defined(__DOXYGEN__)
+ 120:/usr/lib/avr/include/avr/pgmspace.h **** /*
+ 121:/usr/lib/avr/include/avr/pgmspace.h ****  * Doxygen doesn't grok the appended attribute syntax of
+ 122:/usr/lib/avr/include/avr/pgmspace.h ****  * GCC, and confuses the typedefs with function decls, so
+ 123:/usr/lib/avr/include/avr/pgmspace.h ****  * supply a doxygen-friendly view.
+ 124:/usr/lib/avr/include/avr/pgmspace.h ****  */
+ 125:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 126:/usr/lib/avr/include/avr/pgmspace.h **** /**
+ 127:/usr/lib/avr/include/avr/pgmspace.h ****    \ingroup avr_pgmspace
+ 128:/usr/lib/avr/include/avr/pgmspace.h ****    \typedef prog_void
+ 129:/usr/lib/avr/include/avr/pgmspace.h ****    \note DEPRECATED
+ 130:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 131:/usr/lib/avr/include/avr/pgmspace.h ****    This typedef is now deprecated because the usage of the __progmem__ 
+ 132:/usr/lib/avr/include/avr/pgmspace.h ****    attribute on a type is not supported in GCC. However, the use of the 
+ 133:/usr/lib/avr/include/avr/pgmspace.h ****    __progmem__ attribute on a variable declaration is supported, and this is 
+ 134:/usr/lib/avr/include/avr/pgmspace.h ****    now the recommended usage.
+ 135:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 136:/usr/lib/avr/include/avr/pgmspace.h ****    The typedef is only visible if the macro __PROG_TYPES_COMPAT__
+ 137:/usr/lib/avr/include/avr/pgmspace.h ****    has been defined before including <avr/pgmspace.h> (either by a
+ 138:/usr/lib/avr/include/avr/pgmspace.h ****    \c \#define directive, or by a -D compiler option.)
+ 139:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 140:/usr/lib/avr/include/avr/pgmspace.h ****    Type of a "void" object located in flash ROM.  Does not make much
+ 141:/usr/lib/avr/include/avr/pgmspace.h ****    sense by itself, but can be used to declare a "void *" object in
+ 142:/usr/lib/avr/include/avr/pgmspace.h ****    flash ROM.
+ 143:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 144:/usr/lib/avr/include/avr/pgmspace.h **** typedef void PROGMEM prog_void;
+ 145:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 146:/usr/lib/avr/include/avr/pgmspace.h **** /**
+ 147:/usr/lib/avr/include/avr/pgmspace.h ****    \ingroup avr_pgmspace
+ 148:/usr/lib/avr/include/avr/pgmspace.h ****    \typedef prog_char
+ 149:/usr/lib/avr/include/avr/pgmspace.h ****    \note DEPRECATED
+ 150:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 151:/usr/lib/avr/include/avr/pgmspace.h ****    This typedef is now deprecated because the usage of the __progmem__ 
+ 152:/usr/lib/avr/include/avr/pgmspace.h ****    attribute on a type is not supported in GCC. However, the use of the 
+ 153:/usr/lib/avr/include/avr/pgmspace.h ****    __progmem__ attribute on a variable declaration is supported, and this is 
+ 154:/usr/lib/avr/include/avr/pgmspace.h ****    now the recommended usage.
+ 155:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 156:/usr/lib/avr/include/avr/pgmspace.h ****    The typedef is only visible if the macro __PROG_TYPES_COMPAT__
+ 157:/usr/lib/avr/include/avr/pgmspace.h ****    has been defined before including <avr/pgmspace.h> (either by a
+ 158:/usr/lib/avr/include/avr/pgmspace.h ****    \c \#define directive, or by a -D compiler option.)
+ 159:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 160:/usr/lib/avr/include/avr/pgmspace.h ****    Type of a "char" object located in flash ROM.
+ 161:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 162:/usr/lib/avr/include/avr/pgmspace.h **** typedef char PROGMEM prog_char;
+ 163:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 164:/usr/lib/avr/include/avr/pgmspace.h **** /**
+ 165:/usr/lib/avr/include/avr/pgmspace.h ****    \ingroup avr_pgmspace
+ 166:/usr/lib/avr/include/avr/pgmspace.h ****    \typedef prog_uchar
+ 167:/usr/lib/avr/include/avr/pgmspace.h ****    \note DEPRECATED
+ 168:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 169:/usr/lib/avr/include/avr/pgmspace.h ****    This typedef is now deprecated because the usage of the __progmem__ 
+ 170:/usr/lib/avr/include/avr/pgmspace.h ****    attribute on a type is not supported in GCC. However, the use of the 
+ 171:/usr/lib/avr/include/avr/pgmspace.h ****    __progmem__ attribute on a variable declaration is supported, and this is 
+ 172:/usr/lib/avr/include/avr/pgmspace.h ****    now the recommended usage.
+ 173:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 174:/usr/lib/avr/include/avr/pgmspace.h ****    The typedef is only visible if the macro __PROG_TYPES_COMPAT__
+ 175:/usr/lib/avr/include/avr/pgmspace.h ****    has been defined before including <avr/pgmspace.h> (either by a
+ 176:/usr/lib/avr/include/avr/pgmspace.h ****    \c \#define directive, or by a -D compiler option.)
+ 177:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 178:/usr/lib/avr/include/avr/pgmspace.h ****    Type of an "unsigned char" object located in flash ROM.
+ 179:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 180:/usr/lib/avr/include/avr/pgmspace.h **** typedef unsigned char PROGMEM prog_uchar;
+ 181:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 182:/usr/lib/avr/include/avr/pgmspace.h **** /**
+ 183:/usr/lib/avr/include/avr/pgmspace.h ****    \ingroup avr_pgmspace
+ 184:/usr/lib/avr/include/avr/pgmspace.h ****    \typedef prog_int8_t
+ 185:/usr/lib/avr/include/avr/pgmspace.h ****    \note DEPRECATED
+ 186:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 187:/usr/lib/avr/include/avr/pgmspace.h ****    This typedef is now deprecated because the usage of the __progmem__ 
+ 188:/usr/lib/avr/include/avr/pgmspace.h ****    attribute on a type is not supported in GCC. However, the use of the 
+ 189:/usr/lib/avr/include/avr/pgmspace.h ****    __progmem__ attribute on a variable declaration is supported, and this is 
+ 190:/usr/lib/avr/include/avr/pgmspace.h ****    now the recommended usage.
+ 191:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 192:/usr/lib/avr/include/avr/pgmspace.h ****    The typedef is only visible if the macro __PROG_TYPES_COMPAT__
+ 193:/usr/lib/avr/include/avr/pgmspace.h ****    has been defined before including <avr/pgmspace.h> (either by a
+ 194:/usr/lib/avr/include/avr/pgmspace.h ****    \c \#define directive, or by a -D compiler option.)
+ 195:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 196:/usr/lib/avr/include/avr/pgmspace.h ****    Type of an "int8_t" object located in flash ROM.
+ 197:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 198:/usr/lib/avr/include/avr/pgmspace.h **** typedef int8_t PROGMEM prog_int8_t;
+ 199:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 200:/usr/lib/avr/include/avr/pgmspace.h **** /**
+ 201:/usr/lib/avr/include/avr/pgmspace.h ****    \ingroup avr_pgmspace
+ 202:/usr/lib/avr/include/avr/pgmspace.h ****    \typedef prog_uint8_t
+ 203:/usr/lib/avr/include/avr/pgmspace.h ****    \note DEPRECATED
+ 204:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 205:/usr/lib/avr/include/avr/pgmspace.h ****    This typedef is now deprecated because the usage of the __progmem__ 
+ 206:/usr/lib/avr/include/avr/pgmspace.h ****    attribute on a type is not supported in GCC. However, the use of the 
+ 207:/usr/lib/avr/include/avr/pgmspace.h ****    __progmem__ attribute on a variable declaration is supported, and this is 
+ 208:/usr/lib/avr/include/avr/pgmspace.h ****    now the recommended usage.
+ 209:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 210:/usr/lib/avr/include/avr/pgmspace.h ****    The typedef is only visible if the macro __PROG_TYPES_COMPAT__
+ 211:/usr/lib/avr/include/avr/pgmspace.h ****    has been defined before including <avr/pgmspace.h> (either by a
+ 212:/usr/lib/avr/include/avr/pgmspace.h ****    \c \#define directive, or by a -D compiler option.)
+ 213:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 214:/usr/lib/avr/include/avr/pgmspace.h ****    Type of an "uint8_t" object located in flash ROM.
+ 215:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 216:/usr/lib/avr/include/avr/pgmspace.h **** typedef uint8_t PROGMEM prog_uint8_t;
+ 217:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 218:/usr/lib/avr/include/avr/pgmspace.h **** /**
+ 219:/usr/lib/avr/include/avr/pgmspace.h ****    \ingroup avr_pgmspace
+ 220:/usr/lib/avr/include/avr/pgmspace.h ****    \typedef prog_int16_t
+ 221:/usr/lib/avr/include/avr/pgmspace.h ****    \note DEPRECATED
+ 222:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 223:/usr/lib/avr/include/avr/pgmspace.h ****    This typedef is now deprecated because the usage of the __progmem__ 
+ 224:/usr/lib/avr/include/avr/pgmspace.h ****    attribute on a type is not supported in GCC. However, the use of the 
+ 225:/usr/lib/avr/include/avr/pgmspace.h ****    __progmem__ attribute on a variable declaration is supported, and this is 
+ 226:/usr/lib/avr/include/avr/pgmspace.h ****    now the recommended usage.
+ 227:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 228:/usr/lib/avr/include/avr/pgmspace.h ****    The typedef is only visible if the macro __PROG_TYPES_COMPAT__
+ 229:/usr/lib/avr/include/avr/pgmspace.h ****    has been defined before including <avr/pgmspace.h> (either by a
+ 230:/usr/lib/avr/include/avr/pgmspace.h ****    \c \#define directive, or by a -D compiler option.)
+ 231:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 232:/usr/lib/avr/include/avr/pgmspace.h ****    Type of an "int16_t" object located in flash ROM.
+ 233:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 234:/usr/lib/avr/include/avr/pgmspace.h **** typedef int16_t PROGMEM prog_int16_t;
+ 235:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 236:/usr/lib/avr/include/avr/pgmspace.h **** /**
+ 237:/usr/lib/avr/include/avr/pgmspace.h ****    \ingroup avr_pgmspace
+ 238:/usr/lib/avr/include/avr/pgmspace.h ****    \typedef prog_uint16_t
+ 239:/usr/lib/avr/include/avr/pgmspace.h ****    \note DEPRECATED
+ 240:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 241:/usr/lib/avr/include/avr/pgmspace.h ****    This typedef is now deprecated because the usage of the __progmem__ 
+ 242:/usr/lib/avr/include/avr/pgmspace.h ****    attribute on a type is not supported in GCC. However, the use of the 
+ 243:/usr/lib/avr/include/avr/pgmspace.h ****    __progmem__ attribute on a variable declaration is supported, and this is 
+ 244:/usr/lib/avr/include/avr/pgmspace.h ****    now the recommended usage.
+ 245:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 246:/usr/lib/avr/include/avr/pgmspace.h ****    The typedef is only visible if the macro __PROG_TYPES_COMPAT__
+ 247:/usr/lib/avr/include/avr/pgmspace.h ****    has been defined before including <avr/pgmspace.h> (either by a
+ 248:/usr/lib/avr/include/avr/pgmspace.h ****    \c \#define directive, or by a -D compiler option.)
+ 249:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 250:/usr/lib/avr/include/avr/pgmspace.h ****    Type of an "uint16_t" object located in flash ROM.
+ 251:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 252:/usr/lib/avr/include/avr/pgmspace.h **** typedef uint16_t PROGMEM prog_uint16_t;
+ 253:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 254:/usr/lib/avr/include/avr/pgmspace.h **** /**
+ 255:/usr/lib/avr/include/avr/pgmspace.h ****    \ingroup avr_pgmspace
+ 256:/usr/lib/avr/include/avr/pgmspace.h ****    \typedef prog_int32_t
+ 257:/usr/lib/avr/include/avr/pgmspace.h ****    \note DEPRECATED
+ 258:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 259:/usr/lib/avr/include/avr/pgmspace.h ****    This typedef is now deprecated because the usage of the __progmem__ 
+ 260:/usr/lib/avr/include/avr/pgmspace.h ****    attribute on a type is not supported in GCC. However, the use of the 
+ 261:/usr/lib/avr/include/avr/pgmspace.h ****    __progmem__ attribute on a variable declaration is supported, and this is 
+ 262:/usr/lib/avr/include/avr/pgmspace.h ****    now the recommended usage.
+ 263:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 264:/usr/lib/avr/include/avr/pgmspace.h ****    The typedef is only visible if the macro __PROG_TYPES_COMPAT__
+ 265:/usr/lib/avr/include/avr/pgmspace.h ****    has been defined before including <avr/pgmspace.h> (either by a
+ 266:/usr/lib/avr/include/avr/pgmspace.h ****    \c \#define directive, or by a -D compiler option.)
+ 267:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 268:/usr/lib/avr/include/avr/pgmspace.h ****    Type of an "int32_t" object located in flash ROM.
+ 269:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 270:/usr/lib/avr/include/avr/pgmspace.h **** typedef int32_t PROGMEM prog_int32_t;
+ 271:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 272:/usr/lib/avr/include/avr/pgmspace.h **** /**
+ 273:/usr/lib/avr/include/avr/pgmspace.h ****    \ingroup avr_pgmspace
+ 274:/usr/lib/avr/include/avr/pgmspace.h ****    \typedef prog_uint32_t
+ 275:/usr/lib/avr/include/avr/pgmspace.h ****    \note DEPRECATED
+ 276:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 277:/usr/lib/avr/include/avr/pgmspace.h ****    This typedef is now deprecated because the usage of the __progmem__ 
+ 278:/usr/lib/avr/include/avr/pgmspace.h ****    attribute on a type is not supported in GCC. However, the use of the 
+ 279:/usr/lib/avr/include/avr/pgmspace.h ****    __progmem__ attribute on a variable declaration is supported, and this is 
+ 280:/usr/lib/avr/include/avr/pgmspace.h ****    now the recommended usage.
+ 281:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 282:/usr/lib/avr/include/avr/pgmspace.h ****    The typedef is only visible if the macro __PROG_TYPES_COMPAT__
+ 283:/usr/lib/avr/include/avr/pgmspace.h ****    has been defined before including <avr/pgmspace.h> (either by a
+ 284:/usr/lib/avr/include/avr/pgmspace.h ****    \c \#define directive, or by a -D compiler option.)
+ 285:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 286:/usr/lib/avr/include/avr/pgmspace.h ****    Type of an "uint32_t" object located in flash ROM.
+ 287:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 288:/usr/lib/avr/include/avr/pgmspace.h **** typedef uint32_t PROGMEM prog_uint32_t;
+ 289:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 290:/usr/lib/avr/include/avr/pgmspace.h **** /**
+ 291:/usr/lib/avr/include/avr/pgmspace.h ****    \ingroup avr_pgmspace
+ 292:/usr/lib/avr/include/avr/pgmspace.h ****    \typedef prog_int64_t
+ 293:/usr/lib/avr/include/avr/pgmspace.h ****    \note DEPRECATED
+ 294:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 295:/usr/lib/avr/include/avr/pgmspace.h ****    This typedef is now deprecated because the usage of the __progmem__ 
+ 296:/usr/lib/avr/include/avr/pgmspace.h ****    attribute on a type is not supported in GCC. However, the use of the 
+ 297:/usr/lib/avr/include/avr/pgmspace.h ****    __progmem__ attribute on a variable declaration is supported, and this is 
+ 298:/usr/lib/avr/include/avr/pgmspace.h ****    now the recommended usage.
+ 299:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 300:/usr/lib/avr/include/avr/pgmspace.h ****    The typedef is only visible if the macro __PROG_TYPES_COMPAT__
+ 301:/usr/lib/avr/include/avr/pgmspace.h ****    has been defined before including <avr/pgmspace.h> (either by a
+ 302:/usr/lib/avr/include/avr/pgmspace.h ****    \c \#define directive, or by a -D compiler option.)
+ 303:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 304:/usr/lib/avr/include/avr/pgmspace.h ****    Type of an "int64_t" object located in flash ROM.
+ 305:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 306:/usr/lib/avr/include/avr/pgmspace.h ****    \note This type is not available when the compiler
+ 307:/usr/lib/avr/include/avr/pgmspace.h ****    option -mint8 is in effect.
+ 308:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 309:/usr/lib/avr/include/avr/pgmspace.h **** typedef int64_t PROGMEM prog_int64_t;
+ 310:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 311:/usr/lib/avr/include/avr/pgmspace.h **** /**
+ 312:/usr/lib/avr/include/avr/pgmspace.h ****    \ingroup avr_pgmspace
+ 313:/usr/lib/avr/include/avr/pgmspace.h ****    \typedef prog_uint64_t
+ 314:/usr/lib/avr/include/avr/pgmspace.h ****    \note DEPRECATED
+ 315:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 316:/usr/lib/avr/include/avr/pgmspace.h ****    This typedef is now deprecated because the usage of the __progmem__ 
+ 317:/usr/lib/avr/include/avr/pgmspace.h ****    attribute on a type is not supported in GCC. However, the use of the 
+ 318:/usr/lib/avr/include/avr/pgmspace.h ****    __progmem__ attribute on a variable declaration is supported, and this is 
+ 319:/usr/lib/avr/include/avr/pgmspace.h ****    now the recommended usage.
+ 320:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 321:/usr/lib/avr/include/avr/pgmspace.h ****    The typedef is only visible if the macro __PROG_TYPES_COMPAT__
+ 322:/usr/lib/avr/include/avr/pgmspace.h ****    has been defined before including <avr/pgmspace.h> (either by a
+ 323:/usr/lib/avr/include/avr/pgmspace.h ****    \c \#define directive, or by a -D compiler option.)
+ 324:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 325:/usr/lib/avr/include/avr/pgmspace.h ****    Type of an "uint64_t" object located in flash ROM.
+ 326:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 327:/usr/lib/avr/include/avr/pgmspace.h ****    \note This type is not available when the compiler
+ 328:/usr/lib/avr/include/avr/pgmspace.h ****    option -mint8 is in effect.
+ 329:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 330:/usr/lib/avr/include/avr/pgmspace.h **** typedef uint64_t PROGMEM prog_uint64_t;
+ 331:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 332:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+ 333:/usr/lib/avr/include/avr/pgmspace.h ****     \def PGM_P
+ 334:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 335:/usr/lib/avr/include/avr/pgmspace.h ****     Used to declare a variable that is a pointer to a string in program
+ 336:/usr/lib/avr/include/avr/pgmspace.h ****     space. */
+ 337:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 338:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef PGM_P
+ 339:/usr/lib/avr/include/avr/pgmspace.h **** #define PGM_P const char *
+ 340:/usr/lib/avr/include/avr/pgmspace.h **** #endif
+ 341:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 342:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+ 343:/usr/lib/avr/include/avr/pgmspace.h ****     \def PGM_VOID_P
+ 344:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 345:/usr/lib/avr/include/avr/pgmspace.h ****     Used to declare a generic pointer to an object in program space. */
+ 346:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 347:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef PGM_VOID_P
+ 348:/usr/lib/avr/include/avr/pgmspace.h **** #define PGM_VOID_P const void *
+ 349:/usr/lib/avr/include/avr/pgmspace.h **** #endif
+ 350:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 351:/usr/lib/avr/include/avr/pgmspace.h **** #elif defined(__PROG_TYPES_COMPAT__)  /* !DOXYGEN */
+ 352:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 353:/usr/lib/avr/include/avr/pgmspace.h **** typedef void prog_void __attribute__((__progmem__,deprecated("prog_void type is deprecated.")));
+ 354:/usr/lib/avr/include/avr/pgmspace.h **** typedef char prog_char __attribute__((__progmem__,deprecated("prog_char type is deprecated.")));
+ 355:/usr/lib/avr/include/avr/pgmspace.h **** typedef unsigned char prog_uchar __attribute__((__progmem__,deprecated("prog_uchar type is deprecat
+ 356:/usr/lib/avr/include/avr/pgmspace.h **** typedef int8_t    prog_int8_t   __attribute__((__progmem__,deprecated("prog_int8_t type is deprecat
+ 357:/usr/lib/avr/include/avr/pgmspace.h **** typedef uint8_t   prog_uint8_t  __attribute__((__progmem__,deprecated("prog_uint8_t type is depreca
+ 358:/usr/lib/avr/include/avr/pgmspace.h **** typedef int16_t   prog_int16_t  __attribute__((__progmem__,deprecated("prog_int16_t type is depreca
+ 359:/usr/lib/avr/include/avr/pgmspace.h **** typedef uint16_t  prog_uint16_t __attribute__((__progmem__,deprecated("prog_uint16_t type is deprec
+ 360:/usr/lib/avr/include/avr/pgmspace.h **** typedef int32_t   prog_int32_t  __attribute__((__progmem__,deprecated("prog_int32_t type is depreca
+ 361:/usr/lib/avr/include/avr/pgmspace.h **** typedef uint32_t  prog_uint32_t __attribute__((__progmem__,deprecated("prog_uint32_t type is deprec
+ 362:/usr/lib/avr/include/avr/pgmspace.h **** #if !__USING_MINT8
+ 363:/usr/lib/avr/include/avr/pgmspace.h **** typedef int64_t   prog_int64_t  __attribute__((__progmem__,deprecated("prog_int64_t type is depreca
+ 364:/usr/lib/avr/include/avr/pgmspace.h **** typedef uint64_t  prog_uint64_t __attribute__((__progmem__,deprecated("prog_uint64_t type is deprec
+ 365:/usr/lib/avr/include/avr/pgmspace.h **** #endif
+ 366:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 367:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef PGM_P
+ 368:/usr/lib/avr/include/avr/pgmspace.h **** #define PGM_P const prog_char *
+ 369:/usr/lib/avr/include/avr/pgmspace.h **** #endif
+ 370:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 371:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef PGM_VOID_P
+ 372:/usr/lib/avr/include/avr/pgmspace.h **** #define PGM_VOID_P const prog_void *
+ 373:/usr/lib/avr/include/avr/pgmspace.h **** #endif
+ 374:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 375:/usr/lib/avr/include/avr/pgmspace.h **** #else /* !defined(__DOXYGEN__), !defined(__PROG_TYPES_COMPAT__) */
+ 376:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 377:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef PGM_P
+ 378:/usr/lib/avr/include/avr/pgmspace.h **** #define PGM_P const char *
+ 379:/usr/lib/avr/include/avr/pgmspace.h **** #endif
+ 380:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 381:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef PGM_VOID_P
+ 382:/usr/lib/avr/include/avr/pgmspace.h **** #define PGM_VOID_P const void *
+ 383:/usr/lib/avr/include/avr/pgmspace.h **** #endif
+ 384:/usr/lib/avr/include/avr/pgmspace.h **** #endif /* defined(__DOXYGEN__), defined(__PROG_TYPES_COMPAT__) */
+ 385:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 386:/usr/lib/avr/include/avr/pgmspace.h **** /* Although in C, we can get away with just using __c, it does not work in
+ 387:/usr/lib/avr/include/avr/pgmspace.h ****    C++. We need to use &__c[0] to avoid the compiler puking. Dave Hylands
+ 388:/usr/lib/avr/include/avr/pgmspace.h ****    explaned it thusly,
+ 389:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 390:/usr/lib/avr/include/avr/pgmspace.h ****      Let's suppose that we use PSTR("Test"). In this case, the type returned
+ 391:/usr/lib/avr/include/avr/pgmspace.h ****      by __c is a prog_char[5] and not a prog_char *. While these are
+ 392:/usr/lib/avr/include/avr/pgmspace.h ****      compatible, they aren't the same thing (especially in C++). The type
+ 393:/usr/lib/avr/include/avr/pgmspace.h ****      returned by &__c[0] is a prog_char *, which explains why it works
+ 394:/usr/lib/avr/include/avr/pgmspace.h ****      fine. */
+ 395:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 396:/usr/lib/avr/include/avr/pgmspace.h **** #if defined(__DOXYGEN__)
+ 397:/usr/lib/avr/include/avr/pgmspace.h **** /*
+ 398:/usr/lib/avr/include/avr/pgmspace.h ****  * The #define below is just a dummy that serves documentation
+ 399:/usr/lib/avr/include/avr/pgmspace.h ****  * purposes only.
+ 400:/usr/lib/avr/include/avr/pgmspace.h ****  */
+ 401:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+ 402:/usr/lib/avr/include/avr/pgmspace.h ****     \def PSTR(s)
+ 403:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 404:/usr/lib/avr/include/avr/pgmspace.h ****     Used to declare a static pointer to a string in program space. */
+ 405:/usr/lib/avr/include/avr/pgmspace.h **** # define PSTR(s) ((const PROGMEM char *)(s))
+ 406:/usr/lib/avr/include/avr/pgmspace.h **** #else  /* !DOXYGEN */
+ 407:/usr/lib/avr/include/avr/pgmspace.h **** /* The real thing. */
+ 408:/usr/lib/avr/include/avr/pgmspace.h **** # define PSTR(s) (__extension__({static const char __c[] PROGMEM = (s); &__c[0];}))
+ 409:/usr/lib/avr/include/avr/pgmspace.h **** #endif /* DOXYGEN */
+ 410:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 411:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef __DOXYGEN__ /* Internal macros, not documented. */
+ 412:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_classic__(addr)   \
+ 413:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                \
+ 414:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __addr16 = (uint16_t)(addr); \
+ 415:/usr/lib/avr/include/avr/pgmspace.h ****     uint8_t __result;           \
+ 416:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__        \
+ 417:/usr/lib/avr/include/avr/pgmspace.h ****     (                           \
+ 418:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm" "\n\t"            \
+ 419:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %0, r0" "\n\t"     \
+ 420:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)       \
+ 421:/usr/lib/avr/include/avr/pgmspace.h ****         : "z" (__addr16)        \
+ 422:/usr/lib/avr/include/avr/pgmspace.h ****         : "r0"                  \
+ 423:/usr/lib/avr/include/avr/pgmspace.h ****     );                          \
+ 424:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                   \
+ 425:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 426:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 427:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_tiny__(addr)      \
+ 428:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                \
+ 429:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __addr16 = (uint16_t)(addr) + __AVR_TINY_PM_BASE_ADDRESS__; \
+ 430:/usr/lib/avr/include/avr/pgmspace.h ****     uint8_t __result;           \
+ 431:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__                     \
+ 432:/usr/lib/avr/include/avr/pgmspace.h ****     (                           \
+ 433:/usr/lib/avr/include/avr/pgmspace.h ****         "ld %0, z" "\n\t"       \
+ 434:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)       \
+ 435:/usr/lib/avr/include/avr/pgmspace.h ****         : "z" (__addr16)        \
+ 436:/usr/lib/avr/include/avr/pgmspace.h ****     );                          \
+ 437:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                   \
+ 438:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 439:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 440:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_enhanced__(addr)  \
+ 441:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                \
+ 442:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __addr16 = (uint16_t)(addr); \
+ 443:/usr/lib/avr/include/avr/pgmspace.h ****     uint8_t __result;           \
+ 444:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__        \
+ 445:/usr/lib/avr/include/avr/pgmspace.h ****     (                           \
+ 446:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm %0, Z" "\n\t"      \
+ 447:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)       \
+ 448:/usr/lib/avr/include/avr/pgmspace.h ****         : "z" (__addr16)        \
+ 449:/usr/lib/avr/include/avr/pgmspace.h ****     );                          \
+ 450:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                   \
+ 451:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 452:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 453:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_word_classic__(addr)          \
+ 454:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                            \
+ 455:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __addr16 = (uint16_t)(addr);   \
+ 456:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __result;                      \
+ 457:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                    \
+ 458:/usr/lib/avr/include/avr/pgmspace.h ****     (                                       \
+ 459:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm"           "\n\t"              \
+ 460:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %A0, r0"   "\n\t"              \
+ 461:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"   "\n\t"              \
+ 462:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm"           "\n\t"              \
+ 463:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %B0, r0"   "\n\t"              \
+ 464:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result), "=z" (__addr16)  \
+ 465:/usr/lib/avr/include/avr/pgmspace.h ****         : "1" (__addr16)                    \
+ 466:/usr/lib/avr/include/avr/pgmspace.h ****         : "r0"                              \
+ 467:/usr/lib/avr/include/avr/pgmspace.h ****     );                                      \
+ 468:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                               \
+ 469:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 470:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 471:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_word_tiny__(addr)             \
+ 472:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                            \
+ 473:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __addr16 = (uint16_t)(addr) + __AVR_TINY_PM_BASE_ADDRESS__; \
+ 474:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __result;                      \
+ 475:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__                                 \
+ 476:/usr/lib/avr/include/avr/pgmspace.h ****     (                                       \
+ 477:/usr/lib/avr/include/avr/pgmspace.h ****         "ld %A0, z+"     "\n\t"             \
+ 478:/usr/lib/avr/include/avr/pgmspace.h ****         "ld %B0, z"      "\n\t"             \
+ 479:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result), "=z" (__addr16)  \
+ 480:/usr/lib/avr/include/avr/pgmspace.h ****         : "1" (__addr16)                    \
+ 481:/usr/lib/avr/include/avr/pgmspace.h ****     );                                      \
+ 482:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                               \
+ 483:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 484:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 485:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_word_enhanced__(addr)         \
+ 486:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                            \
+ 487:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __addr16 = (uint16_t)(addr);   \
+ 488:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __result;                      \
+ 489:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                    \
+ 490:/usr/lib/avr/include/avr/pgmspace.h ****     (                                       \
+ 491:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm %A0, Z+"   "\n\t"              \
+ 492:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm %B0, Z"    "\n\t"              \
+ 493:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result), "=z" (__addr16)  \
+ 494:/usr/lib/avr/include/avr/pgmspace.h ****         : "1" (__addr16)                    \
+ 495:/usr/lib/avr/include/avr/pgmspace.h ****     );                                      \
+ 496:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                               \
+ 497:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 498:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 499:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_dword_classic__(addr)         \
+ 500:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                            \
+ 501:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __addr16 = (uint16_t)(addr);   \
+ 502:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __result;                      \
+ 503:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                    \
+ 504:/usr/lib/avr/include/avr/pgmspace.h ****     (                                       \
+ 505:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm"           "\n\t"              \
+ 506:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %A0, r0"   "\n\t"              \
+ 507:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"   "\n\t"              \
+ 508:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm"           "\n\t"              \
+ 509:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %B0, r0"   "\n\t"              \
+ 510:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"   "\n\t"              \
+ 511:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm"           "\n\t"              \
+ 512:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %C0, r0"   "\n\t"              \
+ 513:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"   "\n\t"              \
+ 514:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm"           "\n\t"              \
+ 515:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %D0, r0"   "\n\t"              \
+ 516:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result), "=z" (__addr16)  \
+ 517:/usr/lib/avr/include/avr/pgmspace.h ****         : "1" (__addr16)                    \
+ 518:/usr/lib/avr/include/avr/pgmspace.h ****         : "r0"                              \
+ 519:/usr/lib/avr/include/avr/pgmspace.h ****     );                                      \
+ 520:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                               \
+ 521:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 522:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 523:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_dword_tiny__(addr)            \
+ 524:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                            \
+ 525:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __addr16 = (uint16_t)(addr) + __AVR_TINY_PM_BASE_ADDRESS__; \
+ 526:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __result;                      \
+ 527:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__                                 \
+ 528:/usr/lib/avr/include/avr/pgmspace.h ****     (                                       \
+ 529:/usr/lib/avr/include/avr/pgmspace.h ****         "ld %A0, z+"    "\n\t"              \
+ 530:/usr/lib/avr/include/avr/pgmspace.h ****         "ld %B0, z+"    "\n\t"              \
+ 531:/usr/lib/avr/include/avr/pgmspace.h ****         "ld %C0, z+"    "\n\t"              \
+ 532:/usr/lib/avr/include/avr/pgmspace.h ****         "ld %D0, z"     "\n\t"              \
+ 533:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result), "=z" (__addr16)  \
+ 534:/usr/lib/avr/include/avr/pgmspace.h ****         : "1" (__addr16)                    \
+ 535:/usr/lib/avr/include/avr/pgmspace.h ****     );                                      \
+ 536:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                               \
+ 537:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 538:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 539:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_dword_enhanced__(addr)        \
+ 540:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                            \
+ 541:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __addr16 = (uint16_t)(addr);   \
+ 542:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __result;                      \
+ 543:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                    \
+ 544:/usr/lib/avr/include/avr/pgmspace.h ****     (                                       \
+ 545:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm %A0, Z+"   "\n\t"              \
+ 546:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm %B0, Z+"   "\n\t"              \
+ 547:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm %C0, Z+"   "\n\t"              \
+ 548:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm %D0, Z"    "\n\t"              \
+ 549:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result), "=z" (__addr16)  \
+ 550:/usr/lib/avr/include/avr/pgmspace.h ****         : "1" (__addr16)                    \
+ 551:/usr/lib/avr/include/avr/pgmspace.h ****     );                                      \
+ 552:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                               \
+ 553:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 554:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 555:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_float_classic__(addr)         \
+ 556:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                            \
+ 557:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __addr16 = (uint16_t)(addr);   \
+ 558:/usr/lib/avr/include/avr/pgmspace.h ****     float __result;                         \
+ 559:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                    \
+ 560:/usr/lib/avr/include/avr/pgmspace.h ****     (                                       \
+ 561:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm"           "\n\t"              \
+ 562:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %A0, r0"   "\n\t"              \
+ 563:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"   "\n\t"              \
+ 564:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm"           "\n\t"              \
+ 565:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %B0, r0"   "\n\t"              \
+ 566:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"   "\n\t"              \
+ 567:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm"           "\n\t"              \
+ 568:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %C0, r0"   "\n\t"              \
+ 569:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"   "\n\t"              \
+ 570:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm"           "\n\t"              \
+ 571:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %D0, r0"   "\n\t"              \
+ 572:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result), "=z" (__addr16)  \
+ 573:/usr/lib/avr/include/avr/pgmspace.h ****         : "1" (__addr16)                    \
+ 574:/usr/lib/avr/include/avr/pgmspace.h ****         : "r0"                              \
+ 575:/usr/lib/avr/include/avr/pgmspace.h ****     );                                      \
+ 576:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                               \
+ 577:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 578:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 579:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_float_tiny__(addr)            \
+ 580:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                            \
+ 581:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __addr16 = (uint16_t)(addr) + __AVR_TINY_PM_BASE_ADDRESS__; \
+ 582:/usr/lib/avr/include/avr/pgmspace.h ****     float __result;                         \
+ 583:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__                                 \
+ 584:/usr/lib/avr/include/avr/pgmspace.h ****     (                                       \
+ 585:/usr/lib/avr/include/avr/pgmspace.h ****         "ld %A0, z+"   "\n\t"               \
+ 586:/usr/lib/avr/include/avr/pgmspace.h ****         "ld %B0, z+"   "\n\t"               \
+ 587:/usr/lib/avr/include/avr/pgmspace.h ****         "ld %C0, z+"   "\n\t"               \
+ 588:/usr/lib/avr/include/avr/pgmspace.h ****         "ld %D0, z"    "\n\t"               \
+ 589:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result), "=z" (__addr16)  \
+ 590:/usr/lib/avr/include/avr/pgmspace.h ****         : "1" (__addr16)                    \
+ 591:/usr/lib/avr/include/avr/pgmspace.h ****     );                                      \
+ 592:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                               \
+ 593:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 594:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 595:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_float_enhanced__(addr)        \
+ 596:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                            \
+ 597:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __addr16 = (uint16_t)(addr);   \
+ 598:/usr/lib/avr/include/avr/pgmspace.h ****     float __result;                         \
+ 599:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                    \
+ 600:/usr/lib/avr/include/avr/pgmspace.h ****     (                                       \
+ 601:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm %A0, Z+"   "\n\t"              \
+ 602:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm %B0, Z+"   "\n\t"              \
+ 603:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm %C0, Z+"   "\n\t"              \
+ 604:/usr/lib/avr/include/avr/pgmspace.h ****         "lpm %D0, Z"    "\n\t"              \
+ 605:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result), "=z" (__addr16)  \
+ 606:/usr/lib/avr/include/avr/pgmspace.h ****         : "1" (__addr16)                    \
+ 607:/usr/lib/avr/include/avr/pgmspace.h ****     );                                      \
+ 608:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                               \
+ 609:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 610:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 611:/usr/lib/avr/include/avr/pgmspace.h **** #if defined (__AVR_HAVE_LPMX__)
+ 612:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM(addr)         __LPM_enhanced__(addr)
+ 613:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_word(addr)    __LPM_word_enhanced__(addr)
+ 614:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_dword(addr)   __LPM_dword_enhanced__(addr)
+ 615:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_float(addr)   __LPM_float_enhanced__(addr)
+ 616:/usr/lib/avr/include/avr/pgmspace.h **** /*
+ 617:/usr/lib/avr/include/avr/pgmspace.h **** Macro to read data from program memory for avr tiny parts(tiny 4/5/9/10/20/40).
+ 618:/usr/lib/avr/include/avr/pgmspace.h **** why:
+ 619:/usr/lib/avr/include/avr/pgmspace.h **** - LPM instruction is not available in AVR_TINY instruction set.
+ 620:/usr/lib/avr/include/avr/pgmspace.h **** - Programs are executed starting from address 0x0000 in program memory.
+ 621:/usr/lib/avr/include/avr/pgmspace.h **** But it must be addressed starting from 0x4000 when accessed via data memory.
+ 622:/usr/lib/avr/include/avr/pgmspace.h **** Reference: TINY device (ATTiny 4,5,9,10,20 and 40) datasheets
+ 623:/usr/lib/avr/include/avr/pgmspace.h **** Bug: avrtc-536
+ 624:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 625:/usr/lib/avr/include/avr/pgmspace.h **** #elif defined (__AVR_TINY__)
+ 626:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM(addr)         __LPM_tiny__(addr)
+ 627:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_word(addr)    __LPM_word_tiny__(addr)
+ 628:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_dword(addr)   __LPM_dword_tiny__(addr)
+ 629:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_float(addr)   __LPM_float_tiny__(addr)
+ 630:/usr/lib/avr/include/avr/pgmspace.h **** #else
+ 631:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM(addr)         __LPM_classic__(addr)
+ 632:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_word(addr)    __LPM_word_classic__(addr)
+ 633:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_dword(addr)   __LPM_dword_classic__(addr)
+ 634:/usr/lib/avr/include/avr/pgmspace.h **** #define __LPM_float(addr)   __LPM_float_classic__(addr)
+ 635:/usr/lib/avr/include/avr/pgmspace.h **** #endif
+ 636:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 637:/usr/lib/avr/include/avr/pgmspace.h **** #endif  /* !__DOXYGEN__ */
+ 638:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 639:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+ 640:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_byte_near(address_short)
+ 641:/usr/lib/avr/include/avr/pgmspace.h ****     Read a byte from the program space with a 16-bit (near) address. 
+ 642:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address.
+ 643:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+ 644:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 645:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_byte_near(address_short) __LPM((uint16_t)(address_short))
+ 646:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 647:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+ 648:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_word_near(address_short)
+ 649:/usr/lib/avr/include/avr/pgmspace.h ****     Read a word from the program space with a 16-bit (near) address. 
+ 650:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address. 
+ 651:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+ 652:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 653:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_word_near(address_short) __LPM_word((uint16_t)(address_short))
+ 654:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 655:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+ 656:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_dword_near(address_short)
+ 657:/usr/lib/avr/include/avr/pgmspace.h ****     Read a double word from the program space with a 16-bit (near) address. 
+ 658:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address. 
+ 659:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+ 660:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 661:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_dword_near(address_short) \
+ 662:/usr/lib/avr/include/avr/pgmspace.h ****     __LPM_dword((uint16_t)(address_short))
+ 663:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 664:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+ 665:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_float_near(address_short)
+ 666:/usr/lib/avr/include/avr/pgmspace.h ****     Read a float from the program space with a 16-bit (near) address. 
+ 667:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address. 
+ 668:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+ 669:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 670:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_float_near(address_short) \
+ 671:/usr/lib/avr/include/avr/pgmspace.h ****     __LPM_float((uint16_t)(address_short))
+ 672:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 673:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+ 674:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_ptr_near(address_short)
+ 675:/usr/lib/avr/include/avr/pgmspace.h ****     Read a pointer from the program space with a 16-bit (near) address. 
+ 676:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address. 
+ 677:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+ 678:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 679:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_ptr_near(address_short) \
+ 680:/usr/lib/avr/include/avr/pgmspace.h ****     (void*)__LPM_word((uint16_t)(address_short))
+ 681:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 682:/usr/lib/avr/include/avr/pgmspace.h **** #if defined(RAMPZ) || defined(__DOXYGEN__)
+ 683:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 684:/usr/lib/avr/include/avr/pgmspace.h **** /* Only for devices with more than 64K of program memory.
+ 685:/usr/lib/avr/include/avr/pgmspace.h ****    RAMPZ must be defined (see iom103.h, iom128.h).
+ 686:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 687:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 688:/usr/lib/avr/include/avr/pgmspace.h **** /* The classic functions are needed for ATmega103. */
+ 689:/usr/lib/avr/include/avr/pgmspace.h **** #ifndef __DOXYGEN__		/* These are internal macros, avoid "is
+ 690:/usr/lib/avr/include/avr/pgmspace.h **** 				   not documented" warnings. */
+ 691:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_classic__(addr)      \
+ 692:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                    \
+ 693:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __addr32 = (uint32_t)(addr); \
+ 694:/usr/lib/avr/include/avr/pgmspace.h ****     uint8_t __result;               \
+ 695:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__            \
+ 696:/usr/lib/avr/include/avr/pgmspace.h ****     (                               \
+ 697:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, %C1" "\n\t"        \
+ 698:/usr/lib/avr/include/avr/pgmspace.h ****         "mov r31, %B1" "\n\t"       \
+ 699:/usr/lib/avr/include/avr/pgmspace.h ****         "mov r30, %A1" "\n\t"       \
+ 700:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm" "\n\t"               \
+ 701:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %0, r0" "\n\t"         \
+ 702:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)           \
+ 703:/usr/lib/avr/include/avr/pgmspace.h ****         : "r" (__addr32),           \
+ 704:/usr/lib/avr/include/avr/pgmspace.h ****           "I" (_SFR_IO_ADDR(RAMPZ)) \
+ 705:/usr/lib/avr/include/avr/pgmspace.h ****         : "r0", "r30", "r31"        \
+ 706:/usr/lib/avr/include/avr/pgmspace.h ****     );                              \
+ 707:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                       \
+ 708:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 709:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 710:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_enhanced__(addr)     \
+ 711:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                    \
+ 712:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __addr32 = (uint32_t)(addr); \
+ 713:/usr/lib/avr/include/avr/pgmspace.h ****     uint8_t __result;               \
+ 714:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__            \
+ 715:/usr/lib/avr/include/avr/pgmspace.h ****     (                               \
+ 716:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, %C1" "\n\t"        \
+ 717:/usr/lib/avr/include/avr/pgmspace.h ****         "movw r30, %1" "\n\t"       \
+ 718:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %0, Z+" "\n\t"        \
+ 719:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)           \
+ 720:/usr/lib/avr/include/avr/pgmspace.h ****         : "r" (__addr32),           \
+ 721:/usr/lib/avr/include/avr/pgmspace.h ****           "I" (_SFR_IO_ADDR(RAMPZ)) \
+ 722:/usr/lib/avr/include/avr/pgmspace.h ****         : "r30", "r31"              \
+ 723:/usr/lib/avr/include/avr/pgmspace.h ****     );                              \
+ 724:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                       \
+ 725:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 726:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 727:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_xmega__(addr)        \
+ 728:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                    \
+ 729:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __addr32 = (uint32_t)(addr); \
+ 730:/usr/lib/avr/include/avr/pgmspace.h ****     uint8_t __result;               \
+ 731:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__            \
+ 732:/usr/lib/avr/include/avr/pgmspace.h ****     (                               \
+ 733:/usr/lib/avr/include/avr/pgmspace.h ****         "in __tmp_reg__, %2" "\n\t" \
+ 734:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, %C1" "\n\t"        \
+ 735:/usr/lib/avr/include/avr/pgmspace.h ****         "movw r30, %1" "\n\t"       \
+ 736:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %0, Z+" "\n\t"        \
+ 737:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, __tmp_reg__"       \
+ 738:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)           \
+ 739:/usr/lib/avr/include/avr/pgmspace.h ****         : "r" (__addr32),           \
+ 740:/usr/lib/avr/include/avr/pgmspace.h ****           "I" (_SFR_IO_ADDR(RAMPZ)) \
+ 741:/usr/lib/avr/include/avr/pgmspace.h ****         : "r30", "r31"              \
+ 742:/usr/lib/avr/include/avr/pgmspace.h ****     );                              \
+ 743:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                       \
+ 744:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 745:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 746:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_word_classic__(addr)     \
+ 747:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                        \
+ 748:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __addr32 = (uint32_t)(addr); \
+ 749:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __result;                  \
+ 750:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                \
+ 751:/usr/lib/avr/include/avr/pgmspace.h ****     (                                   \
+ 752:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, %C1"   "\n\t"          \
+ 753:/usr/lib/avr/include/avr/pgmspace.h ****         "mov r31, %B1"  "\n\t"          \
+ 754:/usr/lib/avr/include/avr/pgmspace.h ****         "mov r30, %A1"  "\n\t"          \
+ 755:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm"          "\n\t"          \
+ 756:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %A0, r0"   "\n\t"          \
+ 757:/usr/lib/avr/include/avr/pgmspace.h ****         "in r0, %2"     "\n\t"          \
+ 758:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"   "\n\t"          \
+ 759:/usr/lib/avr/include/avr/pgmspace.h ****         "adc r0, __zero_reg__" "\n\t"   \
+ 760:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, r0"    "\n\t"          \
+ 761:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm"          "\n\t"          \
+ 762:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %B0, r0"   "\n\t"          \
+ 763:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)               \
+ 764:/usr/lib/avr/include/avr/pgmspace.h ****         : "r" (__addr32),               \
+ 765:/usr/lib/avr/include/avr/pgmspace.h ****           "I" (_SFR_IO_ADDR(RAMPZ))     \
+ 766:/usr/lib/avr/include/avr/pgmspace.h ****         : "r0", "r30", "r31"            \
+ 767:/usr/lib/avr/include/avr/pgmspace.h ****     );                                  \
+ 768:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                           \
+ 769:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 770:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 771:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_word_enhanced__(addr)    \
+ 772:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                        \
+ 773:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __addr32 = (uint32_t)(addr); \
+ 774:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __result;                  \
+ 775:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                \
+ 776:/usr/lib/avr/include/avr/pgmspace.h ****     (                                   \
+ 777:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, %C1"   "\n\t"          \
+ 778:/usr/lib/avr/include/avr/pgmspace.h ****         "movw r30, %1"  "\n\t"          \
+ 779:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %A0, Z+"  "\n\t"          \
+ 780:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %B0, Z"   "\n\t"          \
+ 781:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)               \
+ 782:/usr/lib/avr/include/avr/pgmspace.h ****         : "r" (__addr32),               \
+ 783:/usr/lib/avr/include/avr/pgmspace.h ****           "I" (_SFR_IO_ADDR(RAMPZ))     \
+ 784:/usr/lib/avr/include/avr/pgmspace.h ****         : "r30", "r31"                  \
+ 785:/usr/lib/avr/include/avr/pgmspace.h ****     );                                  \
+ 786:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                           \
+ 787:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 788:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 789:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_word_xmega__(addr)       \
+ 790:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                        \
+ 791:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __addr32 = (uint32_t)(addr); \
+ 792:/usr/lib/avr/include/avr/pgmspace.h ****     uint16_t __result;                  \
+ 793:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                \
+ 794:/usr/lib/avr/include/avr/pgmspace.h ****     (                                   \
+ 795:/usr/lib/avr/include/avr/pgmspace.h ****         "in __tmp_reg__, %2" "\n\t"     \
+ 796:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, %C1"   "\n\t"          \
+ 797:/usr/lib/avr/include/avr/pgmspace.h ****         "movw r30, %1"  "\n\t"          \
+ 798:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %A0, Z+"  "\n\t"          \
+ 799:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %B0, Z"   "\n\t"          \
+ 800:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, __tmp_reg__"           \
+ 801:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)               \
+ 802:/usr/lib/avr/include/avr/pgmspace.h ****         : "r" (__addr32),               \
+ 803:/usr/lib/avr/include/avr/pgmspace.h ****           "I" (_SFR_IO_ADDR(RAMPZ))     \
+ 804:/usr/lib/avr/include/avr/pgmspace.h ****         : "r30", "r31"                  \
+ 805:/usr/lib/avr/include/avr/pgmspace.h ****     );                                  \
+ 806:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                           \
+ 807:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 808:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 809:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_dword_classic__(addr)      \
+ 810:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                          \
+ 811:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __addr32 = (uint32_t)(addr); \
+ 812:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __result;                    \
+ 813:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                  \
+ 814:/usr/lib/avr/include/avr/pgmspace.h ****     (                                     \
+ 815:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, %C1"          "\n\t"     \
+ 816:/usr/lib/avr/include/avr/pgmspace.h ****         "mov r31, %B1"         "\n\t"     \
+ 817:/usr/lib/avr/include/avr/pgmspace.h ****         "mov r30, %A1"         "\n\t"     \
+ 818:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm"                 "\n\t"     \
+ 819:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %A0, r0"          "\n\t"     \
+ 820:/usr/lib/avr/include/avr/pgmspace.h ****         "in r0, %2"            "\n\t"     \
+ 821:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"          "\n\t"     \
+ 822:/usr/lib/avr/include/avr/pgmspace.h ****         "adc r0, __zero_reg__" "\n\t"     \
+ 823:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, r0"           "\n\t"     \
+ 824:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm"                 "\n\t"     \
+ 825:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %B0, r0"          "\n\t"     \
+ 826:/usr/lib/avr/include/avr/pgmspace.h ****         "in r0, %2"            "\n\t"     \
+ 827:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"          "\n\t"     \
+ 828:/usr/lib/avr/include/avr/pgmspace.h ****         "adc r0, __zero_reg__" "\n\t"     \
+ 829:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, r0"           "\n\t"     \
+ 830:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm"                 "\n\t"     \
+ 831:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %C0, r0"          "\n\t"     \
+ 832:/usr/lib/avr/include/avr/pgmspace.h ****         "in r0, %2"            "\n\t"     \
+ 833:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"          "\n\t"     \
+ 834:/usr/lib/avr/include/avr/pgmspace.h ****         "adc r0, __zero_reg__" "\n\t"     \
+ 835:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, r0"           "\n\t"     \
+ 836:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm"                 "\n\t"     \
+ 837:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %D0, r0"          "\n\t"     \
+ 838:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)                 \
+ 839:/usr/lib/avr/include/avr/pgmspace.h ****         : "r" (__addr32),                 \
+ 840:/usr/lib/avr/include/avr/pgmspace.h ****           "I" (_SFR_IO_ADDR(RAMPZ))       \
+ 841:/usr/lib/avr/include/avr/pgmspace.h ****         : "r0", "r30", "r31"              \
+ 842:/usr/lib/avr/include/avr/pgmspace.h ****     );                                    \
+ 843:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                             \
+ 844:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 845:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 846:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_dword_enhanced__(addr)     \
+ 847:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                          \
+ 848:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __addr32 = (uint32_t)(addr); \
+ 849:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __result;                    \
+ 850:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                  \
+ 851:/usr/lib/avr/include/avr/pgmspace.h ****     (                                     \
+ 852:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, %C1"   "\n\t"            \
+ 853:/usr/lib/avr/include/avr/pgmspace.h ****         "movw r30, %1"  "\n\t"            \
+ 854:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %A0, Z+"  "\n\t"            \
+ 855:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %B0, Z+"  "\n\t"            \
+ 856:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %C0, Z+"  "\n\t"            \
+ 857:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %D0, Z"   "\n\t"            \
+ 858:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)                 \
+ 859:/usr/lib/avr/include/avr/pgmspace.h ****         : "r" (__addr32),                 \
+ 860:/usr/lib/avr/include/avr/pgmspace.h ****           "I" (_SFR_IO_ADDR(RAMPZ))       \
+ 861:/usr/lib/avr/include/avr/pgmspace.h ****         : "r30", "r31"                    \
+ 862:/usr/lib/avr/include/avr/pgmspace.h ****     );                                    \
+ 863:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                             \
+ 864:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 865:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 866:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_dword_xmega__(addr)        \
+ 867:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                          \
+ 868:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __addr32 = (uint32_t)(addr); \
+ 869:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __result;                    \
+ 870:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                  \
+ 871:/usr/lib/avr/include/avr/pgmspace.h ****     (                                     \
+ 872:/usr/lib/avr/include/avr/pgmspace.h ****         "in __tmp_reg__, %2" "\n\t"       \
+ 873:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, %C1"   "\n\t"            \
+ 874:/usr/lib/avr/include/avr/pgmspace.h ****         "movw r30, %1"  "\n\t"            \
+ 875:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %A0, Z+"  "\n\t"            \
+ 876:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %B0, Z+"  "\n\t"            \
+ 877:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %C0, Z+"  "\n\t"            \
+ 878:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %D0, Z"   "\n\t"            \
+ 879:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, __tmp_reg__"             \
+ 880:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)                 \
+ 881:/usr/lib/avr/include/avr/pgmspace.h ****         : "r" (__addr32),                 \
+ 882:/usr/lib/avr/include/avr/pgmspace.h ****           "I" (_SFR_IO_ADDR(RAMPZ))       \
+ 883:/usr/lib/avr/include/avr/pgmspace.h ****         : "r30", "r31"                    \
+ 884:/usr/lib/avr/include/avr/pgmspace.h ****     );                                    \
+ 885:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                             \
+ 886:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 887:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 888:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_float_classic__(addr)      \
+ 889:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                          \
+ 890:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __addr32 = (uint32_t)(addr); \
+ 891:/usr/lib/avr/include/avr/pgmspace.h ****     float __result;                       \
+ 892:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                  \
+ 893:/usr/lib/avr/include/avr/pgmspace.h ****     (                                     \
+ 894:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, %C1"          "\n\t"     \
+ 895:/usr/lib/avr/include/avr/pgmspace.h ****         "mov r31, %B1"         "\n\t"     \
+ 896:/usr/lib/avr/include/avr/pgmspace.h ****         "mov r30, %A1"         "\n\t"     \
+ 897:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm"                 "\n\t"     \
+ 898:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %A0, r0"          "\n\t"     \
+ 899:/usr/lib/avr/include/avr/pgmspace.h ****         "in r0, %2"            "\n\t"     \
+ 900:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"          "\n\t"     \
+ 901:/usr/lib/avr/include/avr/pgmspace.h ****         "adc r0, __zero_reg__" "\n\t"     \
+ 902:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, r0"           "\n\t"     \
+ 903:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm"                 "\n\t"     \
+ 904:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %B0, r0"          "\n\t"     \
+ 905:/usr/lib/avr/include/avr/pgmspace.h ****         "in r0, %2"            "\n\t"     \
+ 906:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"          "\n\t"     \
+ 907:/usr/lib/avr/include/avr/pgmspace.h ****         "adc r0, __zero_reg__" "\n\t"     \
+ 908:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, r0"           "\n\t"     \
+ 909:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm"                 "\n\t"     \
+ 910:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %C0, r0"          "\n\t"     \
+ 911:/usr/lib/avr/include/avr/pgmspace.h ****         "in r0, %2"            "\n\t"     \
+ 912:/usr/lib/avr/include/avr/pgmspace.h ****         "adiw r30, 1"          "\n\t"     \
+ 913:/usr/lib/avr/include/avr/pgmspace.h ****         "adc r0, __zero_reg__" "\n\t"     \
+ 914:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, r0"           "\n\t"     \
+ 915:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm"                 "\n\t"     \
+ 916:/usr/lib/avr/include/avr/pgmspace.h ****         "mov %D0, r0"          "\n\t"     \
+ 917:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)                 \
+ 918:/usr/lib/avr/include/avr/pgmspace.h ****         : "r" (__addr32),                 \
+ 919:/usr/lib/avr/include/avr/pgmspace.h ****           "I" (_SFR_IO_ADDR(RAMPZ))       \
+ 920:/usr/lib/avr/include/avr/pgmspace.h ****         : "r0", "r30", "r31"              \
+ 921:/usr/lib/avr/include/avr/pgmspace.h ****     );                                    \
+ 922:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                             \
+ 923:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 924:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 925:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_float_enhanced__(addr)     \
+ 926:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                          \
+ 927:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __addr32 = (uint32_t)(addr); \
+ 928:/usr/lib/avr/include/avr/pgmspace.h ****     float __result;                       \
+ 929:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                  \
+ 930:/usr/lib/avr/include/avr/pgmspace.h ****     (                                     \
+ 931:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, %C1"   "\n\t"            \
+ 932:/usr/lib/avr/include/avr/pgmspace.h ****         "movw r30, %1"  "\n\t"            \
+ 933:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %A0, Z+"  "\n\t"            \
+ 934:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %B0, Z+"  "\n\t"            \
+ 935:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %C0, Z+"  "\n\t"            \
+ 936:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %D0, Z"   "\n\t"            \
+ 937:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)                 \
+ 938:/usr/lib/avr/include/avr/pgmspace.h ****         : "r" (__addr32),                 \
+ 939:/usr/lib/avr/include/avr/pgmspace.h ****           "I" (_SFR_IO_ADDR(RAMPZ))       \
+ 940:/usr/lib/avr/include/avr/pgmspace.h ****         : "r30", "r31"                    \
+ 941:/usr/lib/avr/include/avr/pgmspace.h ****     );                                    \
+ 942:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                             \
+ 943:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 944:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 945:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_float_xmega__(addr)        \
+ 946:/usr/lib/avr/include/avr/pgmspace.h **** (__extension__({                          \
+ 947:/usr/lib/avr/include/avr/pgmspace.h ****     uint32_t __addr32 = (uint32_t)(addr); \
+ 948:/usr/lib/avr/include/avr/pgmspace.h ****     float __result;                       \
+ 949:/usr/lib/avr/include/avr/pgmspace.h ****     __asm__ __volatile__                  \
+ 950:/usr/lib/avr/include/avr/pgmspace.h ****     (                                     \
+ 951:/usr/lib/avr/include/avr/pgmspace.h ****         "in __tmp_reg__, %2" "\n\t"       \
+ 952:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, %C1"   "\n\t"            \
+ 953:/usr/lib/avr/include/avr/pgmspace.h ****         "movw r30, %1"  "\n\t"            \
+ 954:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %A0, Z+"  "\n\t"            \
+ 955:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %B0, Z+"  "\n\t"            \
+ 956:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %C0, Z+"  "\n\t"            \
+ 957:/usr/lib/avr/include/avr/pgmspace.h ****         "elpm %D0, Z"   "\n\t"            \
+ 958:/usr/lib/avr/include/avr/pgmspace.h ****         "out %2, __tmp_reg__"             \
+ 959:/usr/lib/avr/include/avr/pgmspace.h ****         : "=r" (__result)                 \
+ 960:/usr/lib/avr/include/avr/pgmspace.h ****         : "r" (__addr32),                 \
+ 961:/usr/lib/avr/include/avr/pgmspace.h ****           "I" (_SFR_IO_ADDR(RAMPZ))       \
+ 962:/usr/lib/avr/include/avr/pgmspace.h ****         : "r30", "r31"                    \
+ 963:/usr/lib/avr/include/avr/pgmspace.h ****     );                                    \
+ 964:/usr/lib/avr/include/avr/pgmspace.h ****     __result;                             \
+ 965:/usr/lib/avr/include/avr/pgmspace.h **** }))
+ 966:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 967:/usr/lib/avr/include/avr/pgmspace.h **** /*
+ 968:/usr/lib/avr/include/avr/pgmspace.h **** Check for architectures that implement RAMPD (avrxmega5, avrxmega7)
+ 969:/usr/lib/avr/include/avr/pgmspace.h **** as they need to save/restore RAMPZ for ELPM macros so it does
+ 970:/usr/lib/avr/include/avr/pgmspace.h **** not interfere with data accesses.
+ 971:/usr/lib/avr/include/avr/pgmspace.h **** */
+ 972:/usr/lib/avr/include/avr/pgmspace.h **** #if defined (__AVR_HAVE_RAMPD__)
+ 973:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 974:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM(addr)        __ELPM_xmega__(addr)
+ 975:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_word(addr)   __ELPM_word_xmega__(addr)
+ 976:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_dword(addr)  __ELPM_dword_xmega__(addr)
+ 977:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_float(addr)  __ELPM_float_xmega__(addr)
+ 978:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 979:/usr/lib/avr/include/avr/pgmspace.h **** #else
+ 980:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 981:/usr/lib/avr/include/avr/pgmspace.h **** #if defined (__AVR_HAVE_LPMX__)
+ 982:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 983:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM(addr)        __ELPM_enhanced__(addr)
+ 984:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_word(addr)   __ELPM_word_enhanced__(addr)
+ 985:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_dword(addr)  __ELPM_dword_enhanced__(addr)
+ 986:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_float(addr)  __ELPM_float_enhanced__(addr)
+ 987:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 988:/usr/lib/avr/include/avr/pgmspace.h **** #else
+ 989:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 990:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM(addr)        __ELPM_classic__(addr)
+ 991:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_word(addr)   __ELPM_word_classic__(addr)
+ 992:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_dword(addr)  __ELPM_dword_classic__(addr)
+ 993:/usr/lib/avr/include/avr/pgmspace.h **** #define __ELPM_float(addr)  __ELPM_float_classic__(addr)
+ 994:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 995:/usr/lib/avr/include/avr/pgmspace.h **** #endif  /* __AVR_HAVE_LPMX__ */
+ 996:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 997:/usr/lib/avr/include/avr/pgmspace.h **** #endif  /* __AVR_HAVE_RAMPD__ */
+ 998:/usr/lib/avr/include/avr/pgmspace.h **** 
+ 999:/usr/lib/avr/include/avr/pgmspace.h **** #endif	/* !__DOXYGEN__ */
+1000:/usr/lib/avr/include/avr/pgmspace.h **** 
+1001:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1002:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_byte_far(address_long)
+1003:/usr/lib/avr/include/avr/pgmspace.h ****     Read a byte from the program space with a 32-bit (far) address. 
+1004:/usr/lib/avr/include/avr/pgmspace.h **** 
+1005:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address. 
+1006:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+1007:/usr/lib/avr/include/avr/pgmspace.h **** 
+1008:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_byte_far(address_long)  __ELPM((uint32_t)(address_long))
+1009:/usr/lib/avr/include/avr/pgmspace.h **** 
+1010:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1011:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_word_far(address_long)
+1012:/usr/lib/avr/include/avr/pgmspace.h ****     Read a word from the program space with a 32-bit (far) address. 
+1013:/usr/lib/avr/include/avr/pgmspace.h **** 
+1014:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address.
+1015:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+1016:/usr/lib/avr/include/avr/pgmspace.h **** 
+1017:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_word_far(address_long)  __ELPM_word((uint32_t)(address_long))
+1018:/usr/lib/avr/include/avr/pgmspace.h **** 
+1019:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1020:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_dword_far(address_long)
+1021:/usr/lib/avr/include/avr/pgmspace.h ****     Read a double word from the program space with a 32-bit (far) address. 
+1022:/usr/lib/avr/include/avr/pgmspace.h **** 
+1023:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address.
+1024:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+1025:/usr/lib/avr/include/avr/pgmspace.h **** 
+1026:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_dword_far(address_long) __ELPM_dword((uint32_t)(address_long))
+1027:/usr/lib/avr/include/avr/pgmspace.h **** 
+1028:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1029:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_float_far(address_long)
+1030:/usr/lib/avr/include/avr/pgmspace.h ****     Read a float from the program space with a 32-bit (far) address. 
+1031:/usr/lib/avr/include/avr/pgmspace.h **** 
+1032:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address.
+1033:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+1034:/usr/lib/avr/include/avr/pgmspace.h **** 
+1035:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_float_far(address_long) __ELPM_float((uint32_t)(address_long))
+1036:/usr/lib/avr/include/avr/pgmspace.h **** 
+1037:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1038:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_ptr_far(address_long)
+1039:/usr/lib/avr/include/avr/pgmspace.h ****     Read a pointer from the program space with a 32-bit (far) address. 
+1040:/usr/lib/avr/include/avr/pgmspace.h **** 
+1041:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address.
+1042:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+1043:/usr/lib/avr/include/avr/pgmspace.h **** 
+1044:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_ptr_far(address_long) (void*)__ELPM_word((uint32_t)(address_long))
+1045:/usr/lib/avr/include/avr/pgmspace.h **** 
+1046:/usr/lib/avr/include/avr/pgmspace.h **** #endif /* RAMPZ or __DOXYGEN__ */
+1047:/usr/lib/avr/include/avr/pgmspace.h **** 
+1048:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1049:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_byte(address_short)
+1050:/usr/lib/avr/include/avr/pgmspace.h ****     Read a byte from the program space with a 16-bit (near) address. 
+1051:/usr/lib/avr/include/avr/pgmspace.h **** 
+1052:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address. 
+1053:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+1054:/usr/lib/avr/include/avr/pgmspace.h **** 
+1055:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_byte(address_short)    pgm_read_byte_near(address_short)
+1056:/usr/lib/avr/include/avr/pgmspace.h **** 
+1057:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1058:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_word(address_short)
+1059:/usr/lib/avr/include/avr/pgmspace.h ****     Read a word from the program space with a 16-bit (near) address. 
+1060:/usr/lib/avr/include/avr/pgmspace.h **** 
+1061:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address. 
+1062:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+1063:/usr/lib/avr/include/avr/pgmspace.h **** 
+1064:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_word(address_short)    pgm_read_word_near(address_short)
+1065:/usr/lib/avr/include/avr/pgmspace.h **** 
+1066:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1067:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_dword(address_short)
+1068:/usr/lib/avr/include/avr/pgmspace.h ****     Read a double word from the program space with a 16-bit (near) address. 
+1069:/usr/lib/avr/include/avr/pgmspace.h **** 
+1070:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address. 
+1071:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+1072:/usr/lib/avr/include/avr/pgmspace.h **** 
+1073:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_dword(address_short)   pgm_read_dword_near(address_short)
+1074:/usr/lib/avr/include/avr/pgmspace.h **** 
+1075:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1076:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_float(address_short)
+1077:/usr/lib/avr/include/avr/pgmspace.h ****     Read a float from the program space with a 16-bit (near) address. 
+1078:/usr/lib/avr/include/avr/pgmspace.h **** 
+1079:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address. 
+1080:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+1081:/usr/lib/avr/include/avr/pgmspace.h **** 
+1082:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_float(address_short)   pgm_read_float_near(address_short)
+1083:/usr/lib/avr/include/avr/pgmspace.h **** 
+1084:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1085:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_read_ptr(address_short)
+1086:/usr/lib/avr/include/avr/pgmspace.h ****     Read a pointer from the program space with a 16-bit (near) address. 
+1087:/usr/lib/avr/include/avr/pgmspace.h **** 
+1088:/usr/lib/avr/include/avr/pgmspace.h ****     \note The address is a byte address. 
+1089:/usr/lib/avr/include/avr/pgmspace.h ****     The address is in the program space. */
+1090:/usr/lib/avr/include/avr/pgmspace.h **** 
+1091:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_read_ptr(address_short)     pgm_read_ptr_near(address_short)
+1092:/usr/lib/avr/include/avr/pgmspace.h **** 
+1093:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1094:/usr/lib/avr/include/avr/pgmspace.h ****     \def pgm_get_far_address(var)
+1095:/usr/lib/avr/include/avr/pgmspace.h **** 
+1096:/usr/lib/avr/include/avr/pgmspace.h ****    This macro facilitates the obtention of a 32 bit "far" pointer (only 24 bits
+1097:/usr/lib/avr/include/avr/pgmspace.h ****    used) to data even passed the 64KB limit for the 16 bit ordinary pointer. It
+1098:/usr/lib/avr/include/avr/pgmspace.h ****    is similar to the '&' operator, with some limitations.
+1099:/usr/lib/avr/include/avr/pgmspace.h **** 
+1100:/usr/lib/avr/include/avr/pgmspace.h ****    Comments:
+1101:/usr/lib/avr/include/avr/pgmspace.h **** 
+1102:/usr/lib/avr/include/avr/pgmspace.h ****    - The overhead is minimal and it's mainly due to the 32 bit size operation.
+1103:/usr/lib/avr/include/avr/pgmspace.h **** 
+1104:/usr/lib/avr/include/avr/pgmspace.h ****    - 24 bit sizes guarantees the code compatibility for use in future devices.
+1105:/usr/lib/avr/include/avr/pgmspace.h **** 
+1106:/usr/lib/avr/include/avr/pgmspace.h ****    - hh8() is an undocumented feature but seems to give the third significant byte
+1107:/usr/lib/avr/include/avr/pgmspace.h ****      of a 32 bit data and accepts symbols, complementing the functionality of hi8()
+1108:/usr/lib/avr/include/avr/pgmspace.h ****      and lo8(). There is not an equivalent assembler function to get the high
+1109:/usr/lib/avr/include/avr/pgmspace.h ****      significant byte.
+1110:/usr/lib/avr/include/avr/pgmspace.h **** 
+1111:/usr/lib/avr/include/avr/pgmspace.h ****    - 'var' has to be resolved at linking time as an existing symbol, i.e, a simple
+1112:/usr/lib/avr/include/avr/pgmspace.h ****      type variable name, an array name (not an indexed element of the array, if the
+1113:/usr/lib/avr/include/avr/pgmspace.h ****      index is a constant the compiler does not complain but fails to get the address
+1114:/usr/lib/avr/include/avr/pgmspace.h ****      if optimization is enabled), a struct name or a struct field name, a function
+1115:/usr/lib/avr/include/avr/pgmspace.h ****      identifier, a linker defined identifier,...
+1116:/usr/lib/avr/include/avr/pgmspace.h **** 
+1117:/usr/lib/avr/include/avr/pgmspace.h ****    - The returned value is the identifier's VMA (virtual memory address) determined
+1118:/usr/lib/avr/include/avr/pgmspace.h ****      by the linker and falls in the corresponding memory region. The AVR Harvard
+1119:/usr/lib/avr/include/avr/pgmspace.h ****      architecture requires non overlapping VMA areas for the multiple address spaces
+1120:/usr/lib/avr/include/avr/pgmspace.h ****      in the processor: Flash ROM, RAM, and EEPROM. Typical offset for this are
+1121:/usr/lib/avr/include/avr/pgmspace.h ****      0x00000000, 0x00800xx0, and 0x00810000 respectively, derived from the linker
+1122:/usr/lib/avr/include/avr/pgmspace.h ****      script used and linker options. The value returned can be seen then as a
+1123:/usr/lib/avr/include/avr/pgmspace.h ****      universal pointer.
+1124:/usr/lib/avr/include/avr/pgmspace.h **** */
+1125:/usr/lib/avr/include/avr/pgmspace.h **** 
+1126:/usr/lib/avr/include/avr/pgmspace.h **** #define pgm_get_far_address(var)                          \
+1127:/usr/lib/avr/include/avr/pgmspace.h **** ({                                                    \
+1128:/usr/lib/avr/include/avr/pgmspace.h **** 	uint_farptr_t tmp;                                \
+1129:/usr/lib/avr/include/avr/pgmspace.h ****                                                       \
+1130:/usr/lib/avr/include/avr/pgmspace.h **** 	__asm__ __volatile__(                             \
+1131:/usr/lib/avr/include/avr/pgmspace.h ****                                                       \
+1132:/usr/lib/avr/include/avr/pgmspace.h **** 			"ldi	%A0, lo8(%1)"           "\n\t"    \
+1133:/usr/lib/avr/include/avr/pgmspace.h **** 			"ldi	%B0, hi8(%1)"           "\n\t"    \
+1134:/usr/lib/avr/include/avr/pgmspace.h **** 			"ldi	%C0, hh8(%1)"           "\n\t"    \
+1135:/usr/lib/avr/include/avr/pgmspace.h **** 			"clr	%D0"                    "\n\t"    \
+1136:/usr/lib/avr/include/avr/pgmspace.h **** 		:                                             \
+1137:/usr/lib/avr/include/avr/pgmspace.h **** 			"=d" (tmp)                                \
+1138:/usr/lib/avr/include/avr/pgmspace.h **** 		:                                             \
+1139:/usr/lib/avr/include/avr/pgmspace.h **** 			"p"  (&(var))                             \
+1140:/usr/lib/avr/include/avr/pgmspace.h **** 	);                                                \
+1141:/usr/lib/avr/include/avr/pgmspace.h **** 	tmp;                                              \
+1142:/usr/lib/avr/include/avr/pgmspace.h **** })
+1143:/usr/lib/avr/include/avr/pgmspace.h **** 
+1144:/usr/lib/avr/include/avr/pgmspace.h **** 
+1145:/usr/lib/avr/include/avr/pgmspace.h **** 
+1146:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1147:/usr/lib/avr/include/avr/pgmspace.h ****     \fn const void * memchr_P(const void *s, int val, size_t len)
+1148:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Scan flash memory for a character.
+1149:/usr/lib/avr/include/avr/pgmspace.h **** 
+1150:/usr/lib/avr/include/avr/pgmspace.h ****     The memchr_P() function scans the first \p len bytes of the flash
+1151:/usr/lib/avr/include/avr/pgmspace.h ****     memory area pointed to by \p s for the character \p val.  The first
+1152:/usr/lib/avr/include/avr/pgmspace.h ****     byte to match \p val (interpreted as an unsigned character) stops
+1153:/usr/lib/avr/include/avr/pgmspace.h ****     the operation.
+1154:/usr/lib/avr/include/avr/pgmspace.h **** 
+1155:/usr/lib/avr/include/avr/pgmspace.h ****     \return The memchr_P() function returns a pointer to the matching
+1156:/usr/lib/avr/include/avr/pgmspace.h ****     byte or \c NULL if the character does not occur in the given memory
+1157:/usr/lib/avr/include/avr/pgmspace.h ****     area.	*/
+1158:/usr/lib/avr/include/avr/pgmspace.h **** extern const void * memchr_P(const void *, int __val, size_t __len) __ATTR_CONST__;
+1159:/usr/lib/avr/include/avr/pgmspace.h **** 
+1160:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1161:/usr/lib/avr/include/avr/pgmspace.h ****     \fn int memcmp_P(const void *s1, const void *s2, size_t len)
+1162:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Compare memory areas
+1163:/usr/lib/avr/include/avr/pgmspace.h **** 
+1164:/usr/lib/avr/include/avr/pgmspace.h ****     The memcmp_P() function compares the first \p len bytes of the memory
+1165:/usr/lib/avr/include/avr/pgmspace.h ****     areas \p s1 and flash \p s2. The comparision is performed using unsigned
+1166:/usr/lib/avr/include/avr/pgmspace.h ****     char operations.
+1167:/usr/lib/avr/include/avr/pgmspace.h **** 
+1168:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The memcmp_P() function returns an integer less than, equal
+1169:/usr/lib/avr/include/avr/pgmspace.h ****     to, or greater than zero if the first \p len bytes of \p s1 is found,
+1170:/usr/lib/avr/include/avr/pgmspace.h ****     respectively, to be less than, to match, or be greater than the first
+1171:/usr/lib/avr/include/avr/pgmspace.h ****     \p len bytes of \p s2.	*/
+1172:/usr/lib/avr/include/avr/pgmspace.h **** extern int memcmp_P(const void *, const void *, size_t) __ATTR_PURE__;
+1173:/usr/lib/avr/include/avr/pgmspace.h **** 
+1174:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1175:/usr/lib/avr/include/avr/pgmspace.h ****     \fn void *memccpy_P (void *dest, const void *src, int val, size_t len)
+1176:/usr/lib/avr/include/avr/pgmspace.h **** 
+1177:/usr/lib/avr/include/avr/pgmspace.h ****     This function is similar to memccpy() except that \p src is pointer
+1178:/usr/lib/avr/include/avr/pgmspace.h ****     to a string in program space.	*/
+1179:/usr/lib/avr/include/avr/pgmspace.h **** extern void *memccpy_P(void *, const void *, int __val, size_t);
+1180:/usr/lib/avr/include/avr/pgmspace.h **** 
+1181:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1182:/usr/lib/avr/include/avr/pgmspace.h ****     \fn void *memcpy_P(void *dest, const void *src, size_t n)
+1183:/usr/lib/avr/include/avr/pgmspace.h **** 
+1184:/usr/lib/avr/include/avr/pgmspace.h ****     The memcpy_P() function is similar to memcpy(), except the src string
+1185:/usr/lib/avr/include/avr/pgmspace.h ****     resides in program space.
+1186:/usr/lib/avr/include/avr/pgmspace.h **** 
+1187:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The memcpy_P() function returns a pointer to dest.  */
+1188:/usr/lib/avr/include/avr/pgmspace.h **** extern void *memcpy_P(void *, const void *, size_t);
+1189:/usr/lib/avr/include/avr/pgmspace.h **** 
+1190:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1191:/usr/lib/avr/include/avr/pgmspace.h ****     \fn void *memmem_P(const void *s1, size_t len1, const void *s2, size_t len2)
+1192:/usr/lib/avr/include/avr/pgmspace.h **** 
+1193:/usr/lib/avr/include/avr/pgmspace.h ****     The memmem_P() function is similar to memmem() except that \p s2 is
+1194:/usr/lib/avr/include/avr/pgmspace.h ****     pointer to a string in program space.	*/
+1195:/usr/lib/avr/include/avr/pgmspace.h **** extern void *memmem_P(const void *, size_t, const void *, size_t) __ATTR_PURE__;
+1196:/usr/lib/avr/include/avr/pgmspace.h **** 
+1197:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1198:/usr/lib/avr/include/avr/pgmspace.h ****     \fn const void +memrchr_P(const void *src, int val, size_t len)
+1199:/usr/lib/avr/include/avr/pgmspace.h **** 
+1200:/usr/lib/avr/include/avr/pgmspace.h ****     The memrchr_P() function is like the memchr_P() function, except
+1201:/usr/lib/avr/include/avr/pgmspace.h ****     that it searches backwards from the end of the \p len bytes pointed
+1202:/usr/lib/avr/include/avr/pgmspace.h ****     to by \p src instead of forwards from the front. (Glibc, GNU extension.)
+1203:/usr/lib/avr/include/avr/pgmspace.h **** 
+1204:/usr/lib/avr/include/avr/pgmspace.h ****     \return The memrchr_P() function returns a pointer to the matching
+1205:/usr/lib/avr/include/avr/pgmspace.h ****     byte or \c NULL if the character does not occur in the given memory
+1206:/usr/lib/avr/include/avr/pgmspace.h ****     area.	*/
+1207:/usr/lib/avr/include/avr/pgmspace.h **** extern const void * memrchr_P(const void *, int __val, size_t __len) __ATTR_CONST__;
+1208:/usr/lib/avr/include/avr/pgmspace.h **** 
+1209:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1210:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strcat_P(char *dest, const char *src)
+1211:/usr/lib/avr/include/avr/pgmspace.h **** 
+1212:/usr/lib/avr/include/avr/pgmspace.h ****     The strcat_P() function is similar to strcat() except that the \e src
+1213:/usr/lib/avr/include/avr/pgmspace.h ****     string must be located in program space (flash).
+1214:/usr/lib/avr/include/avr/pgmspace.h **** 
+1215:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strcat() function returns a pointer to the resulting string
+1216:/usr/lib/avr/include/avr/pgmspace.h ****     \e dest. */
+1217:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strcat_P(char *, const char *);
+1218:/usr/lib/avr/include/avr/pgmspace.h **** 
+1219:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1220:/usr/lib/avr/include/avr/pgmspace.h ****     \fn const char *strchr_P(const char *s, int val)
+1221:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Locate character in program space string.
+1222:/usr/lib/avr/include/avr/pgmspace.h **** 
+1223:/usr/lib/avr/include/avr/pgmspace.h ****     The strchr_P() function locates the first occurrence of \p val
+1224:/usr/lib/avr/include/avr/pgmspace.h ****     (converted to a char) in the string pointed to by \p s in program
+1225:/usr/lib/avr/include/avr/pgmspace.h ****     space. The terminating null character is considered to be part of
+1226:/usr/lib/avr/include/avr/pgmspace.h ****     the string.
+1227:/usr/lib/avr/include/avr/pgmspace.h **** 
+1228:/usr/lib/avr/include/avr/pgmspace.h ****     The strchr_P() function is similar to strchr() except that \p s is
+1229:/usr/lib/avr/include/avr/pgmspace.h ****     pointer to a string in program space.
+1230:/usr/lib/avr/include/avr/pgmspace.h **** 
+1231:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strchr_P() function returns a pointer to the matched
+1232:/usr/lib/avr/include/avr/pgmspace.h ****     character or \c NULL if the character is not found. */
+1233:/usr/lib/avr/include/avr/pgmspace.h **** extern const char * strchr_P(const char *, int __val) __ATTR_CONST__;
+1234:/usr/lib/avr/include/avr/pgmspace.h **** 
+1235:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1236:/usr/lib/avr/include/avr/pgmspace.h ****     \fn const char *strchrnul_P(const char *s, int c)
+1237:/usr/lib/avr/include/avr/pgmspace.h **** 
+1238:/usr/lib/avr/include/avr/pgmspace.h ****     The strchrnul_P() function is like strchr_P() except that if \p c is
+1239:/usr/lib/avr/include/avr/pgmspace.h ****     not found in \p s, then it returns a pointer to the null byte at the
+1240:/usr/lib/avr/include/avr/pgmspace.h ****     end of \p s, rather than \c NULL. (Glibc, GNU extension.)
+1241:/usr/lib/avr/include/avr/pgmspace.h **** 
+1242:/usr/lib/avr/include/avr/pgmspace.h ****     \return The strchrnul_P() function returns a pointer to the matched
+1243:/usr/lib/avr/include/avr/pgmspace.h ****     character, or a pointer to the null byte at the end of \p s (i.e.,
+1244:/usr/lib/avr/include/avr/pgmspace.h ****     \c s+strlen(s)) if the character is not found.	*/
+1245:/usr/lib/avr/include/avr/pgmspace.h **** extern const char * strchrnul_P(const char *, int __val) __ATTR_CONST__;
+1246:/usr/lib/avr/include/avr/pgmspace.h **** 
+1247:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1248:/usr/lib/avr/include/avr/pgmspace.h ****     \fn int strcmp_P(const char *s1, const char *s2)
+1249:/usr/lib/avr/include/avr/pgmspace.h **** 
+1250:/usr/lib/avr/include/avr/pgmspace.h ****     The strcmp_P() function is similar to strcmp() except that \p s2 is
+1251:/usr/lib/avr/include/avr/pgmspace.h ****     pointer to a string in program space.
+1252:/usr/lib/avr/include/avr/pgmspace.h **** 
+1253:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strcmp_P() function returns an integer less than, equal
+1254:/usr/lib/avr/include/avr/pgmspace.h ****     to, or greater than zero if \p s1 is found, respectively, to be less
+1255:/usr/lib/avr/include/avr/pgmspace.h ****     than, to match, or be greater than \p s2. A consequence of the
+1256:/usr/lib/avr/include/avr/pgmspace.h ****     ordering used by strcmp_P() is that if \p s1 is an initial substring
+1257:/usr/lib/avr/include/avr/pgmspace.h ****     of \p s2, then \p s1 is considered to be "less than" \p s2. */
+1258:/usr/lib/avr/include/avr/pgmspace.h **** extern int strcmp_P(const char *, const char *) __ATTR_PURE__;
+1259:/usr/lib/avr/include/avr/pgmspace.h **** 
+1260:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1261:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strcpy_P(char *dest, const char *src)
+1262:/usr/lib/avr/include/avr/pgmspace.h **** 
+1263:/usr/lib/avr/include/avr/pgmspace.h ****     The strcpy_P() function is similar to strcpy() except that src is a
+1264:/usr/lib/avr/include/avr/pgmspace.h ****     pointer to a string in program space.
+1265:/usr/lib/avr/include/avr/pgmspace.h **** 
+1266:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strcpy_P() function returns a pointer to the destination
+1267:/usr/lib/avr/include/avr/pgmspace.h ****     string dest. */
+1268:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strcpy_P(char *, const char *);
+1269:/usr/lib/avr/include/avr/pgmspace.h **** 
+1270:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1271:/usr/lib/avr/include/avr/pgmspace.h ****     \fn int strcasecmp_P(const char *s1, const char *s2)
+1272:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Compare two strings ignoring case.
+1273:/usr/lib/avr/include/avr/pgmspace.h **** 
+1274:/usr/lib/avr/include/avr/pgmspace.h ****     The strcasecmp_P() function compares the two strings \p s1 and \p s2,
+1275:/usr/lib/avr/include/avr/pgmspace.h ****     ignoring the case of the characters.
+1276:/usr/lib/avr/include/avr/pgmspace.h **** 
+1277:/usr/lib/avr/include/avr/pgmspace.h ****     \param s1 A pointer to a string in the devices SRAM.
+1278:/usr/lib/avr/include/avr/pgmspace.h ****     \param s2 A pointer to a string in the devices Flash.
+1279:/usr/lib/avr/include/avr/pgmspace.h **** 
+1280:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strcasecmp_P() function returns an integer less than,
+1281:/usr/lib/avr/include/avr/pgmspace.h ****     equal to, or greater than zero if \p s1 is found, respectively, to
+1282:/usr/lib/avr/include/avr/pgmspace.h ****     be less than, to match, or be greater than \p s2. A consequence of
+1283:/usr/lib/avr/include/avr/pgmspace.h ****     the ordering used by strcasecmp_P() is that if \p s1 is an initial
+1284:/usr/lib/avr/include/avr/pgmspace.h ****     substring of \p s2, then \p s1 is considered to be "less than" \p s2. */
+1285:/usr/lib/avr/include/avr/pgmspace.h **** extern int strcasecmp_P(const char *, const char *) __ATTR_PURE__;
+1286:/usr/lib/avr/include/avr/pgmspace.h **** 
+1287:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1288:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strcasestr_P(const char *s1, const char *s2)
+1289:/usr/lib/avr/include/avr/pgmspace.h **** 
+1290:/usr/lib/avr/include/avr/pgmspace.h ****     This funtion is similar to strcasestr() except that \p s2 is pointer
+1291:/usr/lib/avr/include/avr/pgmspace.h ****     to a string in program space.	*/
+1292:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strcasestr_P(const char *, const char *) __ATTR_PURE__;
+1293:/usr/lib/avr/include/avr/pgmspace.h **** 
+1294:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1295:/usr/lib/avr/include/avr/pgmspace.h ****     \fn size_t strcspn_P(const char *s, const char *reject)
+1296:/usr/lib/avr/include/avr/pgmspace.h **** 
+1297:/usr/lib/avr/include/avr/pgmspace.h ****     The strcspn_P() function calculates the length of the initial segment
+1298:/usr/lib/avr/include/avr/pgmspace.h ****     of \p s which consists entirely of characters not in \p reject. This
+1299:/usr/lib/avr/include/avr/pgmspace.h ****     function is similar to strcspn() except that \p reject is a pointer
+1300:/usr/lib/avr/include/avr/pgmspace.h ****     to a string in program space.
+1301:/usr/lib/avr/include/avr/pgmspace.h **** 
+1302:/usr/lib/avr/include/avr/pgmspace.h ****     \return The strcspn_P() function returns the number of characters in
+1303:/usr/lib/avr/include/avr/pgmspace.h ****     the initial segment of \p s which are not in the string \p reject.
+1304:/usr/lib/avr/include/avr/pgmspace.h ****     The terminating zero is not considered as a part of string.	*/
+1305:/usr/lib/avr/include/avr/pgmspace.h **** extern size_t strcspn_P(const char *__s, const char * __reject) __ATTR_PURE__;
+1306:/usr/lib/avr/include/avr/pgmspace.h **** 
+1307:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1308:/usr/lib/avr/include/avr/pgmspace.h ****     \fn size_t strlcat_P(char *dst, const char *src, size_t siz)
+1309:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Concatenate two strings.
+1310:/usr/lib/avr/include/avr/pgmspace.h **** 
+1311:/usr/lib/avr/include/avr/pgmspace.h ****     The strlcat_P() function is similar to strlcat(), except that the \p src
+1312:/usr/lib/avr/include/avr/pgmspace.h ****     string must be located in program space (flash).
+1313:/usr/lib/avr/include/avr/pgmspace.h **** 
+1314:/usr/lib/avr/include/avr/pgmspace.h ****     Appends \p src to string \p dst of size \p siz (unlike strncat(),
+1315:/usr/lib/avr/include/avr/pgmspace.h ****     \p siz is the full size of \p dst, not space left).  At most \p siz-1
+1316:/usr/lib/avr/include/avr/pgmspace.h ****     characters will be copied.  Always NULL terminates (unless \p siz <=
+1317:/usr/lib/avr/include/avr/pgmspace.h ****     \p strlen(dst)).
+1318:/usr/lib/avr/include/avr/pgmspace.h **** 
+1319:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strlcat_P() function returns strlen(src) + MIN(siz,
+1320:/usr/lib/avr/include/avr/pgmspace.h ****     strlen(initial dst)).  If retval >= siz, truncation occurred.	*/
+1321:/usr/lib/avr/include/avr/pgmspace.h **** extern size_t strlcat_P (char *, const char *, size_t );
+1322:/usr/lib/avr/include/avr/pgmspace.h **** 
+1323:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1324:/usr/lib/avr/include/avr/pgmspace.h ****     \fn size_t strlcpy_P(char *dst, const char *src, size_t siz)
+1325:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Copy a string from progmem to RAM.
+1326:/usr/lib/avr/include/avr/pgmspace.h **** 
+1327:/usr/lib/avr/include/avr/pgmspace.h ****     Copy \p src to string \p dst of size \p siz.  At most \p siz-1
+1328:/usr/lib/avr/include/avr/pgmspace.h ****     characters will be copied.  Always NULL terminates (unless \p siz == 0).
+1329:/usr/lib/avr/include/avr/pgmspace.h ****     The strlcpy_P() function is similar to strlcpy() except that the
+1330:/usr/lib/avr/include/avr/pgmspace.h ****     \p src is pointer to a string in memory space.
+1331:/usr/lib/avr/include/avr/pgmspace.h **** 
+1332:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strlcpy_P() function returns strlen(src). If
+1333:/usr/lib/avr/include/avr/pgmspace.h ****     retval >= siz, truncation occurred.  */
+1334:/usr/lib/avr/include/avr/pgmspace.h **** extern size_t strlcpy_P (char *, const char *, size_t );
+1335:/usr/lib/avr/include/avr/pgmspace.h **** 
+1336:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1337:/usr/lib/avr/include/avr/pgmspace.h ****     \fn size_t strnlen_P(const char *src, size_t len)
+1338:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Determine the length of a fixed-size string.
+1339:/usr/lib/avr/include/avr/pgmspace.h **** 
+1340:/usr/lib/avr/include/avr/pgmspace.h ****     The strnlen_P() function is similar to strnlen(), except that \c src is a
+1341:/usr/lib/avr/include/avr/pgmspace.h ****     pointer to a string in program space.
+1342:/usr/lib/avr/include/avr/pgmspace.h **** 
+1343:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strnlen_P function returns strlen_P(src), if that is less than
+1344:/usr/lib/avr/include/avr/pgmspace.h ****     \c len, or \c len if there is no '\\0' character among the first \c len
+1345:/usr/lib/avr/include/avr/pgmspace.h ****     characters pointed to by \c src. */
+1346:/usr/lib/avr/include/avr/pgmspace.h **** extern size_t strnlen_P(const char *, size_t) __ATTR_CONST__; /* program memory can't change */
+1347:/usr/lib/avr/include/avr/pgmspace.h **** 
+1348:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1349:/usr/lib/avr/include/avr/pgmspace.h ****     \fn int strncmp_P(const char *s1, const char *s2, size_t n)
+1350:/usr/lib/avr/include/avr/pgmspace.h **** 
+1351:/usr/lib/avr/include/avr/pgmspace.h ****     The strncmp_P() function is similar to strcmp_P() except it only compares
+1352:/usr/lib/avr/include/avr/pgmspace.h ****     the first (at most) n characters of s1 and s2.
+1353:/usr/lib/avr/include/avr/pgmspace.h **** 
+1354:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strncmp_P() function returns an integer less than, equal to,
+1355:/usr/lib/avr/include/avr/pgmspace.h ****     or greater than zero if s1 (or the first n bytes thereof) is found,
+1356:/usr/lib/avr/include/avr/pgmspace.h ****     respectively, to be less than, to match, or be greater than s2.  */
+1357:/usr/lib/avr/include/avr/pgmspace.h **** extern int strncmp_P(const char *, const char *, size_t) __ATTR_PURE__;
+1358:/usr/lib/avr/include/avr/pgmspace.h **** 
+1359:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1360:/usr/lib/avr/include/avr/pgmspace.h ****     \fn int strncasecmp_P(const char *s1, const char *s2, size_t n)
+1361:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Compare two strings ignoring case.
+1362:/usr/lib/avr/include/avr/pgmspace.h **** 
+1363:/usr/lib/avr/include/avr/pgmspace.h ****     The strncasecmp_P() function is similar to strcasecmp_P(), except it
+1364:/usr/lib/avr/include/avr/pgmspace.h ****     only compares the first \p n characters of \p s1.
+1365:/usr/lib/avr/include/avr/pgmspace.h **** 
+1366:/usr/lib/avr/include/avr/pgmspace.h ****     \param s1 A pointer to a string in the devices SRAM.
+1367:/usr/lib/avr/include/avr/pgmspace.h ****     \param s2 A pointer to a string in the devices Flash.
+1368:/usr/lib/avr/include/avr/pgmspace.h ****     \param n The maximum number of bytes to compare.
+1369:/usr/lib/avr/include/avr/pgmspace.h **** 
+1370:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strncasecmp_P() function returns an integer less than,
+1371:/usr/lib/avr/include/avr/pgmspace.h ****     equal to, or greater than zero if \p s1 (or the first \p n bytes
+1372:/usr/lib/avr/include/avr/pgmspace.h ****     thereof) is found, respectively, to be less than, to match, or be
+1373:/usr/lib/avr/include/avr/pgmspace.h ****     greater than \p s2. A consequence of the ordering used by
+1374:/usr/lib/avr/include/avr/pgmspace.h ****     strncasecmp_P() is that if \p s1 is an initial substring of \p s2,
+1375:/usr/lib/avr/include/avr/pgmspace.h ****     then \p s1 is considered to be "less than" \p s2.  */
+1376:/usr/lib/avr/include/avr/pgmspace.h **** extern int strncasecmp_P(const char *, const char *, size_t) __ATTR_PURE__;
+1377:/usr/lib/avr/include/avr/pgmspace.h **** 
+1378:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1379:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strncat_P(char *dest, const char *src, size_t len)
+1380:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Concatenate two strings.
+1381:/usr/lib/avr/include/avr/pgmspace.h **** 
+1382:/usr/lib/avr/include/avr/pgmspace.h ****     The strncat_P() function is similar to strncat(), except that the \e src
+1383:/usr/lib/avr/include/avr/pgmspace.h ****     string must be located in program space (flash).
+1384:/usr/lib/avr/include/avr/pgmspace.h **** 
+1385:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strncat_P() function returns a pointer to the resulting string
+1386:/usr/lib/avr/include/avr/pgmspace.h ****     dest.  */
+1387:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strncat_P(char *, const char *, size_t);
+1388:/usr/lib/avr/include/avr/pgmspace.h **** 
+1389:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1390:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strncpy_P(char *dest, const char *src, size_t n)
+1391:/usr/lib/avr/include/avr/pgmspace.h **** 
+1392:/usr/lib/avr/include/avr/pgmspace.h ****     The strncpy_P() function is similar to strcpy_P() except that not more
+1393:/usr/lib/avr/include/avr/pgmspace.h ****     than n bytes of src are copied.  Thus, if there is no null byte among the
+1394:/usr/lib/avr/include/avr/pgmspace.h ****     first n bytes of src, the result will not be null-terminated.
+1395:/usr/lib/avr/include/avr/pgmspace.h **** 
+1396:/usr/lib/avr/include/avr/pgmspace.h ****     In the case where the length of src is less than that of n, the remainder
+1397:/usr/lib/avr/include/avr/pgmspace.h ****     of dest will be padded with nulls.
+1398:/usr/lib/avr/include/avr/pgmspace.h **** 
+1399:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strncpy_P() function returns a pointer to the destination
+1400:/usr/lib/avr/include/avr/pgmspace.h ****     string dest.  */
+1401:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strncpy_P(char *, const char *, size_t);
+1402:/usr/lib/avr/include/avr/pgmspace.h **** 
+1403:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1404:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strpbrk_P(const char *s, const char *accept)
+1405:/usr/lib/avr/include/avr/pgmspace.h **** 
+1406:/usr/lib/avr/include/avr/pgmspace.h ****     The strpbrk_P() function locates the first occurrence in the string
+1407:/usr/lib/avr/include/avr/pgmspace.h ****     \p s of any of the characters in the flash string \p accept. This
+1408:/usr/lib/avr/include/avr/pgmspace.h ****     function is similar to strpbrk() except that \p accept is a pointer
+1409:/usr/lib/avr/include/avr/pgmspace.h ****     to a string in program space.
+1410:/usr/lib/avr/include/avr/pgmspace.h **** 
+1411:/usr/lib/avr/include/avr/pgmspace.h ****     \return  The strpbrk_P() function returns a pointer to the character
+1412:/usr/lib/avr/include/avr/pgmspace.h ****     in \p s that matches one of the characters in \p accept, or \c NULL
+1413:/usr/lib/avr/include/avr/pgmspace.h ****     if no such character is found. The terminating zero is not considered
+1414:/usr/lib/avr/include/avr/pgmspace.h ****     as a part of string: if one or both args are empty, the result will
+1415:/usr/lib/avr/include/avr/pgmspace.h ****     \c NULL. */
+1416:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strpbrk_P(const char *__s, const char * __accept) __ATTR_PURE__;
+1417:/usr/lib/avr/include/avr/pgmspace.h **** 
+1418:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1419:/usr/lib/avr/include/avr/pgmspace.h ****     \fn const char *strrchr_P(const char *s, int val)
+1420:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Locate character in string.
+1421:/usr/lib/avr/include/avr/pgmspace.h **** 
+1422:/usr/lib/avr/include/avr/pgmspace.h ****     The strrchr_P() function returns a pointer to the last occurrence of
+1423:/usr/lib/avr/include/avr/pgmspace.h ****     the character \p val in the flash string \p s.
+1424:/usr/lib/avr/include/avr/pgmspace.h **** 
+1425:/usr/lib/avr/include/avr/pgmspace.h ****     \return The strrchr_P() function returns a pointer to the matched
+1426:/usr/lib/avr/include/avr/pgmspace.h ****     character or \c NULL if the character is not found. */
+1427:/usr/lib/avr/include/avr/pgmspace.h **** extern const char * strrchr_P(const char *, int __val) __ATTR_CONST__;
+1428:/usr/lib/avr/include/avr/pgmspace.h **** 
+1429:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1430:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strsep_P(char **sp, const char *delim)
+1431:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Parse a string into tokens.
+1432:/usr/lib/avr/include/avr/pgmspace.h **** 
+1433:/usr/lib/avr/include/avr/pgmspace.h ****     The strsep_P() function locates, in the string referenced by \p *sp,
+1434:/usr/lib/avr/include/avr/pgmspace.h ****     the first occurrence of any character in the string \p delim (or the
+1435:/usr/lib/avr/include/avr/pgmspace.h ****     terminating '\\0' character) and replaces it with a '\\0'.  The
+1436:/usr/lib/avr/include/avr/pgmspace.h ****     location of the next character after the delimiter character (or \c
+1437:/usr/lib/avr/include/avr/pgmspace.h ****     NULL, if the end of the string was reached) is stored in \p *sp. An
+1438:/usr/lib/avr/include/avr/pgmspace.h ****     ``empty'' field, i.e. one caused by two adjacent delimiter
+1439:/usr/lib/avr/include/avr/pgmspace.h ****     characters, can be detected by comparing the location referenced by
+1440:/usr/lib/avr/include/avr/pgmspace.h ****     the pointer returned in \p *sp to '\\0'. This function is similar to
+1441:/usr/lib/avr/include/avr/pgmspace.h ****     strsep() except that \p delim is a pointer to a string in program
+1442:/usr/lib/avr/include/avr/pgmspace.h ****     space.
+1443:/usr/lib/avr/include/avr/pgmspace.h **** 
+1444:/usr/lib/avr/include/avr/pgmspace.h ****     \return The strsep_P() function returns a pointer to the original
+1445:/usr/lib/avr/include/avr/pgmspace.h ****     value of \p *sp. If \p *sp is initially \c NULL, strsep_P() returns
+1446:/usr/lib/avr/include/avr/pgmspace.h ****     \c NULL. */
+1447:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strsep_P(char **__sp, const char * __delim);
+1448:/usr/lib/avr/include/avr/pgmspace.h **** 
+1449:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1450:/usr/lib/avr/include/avr/pgmspace.h ****     \fn size_t strspn_P(const char *s, const char *accept)
+1451:/usr/lib/avr/include/avr/pgmspace.h **** 
+1452:/usr/lib/avr/include/avr/pgmspace.h ****     The strspn_P() function calculates the length of the initial segment
+1453:/usr/lib/avr/include/avr/pgmspace.h ****     of \p s which consists entirely of characters in \p accept. This
+1454:/usr/lib/avr/include/avr/pgmspace.h ****     function is similar to strspn() except that \p accept is a pointer
+1455:/usr/lib/avr/include/avr/pgmspace.h ****     to a string in program space.
+1456:/usr/lib/avr/include/avr/pgmspace.h **** 
+1457:/usr/lib/avr/include/avr/pgmspace.h ****     \return  The strspn_P() function returns the number of characters in
+1458:/usr/lib/avr/include/avr/pgmspace.h ****     the initial segment of \p s which consist only of characters from \p
+1459:/usr/lib/avr/include/avr/pgmspace.h ****     accept. The terminating zero is not considered as a part of string.	*/
+1460:/usr/lib/avr/include/avr/pgmspace.h **** extern size_t strspn_P(const char *__s, const char * __accept) __ATTR_PURE__;
+1461:/usr/lib/avr/include/avr/pgmspace.h **** 
+1462:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1463:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strstr_P(const char *s1, const char *s2)
+1464:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Locate a substring.
+1465:/usr/lib/avr/include/avr/pgmspace.h **** 
+1466:/usr/lib/avr/include/avr/pgmspace.h ****     The strstr_P() function finds the first occurrence of the substring
+1467:/usr/lib/avr/include/avr/pgmspace.h ****     \p s2 in the string \p s1.  The terminating '\\0' characters are not
+1468:/usr/lib/avr/include/avr/pgmspace.h ****     compared. The strstr_P() function is similar to strstr() except that
+1469:/usr/lib/avr/include/avr/pgmspace.h ****     \p s2 is pointer to a string in program space.
+1470:/usr/lib/avr/include/avr/pgmspace.h **** 
+1471:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strstr_P() function returns a pointer to the beginning
+1472:/usr/lib/avr/include/avr/pgmspace.h ****     of the substring, or NULL if the substring is not found. If \p s2
+1473:/usr/lib/avr/include/avr/pgmspace.h ****     points to a string of zero length, the function returns \p s1. */
+1474:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strstr_P(const char *, const char *) __ATTR_PURE__;
+1475:/usr/lib/avr/include/avr/pgmspace.h **** 
+1476:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1477:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strtok_P(char *s, const char * delim)
+1478:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Parses the string into tokens.
+1479:/usr/lib/avr/include/avr/pgmspace.h **** 
+1480:/usr/lib/avr/include/avr/pgmspace.h ****     strtok_P() parses the string \p s into tokens. The first call to
+1481:/usr/lib/avr/include/avr/pgmspace.h ****     strtok_P() should have \p s as its first argument. Subsequent calls
+1482:/usr/lib/avr/include/avr/pgmspace.h ****     should have the first argument set to NULL. If a token ends with a
+1483:/usr/lib/avr/include/avr/pgmspace.h ****     delimiter, this delimiting character is overwritten with a '\\0' and a
+1484:/usr/lib/avr/include/avr/pgmspace.h ****     pointer to the next character is saved for the next call to strtok_P().
+1485:/usr/lib/avr/include/avr/pgmspace.h ****     The delimiter string \p delim may be different for each call.
+1486:/usr/lib/avr/include/avr/pgmspace.h **** 
+1487:/usr/lib/avr/include/avr/pgmspace.h ****     The strtok_P() function is similar to strtok() except that \p delim
+1488:/usr/lib/avr/include/avr/pgmspace.h ****     is pointer to a string in program space.
+1489:/usr/lib/avr/include/avr/pgmspace.h **** 
+1490:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strtok_P() function returns a pointer to the next token or
+1491:/usr/lib/avr/include/avr/pgmspace.h ****     NULL when no more tokens are found.
+1492:/usr/lib/avr/include/avr/pgmspace.h **** 
+1493:/usr/lib/avr/include/avr/pgmspace.h ****     \note strtok_P() is NOT reentrant. For a reentrant version of this
+1494:/usr/lib/avr/include/avr/pgmspace.h ****     function see strtok_rP().
+1495:/usr/lib/avr/include/avr/pgmspace.h ****  */
+1496:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strtok_P(char *__s, const char * __delim);
+1497:/usr/lib/avr/include/avr/pgmspace.h **** 
+1498:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1499:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strtok_rP (char *string, const char *delim, char **last)
+1500:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Parses string into tokens.
+1501:/usr/lib/avr/include/avr/pgmspace.h **** 
+1502:/usr/lib/avr/include/avr/pgmspace.h ****     The strtok_rP() function parses \p string into tokens. The first call to
+1503:/usr/lib/avr/include/avr/pgmspace.h ****     strtok_rP() should have string as its first argument. Subsequent calls
+1504:/usr/lib/avr/include/avr/pgmspace.h ****     should have the first argument set to NULL. If a token ends with a
+1505:/usr/lib/avr/include/avr/pgmspace.h ****     delimiter, this delimiting character is overwritten with a '\\0' and a
+1506:/usr/lib/avr/include/avr/pgmspace.h ****     pointer to the next character is saved for the next call to strtok_rP().
+1507:/usr/lib/avr/include/avr/pgmspace.h ****     The delimiter string \p delim may be different for each call. \p last is
+1508:/usr/lib/avr/include/avr/pgmspace.h ****     a user allocated char* pointer. It must be the same while parsing the
+1509:/usr/lib/avr/include/avr/pgmspace.h ****     same string. strtok_rP() is a reentrant version of strtok_P().
+1510:/usr/lib/avr/include/avr/pgmspace.h **** 
+1511:/usr/lib/avr/include/avr/pgmspace.h ****     The strtok_rP() function is similar to strtok_r() except that \p delim
+1512:/usr/lib/avr/include/avr/pgmspace.h ****     is pointer to a string in program space.
+1513:/usr/lib/avr/include/avr/pgmspace.h **** 
+1514:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strtok_rP() function returns a pointer to the next token or
+1515:/usr/lib/avr/include/avr/pgmspace.h ****     NULL when no more tokens are found. */
+1516:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strtok_rP(char *__s, const char * __delim, char **__last);
+1517:/usr/lib/avr/include/avr/pgmspace.h **** 
+1518:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1519:/usr/lib/avr/include/avr/pgmspace.h ****     \fn size_t strlen_PF(uint_farptr_t s)
+1520:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Obtain the length of a string
+1521:/usr/lib/avr/include/avr/pgmspace.h **** 
+1522:/usr/lib/avr/include/avr/pgmspace.h ****     The strlen_PF() function is similar to strlen(), except that \e s is a
+1523:/usr/lib/avr/include/avr/pgmspace.h ****     far pointer to a string in program space.
+1524:/usr/lib/avr/include/avr/pgmspace.h **** 
+1525:/usr/lib/avr/include/avr/pgmspace.h ****     \param s A far pointer to the string in flash
+1526:/usr/lib/avr/include/avr/pgmspace.h **** 
+1527:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strlen_PF() function returns the number of characters in
+1528:/usr/lib/avr/include/avr/pgmspace.h ****     \e s. The contents of RAMPZ SFR are undefined when the function returns. */
+1529:/usr/lib/avr/include/avr/pgmspace.h **** extern size_t strlen_PF(uint_farptr_t src) __ATTR_CONST__; /* program memory can't change */
+1530:/usr/lib/avr/include/avr/pgmspace.h **** 
+1531:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1532:/usr/lib/avr/include/avr/pgmspace.h ****     \fn size_t strnlen_PF(uint_farptr_t s, size_t len)
+1533:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Determine the length of a fixed-size string
+1534:/usr/lib/avr/include/avr/pgmspace.h **** 
+1535:/usr/lib/avr/include/avr/pgmspace.h ****     The strnlen_PF() function is similar to strnlen(), except that \e s is a
+1536:/usr/lib/avr/include/avr/pgmspace.h ****     far pointer to a string in program space.
+1537:/usr/lib/avr/include/avr/pgmspace.h **** 
+1538:/usr/lib/avr/include/avr/pgmspace.h ****     \param s A far pointer to the string in Flash
+1539:/usr/lib/avr/include/avr/pgmspace.h ****     \param len The maximum number of length to return
+1540:/usr/lib/avr/include/avr/pgmspace.h **** 
+1541:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strnlen_PF function returns strlen_P(\e s), if that is less
+1542:/usr/lib/avr/include/avr/pgmspace.h ****     than \e len, or \e len if there is no '\\0' character among the first \e
+1543:/usr/lib/avr/include/avr/pgmspace.h ****     len characters pointed to by \e s. The contents of RAMPZ SFR are
+1544:/usr/lib/avr/include/avr/pgmspace.h ****     undefined when the function returns. */
+1545:/usr/lib/avr/include/avr/pgmspace.h **** extern size_t strnlen_PF(uint_farptr_t src, size_t len) __ATTR_CONST__; /* program memory can't cha
+1546:/usr/lib/avr/include/avr/pgmspace.h **** 
+1547:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1548:/usr/lib/avr/include/avr/pgmspace.h ****     \fn void *memcpy_PF(void *dest, uint_farptr_t src, size_t n)
+1549:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Copy a memory block from flash to SRAM
+1550:/usr/lib/avr/include/avr/pgmspace.h **** 
+1551:/usr/lib/avr/include/avr/pgmspace.h ****     The memcpy_PF() function is similar to memcpy(), except the data
+1552:/usr/lib/avr/include/avr/pgmspace.h ****     is copied from the program space and is addressed using a far pointer.
+1553:/usr/lib/avr/include/avr/pgmspace.h **** 
+1554:/usr/lib/avr/include/avr/pgmspace.h ****     \param dest A pointer to the destination buffer
+1555:/usr/lib/avr/include/avr/pgmspace.h ****     \param src A far pointer to the origin of data in flash memory
+1556:/usr/lib/avr/include/avr/pgmspace.h ****     \param n The number of bytes to be copied
+1557:/usr/lib/avr/include/avr/pgmspace.h **** 
+1558:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The memcpy_PF() function returns a pointer to \e dst. The contents
+1559:/usr/lib/avr/include/avr/pgmspace.h ****     of RAMPZ SFR are undefined when the function returns. */
+1560:/usr/lib/avr/include/avr/pgmspace.h **** extern void *memcpy_PF(void *dest, uint_farptr_t src, size_t len);
+1561:/usr/lib/avr/include/avr/pgmspace.h **** 
+1562:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1563:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strcpy_PF(char *dst, uint_farptr_t src)
+1564:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Duplicate a string
+1565:/usr/lib/avr/include/avr/pgmspace.h **** 
+1566:/usr/lib/avr/include/avr/pgmspace.h ****     The strcpy_PF() function is similar to strcpy() except that \e src is a far
+1567:/usr/lib/avr/include/avr/pgmspace.h ****     pointer to a string in program space.
+1568:/usr/lib/avr/include/avr/pgmspace.h **** 
+1569:/usr/lib/avr/include/avr/pgmspace.h ****     \param dst A pointer to the destination string in SRAM
+1570:/usr/lib/avr/include/avr/pgmspace.h ****     \param src A far pointer to the source string in Flash
+1571:/usr/lib/avr/include/avr/pgmspace.h **** 
+1572:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strcpy_PF() function returns a pointer to the destination
+1573:/usr/lib/avr/include/avr/pgmspace.h ****     string \e dst. The contents of RAMPZ SFR are undefined when the funcion
+1574:/usr/lib/avr/include/avr/pgmspace.h ****     returns. */
+1575:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strcpy_PF(char *dest, uint_farptr_t src);
+1576:/usr/lib/avr/include/avr/pgmspace.h **** 
+1577:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1578:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strncpy_PF(char *dst, uint_farptr_t src, size_t n)
+1579:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Duplicate a string until a limited length
+1580:/usr/lib/avr/include/avr/pgmspace.h **** 
+1581:/usr/lib/avr/include/avr/pgmspace.h ****     The strncpy_PF() function is similar to strcpy_PF() except that not more
+1582:/usr/lib/avr/include/avr/pgmspace.h ****     than \e n bytes of \e src are copied.  Thus, if there is no null byte among
+1583:/usr/lib/avr/include/avr/pgmspace.h ****     the first \e n bytes of \e src, the result will not be null-terminated.
+1584:/usr/lib/avr/include/avr/pgmspace.h **** 
+1585:/usr/lib/avr/include/avr/pgmspace.h ****     In the case where the length of \e src is less than that of \e n, the
+1586:/usr/lib/avr/include/avr/pgmspace.h ****     remainder of \e dst will be padded with nulls.
+1587:/usr/lib/avr/include/avr/pgmspace.h **** 
+1588:/usr/lib/avr/include/avr/pgmspace.h ****     \param dst A pointer to the destination string in SRAM
+1589:/usr/lib/avr/include/avr/pgmspace.h ****     \param src A far pointer to the source string in Flash
+1590:/usr/lib/avr/include/avr/pgmspace.h ****     \param n The maximum number of bytes to copy
+1591:/usr/lib/avr/include/avr/pgmspace.h **** 
+1592:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strncpy_PF() function returns a pointer to the destination
+1593:/usr/lib/avr/include/avr/pgmspace.h ****     string \e dst. The contents of RAMPZ SFR are undefined when the function
+1594:/usr/lib/avr/include/avr/pgmspace.h ****     returns. */
+1595:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strncpy_PF(char *dest, uint_farptr_t src, size_t len);
+1596:/usr/lib/avr/include/avr/pgmspace.h **** 
+1597:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1598:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strcat_PF(char *dst, uint_farptr_t src)
+1599:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Concatenates two strings
+1600:/usr/lib/avr/include/avr/pgmspace.h **** 
+1601:/usr/lib/avr/include/avr/pgmspace.h ****     The strcat_PF() function is similar to strcat() except that the \e src
+1602:/usr/lib/avr/include/avr/pgmspace.h ****     string must be located in program space (flash) and is addressed using
+1603:/usr/lib/avr/include/avr/pgmspace.h ****     a far pointer
+1604:/usr/lib/avr/include/avr/pgmspace.h **** 
+1605:/usr/lib/avr/include/avr/pgmspace.h ****     \param dst A pointer to the destination string in SRAM
+1606:/usr/lib/avr/include/avr/pgmspace.h ****     \param src A far pointer to the string to be appended in Flash
+1607:/usr/lib/avr/include/avr/pgmspace.h **** 
+1608:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strcat_PF() function returns a pointer to the resulting
+1609:/usr/lib/avr/include/avr/pgmspace.h ****     string \e dst. The contents of RAMPZ SFR are undefined when the function
+1610:/usr/lib/avr/include/avr/pgmspace.h ****     returns */
+1611:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strcat_PF(char *dest, uint_farptr_t src);
+1612:/usr/lib/avr/include/avr/pgmspace.h **** 
+1613:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1614:/usr/lib/avr/include/avr/pgmspace.h ****     \fn size_t strlcat_PF(char *dst, uint_farptr_t src, size_t n)
+1615:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Concatenate two strings
+1616:/usr/lib/avr/include/avr/pgmspace.h **** 
+1617:/usr/lib/avr/include/avr/pgmspace.h ****     The strlcat_PF() function is similar to strlcat(), except that the \e src
+1618:/usr/lib/avr/include/avr/pgmspace.h ****     string must be located in program space (flash) and is addressed using
+1619:/usr/lib/avr/include/avr/pgmspace.h ****     a far pointer.
+1620:/usr/lib/avr/include/avr/pgmspace.h **** 
+1621:/usr/lib/avr/include/avr/pgmspace.h ****     Appends src to string dst of size \e n (unlike strncat(), \e n is the
+1622:/usr/lib/avr/include/avr/pgmspace.h ****     full size of \e dst, not space left).  At most \e n-1 characters
+1623:/usr/lib/avr/include/avr/pgmspace.h ****     will be copied.  Always NULL terminates (unless \e n <= strlen(\e dst)).
+1624:/usr/lib/avr/include/avr/pgmspace.h **** 
+1625:/usr/lib/avr/include/avr/pgmspace.h ****     \param dst A pointer to the destination string in SRAM
+1626:/usr/lib/avr/include/avr/pgmspace.h ****     \param src A far pointer to the source string in Flash
+1627:/usr/lib/avr/include/avr/pgmspace.h ****     \param n The total number of bytes allocated to the destination string
+1628:/usr/lib/avr/include/avr/pgmspace.h **** 
+1629:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strlcat_PF() function returns strlen(\e src) + MIN(\e n,
+1630:/usr/lib/avr/include/avr/pgmspace.h ****     strlen(initial \e dst)).  If retval >= \e n, truncation occurred. The
+1631:/usr/lib/avr/include/avr/pgmspace.h ****     contents of RAMPZ SFR are undefined when the funcion returns. */
+1632:/usr/lib/avr/include/avr/pgmspace.h **** extern size_t strlcat_PF(char *dst, uint_farptr_t src, size_t siz);
+1633:/usr/lib/avr/include/avr/pgmspace.h **** 
+1634:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1635:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strncat_PF(char *dst, uint_farptr_t src, size_t n)
+1636:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Concatenate two strings
+1637:/usr/lib/avr/include/avr/pgmspace.h **** 
+1638:/usr/lib/avr/include/avr/pgmspace.h ****     The strncat_PF() function is similar to strncat(), except that the \e src
+1639:/usr/lib/avr/include/avr/pgmspace.h ****     string must be located in program space (flash) and is addressed using a
+1640:/usr/lib/avr/include/avr/pgmspace.h ****     far pointer.
+1641:/usr/lib/avr/include/avr/pgmspace.h **** 
+1642:/usr/lib/avr/include/avr/pgmspace.h ****     \param dst A pointer to the destination string in SRAM
+1643:/usr/lib/avr/include/avr/pgmspace.h ****     \param src A far pointer to the source string in Flash
+1644:/usr/lib/avr/include/avr/pgmspace.h ****     \param n The maximum number of bytes to append
+1645:/usr/lib/avr/include/avr/pgmspace.h **** 
+1646:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strncat_PF() function returns a pointer to the resulting
+1647:/usr/lib/avr/include/avr/pgmspace.h ****     string \e dst. The contents of RAMPZ SFR are undefined when the function
+1648:/usr/lib/avr/include/avr/pgmspace.h ****     returns. */
+1649:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strncat_PF(char *dest, uint_farptr_t src, size_t len);
+1650:/usr/lib/avr/include/avr/pgmspace.h **** 
+1651:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1652:/usr/lib/avr/include/avr/pgmspace.h ****     \fn int strcmp_PF(const char *s1, uint_farptr_t s2)
+1653:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Compares two strings
+1654:/usr/lib/avr/include/avr/pgmspace.h **** 
+1655:/usr/lib/avr/include/avr/pgmspace.h ****     The strcmp_PF() function is similar to strcmp() except that \e s2 is a far
+1656:/usr/lib/avr/include/avr/pgmspace.h ****     pointer to a string in program space.
+1657:/usr/lib/avr/include/avr/pgmspace.h **** 
+1658:/usr/lib/avr/include/avr/pgmspace.h ****     \param s1 A pointer to the first string in SRAM
+1659:/usr/lib/avr/include/avr/pgmspace.h ****     \param s2 A far pointer to the second string in Flash
+1660:/usr/lib/avr/include/avr/pgmspace.h **** 
+1661:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strcmp_PF() function returns an integer less than, equal to,
+1662:/usr/lib/avr/include/avr/pgmspace.h ****     or greater than zero if \e s1 is found, respectively, to be less than, to
+1663:/usr/lib/avr/include/avr/pgmspace.h ****     match, or be greater than \e s2. The contents of RAMPZ SFR are undefined
+1664:/usr/lib/avr/include/avr/pgmspace.h ****     when the function returns. */
+1665:/usr/lib/avr/include/avr/pgmspace.h **** extern int strcmp_PF(const char *s1, uint_farptr_t s2) __ATTR_PURE__;
+1666:/usr/lib/avr/include/avr/pgmspace.h **** 
+1667:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1668:/usr/lib/avr/include/avr/pgmspace.h ****     \fn int strncmp_PF(const char *s1, uint_farptr_t s2, size_t n)
+1669:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Compare two strings with limited length
+1670:/usr/lib/avr/include/avr/pgmspace.h **** 
+1671:/usr/lib/avr/include/avr/pgmspace.h ****     The strncmp_PF() function is similar to strcmp_PF() except it only
+1672:/usr/lib/avr/include/avr/pgmspace.h ****     compares the first (at most) \e n characters of \e s1 and \e s2.
+1673:/usr/lib/avr/include/avr/pgmspace.h **** 
+1674:/usr/lib/avr/include/avr/pgmspace.h ****     \param s1 A pointer to the first string in SRAM
+1675:/usr/lib/avr/include/avr/pgmspace.h ****     \param s2 A far pointer to the second string in Flash
+1676:/usr/lib/avr/include/avr/pgmspace.h ****     \param n The maximum number of bytes to compare
+1677:/usr/lib/avr/include/avr/pgmspace.h **** 
+1678:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strncmp_PF() function returns an integer less than, equal
+1679:/usr/lib/avr/include/avr/pgmspace.h ****     to, or greater than zero if \e s1 (or the first \e n bytes thereof) is found,
+1680:/usr/lib/avr/include/avr/pgmspace.h ****     respectively, to be less than, to match, or be greater than \e s2. The
+1681:/usr/lib/avr/include/avr/pgmspace.h ****     contents of RAMPZ SFR are undefined when the function returns. */
+1682:/usr/lib/avr/include/avr/pgmspace.h **** extern int strncmp_PF(const char *s1, uint_farptr_t s2, size_t n) __ATTR_PURE__;
+1683:/usr/lib/avr/include/avr/pgmspace.h **** 
+1684:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1685:/usr/lib/avr/include/avr/pgmspace.h ****     \fn int strcasecmp_PF(const char *s1, uint_farptr_t s2)
+1686:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Compare two strings ignoring case
+1687:/usr/lib/avr/include/avr/pgmspace.h **** 
+1688:/usr/lib/avr/include/avr/pgmspace.h ****     The strcasecmp_PF() function compares the two strings \e s1 and \e s2, ignoring
+1689:/usr/lib/avr/include/avr/pgmspace.h ****     the case of the characters.
+1690:/usr/lib/avr/include/avr/pgmspace.h **** 
+1691:/usr/lib/avr/include/avr/pgmspace.h ****     \param s1 A pointer to the first string in SRAM
+1692:/usr/lib/avr/include/avr/pgmspace.h ****     \param s2 A far pointer to the second string in Flash
+1693:/usr/lib/avr/include/avr/pgmspace.h **** 
+1694:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strcasecmp_PF() function returns an integer less than, equal
+1695:/usr/lib/avr/include/avr/pgmspace.h ****     to, or greater than zero if \e s1 is found, respectively, to be less than, to
+1696:/usr/lib/avr/include/avr/pgmspace.h ****     match, or be greater than \e s2. The contents of RAMPZ SFR are undefined
+1697:/usr/lib/avr/include/avr/pgmspace.h ****     when the function returns. */
+1698:/usr/lib/avr/include/avr/pgmspace.h **** extern int strcasecmp_PF(const char *s1, uint_farptr_t s2) __ATTR_PURE__;
+1699:/usr/lib/avr/include/avr/pgmspace.h **** 
+1700:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1701:/usr/lib/avr/include/avr/pgmspace.h ****     \fn int strncasecmp_PF(const char *s1, uint_farptr_t s2, size_t n)
+1702:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Compare two strings ignoring case
+1703:/usr/lib/avr/include/avr/pgmspace.h **** 
+1704:/usr/lib/avr/include/avr/pgmspace.h ****     The strncasecmp_PF() function is similar to strcasecmp_PF(), except it
+1705:/usr/lib/avr/include/avr/pgmspace.h ****     only compares the first \e n characters of \e s1 and the string in flash is
+1706:/usr/lib/avr/include/avr/pgmspace.h ****     addressed using a far pointer.
+1707:/usr/lib/avr/include/avr/pgmspace.h **** 
+1708:/usr/lib/avr/include/avr/pgmspace.h ****     \param s1 A pointer to a string in SRAM
+1709:/usr/lib/avr/include/avr/pgmspace.h ****     \param s2 A far pointer to a string in Flash
+1710:/usr/lib/avr/include/avr/pgmspace.h ****     \param n The maximum number of bytes to compare
+1711:/usr/lib/avr/include/avr/pgmspace.h **** 
+1712:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strncasecmp_PF() function returns an integer less than, equal
+1713:/usr/lib/avr/include/avr/pgmspace.h ****     to, or greater than zero if \e s1 (or the first \e n bytes thereof) is found,
+1714:/usr/lib/avr/include/avr/pgmspace.h ****     respectively, to be less than, to match, or be greater than \e s2. The
+1715:/usr/lib/avr/include/avr/pgmspace.h ****     contents of RAMPZ SFR are undefined when the function returns.  */
+1716:/usr/lib/avr/include/avr/pgmspace.h **** extern int strncasecmp_PF(const char *s1, uint_farptr_t s2, size_t n) __ATTR_PURE__;
+1717:/usr/lib/avr/include/avr/pgmspace.h **** 
+1718:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1719:/usr/lib/avr/include/avr/pgmspace.h ****     \fn char *strstr_PF(const char *s1, uint_farptr_t s2)
+1720:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Locate a substring.
+1721:/usr/lib/avr/include/avr/pgmspace.h **** 
+1722:/usr/lib/avr/include/avr/pgmspace.h ****     The strstr_PF() function finds the first occurrence of the substring \c s2
+1723:/usr/lib/avr/include/avr/pgmspace.h ****     in the string \c s1.  The terminating '\\0' characters are not
+1724:/usr/lib/avr/include/avr/pgmspace.h ****     compared.
+1725:/usr/lib/avr/include/avr/pgmspace.h ****     The strstr_PF() function is similar to strstr() except that \c s2 is a
+1726:/usr/lib/avr/include/avr/pgmspace.h ****     far pointer to a string in program space.
+1727:/usr/lib/avr/include/avr/pgmspace.h **** 
+1728:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strstr_PF() function returns a pointer to the beginning of the
+1729:/usr/lib/avr/include/avr/pgmspace.h ****     substring, or NULL if the substring is not found.
+1730:/usr/lib/avr/include/avr/pgmspace.h ****     If \c s2 points to a string of zero length, the function returns \c s1. The
+1731:/usr/lib/avr/include/avr/pgmspace.h ****     contents of RAMPZ SFR are undefined when the function returns. */
+1732:/usr/lib/avr/include/avr/pgmspace.h **** extern char *strstr_PF(const char *s1, uint_farptr_t s2);
+1733:/usr/lib/avr/include/avr/pgmspace.h **** 
+1734:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1735:/usr/lib/avr/include/avr/pgmspace.h ****     \fn size_t strlcpy_PF(char *dst, uint_farptr_t src, size_t siz)
+1736:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Copy a string from progmem to RAM.
+1737:/usr/lib/avr/include/avr/pgmspace.h **** 
+1738:/usr/lib/avr/include/avr/pgmspace.h ****     Copy src to string dst of size siz.  At most siz-1 characters will be
+1739:/usr/lib/avr/include/avr/pgmspace.h ****     copied. Always NULL terminates (unless siz == 0).
+1740:/usr/lib/avr/include/avr/pgmspace.h **** 
+1741:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strlcpy_PF() function returns strlen(src). If retval >= siz,
+1742:/usr/lib/avr/include/avr/pgmspace.h ****     truncation occurred.  The contents of RAMPZ SFR are undefined when the
+1743:/usr/lib/avr/include/avr/pgmspace.h ****     function returns. */
+1744:/usr/lib/avr/include/avr/pgmspace.h **** extern size_t strlcpy_PF(char *dst, uint_farptr_t src, size_t siz);
+1745:/usr/lib/avr/include/avr/pgmspace.h **** 
+1746:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1747:/usr/lib/avr/include/avr/pgmspace.h ****     \fn int memcmp_PF(const void *s1, uint_farptr_t s2, size_t len)
+1748:/usr/lib/avr/include/avr/pgmspace.h ****     \brief Compare memory areas
+1749:/usr/lib/avr/include/avr/pgmspace.h **** 
+1750:/usr/lib/avr/include/avr/pgmspace.h ****     The memcmp_PF() function compares the first \p len bytes of the memory
+1751:/usr/lib/avr/include/avr/pgmspace.h ****     areas \p s1 and flash \p s2. The comparision is performed using unsigned
+1752:/usr/lib/avr/include/avr/pgmspace.h ****     char operations. It is an equivalent of memcmp_P() function, except
+1753:/usr/lib/avr/include/avr/pgmspace.h ****     that it is capable working on all FLASH including the exteded area
+1754:/usr/lib/avr/include/avr/pgmspace.h ****     above 64kB.
+1755:/usr/lib/avr/include/avr/pgmspace.h **** 
+1756:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The memcmp_PF() function returns an integer less than, equal
+1757:/usr/lib/avr/include/avr/pgmspace.h ****     to, or greater than zero if the first \p len bytes of \p s1 is found,
+1758:/usr/lib/avr/include/avr/pgmspace.h ****     respectively, to be less than, to match, or be greater than the first
+1759:/usr/lib/avr/include/avr/pgmspace.h ****     \p len bytes of \p s2.  */
+1760:/usr/lib/avr/include/avr/pgmspace.h **** extern int memcmp_PF(const void *, uint_farptr_t, size_t) __ATTR_PURE__;
+1761:/usr/lib/avr/include/avr/pgmspace.h **** 
+1762:/usr/lib/avr/include/avr/pgmspace.h **** #ifdef __DOXYGEN__
+1763:/usr/lib/avr/include/avr/pgmspace.h **** /** \ingroup avr_pgmspace
+1764:/usr/lib/avr/include/avr/pgmspace.h ****     \fn size_t strlen_P(const char *src)
+1765:/usr/lib/avr/include/avr/pgmspace.h **** 
+1766:/usr/lib/avr/include/avr/pgmspace.h ****     The strlen_P() function is similar to strlen(), except that src is a
+1767:/usr/lib/avr/include/avr/pgmspace.h ****     pointer to a string in program space.
+1768:/usr/lib/avr/include/avr/pgmspace.h **** 
+1769:/usr/lib/avr/include/avr/pgmspace.h ****     \returns The strlen_P() function returns the number of characters in src.
+1770:/usr/lib/avr/include/avr/pgmspace.h **** 
+1771:/usr/lib/avr/include/avr/pgmspace.h ****     \note strlen_P() is implemented as an inline function in the avr/pgmspace.h
+1772:/usr/lib/avr/include/avr/pgmspace.h ****     header file, which will check if the length of the string is a constant
+1773:/usr/lib/avr/include/avr/pgmspace.h ****     and known at compile time. If it is not known at compile time, the macro
+1774:/usr/lib/avr/include/avr/pgmspace.h ****     will issue a call to __strlen_P() which will then calculate the length
+1775:/usr/lib/avr/include/avr/pgmspace.h ****     of the string as normal.
+1776:/usr/lib/avr/include/avr/pgmspace.h **** */
+1777:/usr/lib/avr/include/avr/pgmspace.h **** static inline size_t strlen_P(const char * s);
+1778:/usr/lib/avr/include/avr/pgmspace.h **** #else
+1779:/usr/lib/avr/include/avr/pgmspace.h **** extern size_t __strlen_P(const char *) __ATTR_CONST__;  /* internal helper function */
+1780:/usr/lib/avr/include/avr/pgmspace.h **** __attribute__((__always_inline__)) static __inline__ size_t strlen_P(const char * s);
+1781:/usr/lib/avr/include/avr/pgmspace.h **** static __inline__ size_t strlen_P(const char *s) {
+1782:/usr/lib/avr/include/avr/pgmspace.h ****   return __builtin_constant_p(__builtin_strlen(s))
+1783:/usr/lib/avr/include/avr/pgmspace.h ****      ? __builtin_strlen(s) : __strlen_P(s);
+ 309               		.loc 2 1783 0
+ 310 013a C901      		movw r24,r18
+ 311 013c 0E94 0000 		call __strlen_P
+ 312               	.LVL14:
+ 313 0140 4C01      		movw r8,r24
+ 314               	.LVL15:
+ 315               	.LBE9:
+ 316               	.LBE8:
+ 181:Lib/Webserver.c **** 		uint16_t Length;
+ 182:Lib/Webserver.c **** 
+ 183:Lib/Webserver.c **** 		/* Determine the length of the loaded block */
+ 184:Lib/Webserver.c **** 		Length = MIN(RemLength, HTTP_REPLY_BLOCK_SIZE);
+ 317               		.loc 1 184 0
+ 318 0142 8138      		cpi r24,-127
+ 319 0144 9105      		cpc r25,__zero_reg__
+ 320 0146 00F0      		brlo .L18
+ 321 0148 80E8      		ldi r24,lo8(-128)
+ 322 014a 882E      		mov r8,r24
+ 323 014c 912C      		mov r9,__zero_reg__
+ 324               	.L18:
+ 325               	.LVL16:
+ 185:Lib/Webserver.c **** 
+ 186:Lib/Webserver.c **** 		/* Copy the next buffer sized block of the page to the packet buffer */
+ 187:Lib/Webserver.c **** 		strncpy_P(BufferDataStr, &HTTPPage[PageBlock * HTTP_REPLY_BLOCK_SIZE], Length);
+ 326               		.loc 1 187 0
+ 327 014e A401      		movw r20,r8
+ 328 0150 B501      		movw r22,r10
+ 329 0152 CE01      		movw r24,r28
+ 330 0154 0E94 0000 		call strncpy_P
+ 331               	.LVL17:
+ 188:Lib/Webserver.c **** 
+ 189:Lib/Webserver.c **** 		/* Send the buffer contents to the host */
+ 190:Lib/Webserver.c **** 		TCP_APP_SEND_BUFFER(Buffer, Length);
+ 332               		.loc 1 190 0
+ 333 0158 81E0      		ldi r24,lo8(1)
+ 334 015a D301      		movw r26,r6
+ 335 015c 8C93      		st X,r24
+ 336 015e F801      		movw r30,r16
+ 337 0160 9182      		std Z+1,r9
+ 338 0162 8082      		st Z,r8
+ 339 0164 D601      		movw r26,r12
+ 340 0166 8C93      		st X,r24
+ 191:Lib/Webserver.c **** 
+ 192:Lib/Webserver.c **** 		/* Check to see if the entire page has been sent */
+ 193:Lib/Webserver.c **** 		if (PageBlock++ == (sizeof(HTTPPage) / HTTP_REPLY_BLOCK_SIZE))
+ 341               		.loc 1 193 0
+ 342 0168 8091 0000 		lds r24,PageBlock.4253
+ 343 016c 91E0      		ldi r25,lo8(1)
+ 344 016e 980F      		add r25,r24
+ 345 0170 9093 0000 		sts PageBlock.4253,r25
+ 346 0174 8330      		cpi r24,lo8(3)
+ 347 0176 01F4      		brne .L7
+ 194:Lib/Webserver.c **** 		{
+ 195:Lib/Webserver.c **** 			/* Unlock the buffer so that the host can fill it with future packets */
+ 196:Lib/Webserver.c **** 			TCP_APP_RELEASE_BUFFER(Buffer);
+ 348               		.loc 1 196 0
+ 349 0178 F201      		movw r30,r4
+ 350 017a 1082      		st Z,__zero_reg__
+ 351               	.LVL18:
+ 352               	.L27:
+ 197:Lib/Webserver.c **** 
+ 198:Lib/Webserver.c **** 			/* Close the connection to the host */
+ 199:Lib/Webserver.c **** 			TCP_APP_CLOSECONNECTION(ConnectionState);
+ 353               		.loc 1 199 0
+ 354 017c F701      		movw r30,r14
+ 355 017e EB5E      		subi r30,-21
+ 356 0180 FD4F      		sbci r31,-3
+ 357 0182 87E0      		ldi r24,lo8(7)
+ 358               	.L26:
+ 359 0184 8083      		st Z,r24
+ 360               	.L7:
+ 361               	/* epilogue start */
+ 362               	.LBE7:
+ 200:Lib/Webserver.c **** 		}
+ 201:Lib/Webserver.c **** 	}
+ 202:Lib/Webserver.c **** }
+ 363               		.loc 1 202 0
+ 364 0186 DF91      		pop r29
+ 365 0188 CF91      		pop r28
+ 366               	.LVL19:
+ 367 018a 1F91      		pop r17
+ 368 018c 0F91      		pop r16
+ 369               	.LVL20:
+ 370 018e FF90      		pop r15
+ 371 0190 EF90      		pop r14
+ 372               	.LVL21:
+ 373 0192 DF90      		pop r13
+ 374 0194 CF90      		pop r12
+ 375               	.LVL22:
+ 376 0196 BF90      		pop r11
+ 377 0198 AF90      		pop r10
+ 378 019a 9F90      		pop r9
+ 379 019c 8F90      		pop r8
+ 380 019e 7F90      		pop r7
+ 381 01a0 6F90      		pop r6
+ 382 01a2 5F90      		pop r5
+ 383 01a4 4F90      		pop r4
+ 384 01a6 0895      		ret
+ 385               		.cfi_endproc
+ 386               	.LFE106:
+ 388               		.section	.text.Webserver_Init,"ax",@progbits
+ 389               	.global	Webserver_Init
+ 391               	Webserver_Init:
+ 392               	.LFB104:
+  81:Lib/Webserver.c **** 	/* Open the HTTP port in the TCP protocol so that HTTP connections to the device can be establishe
+ 393               		.loc 1 81 0
+ 394               		.cfi_startproc
+ 395               	/* prologue: function */
+ 396               	/* frame size = 0 */
+ 397               	/* stack size = 0 */
+ 398               	.L__stack_usage = 0
+  83:Lib/Webserver.c **** }
+ 399               		.loc 1 83 0
+ 400 0000 40E0      		ldi r20,lo8(gs(Webserver_ApplicationCallback))
+ 401 0002 50E0      		ldi r21,hi8(gs(Webserver_ApplicationCallback))
+ 402 0004 61E0      		ldi r22,lo8(1)
+ 403 0006 80E0      		ldi r24,0
+ 404 0008 90E5      		ldi r25,lo8(80)
+ 405 000a 0C94 0000 		jmp TCP_SetPortState
+ 406               	.LVL23:
+ 407               		.cfi_endproc
+ 408               	.LFE104:
+ 410               		.local	PageBlock.4253
+ 411               		.comm	PageBlock.4253,1,1
+ 412               	.global	HTTPPage
+ 413               		.section	.progmem.data,"a",@progbits
+ 416               	HTTPPage:
+ 417 0000 3C68 746D 		.ascii	"<html>\t<head>\t\t<title>\t\t\tLUFA Webserver Demo\t\t</titl"
+ 417      6C3E 093C 
+ 417      6865 6164 
+ 417      3E09 093C 
+ 417      7469 746C 
+ 418 0034 653E 093C 		.ascii	"e>\t</head>\t<body>\t\t<h1>Hello from your USB AVR!</h1>\t\t"
+ 418      2F68 6561 
+ 418      643E 093C 
+ 418      626F 6479 
+ 418      3E09 093C 
+ 419 006a 3C70 3E09 		.ascii	"<p>\t\t\tHello! Welcome to the LUFA RNDIS Demo Webserver tes"
+ 419      0909 4865 
+ 419      6C6C 6F21 
+ 419      2057 656C 
+ 419      636F 6D65 
+ 420 00a3 7420 7061 		.ascii	"t page, running on your USB AVR via the LUFA library. This d"
+ 420      6765 2C20 
+ 420      7275 6E6E 
+ 420      696E 6720 
+ 420      6F6E 2079 
+ 421 00df 656D 6F6E 		.ascii	"emonstrates the "
+ 421      7374 7261 
+ 421      7465 7320 
+ 421      7468 6520 
+ 422 00ef 4854 5450 		.string	"HTTP webserver, TCP/IP stack and RNDIS demo all running atop the LUFA USB stack.\t\t\t<br
+ 422      2077 6562 
+ 422      7365 7276 
+ 422      6572 2C20 
+ 422      5443 502F 
+ 423               	.global	HTTP404Header
+ 426               	HTTP404Header:
+ 427 01f0 4854 5450 		.string	"HTTP/1.1 404 Not Found\r\nServer: LUFA RNDIS\r\nConnection: close\r\n\r\n"
+ 427      2F31 2E31 
+ 427      2034 3034 
+ 427      204E 6F74 
+ 427      2046 6F75 
+ 428               	.global	HTTP200Header
+ 431               	HTTP200Header:
+ 432 0232 4854 5450 		.string	"HTTP/1.1 200 OK\r\nServer: LUFA RNDIS\r\nContent-type: text/html\r\nConnection: close\r\n
+ 432      2F31 2E31 
+ 432      2032 3030 
+ 432      204F 4B0D 
+ 432      0A53 6572 
+ 433               		.text
+ 434               	.Letext0:
+ 435               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 436               		.file 4 "/usr/lib/gcc/avr/5.4.0/include/stddef.h"
+ 437               		.file 5 "Lib/EthernetProtocols.h"
+ 438               		.file 6 "/usr/lib/avr/include/stdio.h"
+ 439               		.file 7 "Lib/TCP.h"
+ 440               		.file 8 "../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h"
+ 441               		.file 9 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 442               		.file 10 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+ 443               		.file 11 "/usr/lib/avr/include/string.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 Webserver.c
+     /tmp/ccbtpa1L.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccbtpa1L.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccbtpa1L.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccbtpa1L.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccbtpa1L.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccbtpa1L.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccbtpa1L.s:13     .text.IsHTTPCommand:0000000000000000 IsHTTPCommand
+     /tmp/ccbtpa1L.s:60     .text.Webserver_ApplicationCallback:0000000000000000 Webserver_ApplicationCallback
+                             .bss:0000000000000000 PageBlock.4253
+     /tmp/ccbtpa1L.s:431    .progmem.data:0000000000000232 HTTP200Header
+     /tmp/ccbtpa1L.s:426    .progmem.data:00000000000001f0 HTTP404Header
+     /tmp/ccbtpa1L.s:416    .progmem.data:0000000000000000 HTTPPage
+     /tmp/ccbtpa1L.s:391    .text.Webserver_Init:0000000000000000 Webserver_Init
+
+UNDEFINED SYMBOLS
+strncmp
+strcpy_P
+__strlen_P
+strncpy_P
+TCP_SetPortState
+__do_copy_data
+__do_clear_bss

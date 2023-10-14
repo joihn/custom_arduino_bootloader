@@ -1,0 +1,295 @@
+   1               		.file	"timer.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.timer_set,"ax",@progbits
+  12               	.global	timer_set
+  14               	timer_set:
+  15               	.LFB5:
+  16               		.file 1 "Lib/uip/timer.c"
+   1:Lib/uip/timer.c **** /**
+   2:Lib/uip/timer.c ****  * \addtogroup timer
+   3:Lib/uip/timer.c ****  * @{
+   4:Lib/uip/timer.c ****  */
+   5:Lib/uip/timer.c **** 
+   6:Lib/uip/timer.c **** /**
+   7:Lib/uip/timer.c ****  * \file
+   8:Lib/uip/timer.c ****  * Timer library implementation.
+   9:Lib/uip/timer.c ****  * \author
+  10:Lib/uip/timer.c ****  * Adam Dunkels <adam@sics.se>
+  11:Lib/uip/timer.c ****  */
+  12:Lib/uip/timer.c **** 
+  13:Lib/uip/timer.c **** /*
+  14:Lib/uip/timer.c ****  * Copyright (c) 2004, Swedish Institute of Computer Science.
+  15:Lib/uip/timer.c ****  * All rights reserved.
+  16:Lib/uip/timer.c ****  *
+  17:Lib/uip/timer.c ****  * Redistribution and use in source and binary forms, with or without
+  18:Lib/uip/timer.c ****  * modification, are permitted provided that the following conditions
+  19:Lib/uip/timer.c ****  * are met:
+  20:Lib/uip/timer.c ****  * 1. Redistributions of source code must retain the above copyright
+  21:Lib/uip/timer.c ****  *    notice, this list of conditions and the following disclaimer.
+  22:Lib/uip/timer.c ****  * 2. Redistributions in binary form must reproduce the above copyright
+  23:Lib/uip/timer.c ****  *    notice, this list of conditions and the following disclaimer in the
+  24:Lib/uip/timer.c ****  *    documentation and/or other materials provided with the distribution.
+  25:Lib/uip/timer.c ****  * 3. Neither the name of the Institute nor the names of its contributors
+  26:Lib/uip/timer.c ****  *    may be used to endorse or promote products derived from this software
+  27:Lib/uip/timer.c ****  *    without specific prior written permission.
+  28:Lib/uip/timer.c ****  *
+  29:Lib/uip/timer.c ****  * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
+  30:Lib/uip/timer.c ****  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  31:Lib/uip/timer.c ****  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  32:Lib/uip/timer.c ****  * ARE DISCLAIMED.  IN NO EVENT SHALL THE INSTITUTE OR CONTRIBUTORS BE LIABLE
+  33:Lib/uip/timer.c ****  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  34:Lib/uip/timer.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  35:Lib/uip/timer.c ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  36:Lib/uip/timer.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  37:Lib/uip/timer.c ****  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+  38:Lib/uip/timer.c ****  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  39:Lib/uip/timer.c ****  * SUCH DAMAGE.
+  40:Lib/uip/timer.c ****  *
+  41:Lib/uip/timer.c ****  * This file is part of the uIP TCP/IP stack
+  42:Lib/uip/timer.c ****  *
+  43:Lib/uip/timer.c ****  * Author: Adam Dunkels <adam@sics.se>
+  44:Lib/uip/timer.c ****  *
+  45:Lib/uip/timer.c ****  * $Id: timer.c,v 1.2 2006/06/12 08:00:30 adam Exp $
+  46:Lib/uip/timer.c ****  */
+  47:Lib/uip/timer.c **** 
+  48:Lib/uip/timer.c **** #include "clock.h"
+  49:Lib/uip/timer.c **** #include "timer.h"
+  50:Lib/uip/timer.c **** 
+  51:Lib/uip/timer.c **** /*---------------------------------------------------------------------------*/
+  52:Lib/uip/timer.c **** /**
+  53:Lib/uip/timer.c ****  * Set a timer.
+  54:Lib/uip/timer.c ****  *
+  55:Lib/uip/timer.c ****  * This function is used to set a timer for a time sometime in the
+  56:Lib/uip/timer.c ****  * future. The function timer_expired() will evaluate to true after
+  57:Lib/uip/timer.c ****  * the timer has expired.
+  58:Lib/uip/timer.c ****  *
+  59:Lib/uip/timer.c ****  * \param t A pointer to the timer
+  60:Lib/uip/timer.c ****  * \param interval The interval before the timer expires.
+  61:Lib/uip/timer.c ****  *
+  62:Lib/uip/timer.c ****  */
+  63:Lib/uip/timer.c **** void
+  64:Lib/uip/timer.c **** timer_set(struct timer *t, clock_time_t interval)
+  65:Lib/uip/timer.c **** {
+  17               		.loc 1 65 0
+  18               		.cfi_startproc
+  19               	.LVL0:
+  20 0000 CF93      		push r28
+  21               	.LCFI0:
+  22               		.cfi_def_cfa_offset 3
+  23               		.cfi_offset 28, -2
+  24 0002 DF93      		push r29
+  25               	.LCFI1:
+  26               		.cfi_def_cfa_offset 4
+  27               		.cfi_offset 29, -3
+  28               	/* prologue: function */
+  29               	/* frame size = 0 */
+  30               	/* stack size = 2 */
+  31               	.L__stack_usage = 2
+  32 0004 EC01      		movw r28,r24
+  66:Lib/uip/timer.c ****   t->interval = interval;
+  33               		.loc 1 66 0
+  34 0006 7B83      		std Y+3,r23
+  35 0008 6A83      		std Y+2,r22
+  67:Lib/uip/timer.c ****   t->start = clock_time();
+  36               		.loc 1 67 0
+  37 000a 0E94 0000 		call clock_time
+  38               	.LVL1:
+  39 000e 9983      		std Y+1,r25
+  40 0010 8883      		st Y,r24
+  41               	/* epilogue start */
+  68:Lib/uip/timer.c **** }
+  42               		.loc 1 68 0
+  43 0012 DF91      		pop r29
+  44 0014 CF91      		pop r28
+  45               	.LVL2:
+  46 0016 0895      		ret
+  47               		.cfi_endproc
+  48               	.LFE5:
+  50               		.section	.text.timer_reset,"ax",@progbits
+  51               	.global	timer_reset
+  53               	timer_reset:
+  54               	.LFB6:
+  69:Lib/uip/timer.c **** /*---------------------------------------------------------------------------*/
+  70:Lib/uip/timer.c **** /**
+  71:Lib/uip/timer.c ****  * Reset the timer with the same interval.
+  72:Lib/uip/timer.c ****  *
+  73:Lib/uip/timer.c ****  * This function resets the timer with the same interval that was
+  74:Lib/uip/timer.c ****  * given to the timer_set() function. The start point of the interval
+  75:Lib/uip/timer.c ****  * is the exact time that the timer last expired. Therefore, this
+  76:Lib/uip/timer.c ****  * function will cause the timer to be stable over time, unlike the
+  77:Lib/uip/timer.c ****  * timer_restart() function.
+  78:Lib/uip/timer.c ****  *
+  79:Lib/uip/timer.c ****  * \param t A pointer to the timer.
+  80:Lib/uip/timer.c ****  *
+  81:Lib/uip/timer.c ****  * \sa timer_restart()
+  82:Lib/uip/timer.c ****  */
+  83:Lib/uip/timer.c **** void
+  84:Lib/uip/timer.c **** timer_reset(struct timer *t)
+  85:Lib/uip/timer.c **** {
+  55               		.loc 1 85 0
+  56               		.cfi_startproc
+  57               	.LVL3:
+  58               	/* prologue: function */
+  59               	/* frame size = 0 */
+  60               	/* stack size = 0 */
+  61               	.L__stack_usage = 0
+  62 0000 FC01      		movw r30,r24
+  86:Lib/uip/timer.c ****   t->start += t->interval;
+  63               		.loc 1 86 0
+  64 0002 2081      		ld r18,Z
+  65 0004 3181      		ldd r19,Z+1
+  66 0006 8281      		ldd r24,Z+2
+  67 0008 9381      		ldd r25,Z+3
+  68               	.LVL4:
+  69 000a 820F      		add r24,r18
+  70 000c 931F      		adc r25,r19
+  71 000e 9183      		std Z+1,r25
+  72 0010 8083      		st Z,r24
+  73 0012 0895      		ret
+  74               		.cfi_endproc
+  75               	.LFE6:
+  77               		.section	.text.timer_restart,"ax",@progbits
+  78               	.global	timer_restart
+  80               	timer_restart:
+  81               	.LFB7:
+  87:Lib/uip/timer.c **** }
+  88:Lib/uip/timer.c **** /*---------------------------------------------------------------------------*/
+  89:Lib/uip/timer.c **** /**
+  90:Lib/uip/timer.c ****  * Restart the timer from the current point in time
+  91:Lib/uip/timer.c ****  *
+  92:Lib/uip/timer.c ****  * This function restarts a timer with the same interval that was
+  93:Lib/uip/timer.c ****  * given to the timer_set() function. The timer will start at the
+  94:Lib/uip/timer.c ****  * current time.
+  95:Lib/uip/timer.c ****  *
+  96:Lib/uip/timer.c ****  * \note A periodic timer will drift if this function is used to reset
+  97:Lib/uip/timer.c ****  * it. For periodic timers, use the timer_reset() function instead.
+  98:Lib/uip/timer.c ****  *
+  99:Lib/uip/timer.c ****  * \param t A pointer to the timer.
+ 100:Lib/uip/timer.c ****  *
+ 101:Lib/uip/timer.c ****  * \sa timer_reset()
+ 102:Lib/uip/timer.c ****  */
+ 103:Lib/uip/timer.c **** void
+ 104:Lib/uip/timer.c **** timer_restart(struct timer *t)
+ 105:Lib/uip/timer.c **** {
+  82               		.loc 1 105 0
+  83               		.cfi_startproc
+  84               	.LVL5:
+  85 0000 CF93      		push r28
+  86               	.LCFI2:
+  87               		.cfi_def_cfa_offset 3
+  88               		.cfi_offset 28, -2
+  89 0002 DF93      		push r29
+  90               	.LCFI3:
+  91               		.cfi_def_cfa_offset 4
+  92               		.cfi_offset 29, -3
+  93               	/* prologue: function */
+  94               	/* frame size = 0 */
+  95               	/* stack size = 2 */
+  96               	.L__stack_usage = 2
+  97 0004 EC01      		movw r28,r24
+ 106:Lib/uip/timer.c ****   t->start = clock_time();
+  98               		.loc 1 106 0
+  99 0006 0E94 0000 		call clock_time
+ 100               	.LVL6:
+ 101 000a 9983      		std Y+1,r25
+ 102 000c 8883      		st Y,r24
+ 103               	/* epilogue start */
+ 107:Lib/uip/timer.c **** }
+ 104               		.loc 1 107 0
+ 105 000e DF91      		pop r29
+ 106 0010 CF91      		pop r28
+ 107               	.LVL7:
+ 108 0012 0895      		ret
+ 109               		.cfi_endproc
+ 110               	.LFE7:
+ 112               		.section	.text.timer_expired,"ax",@progbits
+ 113               	.global	timer_expired
+ 115               	timer_expired:
+ 116               	.LFB8:
+ 108:Lib/uip/timer.c **** /*---------------------------------------------------------------------------*/
+ 109:Lib/uip/timer.c **** /**
+ 110:Lib/uip/timer.c ****  * Check if a timer has expired.
+ 111:Lib/uip/timer.c ****  *
+ 112:Lib/uip/timer.c ****  * This function tests if a timer has expired and returns true or
+ 113:Lib/uip/timer.c ****  * false depending on its status.
+ 114:Lib/uip/timer.c ****  *
+ 115:Lib/uip/timer.c ****  * \param t A pointer to the timer
+ 116:Lib/uip/timer.c ****  *
+ 117:Lib/uip/timer.c ****  * \return Non-zero if the timer has expired, zero otherwise.
+ 118:Lib/uip/timer.c ****  *
+ 119:Lib/uip/timer.c ****  */
+ 120:Lib/uip/timer.c **** int
+ 121:Lib/uip/timer.c **** timer_expired(struct timer *t)
+ 122:Lib/uip/timer.c **** {
+ 117               		.loc 1 122 0
+ 118               		.cfi_startproc
+ 119               	.LVL8:
+ 120 0000 CF93      		push r28
+ 121               	.LCFI4:
+ 122               		.cfi_def_cfa_offset 3
+ 123               		.cfi_offset 28, -2
+ 124 0002 DF93      		push r29
+ 125               	.LCFI5:
+ 126               		.cfi_def_cfa_offset 4
+ 127               		.cfi_offset 29, -3
+ 128               	/* prologue: function */
+ 129               	/* frame size = 0 */
+ 130               	/* stack size = 2 */
+ 131               	.L__stack_usage = 2
+ 132 0004 EC01      		movw r28,r24
+ 123:Lib/uip/timer.c ****   return (clock_time_t)(clock_time() - t->start) >= (clock_time_t)t->interval;
+ 133               		.loc 1 123 0
+ 134 0006 0E94 0000 		call clock_time
+ 135               	.LVL9:
+ 136 000a 2881      		ld r18,Y
+ 137 000c 3981      		ldd r19,Y+1
+ 138 000e AC01      		movw r20,r24
+ 139 0010 421B      		sub r20,r18
+ 140 0012 530B      		sbc r21,r19
+ 141 0014 81E0      		ldi r24,lo8(1)
+ 142 0016 90E0      		ldi r25,0
+ 143 0018 2A81      		ldd r18,Y+2
+ 144 001a 3B81      		ldd r19,Y+3
+ 145 001c 4217      		cp r20,r18
+ 146 001e 5307      		cpc r21,r19
+ 147 0020 00F4      		brsh .L5
+ 148 0022 80E0      		ldi r24,0
+ 149 0024 90E0      		ldi r25,0
+ 150               	.L5:
+ 151               	/* epilogue start */
+ 124:Lib/uip/timer.c **** }
+ 152               		.loc 1 124 0
+ 153 0026 DF91      		pop r29
+ 154 0028 CF91      		pop r28
+ 155               	.LVL10:
+ 156 002a 0895      		ret
+ 157               		.cfi_endproc
+ 158               	.LFE8:
+ 160               		.text
+ 161               	.Letext0:
+ 162               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 163               		.file 3 "Lib/uip/clock.h"
+ 164               		.file 4 "Lib/uip/timer.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 timer.c
+     /tmp/ccEKUNnz.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccEKUNnz.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccEKUNnz.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccEKUNnz.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccEKUNnz.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccEKUNnz.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccEKUNnz.s:14     .text.timer_set:0000000000000000 timer_set
+     /tmp/ccEKUNnz.s:53     .text.timer_reset:0000000000000000 timer_reset
+     /tmp/ccEKUNnz.s:80     .text.timer_restart:0000000000000000 timer_restart
+     /tmp/ccEKUNnz.s:115    .text.timer_expired:0000000000000000 timer_expired
+
+UNDEFINED SYMBOLS
+clock_time

@@ -1,0 +1,591 @@
+   1               		.file	"ConfigDescriptor.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.DComp_NextBidirectionalPrinterInterface,"ax",@progbits
+  12               	.global	DComp_NextBidirectionalPrinterInterface
+  14               	DComp_NextBidirectionalPrinterInterface:
+  15               	.LFB148:
+  16               		.file 1 "ConfigDescriptor.c"
+   1:ConfigDescriptor.c **** /*
+   2:ConfigDescriptor.c ****              LUFA Library
+   3:ConfigDescriptor.c ****      Copyright (C) Dean Camera, 2011.
+   4:ConfigDescriptor.c **** 
+   5:ConfigDescriptor.c ****   dean [at] fourwalledcubicle [dot] com
+   6:ConfigDescriptor.c ****            www.lufa-lib.org
+   7:ConfigDescriptor.c **** */
+   8:ConfigDescriptor.c **** 
+   9:ConfigDescriptor.c **** /*
+  10:ConfigDescriptor.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:ConfigDescriptor.c **** 
+  12:ConfigDescriptor.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:ConfigDescriptor.c ****   software and its documentation for any purpose is hereby granted
+  14:ConfigDescriptor.c ****   without fee, provided that the above copyright notice appear in
+  15:ConfigDescriptor.c ****   all copies and that both that the copyright notice and this
+  16:ConfigDescriptor.c ****   permission notice and warranty disclaimer appear in supporting
+  17:ConfigDescriptor.c ****   documentation, and that the name of the author not be used in
+  18:ConfigDescriptor.c ****   advertising or publicity pertaining to distribution of the
+  19:ConfigDescriptor.c ****   software without specific, written prior permission.
+  20:ConfigDescriptor.c **** 
+  21:ConfigDescriptor.c ****   The author disclaim all warranties with regard to this
+  22:ConfigDescriptor.c ****   software, including all implied warranties of merchantability
+  23:ConfigDescriptor.c ****   and fitness.  In no event shall the author be liable for any
+  24:ConfigDescriptor.c ****   special, indirect or consequential damages or any damages
+  25:ConfigDescriptor.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:ConfigDescriptor.c ****   in an action of contract, negligence or other tortious action,
+  27:ConfigDescriptor.c ****   arising out of or in connection with the use or performance of
+  28:ConfigDescriptor.c ****   this software.
+  29:ConfigDescriptor.c **** */
+  30:ConfigDescriptor.c **** 
+  31:ConfigDescriptor.c **** #include "ConfigDescriptor.h"
+  32:ConfigDescriptor.c **** 
+  33:ConfigDescriptor.c **** /** Interface number for the bidirectional Printer interface found within the device. */
+  34:ConfigDescriptor.c **** uint8_t PrinterInterfaceNumber;
+  35:ConfigDescriptor.c **** 
+  36:ConfigDescriptor.c **** /** Interface Alternate Setting number for the bidirectional Printer interface found within the dev
+  37:ConfigDescriptor.c **** uint8_t PrinterAltSetting;
+  38:ConfigDescriptor.c **** 
+  39:ConfigDescriptor.c **** /** Reads and processes an attached device's descriptors, to determine compatibility and pipe confi
+  40:ConfigDescriptor.c ****  *  routine will read in the entire configuration descriptor, and configure the hosts pipes to corr
+  41:ConfigDescriptor.c ****  *  with compatible devices.
+  42:ConfigDescriptor.c ****  *
+  43:ConfigDescriptor.c ****  *  This routine searches for a bidirectional Printer interface descriptor containing bulk IN and O
+  44:ConfigDescriptor.c ****  *
+  45:ConfigDescriptor.c ****  *  \return An error code from the \ref PrinterHost_GetConfigDescriptorDataCodes_t enum.
+  46:ConfigDescriptor.c ****  */
+  47:ConfigDescriptor.c **** uint8_t ProcessConfigurationDescriptor(void)
+  48:ConfigDescriptor.c **** {
+  49:ConfigDescriptor.c **** 	uint8_t  ConfigDescriptorData[512];
+  50:ConfigDescriptor.c **** 	void*    CurrConfigLocation = ConfigDescriptorData;
+  51:ConfigDescriptor.c **** 	uint16_t CurrConfigBytesRem;
+  52:ConfigDescriptor.c **** 
+  53:ConfigDescriptor.c **** 	USB_Descriptor_Interface_t* PrinterInterface = NULL;
+  54:ConfigDescriptor.c **** 	USB_Descriptor_Endpoint_t*  DataINEndpoint   = NULL;
+  55:ConfigDescriptor.c **** 	USB_Descriptor_Endpoint_t*  DataOUTEndpoint  = NULL;
+  56:ConfigDescriptor.c **** 
+  57:ConfigDescriptor.c **** 	/* Retrieve the entire configuration descriptor into the allocated buffer */
+  58:ConfigDescriptor.c **** 	switch (USB_Host_GetDeviceConfigDescriptor(1, &CurrConfigBytesRem, ConfigDescriptorData, sizeof(Co
+  59:ConfigDescriptor.c **** 	{
+  60:ConfigDescriptor.c **** 		case HOST_GETCONFIG_Successful:
+  61:ConfigDescriptor.c **** 			break;
+  62:ConfigDescriptor.c **** 		case HOST_GETCONFIG_InvalidData:
+  63:ConfigDescriptor.c **** 			return InvalidConfigDataReturned;
+  64:ConfigDescriptor.c **** 		case HOST_GETCONFIG_BuffOverflow:
+  65:ConfigDescriptor.c **** 			return DescriptorTooLarge;
+  66:ConfigDescriptor.c **** 		default:
+  67:ConfigDescriptor.c **** 			return ControlError;
+  68:ConfigDescriptor.c **** 	}
+  69:ConfigDescriptor.c **** 
+  70:ConfigDescriptor.c **** 	while (!(DataINEndpoint) || !(DataOUTEndpoint))
+  71:ConfigDescriptor.c **** 	{
+  72:ConfigDescriptor.c **** 		/* See if we've found a likely compatible interface, and if there is an endpoint within that inte
+  73:ConfigDescriptor.c **** 		if (!(PrinterInterface) ||
+  74:ConfigDescriptor.c **** 		    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+  75:ConfigDescriptor.c **** 		                              DComp_NextPrinterInterfaceBulkDataEndpoint) != DESCRIPTOR_SEARCH_CO
+  76:ConfigDescriptor.c **** 		{
+  77:ConfigDescriptor.c **** 			/* Get the next Printer interface from the configuration descriptor */
+  78:ConfigDescriptor.c **** 			if (USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+  79:ConfigDescriptor.c **** 										  DComp_NextBidirectionalPrinterInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+  80:ConfigDescriptor.c **** 			{
+  81:ConfigDescriptor.c **** 				/* Descriptor not found, error out */
+  82:ConfigDescriptor.c **** 				return NoCompatibleInterfaceFound;
+  83:ConfigDescriptor.c **** 			}
+  84:ConfigDescriptor.c **** 
+  85:ConfigDescriptor.c **** 			/* Save the interface in case we need to refer back to it later */
+  86:ConfigDescriptor.c **** 			PrinterInterface = DESCRIPTOR_PCAST(CurrConfigLocation, USB_Descriptor_Interface_t);
+  87:ConfigDescriptor.c **** 
+  88:ConfigDescriptor.c **** 			/* Clear any found endpoints */
+  89:ConfigDescriptor.c **** 			DataINEndpoint  = NULL;
+  90:ConfigDescriptor.c **** 			DataOUTEndpoint = NULL;
+  91:ConfigDescriptor.c **** 
+  92:ConfigDescriptor.c **** 			/* Skip the remainder of the loop as we have not found an endpoint yet */
+  93:ConfigDescriptor.c **** 			continue;
+  94:ConfigDescriptor.c **** 		}
+  95:ConfigDescriptor.c **** 
+  96:ConfigDescriptor.c **** 		/* Retrieve the endpoint address from the endpoint descriptor */
+  97:ConfigDescriptor.c **** 		USB_Descriptor_Endpoint_t* EndpointData = DESCRIPTOR_PCAST(CurrConfigLocation, USB_Descriptor_End
+  98:ConfigDescriptor.c **** 
+  99:ConfigDescriptor.c **** 		/* If the endpoint is a IN type endpoint */
+ 100:ConfigDescriptor.c **** 		if ((EndpointData->EndpointAddress & ENDPOINT_DIR_MASK) == ENDPOINT_DIR_IN)
+ 101:ConfigDescriptor.c **** 		  DataINEndpoint  = EndpointData;
+ 102:ConfigDescriptor.c **** 		else
+ 103:ConfigDescriptor.c **** 		  DataOUTEndpoint = EndpointData;
+ 104:ConfigDescriptor.c **** 	}
+ 105:ConfigDescriptor.c **** 
+ 106:ConfigDescriptor.c **** 	/* Save Printer interface details for later use */
+ 107:ConfigDescriptor.c **** 	PrinterInterfaceNumber = PrinterInterface->InterfaceNumber;
+ 108:ConfigDescriptor.c **** 	PrinterAltSetting      = PrinterInterface->AlternateSetting;
+ 109:ConfigDescriptor.c **** 
+ 110:ConfigDescriptor.c **** 	/* Configure the Printer data IN pipe */
+ 111:ConfigDescriptor.c **** 	Pipe_ConfigurePipe(PRINTER_DATA_IN_PIPE, EP_TYPE_BULK, PIPE_TOKEN_IN,
+ 112:ConfigDescriptor.c **** 	                   DataINEndpoint->EndpointAddress, DataINEndpoint->EndpointSize, PIPE_BANK_SINGLE
+ 113:ConfigDescriptor.c **** 
+ 114:ConfigDescriptor.c **** 	/* Configure the Printer data OUT pipe */
+ 115:ConfigDescriptor.c **** 	Pipe_ConfigurePipe(PRINTER_DATA_OUT_PIPE, EP_TYPE_BULK, PIPE_TOKEN_OUT,
+ 116:ConfigDescriptor.c **** 					   DataOUTEndpoint->EndpointAddress, DataOUTEndpoint->EndpointSize, PIPE_BANK_SINGLE);
+ 117:ConfigDescriptor.c **** 
+ 118:ConfigDescriptor.c **** 	/* Valid data found, return success */
+ 119:ConfigDescriptor.c **** 	return SuccessfulConfigRead;
+ 120:ConfigDescriptor.c **** }
+ 121:ConfigDescriptor.c **** 
+ 122:ConfigDescriptor.c **** /** Descriptor comparator function. This comparator function is can be called while processing an a
+ 123:ConfigDescriptor.c ****  *  configuration descriptor, to search for a specific sub descriptor. It can also be used to abort
+ 124:ConfigDescriptor.c ****  *  descriptor processing if an incompatible descriptor configuration is found.
+ 125:ConfigDescriptor.c ****  *
+ 126:ConfigDescriptor.c ****  *  This comparator searches for the next Bidirectional Printer Interface descriptor of the current
+ 127:ConfigDescriptor.c ****  *  aborting the search if the end of the descriptors is found.
+ 128:ConfigDescriptor.c ****  *
+ 129:ConfigDescriptor.c ****  *  \return A value from the DSEARCH_Return_ErrorCodes_t enum
+ 130:ConfigDescriptor.c ****  */
+ 131:ConfigDescriptor.c **** uint8_t DComp_NextBidirectionalPrinterInterface(void* CurrentDescriptor)
+ 132:ConfigDescriptor.c **** {
+  17               		.loc 1 132 0
+  18               		.cfi_startproc
+  19               	.LVL0:
+  20               	/* prologue: function */
+  21               	/* frame size = 0 */
+  22               	/* stack size = 0 */
+  23               	.L__stack_usage = 0
+  24 0000 FC01      		movw r30,r24
+  25               	.LVL1:
+ 133:ConfigDescriptor.c **** 	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+ 134:ConfigDescriptor.c **** 
+ 135:ConfigDescriptor.c **** 	if (Header->Type == DTYPE_Interface)
+  26               		.loc 1 135 0
+  27 0002 8181      		ldd r24,Z+1
+  28               	.LVL2:
+  29 0004 8430      		cpi r24,lo8(4)
+  30 0006 01F4      		brne .L6
+  31               	.LVL3:
+  32               	.LBB2:
+ 136:ConfigDescriptor.c **** 	{
+ 137:ConfigDescriptor.c **** 		USB_Descriptor_Interface_t* Interface = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Interf
+ 138:ConfigDescriptor.c **** 
+ 139:ConfigDescriptor.c **** 		/* Check the descriptor class, subclass and protocol, break out if correct value interface found 
+ 140:ConfigDescriptor.c **** 		if ((Interface->Class    == PRNT_CSCP_PrinterClass)    &&
+  33               		.loc 1 140 0
+  34 0008 8581      		ldd r24,Z+5
+  35 000a 8730      		cpi r24,lo8(7)
+  36 000c 01F4      		brne .L6
+  37               		.loc 1 140 0 is_stmt 0 discriminator 1
+  38 000e 8681      		ldd r24,Z+6
+  39 0010 8130      		cpi r24,lo8(1)
+  40 0012 01F4      		brne .L6
+ 141:ConfigDescriptor.c **** 		    (Interface->SubClass == PRNT_CSCP_PrinterSubclass) &&
+  41               		.loc 1 141 0 is_stmt 1
+  42 0014 8781      		ldd r24,Z+7
+  43 0016 8230      		cpi r24,lo8(2)
+  44 0018 01F4      		brne .L6
+ 142:ConfigDescriptor.c **** 			(Interface->Protocol == PRNT_CSCP_BidirectionalProtocol))
+ 143:ConfigDescriptor.c **** 		{
+ 144:ConfigDescriptor.c **** 			return DESCRIPTOR_SEARCH_Found;
+  45               		.loc 1 144 0
+  46 001a 80E0      		ldi r24,0
+  47 001c 0895      		ret
+  48               	.LVL4:
+  49               	.L6:
+  50               	.LBE2:
+ 145:ConfigDescriptor.c **** 		}
+ 146:ConfigDescriptor.c **** 	}
+ 147:ConfigDescriptor.c **** 
+ 148:ConfigDescriptor.c **** 	return DESCRIPTOR_SEARCH_NotFound;
+  51               		.loc 1 148 0
+  52 001e 82E0      		ldi r24,lo8(2)
+ 149:ConfigDescriptor.c **** }
+  53               		.loc 1 149 0
+  54 0020 0895      		ret
+  55               		.cfi_endproc
+  56               	.LFE148:
+  58               		.section	.text.DComp_NextPrinterInterfaceBulkDataEndpoint,"ax",@progbits
+  59               	.global	DComp_NextPrinterInterfaceBulkDataEndpoint
+  61               	DComp_NextPrinterInterfaceBulkDataEndpoint:
+  62               	.LFB149:
+ 150:ConfigDescriptor.c **** 
+ 151:ConfigDescriptor.c **** /** Descriptor comparator function. This comparator function is can be called while processing an a
+ 152:ConfigDescriptor.c ****  *  configuration descriptor, to search for a specific sub descriptor. It can also be used to abort
+ 153:ConfigDescriptor.c ****  *  descriptor processing if an incompatible descriptor configuration is found.
+ 154:ConfigDescriptor.c ****  *
+ 155:ConfigDescriptor.c ****  *  This comparator searches for the next Bulk Endpoint descriptor of the current Printer interface
+ 156:ConfigDescriptor.c ****  *  search if another interface descriptor is found before the next endpoint.
+ 157:ConfigDescriptor.c ****  *
+ 158:ConfigDescriptor.c ****  *  \return A value from the DSEARCH_Return_ErrorCodes_t enum
+ 159:ConfigDescriptor.c ****  */
+ 160:ConfigDescriptor.c **** uint8_t DComp_NextPrinterInterfaceBulkDataEndpoint(void* CurrentDescriptor)
+ 161:ConfigDescriptor.c **** {
+  63               		.loc 1 161 0
+  64               		.cfi_startproc
+  65               	.LVL5:
+  66               	/* prologue: function */
+  67               	/* frame size = 0 */
+  68               	/* stack size = 0 */
+  69               	.L__stack_usage = 0
+  70 0000 FC01      		movw r30,r24
+  71               	.LVL6:
+ 162:ConfigDescriptor.c **** 	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+ 163:ConfigDescriptor.c **** 
+ 164:ConfigDescriptor.c **** 	if (Header->Type == DTYPE_Endpoint)
+  72               		.loc 1 164 0
+  73 0002 9181      		ldd r25,Z+1
+  74 0004 9530      		cpi r25,lo8(5)
+  75 0006 01F4      		brne .L9
+  76               	.LVL7:
+  77               	.LBB3:
+ 165:ConfigDescriptor.c **** 	{
+ 166:ConfigDescriptor.c **** 		USB_Descriptor_Endpoint_t* Endpoint = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Endpoint
+ 167:ConfigDescriptor.c **** 
+ 168:ConfigDescriptor.c **** 		/* Check the endpoint type, break out if correct BULK type endpoint found */
+ 169:ConfigDescriptor.c **** 		if ((Endpoint->Attributes & EP_TYPE_MASK) == EP_TYPE_BULK)
+  78               		.loc 1 169 0
+  79 0008 8381      		ldd r24,Z+3
+  80               	.LVL8:
+  81 000a 8370      		andi r24,lo8(3)
+  82 000c 8230      		cpi r24,lo8(2)
+  83 000e 01F4      		brne .L12
+ 170:ConfigDescriptor.c **** 		  return DESCRIPTOR_SEARCH_Found;
+  84               		.loc 1 170 0
+  85 0010 80E0      		ldi r24,0
+  86 0012 0895      		ret
+  87               	.LVL9:
+  88               	.L9:
+  89               	.LBE3:
+ 171:ConfigDescriptor.c **** 	}
+ 172:ConfigDescriptor.c **** 	else if (Header->Type == DTYPE_Interface)
+  90               		.loc 1 172 0
+  91 0014 9430      		cpi r25,lo8(4)
+  92 0016 01F4      		brne .L12
+ 173:ConfigDescriptor.c **** 	{
+ 174:ConfigDescriptor.c **** 		return DESCRIPTOR_SEARCH_Fail;
+  93               		.loc 1 174 0
+  94 0018 81E0      		ldi r24,lo8(1)
+  95               	.LVL10:
+  96 001a 0895      		ret
+  97               	.L12:
+ 175:ConfigDescriptor.c **** 	}
+ 176:ConfigDescriptor.c **** 
+ 177:ConfigDescriptor.c **** 	return DESCRIPTOR_SEARCH_NotFound;
+  98               		.loc 1 177 0
+  99 001c 82E0      		ldi r24,lo8(2)
+ 178:ConfigDescriptor.c **** }
+ 100               		.loc 1 178 0
+ 101 001e 0895      		ret
+ 102               		.cfi_endproc
+ 103               	.LFE149:
+ 105               		.section	.text.ProcessConfigurationDescriptor,"ax",@progbits
+ 106               	.global	ProcessConfigurationDescriptor
+ 108               	ProcessConfigurationDescriptor:
+ 109               	.LFB147:
+  48:ConfigDescriptor.c **** 	uint8_t  ConfigDescriptorData[512];
+ 110               		.loc 1 48 0
+ 111               		.cfi_startproc
+ 112 0000 BF92      		push r11
+ 113               	.LCFI0:
+ 114               		.cfi_def_cfa_offset 3
+ 115               		.cfi_offset 11, -2
+ 116 0002 CF92      		push r12
+ 117               	.LCFI1:
+ 118               		.cfi_def_cfa_offset 4
+ 119               		.cfi_offset 12, -3
+ 120 0004 DF92      		push r13
+ 121               	.LCFI2:
+ 122               		.cfi_def_cfa_offset 5
+ 123               		.cfi_offset 13, -4
+ 124 0006 EF92      		push r14
+ 125               	.LCFI3:
+ 126               		.cfi_def_cfa_offset 6
+ 127               		.cfi_offset 14, -5
+ 128 0008 FF92      		push r15
+ 129               	.LCFI4:
+ 130               		.cfi_def_cfa_offset 7
+ 131               		.cfi_offset 15, -6
+ 132 000a 0F93      		push r16
+ 133               	.LCFI5:
+ 134               		.cfi_def_cfa_offset 8
+ 135               		.cfi_offset 16, -7
+ 136 000c 1F93      		push r17
+ 137               	.LCFI6:
+ 138               		.cfi_def_cfa_offset 9
+ 139               		.cfi_offset 17, -8
+ 140 000e CF93      		push r28
+ 141               	.LCFI7:
+ 142               		.cfi_def_cfa_offset 10
+ 143               		.cfi_offset 28, -9
+ 144 0010 DF93      		push r29
+ 145               	.LCFI8:
+ 146               		.cfi_def_cfa_offset 11
+ 147               		.cfi_offset 29, -10
+ 148 0012 CDB7      		in r28,__SP_L__
+ 149 0014 DEB7      		in r29,__SP_H__
+ 150               	.LCFI9:
+ 151               		.cfi_def_cfa_register 28
+ 152 0016 C450      		subi r28,4
+ 153 0018 D240      		sbci r29,2
+ 154               	.LCFI10:
+ 155               		.cfi_def_cfa_offset 527
+ 156 001a 0FB6      		in __tmp_reg__,__SREG__
+ 157 001c F894      		cli
+ 158 001e DEBF      		out __SP_H__,r29
+ 159 0020 0FBE      		out __SREG__,__tmp_reg__
+ 160 0022 CDBF      		out __SP_L__,r28
+ 161               	/* prologue: function */
+ 162               	/* frame size = 516 */
+ 163               	/* stack size = 525 */
+ 164               	.L__stack_usage = 525
+  50:ConfigDescriptor.c **** 	uint16_t CurrConfigBytesRem;
+ 165               		.loc 1 50 0
+ 166 0024 AE01      		movw r20,r28
+ 167 0026 4F5F      		subi r20,-1
+ 168 0028 5F4F      		sbci r21,-1
+ 169 002a CD5F      		subi r28,lo8(-515)
+ 170 002c DD4F      		sbci r29,hi8(-515)
+ 171 002e 5983      		std Y+1,r21
+ 172 0030 4883      		st Y,r20
+ 173 0032 C350      		subi r28,lo8(515)
+ 174 0034 D240      		sbci r29,hi8(515)
+ 175               	.LVL11:
+  58:ConfigDescriptor.c **** 	{
+ 176               		.loc 1 58 0
+ 177 0036 20E0      		ldi r18,0
+ 178 0038 32E0      		ldi r19,lo8(2)
+ 179 003a BE01      		movw r22,r28
+ 180 003c 6F5F      		subi r22,-1
+ 181 003e 7D4F      		sbci r23,-3
+ 182 0040 81E0      		ldi r24,lo8(1)
+ 183 0042 0E94 0000 		call USB_Host_GetDeviceConfigDescriptor
+ 184               	.LVL12:
+ 185 0046 8530      		cpi r24,lo8(5)
+ 186 0048 01F0      		breq .L15
+ 187 004a 8630      		cpi r24,lo8(6)
+ 188 004c 01F4      		brne .+2
+ 189 004e 00C0      		rjmp .L24
+ 190 0050 8823      		tst r24
+ 191 0052 01F0      		breq .L17
+  67:ConfigDescriptor.c **** 	}
+ 192               		.loc 1 67 0
+ 193 0054 FF24      		clr r15
+ 194 0056 F394      		inc r15
+ 195 0058 00C0      		rjmp .L16
+ 196               	.L15:
+  65:ConfigDescriptor.c **** 		default:
+ 197               		.loc 1 65 0
+ 198 005a 22E0      		ldi r18,lo8(2)
+ 199 005c F22E      		mov r15,r18
+ 200 005e 00C0      		rjmp .L16
+ 201               	.LVL13:
+ 202               	.L36:
+ 203               	.LBB4:
+  74:ConfigDescriptor.c **** 		                              DComp_NextPrinterInterfaceBulkDataEndpoint) != DESCRIPTOR_SEARCH_CO
+ 204               		.loc 1 74 0 discriminator 1
+ 205 0060 40E0      		ldi r20,lo8(gs(DComp_NextPrinterInterfaceBulkDataEndpoint))
+ 206 0062 50E0      		ldi r21,hi8(gs(DComp_NextPrinterInterfaceBulkDataEndpoint))
+ 207 0064 BE01      		movw r22,r28
+ 208 0066 6D5F      		subi r22,-3
+ 209 0068 7D4F      		sbci r23,-3
+ 210 006a CE01      		movw r24,r28
+ 211 006c 8F5F      		subi r24,-1
+ 212 006e 9D4F      		sbci r25,-3
+ 213 0070 0E94 0000 		call USB_GetNextDescriptorComp
+ 214               	.LVL14:
+ 215 0074 F82E      		mov r15,r24
+  73:ConfigDescriptor.c **** 		    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+ 216               		.loc 1 73 0 discriminator 1
+ 217 0076 8111      		cpse r24,__zero_reg__
+ 218 0078 00C0      		rjmp .L17
+  97:ConfigDescriptor.c **** 
+ 219               		.loc 1 97 0
+ 220 007a CD5F      		subi r28,lo8(-515)
+ 221 007c DD4F      		sbci r29,hi8(-515)
+ 222 007e E881      		ld r30,Y
+ 223 0080 F981      		ldd r31,Y+1
+ 224 0082 C350      		subi r28,lo8(515)
+ 225 0084 D240      		sbci r29,hi8(515)
+ 226               	.LVL15:
+ 100:ConfigDescriptor.c **** 		  DataINEndpoint  = EndpointData;
+ 227               		.loc 1 100 0
+ 228 0086 8281      		ldd r24,Z+2
+ 229 0088 87FD      		sbrc r24,7
+ 230 008a 00C0      		rjmp .L22
+ 103:ConfigDescriptor.c **** 	}
+ 231               		.loc 1 103 0
+ 232 008c 6F01      		movw r12,r30
+ 100:ConfigDescriptor.c **** 		  DataINEndpoint  = EndpointData;
+ 233               		.loc 1 100 0
+ 234 008e EB2D      		mov r30,r11
+ 235               	.LVL16:
+ 236 0090 FE2D      		mov r31,r14
+ 237               	.LVL17:
+ 238               	.L22:
+ 239               	.LBE4:
+  70:ConfigDescriptor.c **** 	{
+ 240               		.loc 1 70 0
+ 241 0092 3097      		sbiw r30,0
+ 242 0094 01F4      		brne .L35
+ 243               	.L23:
+  48:ConfigDescriptor.c **** 	uint8_t  ConfigDescriptorData[512];
+ 244               		.loc 1 48 0
+ 245 0096 BE2E      		mov r11,r30
+ 246 0098 EF2E      		mov r14,r31
+ 247               	.LVL18:
+ 248               	.L21:
+ 249               	.LBB5:
+  73:ConfigDescriptor.c **** 		    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+ 250               		.loc 1 73 0
+ 251 009a 0115      		cp r16,__zero_reg__
+ 252 009c 1105      		cpc r17,__zero_reg__
+ 253 009e 01F4      		brne .L36
+ 254               	.LVL19:
+ 255               	.L17:
+  78:ConfigDescriptor.c **** 										  DComp_NextBidirectionalPrinterInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+ 256               		.loc 1 78 0
+ 257 00a0 40E0      		ldi r20,lo8(gs(DComp_NextBidirectionalPrinterInterface))
+ 258 00a2 50E0      		ldi r21,hi8(gs(DComp_NextBidirectionalPrinterInterface))
+ 259 00a4 BE01      		movw r22,r28
+ 260 00a6 6D5F      		subi r22,-3
+ 261 00a8 7D4F      		sbci r23,-3
+ 262 00aa CE01      		movw r24,r28
+ 263 00ac 8F5F      		subi r24,-1
+ 264 00ae 9D4F      		sbci r25,-3
+ 265 00b0 0E94 0000 		call USB_GetNextDescriptorComp
+ 266               	.LVL20:
+ 267 00b4 8111      		cpse r24,__zero_reg__
+ 268 00b6 00C0      		rjmp .L25
+  86:ConfigDescriptor.c **** 
+ 269               		.loc 1 86 0
+ 270 00b8 CD5F      		subi r28,lo8(-515)
+ 271 00ba DD4F      		sbci r29,hi8(-515)
+ 272 00bc 0881      		ld r16,Y
+ 273 00be 1981      		ldd r17,Y+1
+ 274 00c0 C350      		subi r28,lo8(515)
+ 275 00c2 D240      		sbci r29,hi8(515)
+ 276               	.LVL21:
+  89:ConfigDescriptor.c **** 			DataOUTEndpoint = NULL;
+ 277               		.loc 1 89 0
+ 278 00c4 B12C      		mov r11,__zero_reg__
+ 279 00c6 E12C      		mov r14,__zero_reg__
+  90:ConfigDescriptor.c **** 
+ 280               		.loc 1 90 0
+ 281 00c8 C12C      		mov r12,__zero_reg__
+ 282 00ca D12C      		mov r13,__zero_reg__
+ 283 00cc 00C0      		rjmp .L21
+ 284               	.LVL22:
+ 285               	.L35:
+ 286               	.LBE5:
+  70:ConfigDescriptor.c **** 	{
+ 287               		.loc 1 70 0 discriminator 1
+ 288 00ce C114      		cp r12,__zero_reg__
+ 289 00d0 D104      		cpc r13,__zero_reg__
+ 290 00d2 01F0      		breq .L23
+ 107:ConfigDescriptor.c **** 	PrinterAltSetting      = PrinterInterface->AlternateSetting;
+ 291               		.loc 1 107 0
+ 292 00d4 D801      		movw r26,r16
+ 293 00d6 1296      		adiw r26,2
+ 294 00d8 8C91      		ld r24,X
+ 295 00da 1297      		sbiw r26,2
+ 296 00dc 8093 0000 		sts PrinterInterfaceNumber,r24
+ 108:ConfigDescriptor.c **** 
+ 297               		.loc 1 108 0
+ 298 00e0 1396      		adiw r26,3
+ 299 00e2 8C91      		ld r24,X
+ 300 00e4 8093 0000 		sts PrinterAltSetting,r24
+ 111:ConfigDescriptor.c **** 	                   DataINEndpoint->EndpointAddress, DataINEndpoint->EndpointSize, PIPE_BANK_SINGLE
+ 301               		.loc 1 111 0
+ 302 00e8 0481      		ldd r16,Z+4
+ 303 00ea 1581      		ldd r17,Z+5
+ 304               	.LVL23:
+ 305 00ec E12C      		mov r14,__zero_reg__
+ 306 00ee 2281      		ldd r18,Z+2
+ 307 00f0 40E1      		ldi r20,lo8(16)
+ 308 00f2 62E0      		ldi r22,lo8(2)
+ 309 00f4 81E0      		ldi r24,lo8(1)
+ 310 00f6 0E94 0000 		call Pipe_ConfigurePipe
+ 311               	.LVL24:
+ 115:ConfigDescriptor.c **** 					   DataOUTEndpoint->EndpointAddress, DataOUTEndpoint->EndpointSize, PIPE_BANK_SINGLE);
+ 312               		.loc 1 115 0
+ 313 00fa F601      		movw r30,r12
+ 314 00fc 0481      		ldd r16,Z+4
+ 315 00fe 1581      		ldd r17,Z+5
+ 316 0100 2281      		ldd r18,Z+2
+ 317 0102 40E2      		ldi r20,lo8(32)
+ 318 0104 62E0      		ldi r22,lo8(2)
+ 319 0106 82E0      		ldi r24,lo8(2)
+ 320 0108 0E94 0000 		call Pipe_ConfigurePipe
+ 321               	.LVL25:
+ 119:ConfigDescriptor.c **** }
+ 322               		.loc 1 119 0
+ 323 010c 00C0      		rjmp .L16
+ 324               	.LVL26:
+ 325               	.L24:
+  63:ConfigDescriptor.c **** 		case HOST_GETCONFIG_BuffOverflow:
+ 326               		.loc 1 63 0
+ 327 010e 93E0      		ldi r25,lo8(3)
+ 328 0110 F92E      		mov r15,r25
+ 329 0112 00C0      		rjmp .L16
+ 330               	.LVL27:
+ 331               	.L25:
+ 332               	.LBB6:
+  82:ConfigDescriptor.c **** 			}
+ 333               		.loc 1 82 0
+ 334 0114 84E0      		ldi r24,lo8(4)
+ 335 0116 F82E      		mov r15,r24
+ 336               	.L16:
+ 337               	.LBE6:
+ 120:ConfigDescriptor.c **** 
+ 338               		.loc 1 120 0
+ 339 0118 8F2D      		mov r24,r15
+ 340               	/* epilogue start */
+ 341 011a CC5F      		subi r28,-4
+ 342 011c DD4F      		sbci r29,-3
+ 343 011e 0FB6      		in __tmp_reg__,__SREG__
+ 344 0120 F894      		cli
+ 345 0122 DEBF      		out __SP_H__,r29
+ 346 0124 0FBE      		out __SREG__,__tmp_reg__
+ 347 0126 CDBF      		out __SP_L__,r28
+ 348 0128 DF91      		pop r29
+ 349 012a CF91      		pop r28
+ 350 012c 1F91      		pop r17
+ 351 012e 0F91      		pop r16
+ 352 0130 FF90      		pop r15
+ 353 0132 EF90      		pop r14
+ 354 0134 DF90      		pop r13
+ 355 0136 CF90      		pop r12
+ 356 0138 BF90      		pop r11
+ 357 013a 0895      		ret
+ 358               		.cfi_endproc
+ 359               	.LFE147:
+ 361               		.comm	PrinterAltSetting,1,1
+ 362               		.comm	PrinterInterfaceNumber,1,1
+ 363               		.text
+ 364               	.Letext0:
+ 365               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 366               		.file 3 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../StdDescriptors.h"
+ 367               		.file 4 "../../../../LUFA/Drivers/USB/Core/ConfigDescriptor.h"
+ 368               		.file 5 "/usr/lib/avr/include/stdio.h"
+ 369               		.file 6 "../../../../LUFA/Drivers/USB/Class/Host/../Common/Printer.h"
+ 370               		.file 7 "ConfigDescriptor.h"
+ 371               		.file 8 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+ 372               		.file 9 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 373               		.file 10 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ConfigDescriptor.c
+     /tmp/ccsxOzR5.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccsxOzR5.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccsxOzR5.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccsxOzR5.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccsxOzR5.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccsxOzR5.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccsxOzR5.s:14     .text.DComp_NextBidirectionalPrinterInterface:0000000000000000 DComp_NextBidirectionalPrinterInterface
+     /tmp/ccsxOzR5.s:61     .text.DComp_NextPrinterInterfaceBulkDataEndpoint:0000000000000000 DComp_NextPrinterInterfaceBulkDataEndpoint
+     /tmp/ccsxOzR5.s:108    .text.ProcessConfigurationDescriptor:0000000000000000 ProcessConfigurationDescriptor
+                            *COM*:0000000000000001 PrinterInterfaceNumber
+                            *COM*:0000000000000001 PrinterAltSetting
+
+UNDEFINED SYMBOLS
+USB_Host_GetDeviceConfigDescriptor
+USB_GetNextDescriptorComp
+Pipe_ConfigurePipe
+__do_clear_bss

@@ -1,0 +1,3605 @@
+
+MediaController.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         0000000e  00800100  0000100a  0000109e  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         0000100a  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .bss          0000000f  0080010e  0080010e  000010ac  2**0
+                  ALLOC
+  3 .comment      00000011  00000000  00000000  000010ac  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000010c0  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 00000278  00000000  00000000  00001100  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   000057bb  00000000  00000000  00001378  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 00001ca5  00000000  00000000  00006b33  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   00002e1b  00000000  00000000  000087d8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  000007f8  00000000  00000000  0000b5f4  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    0000239c  00000000  00000000  0000bdec  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    0000304b  00000000  00000000  0000e188  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000390  00000000  00000000  000111d3  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+       0:	ab c0       	rjmp	.+342    	; 0x158 <__ctors_end>
+       2:	00 00       	nop
+       4:	c6 c0       	rjmp	.+396    	; 0x192 <__bad_interrupt>
+       6:	00 00       	nop
+       8:	c4 c0       	rjmp	.+392    	; 0x192 <__bad_interrupt>
+       a:	00 00       	nop
+       c:	c2 c0       	rjmp	.+388    	; 0x192 <__bad_interrupt>
+       e:	00 00       	nop
+      10:	c0 c0       	rjmp	.+384    	; 0x192 <__bad_interrupt>
+      12:	00 00       	nop
+      14:	be c0       	rjmp	.+380    	; 0x192 <__bad_interrupt>
+      16:	00 00       	nop
+      18:	bc c0       	rjmp	.+376    	; 0x192 <__bad_interrupt>
+      1a:	00 00       	nop
+      1c:	ba c0       	rjmp	.+372    	; 0x192 <__bad_interrupt>
+      1e:	00 00       	nop
+      20:	b8 c0       	rjmp	.+368    	; 0x192 <__bad_interrupt>
+      22:	00 00       	nop
+      24:	b6 c0       	rjmp	.+364    	; 0x192 <__bad_interrupt>
+      26:	00 00       	nop
+      28:	6c c2       	rjmp	.+1240   	; 0x502 <__vector_10>
+      2a:	00 00       	nop
+      2c:	b2 c0       	rjmp	.+356    	; 0x192 <__bad_interrupt>
+      2e:	00 00       	nop
+      30:	b0 c0       	rjmp	.+352    	; 0x192 <__bad_interrupt>
+      32:	00 00       	nop
+      34:	ae c0       	rjmp	.+348    	; 0x192 <__bad_interrupt>
+      36:	00 00       	nop
+      38:	ac c0       	rjmp	.+344    	; 0x192 <__bad_interrupt>
+      3a:	00 00       	nop
+      3c:	aa c0       	rjmp	.+340    	; 0x192 <__bad_interrupt>
+      3e:	00 00       	nop
+      40:	a8 c0       	rjmp	.+336    	; 0x192 <__bad_interrupt>
+      42:	00 00       	nop
+      44:	a6 c0       	rjmp	.+332    	; 0x192 <__bad_interrupt>
+      46:	00 00       	nop
+      48:	a4 c0       	rjmp	.+328    	; 0x192 <__bad_interrupt>
+      4a:	00 00       	nop
+      4c:	a2 c0       	rjmp	.+324    	; 0x192 <__bad_interrupt>
+      4e:	00 00       	nop
+      50:	a0 c0       	rjmp	.+320    	; 0x192 <__bad_interrupt>
+      52:	00 00       	nop
+      54:	9e c0       	rjmp	.+316    	; 0x192 <__bad_interrupt>
+      56:	00 00       	nop
+      58:	9c c0       	rjmp	.+312    	; 0x192 <__bad_interrupt>
+      5a:	00 00       	nop
+      5c:	9a c0       	rjmp	.+308    	; 0x192 <__bad_interrupt>
+      5e:	00 00       	nop
+      60:	98 c0       	rjmp	.+304    	; 0x192 <__bad_interrupt>
+      62:	00 00       	nop
+      64:	96 c0       	rjmp	.+300    	; 0x192 <__bad_interrupt>
+      66:	00 00       	nop
+      68:	94 c0       	rjmp	.+296    	; 0x192 <__bad_interrupt>
+      6a:	00 00       	nop
+      6c:	92 c0       	rjmp	.+292    	; 0x192 <__bad_interrupt>
+      6e:	00 00       	nop
+      70:	90 c0       	rjmp	.+288    	; 0x192 <__bad_interrupt>
+      72:	00 00       	nop
+      74:	8e c0       	rjmp	.+284    	; 0x192 <__bad_interrupt>
+      76:	00 00       	nop
+      78:	8c c0       	rjmp	.+280    	; 0x192 <__bad_interrupt>
+      7a:	00 00       	nop
+      7c:	8a c0       	rjmp	.+276    	; 0x192 <__bad_interrupt>
+      7e:	00 00       	nop
+      80:	88 c0       	rjmp	.+272    	; 0x192 <__bad_interrupt>
+      82:	00 00       	nop
+      84:	86 c0       	rjmp	.+268    	; 0x192 <__bad_interrupt>
+      86:	00 00       	nop
+      88:	84 c0       	rjmp	.+264    	; 0x192 <__bad_interrupt>
+      8a:	00 00       	nop
+      8c:	82 c0       	rjmp	.+260    	; 0x192 <__bad_interrupt>
+      8e:	00 00       	nop
+      90:	80 c0       	rjmp	.+256    	; 0x192 <__bad_interrupt>
+      92:	00 00       	nop
+      94:	7e c0       	rjmp	.+252    	; 0x192 <__bad_interrupt>
+      96:	00 00       	nop
+      98:	aa 04       	cpc	r10, r10
+      9a:	cc 04       	cpc	r12, r12
+      9c:	b9 05       	cpc	r27, r9
+      9e:	cc 04       	cpc	r12, r12
+      a0:	b9 05       	cpc	r27, r9
+      a2:	11 05       	cpc	r17, r1
+      a4:	34 05       	cpc	r19, r4
+      a6:	b9 05       	cpc	r27, r9
+      a8:	86 05       	cpc	r24, r6
+      aa:	98 05       	cpc	r25, r8
+
+000000ac <ProductString>:
+      ac:	2c 03 4c 00 55 00 46 00 41 00 20 00 4d 00 65 00     ,.L.U.F.A. .M.e.
+      bc:	64 00 69 00 61 00 20 00 43 00 6f 00 6e 00 74 00     d.i.a. .C.o.n.t.
+      cc:	72 00 6f 00 6c 00 6c 00 65 00 72 00 00 00           r.o.l.l.e.r...
+
+000000da <ManufacturerString>:
+      da:	18 03 44 00 65 00 61 00 6e 00 20 00 43 00 61 00     ..D.e.a.n. .C.a.
+      ea:	6d 00 65 00 72 00 61 00 00 00                       m.e.r.a...
+
+000000f4 <LanguageString>:
+      f4:	04 03 09 04                                         ....
+
+000000f8 <ConfigurationDescriptor>:
+      f8:	09 02 22 00 01 01 00 c0 32 09 04 00 00 01 03 00     ..".....2.......
+     108:	00 00 09 21 11 01 00 01 22 2b 00 07 05 81 03 08     ...!...."+......
+     118:	00 01                                               ..
+
+0000011a <DeviceDescriptor>:
+     11a:	12 01 10 01 00 00 00 08 eb 03 6a 20 01 00 01 02     ..........j ....
+     12a:	00 01                                               ..
+
+0000012c <MediaControlReport>:
+     12c:	05 0c 09 01 a1 01 09 b0 09 b1 09 b3 09 b4 09 b5     ................
+     13c:	09 b6 09 b7 09 cd 09 e2 09 e9 09 ea 75 01 95 0b     ............u...
+     14c:	15 00 25 01 81 06 95 05 81 01 c0 00                 ..%.........
+
+00000158 <__ctors_end>:
+     158:	11 24       	eor	r1, r1
+     15a:	1f be       	out	0x3f, r1	; 63
+     15c:	cf ef       	ldi	r28, 0xFF	; 255
+     15e:	d0 e2       	ldi	r29, 0x20	; 32
+     160:	de bf       	out	0x3e, r29	; 62
+     162:	cd bf       	out	0x3d, r28	; 61
+
+00000164 <__do_copy_data>:
+     164:	11 e0       	ldi	r17, 0x01	; 1
+     166:	a0 e0       	ldi	r26, 0x00	; 0
+     168:	b1 e0       	ldi	r27, 0x01	; 1
+     16a:	ea e0       	ldi	r30, 0x0A	; 10
+     16c:	f0 e1       	ldi	r31, 0x10	; 16
+     16e:	00 e0       	ldi	r16, 0x00	; 0
+     170:	0b bf       	out	0x3b, r16	; 59
+     172:	02 c0       	rjmp	.+4      	; 0x178 <__do_copy_data+0x14>
+     174:	07 90       	elpm	r0, Z+
+     176:	0d 92       	st	X+, r0
+     178:	ae 30       	cpi	r26, 0x0E	; 14
+     17a:	b1 07       	cpc	r27, r17
+     17c:	d9 f7       	brne	.-10     	; 0x174 <__do_copy_data+0x10>
+
+0000017e <__do_clear_bss>:
+     17e:	21 e0       	ldi	r18, 0x01	; 1
+     180:	ae e0       	ldi	r26, 0x0E	; 14
+     182:	b1 e0       	ldi	r27, 0x01	; 1
+     184:	01 c0       	rjmp	.+2      	; 0x188 <.do_clear_bss_start>
+
+00000186 <.do_clear_bss_loop>:
+     186:	1d 92       	st	X+, r1
+
+00000188 <.do_clear_bss_start>:
+     188:	ad 31       	cpi	r26, 0x1D	; 29
+     18a:	b2 07       	cpc	r27, r18
+     18c:	e1 f7       	brne	.-8      	; 0x186 <.do_clear_bss_loop>
+     18e:	33 d0       	rcall	.+102    	; 0x1f6 <main>
+     190:	3a c7       	rjmp	.+3700   	; 0x1006 <_exit>
+
+00000192 <__bad_interrupt>:
+     192:	36 cf       	rjmp	.-404    	; 0x0 <__vectors>
+
+00000194 <LEDs_SetAllLEDs>:
+				PORTD &= ~LEDMask;
+			}
+
+			static inline void LEDs_SetAllLEDs(const uint8_t LEDMask)
+			{
+				PORTD = ((PORTD & ~LEDS_ALL_LEDS) | LEDMask);
+     194:	9b b1       	in	r25, 0x0b	; 11
+     196:	9f 70       	andi	r25, 0x0F	; 15
+     198:	89 2b       	or	r24, r25
+     19a:	8b b9       	out	0x0b, r24	; 11
+     19c:	08 95       	ret
+
+0000019e <SetupHardware>:
+
+/** Configures the board hardware and chip peripherals for the demo's functionality. */
+void SetupHardware()
+{
+	/* Disable watchdog if enabled by bootloader/fuses */
+	MCUSR &= ~(1 << WDRF);
+     19e:	84 b7       	in	r24, 0x34	; 52
+     1a0:	87 7f       	andi	r24, 0xF7	; 247
+     1a2:	84 bf       	out	0x34, r24	; 52
+		);
+	}
+	else
+	{
+        uint8_t register temp_reg;
+		__asm__ __volatile__ (
+     1a4:	0f b6       	in	r0, 0x3f	; 63
+     1a6:	f8 94       	cli
+     1a8:	a8 95       	wdr
+     1aa:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <__TEXT_REGION_LENGTH__+0x7e0060>
+     1ae:	88 61       	ori	r24, 0x18	; 24
+     1b0:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__TEXT_REGION_LENGTH__+0x7e0060>
+     1b4:	10 92 60 00 	sts	0x0060, r1	; 0x800060 <__TEXT_REGION_LENGTH__+0x7e0060>
+     1b8:	0f be       	out	0x3f, r0	; 63
+from 1 to 129. Thus, one does not need to use \c clock_div_t type as argument.
+*/
+void clock_prescale_set(clock_div_t __x)
+{
+    uint8_t __tmp = _BV(CLKPCE);
+    __asm__ __volatile__ (
+     1ba:	90 e0       	ldi	r25, 0x00	; 0
+     1bc:	80 e8       	ldi	r24, 0x80	; 128
+     1be:	0f b6       	in	r0, 0x3f	; 63
+     1c0:	f8 94       	cli
+     1c2:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <__TEXT_REGION_LENGTH__+0x7e0061>
+     1c6:	90 93 61 00 	sts	0x0061, r25	; 0x800061 <__TEXT_REGION_LENGTH__+0x7e0061>
+     1ca:	0f be       	out	0x3f, r0	; 63
+
+		/* Inline Functions: */
+		#if !defined(__DOXYGEN__)
+			static inline void Joystick_Init(void)
+			{
+				DDRB  &= ~(JOY_BMASK);
+     1cc:	84 b1       	in	r24, 0x04	; 4
+     1ce:	8f 71       	andi	r24, 0x1F	; 31
+     1d0:	84 b9       	out	0x04, r24	; 4
+				DDRE  &= ~(JOY_EMASK);
+     1d2:	8d b1       	in	r24, 0x0d	; 13
+     1d4:	8f 7c       	andi	r24, 0xCF	; 207
+     1d6:	8d b9       	out	0x0d, r24	; 13
+
+				PORTB |= JOY_BMASK;
+     1d8:	85 b1       	in	r24, 0x05	; 5
+     1da:	80 6e       	ori	r24, 0xE0	; 224
+     1dc:	85 b9       	out	0x05, r24	; 5
+				PORTE |= JOY_EMASK;
+     1de:	8e b1       	in	r24, 0x0e	; 14
+     1e0:	80 63       	ori	r24, 0x30	; 48
+     1e2:	8e b9       	out	0x0e, r24	; 14
+
+		/* Inline Functions: */
+		#if !defined(__DOXYGEN__)
+			static inline void LEDs_Init(void)
+			{
+				DDRD  |=  LEDS_ALL_LEDS;
+     1e4:	8a b1       	in	r24, 0x0a	; 10
+     1e6:	80 6f       	ori	r24, 0xF0	; 240
+     1e8:	8a b9       	out	0x0a, r24	; 10
+				PORTD &= ~LEDS_ALL_LEDS;
+     1ea:	8b b1       	in	r24, 0x0b	; 11
+     1ec:	8f 70       	andi	r24, 0x0F	; 15
+     1ee:	8b b9       	out	0x0b, r24	; 11
+
+		/* Inline Functions: */
+		#if !defined(__DOXYGEN__)
+			static inline void Buttons_Init(void)
+			{
+				DDRE  &= ~BUTTONS_BUTTON1;
+     1f0:	6a 98       	cbi	0x0d, 2	; 13
+				PORTE |=  BUTTONS_BUTTON1;
+     1f2:	72 9a       	sbi	0x0e, 2	; 14
+
+	/* Hardware Initialization */
+	Joystick_Init();
+	LEDs_Init();
+	Buttons_Init();
+	USB_Init();
+     1f4:	70 c1       	rjmp	.+736    	; 0x4d6 <USB_Init>
+
+000001f6 <main>:
+/** Main program entry point. This routine contains the overall program flow, including initial
+ *  setup of all components and the main program loop.
+ */
+int main(void)
+{
+	SetupHardware();
+     1f6:	d3 df       	rcall	.-90     	; 0x19e <SetupHardware>
+
+	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
+     1f8:	80 e1       	ldi	r24, 0x10	; 16
+     1fa:	cc df       	rcall	.-104    	; 0x194 <LEDs_SetAllLEDs>
+	sei();
+     1fc:	78 94       	sei
+
+	for (;;)
+	{
+		HID_Device_USBTask(&MediaControl_HID_Interface);
+     1fe:	80 e0       	ldi	r24, 0x00	; 0
+     200:	91 e0       	ldi	r25, 0x01	; 1
+		USB_USBTask();
+     202:	35 d6       	rcall	.+3178   	; 0xe6e <HID_Device_USBTask>
+     204:	d0 d4       	rcall	.+2464   	; 0xba6 <USB_USBTask>
+     206:	fb cf       	rjmp	.-10     	; 0x1fe <main+0x8>
+
+00000208 <EVENT_USB_Device_Connect>:
+}
+
+/** Event handler for the library USB Connection event. */
+void EVENT_USB_Device_Connect(void)
+{
+	LEDs_SetAllLEDs(LEDMASK_USB_ENUMERATING);
+     208:	80 ea       	ldi	r24, 0xA0	; 160
+     20a:	c4 cf       	rjmp	.-120    	; 0x194 <LEDs_SetAllLEDs>
+
+0000020c <EVENT_USB_Device_Disconnect>:
+}
+
+/** Event handler for the library USB Disconnection event. */
+void EVENT_USB_Device_Disconnect(void)
+{
+	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
+     20c:	80 e1       	ldi	r24, 0x10	; 16
+     20e:	c2 cf       	rjmp	.-124    	; 0x194 <LEDs_SetAllLEDs>
+
+00000210 <EVENT_USB_Device_ConfigurationChanged>:
+/** Event handler for the library USB Configuration Changed event. */
+void EVENT_USB_Device_ConfigurationChanged(void)
+{
+	bool ConfigSuccess = true;
+
+	ConfigSuccess &= HID_Device_ConfigureEndpoints(&MediaControl_HID_Interface);
+     210:	80 e0       	ldi	r24, 0x00	; 0
+     212:	91 e0       	ldi	r25, 0x01	; 1
+     214:	01 d6       	rcall	.+3074   	; 0xe18 <HID_Device_ConfigureEndpoints>
+						break;
+					case USB_INT_EORSTI:
+						UDIEN  |= (1 << EORSTE);
+						break;
+					case USB_INT_SOFI:
+						UDIEN  |= (1 << SOFE);
+     216:	90 91 e2 00 	lds	r25, 0x00E2	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+     21a:	94 60       	ori	r25, 0x04	; 4
+     21c:	90 93 e2 00 	sts	0x00E2, r25	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+
+	USB_Device_EnableSOFEvents();
+
+	LEDs_SetAllLEDs(ConfigSuccess ? LEDMASK_USB_READY : LEDMASK_USB_ERROR);
+     220:	81 11       	cpse	r24, r1
+     222:	02 c0       	rjmp	.+4      	; 0x228 <EVENT_USB_Device_ConfigurationChanged+0x18>
+     224:	80 e9       	ldi	r24, 0x90	; 144
+     226:	01 c0       	rjmp	.+2      	; 0x22a <EVENT_USB_Device_ConfigurationChanged+0x1a>
+     228:	80 e6       	ldi	r24, 0x60	; 96
+     22a:	b4 cf       	rjmp	.-152    	; 0x194 <LEDs_SetAllLEDs>
+
+0000022c <EVENT_USB_Device_ControlRequest>:
+}
+
+/** Event handler for the library USB Control Request reception event. */
+void EVENT_USB_Device_ControlRequest(void)
+{
+	HID_Device_ProcessControlRequest(&MediaControl_HID_Interface);
+     22c:	80 e0       	ldi	r24, 0x00	; 0
+     22e:	91 e0       	ldi	r25, 0x01	; 1
+     230:	cc c4       	rjmp	.+2456   	; 0xbca <HID_Device_ProcessControlRequest>
+
+00000232 <EVENT_USB_Device_StartOfFrame>:
+			 *  \param[in,out] HIDInterfaceInfo  Pointer to a structure containing a HID Class configuration and state.
+			 */
+			static inline void HID_Device_MillisecondElapsed(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo) ATTR_ALWAYS_INLINE ATTR_NON_NULL_PTR_ARG(1);
+			static inline void HID_Device_MillisecondElapsed(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo)
+			{
+				if (HIDInterfaceInfo->State.IdleMSRemaining)
+     232:	80 91 0b 01 	lds	r24, 0x010B	; 0x80010b <__DATA_REGION_ORIGIN__+0xb>
+     236:	90 91 0c 01 	lds	r25, 0x010C	; 0x80010c <__DATA_REGION_ORIGIN__+0xc>
+     23a:	00 97       	sbiw	r24, 0x00	; 0
+     23c:	29 f0       	breq	.+10     	; 0x248 <EVENT_USB_Device_StartOfFrame+0x16>
+				  HIDInterfaceInfo->State.IdleMSRemaining--;
+     23e:	01 97       	sbiw	r24, 0x01	; 1
+     240:	90 93 0c 01 	sts	0x010C, r25	; 0x80010c <__DATA_REGION_ORIGIN__+0xc>
+     244:	80 93 0b 01 	sts	0x010B, r24	; 0x80010b <__DATA_REGION_ORIGIN__+0xb>
+     248:	08 95       	ret
+
+0000024a <CALLBACK_HID_Device_CreateHIDReport>:
+ *
+ *  \return Boolean true to force the sending of the report, false to let the library determine if it needs to be sent
+ */
+bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo, uint8_t* const ReportID,
+                                         const uint8_t ReportType, void* ReportData, uint16_t* const ReportSize)
+{
+     24a:	0f 93       	push	r16
+     24c:	1f 93       	push	r17
+     24e:	f9 01       	movw	r30, r18
+			}
+
+			static inline uint8_t Joystick_GetStatus(void) ATTR_WARN_UNUSED_RESULT;
+			static inline uint8_t Joystick_GetStatus(void)
+			{
+				return (((uint8_t)~PINB & JOY_BMASK) | (((uint8_t)~PINE & JOY_EMASK) >> JOY_PORTE_MASK_SHIFT));
+     250:	83 b1       	in	r24, 0x03	; 3
+     252:	9c b1       	in	r25, 0x0c	; 12
+     254:	90 95       	com	r25
+     256:	90 73       	andi	r25, 0x30	; 48
+     258:	96 95       	lsr	r25
+     25a:	80 95       	com	r24
+     25c:	80 7e       	andi	r24, 0xE0	; 224
+     25e:	89 2b       	or	r24, r25
+			}
+
+			static inline uint8_t Buttons_GetStatus(void) ATTR_WARN_UNUSED_RESULT;
+			static inline uint8_t Buttons_GetStatus(void)
+			{
+				return ((PINE & BUTTONS_BUTTON1) ^ BUTTONS_BUTTON1);
+     260:	9c b1       	in	r25, 0x0c	; 12
+
+	uint8_t JoyStatus_LCL    = Joystick_GetStatus();
+	uint8_t ButtonStatus_LCL = Buttons_GetStatus();
+
+	/* Update the Media Control report with the user button presses */
+	MediaReport->Mute          = ((ButtonStatus_LCL & BUTTONS_BUTTON1) ? true : false);
+     262:	90 95       	com	r25
+     264:	92 fb       	bst	r25, 2
+     266:	99 27       	eor	r25, r25
+     268:	90 f9       	bld	r25, 0
+     26a:	31 81       	ldd	r19, Z+1	; 0x01
+     26c:	90 fb       	bst	r25, 0
+     26e:	30 f9       	bld	r19, 0
+	MediaReport->PlayPause     = ((JoyStatus_LCL & JOY_PRESS) ? true : false);
+     270:	85 fb       	bst	r24, 5
+     272:	22 27       	eor	r18, r18
+     274:	20 f9       	bld	r18, 0
+     276:	90 81       	ld	r25, Z
+     278:	20 fb       	bst	r18, 0
+     27a:	97 f9       	bld	r25, 7
+	MediaReport->VolumeUp      = ((JoyStatus_LCL & JOY_UP)    ? true : false);
+     27c:	28 2f       	mov	r18, r24
+     27e:	22 1f       	adc	r18, r18
+     280:	22 27       	eor	r18, r18
+     282:	22 1f       	adc	r18, r18
+     284:	20 fb       	bst	r18, 0
+     286:	31 f9       	bld	r19, 1
+	MediaReport->VolumeDown    = ((JoyStatus_LCL & JOY_DOWN)  ? true : false);
+     288:	84 fb       	bst	r24, 4
+     28a:	22 27       	eor	r18, r18
+     28c:	20 f9       	bld	r18, 0
+     28e:	20 fb       	bst	r18, 0
+     290:	32 f9       	bld	r19, 2
+     292:	31 83       	std	Z+1, r19	; 0x01
+	MediaReport->PreviousTrack = ((JoyStatus_LCL & JOY_LEFT)  ? true : false);
+     294:	86 fb       	bst	r24, 6
+     296:	22 27       	eor	r18, r18
+     298:	20 f9       	bld	r18, 0
+     29a:	20 fb       	bst	r18, 0
+     29c:	95 f9       	bld	r25, 5
+	MediaReport->NextTrack     = ((JoyStatus_LCL & JOY_RIGHT) ? true : false);
+     29e:	83 fb       	bst	r24, 3
+     2a0:	88 27       	eor	r24, r24
+     2a2:	80 f9       	bld	r24, 0
+     2a4:	80 fb       	bst	r24, 0
+     2a6:	94 f9       	bld	r25, 4
+     2a8:	90 83       	st	Z, r25
+
+	*ReportSize = sizeof(USB_MediaReport_Data_t);
+     2aa:	82 e0       	ldi	r24, 0x02	; 2
+     2ac:	90 e0       	ldi	r25, 0x00	; 0
+     2ae:	f8 01       	movw	r30, r16
+     2b0:	91 83       	std	Z+1, r25	; 0x01
+     2b2:	80 83       	st	Z, r24
+	return false;
+}
+     2b4:	80 e0       	ldi	r24, 0x00	; 0
+     2b6:	1f 91       	pop	r17
+     2b8:	0f 91       	pop	r16
+     2ba:	08 95       	ret
+
+000002bc <CALLBACK_HID_Device_ProcessHIDReport>:
+void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
+                                          const uint8_t ReportID,
+                                          const uint8_t ReportType,
+                                          const void* ReportData,
+                                          const uint16_t ReportSize)
+{
+     2bc:	08 95       	ret
+
+000002be <CALLBACK_USB_GetDescriptor>:
+	const uint8_t  DescriptorNumber = (wValue & 0xFF);
+
+	const void* Address = NULL;
+	uint16_t    Size    = NO_DESCRIPTOR;
+
+	switch (DescriptorType)
+     2be:	29 2f       	mov	r18, r25
+     2c0:	33 27       	eor	r19, r19
+     2c2:	23 30       	cpi	r18, 0x03	; 3
+     2c4:	31 05       	cpc	r19, r1
+     2c6:	e1 f0       	breq	.+56     	; 0x300 <CALLBACK_USB_GetDescriptor+0x42>
+     2c8:	58 f4       	brcc	.+22     	; 0x2e0 <CALLBACK_USB_GetDescriptor+0x22>
+     2ca:	21 30       	cpi	r18, 0x01	; 1
+     2cc:	31 05       	cpc	r19, r1
+     2ce:	99 f0       	breq	.+38     	; 0x2f6 <CALLBACK_USB_GetDescriptor+0x38>
+     2d0:	22 30       	cpi	r18, 0x02	; 2
+     2d2:	31 05       	cpc	r19, r1
+     2d4:	69 f5       	brne	.+90     	; 0x330 <CALLBACK_USB_GetDescriptor+0x72>
+			Address = &DeviceDescriptor;
+			Size    = sizeof(USB_Descriptor_Device_t);
+			break;
+		case DTYPE_Configuration:
+			Address = &ConfigurationDescriptor;
+			Size    = sizeof(USB_Descriptor_Configuration_t);
+     2d6:	82 e2       	ldi	r24, 0x22	; 34
+     2d8:	90 e0       	ldi	r25, 0x00	; 0
+		case DTYPE_Device:
+			Address = &DeviceDescriptor;
+			Size    = sizeof(USB_Descriptor_Device_t);
+			break;
+		case DTYPE_Configuration:
+			Address = &ConfigurationDescriptor;
+     2da:	28 ef       	ldi	r18, 0xF8	; 248
+     2dc:	30 e0       	ldi	r19, 0x00	; 0
+			Size    = sizeof(USB_Descriptor_Configuration_t);
+			break;
+     2de:	2c c0       	rjmp	.+88     	; 0x338 <CALLBACK_USB_GetDescriptor+0x7a>
+	const uint8_t  DescriptorNumber = (wValue & 0xFF);
+
+	const void* Address = NULL;
+	uint16_t    Size    = NO_DESCRIPTOR;
+
+	switch (DescriptorType)
+     2e0:	21 32       	cpi	r18, 0x21	; 33
+     2e2:	31 05       	cpc	r19, r1
+     2e4:	01 f1       	breq	.+64     	; 0x326 <CALLBACK_USB_GetDescriptor+0x68>
+     2e6:	22 32       	cpi	r18, 0x22	; 34
+     2e8:	31 05       	cpc	r19, r1
+     2ea:	11 f5       	brne	.+68     	; 0x330 <CALLBACK_USB_GetDescriptor+0x72>
+			Address = &ConfigurationDescriptor.HID_MediaControlHID;
+			Size    = sizeof(USB_HID_Descriptor_HID_t);
+			break;
+		case HID_DTYPE_Report:
+			Address = &MediaControlReport;
+			Size    = sizeof(MediaControlReport);
+     2ec:	8b e2       	ldi	r24, 0x2B	; 43
+     2ee:	90 e0       	ldi	r25, 0x00	; 0
+		case HID_DTYPE_HID:
+			Address = &ConfigurationDescriptor.HID_MediaControlHID;
+			Size    = sizeof(USB_HID_Descriptor_HID_t);
+			break;
+		case HID_DTYPE_Report:
+			Address = &MediaControlReport;
+     2f0:	2c e2       	ldi	r18, 0x2C	; 44
+     2f2:	31 e0       	ldi	r19, 0x01	; 1
+			Size    = sizeof(MediaControlReport);
+			break;
+     2f4:	21 c0       	rjmp	.+66     	; 0x338 <CALLBACK_USB_GetDescriptor+0x7a>
+
+	switch (DescriptorType)
+	{
+		case DTYPE_Device:
+			Address = &DeviceDescriptor;
+			Size    = sizeof(USB_Descriptor_Device_t);
+     2f6:	82 e1       	ldi	r24, 0x12	; 18
+     2f8:	90 e0       	ldi	r25, 0x00	; 0
+	uint16_t    Size    = NO_DESCRIPTOR;
+
+	switch (DescriptorType)
+	{
+		case DTYPE_Device:
+			Address = &DeviceDescriptor;
+     2fa:	2a e1       	ldi	r18, 0x1A	; 26
+     2fc:	31 e0       	ldi	r19, 0x01	; 1
+     2fe:	1c c0       	rjmp	.+56     	; 0x338 <CALLBACK_USB_GetDescriptor+0x7a>
+		case DTYPE_Configuration:
+			Address = &ConfigurationDescriptor;
+			Size    = sizeof(USB_Descriptor_Configuration_t);
+			break;
+		case DTYPE_String:
+			switch (DescriptorNumber)
+     300:	99 27       	eor	r25, r25
+     302:	81 30       	cpi	r24, 0x01	; 1
+     304:	91 05       	cpc	r25, r1
+     306:	49 f0       	breq	.+18     	; 0x31a <CALLBACK_USB_GetDescriptor+0x5c>
+     308:	28 f0       	brcs	.+10     	; 0x314 <CALLBACK_USB_GetDescriptor+0x56>
+     30a:	02 97       	sbiw	r24, 0x02	; 2
+     30c:	89 f4       	brne	.+34     	; 0x330 <CALLBACK_USB_GetDescriptor+0x72>
+					Address = &ManufacturerString;
+					Size    = pgm_read_byte(&ManufacturerString.Header.Size);
+					break;
+				case 0x02:
+					Address = &ProductString;
+					Size    = pgm_read_byte(&ProductString.Header.Size);
+     30e:	ec ea       	ldi	r30, 0xAC	; 172
+     310:	f0 e0       	ldi	r31, 0x00	; 0
+     312:	05 c0       	rjmp	.+10     	; 0x31e <CALLBACK_USB_GetDescriptor+0x60>
+		case DTYPE_String:
+			switch (DescriptorNumber)
+			{
+				case 0x00:
+					Address = &LanguageString;
+					Size    = pgm_read_byte(&LanguageString.Header.Size);
+     314:	e4 ef       	ldi	r30, 0xF4	; 244
+     316:	f0 e0       	ldi	r31, 0x00	; 0
+     318:	02 c0       	rjmp	.+4      	; 0x31e <CALLBACK_USB_GetDescriptor+0x60>
+					break;
+				case 0x01:
+					Address = &ManufacturerString;
+					Size    = pgm_read_byte(&ManufacturerString.Header.Size);
+     31a:	ea ed       	ldi	r30, 0xDA	; 218
+     31c:	f0 e0       	ldi	r31, 0x00	; 0
+					break;
+				case 0x02:
+					Address = &ProductString;
+					Size    = pgm_read_byte(&ProductString.Header.Size);
+     31e:	84 91       	lpm	r24, Z
+     320:	90 e0       	ldi	r25, 0x00	; 0
+				case 0x01:
+					Address = &ManufacturerString;
+					Size    = pgm_read_byte(&ManufacturerString.Header.Size);
+					break;
+				case 0x02:
+					Address = &ProductString;
+     322:	9f 01       	movw	r18, r30
+					Size    = pgm_read_byte(&ProductString.Header.Size);
+					break;
+     324:	09 c0       	rjmp	.+18     	; 0x338 <CALLBACK_USB_GetDescriptor+0x7a>
+			}
+
+			break;
+		case HID_DTYPE_HID:
+			Address = &ConfigurationDescriptor.HID_MediaControlHID;
+			Size    = sizeof(USB_HID_Descriptor_HID_t);
+     326:	89 e0       	ldi	r24, 0x09	; 9
+     328:	90 e0       	ldi	r25, 0x00	; 0
+					break;
+			}
+
+			break;
+		case HID_DTYPE_HID:
+			Address = &ConfigurationDescriptor.HID_MediaControlHID;
+     32a:	2a e0       	ldi	r18, 0x0A	; 10
+     32c:	31 e0       	ldi	r19, 0x01	; 1
+			Size    = sizeof(USB_HID_Descriptor_HID_t);
+			break;
+     32e:	04 c0       	rjmp	.+8      	; 0x338 <CALLBACK_USB_GetDescriptor+0x7a>
+{
+	const uint8_t  DescriptorType   = (wValue >> 8);
+	const uint8_t  DescriptorNumber = (wValue & 0xFF);
+
+	const void* Address = NULL;
+	uint16_t    Size    = NO_DESCRIPTOR;
+     330:	80 e0       	ldi	r24, 0x00	; 0
+     332:	90 e0       	ldi	r25, 0x00	; 0
+                                    const void** const DescriptorAddress)
+{
+	const uint8_t  DescriptorType   = (wValue >> 8);
+	const uint8_t  DescriptorNumber = (wValue & 0xFF);
+
+	const void* Address = NULL;
+     334:	20 e0       	ldi	r18, 0x00	; 0
+     336:	30 e0       	ldi	r19, 0x00	; 0
+			Address = &MediaControlReport;
+			Size    = sizeof(MediaControlReport);
+			break;
+	}
+
+	*DescriptorAddress = Address;
+     338:	fa 01       	movw	r30, r20
+     33a:	31 83       	std	Z+1, r19	; 0x01
+     33c:	20 83       	st	Z, r18
+	return Size;
+}
+     33e:	08 95       	ret
+
+00000340 <Endpoint_ConfigureEndpoint_Prv>:
+		UEIENX  = 0;
+		UEINTX  = 0;
+		UECFG1X = 0;
+		Endpoint_DisableEndpoint();
+	}
+}
+     340:	98 2f       	mov	r25, r24
+     342:	97 30       	cpi	r25, 0x07	; 7
+     344:	68 f5       	brcc	.+90     	; 0x3a0 <Endpoint_ConfigureEndpoint_Prv+0x60>
+     346:	90 93 e9 00 	sts	0x00E9, r25	; 0x8000e9 <__TEXT_REGION_LENGTH__+0x7e00e9>
+     34a:	98 17       	cp	r25, r24
+     34c:	39 f0       	breq	.+14     	; 0x35c <Endpoint_ConfigureEndpoint_Prv+0x1c>
+     34e:	70 91 ec 00 	lds	r23, 0x00EC	; 0x8000ec <__TEXT_REGION_LENGTH__+0x7e00ec>
+     352:	20 91 ed 00 	lds	r18, 0x00ED	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7e00ed>
+     356:	50 91 f0 00 	lds	r21, 0x00F0	; 0x8000f0 <__TEXT_REGION_LENGTH__+0x7e00f0>
+     35a:	03 c0       	rjmp	.+6      	; 0x362 <Endpoint_ConfigureEndpoint_Prv+0x22>
+     35c:	24 2f       	mov	r18, r20
+     35e:	76 2f       	mov	r23, r22
+     360:	50 e0       	ldi	r21, 0x00	; 0
+     362:	21 fd       	sbrc	r18, 1
+     364:	02 c0       	rjmp	.+4      	; 0x36a <Endpoint_ConfigureEndpoint_Prv+0x2a>
+     366:	9f 5f       	subi	r25, 0xFF	; 255
+     368:	ec cf       	rjmp	.-40     	; 0x342 <Endpoint_ConfigureEndpoint_Prv+0x2>
+     36a:	30 91 eb 00 	lds	r19, 0x00EB	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+     36e:	3e 7f       	andi	r19, 0xFE	; 254
+     370:	30 93 eb 00 	sts	0x00EB, r19	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+     374:	30 91 ed 00 	lds	r19, 0x00ED	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7e00ed>
+     378:	3d 7f       	andi	r19, 0xFD	; 253
+     37a:	30 93 ed 00 	sts	0x00ED, r19	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7e00ed>
+     37e:	30 91 eb 00 	lds	r19, 0x00EB	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+     382:	31 60       	ori	r19, 0x01	; 1
+     384:	30 93 eb 00 	sts	0x00EB, r19	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+     388:	70 93 ec 00 	sts	0x00EC, r23	; 0x8000ec <__TEXT_REGION_LENGTH__+0x7e00ec>
+     38c:	20 93 ed 00 	sts	0x00ED, r18	; 0x8000ed <__TEXT_REGION_LENGTH__+0x7e00ed>
+     390:	50 93 f0 00 	sts	0x00F0, r21	; 0x8000f0 <__TEXT_REGION_LENGTH__+0x7e00f0>
+     394:	20 91 ee 00 	lds	r18, 0x00EE	; 0x8000ee <__TEXT_REGION_LENGTH__+0x7e00ee>
+     398:	27 fd       	sbrc	r18, 7
+     39a:	e5 cf       	rjmp	.-54     	; 0x366 <Endpoint_ConfigureEndpoint_Prv+0x26>
+     39c:	80 e0       	ldi	r24, 0x00	; 0
+     39e:	08 95       	ret
+     3a0:	80 93 e9 00 	sts	0x00E9, r24	; 0x8000e9 <__TEXT_REGION_LENGTH__+0x7e00e9>
+     3a4:	81 e0       	ldi	r24, 0x01	; 1
+     3a6:	08 95       	ret
+
+000003a8 <Endpoint_ClearStatusStage>:
+
+void Endpoint_ClearStatusStage(void)
+{
+	if (USB_ControlRequest.bmRequestType & REQDIR_DEVICETOHOST)
+     3a8:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <USB_ControlRequest>
+     3ac:	87 ff       	sbrs	r24, 7
+     3ae:	11 c0       	rjmp	.+34     	; 0x3d2 <Endpoint_ClearStatusStage+0x2a>
+			 *  \return Boolean \c true if current endpoint is has received an OUT packet, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsOUTReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsOUTReceived(void)
+			{
+				return ((UEINTX & (1 << RXOUTI)) ? true : false);
+     3b0:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+	{
+		while (!(Endpoint_IsOUTReceived()))
+     3b4:	82 fd       	sbrc	r24, 2
+     3b6:	05 c0       	rjmp	.+10     	; 0x3c2 <Endpoint_ClearStatusStage+0x1a>
+		{
+			if (USB_DeviceState == DEVICE_STATE_Unattached)
+     3b8:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <USB_DeviceState>
+     3bc:	81 11       	cpse	r24, r1
+     3be:	f8 cf       	rjmp	.-16     	; 0x3b0 <Endpoint_ClearStatusStage+0x8>
+     3c0:	11 c0       	rjmp	.+34     	; 0x3e4 <Endpoint_ClearStatusStage+0x3c>
+			 */
+			static inline void Endpoint_ClearOUT(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearOUT(void)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UEINTX &= ~((1 << RXOUTI) | (1 << FIFOCON));
+     3c2:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     3c6:	8b 77       	andi	r24, 0x7B	; 123
+     3c8:	0b c0       	rjmp	.+22     	; 0x3e0 <Endpoint_ClearStatusStage+0x38>
+	}
+	else
+	{
+		while (!(Endpoint_IsINReady()))
+		{
+			if (USB_DeviceState == DEVICE_STATE_Unattached)
+     3ca:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <USB_DeviceState>
+     3ce:	88 23       	and	r24, r24
+     3d0:	49 f0       	breq	.+18     	; 0x3e4 <Endpoint_ClearStatusStage+0x3c>
+			 *  \return Boolean \c true if the current endpoint is ready for an IN packet, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsINReady(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsINReady(void)
+			{
+				return ((UEINTX & (1 << TXINI)) ? true : false);
+     3d2:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+
+		Endpoint_ClearOUT();
+	}
+	else
+	{
+		while (!(Endpoint_IsINReady()))
+     3d6:	80 ff       	sbrs	r24, 0
+     3d8:	f8 cf       	rjmp	.-16     	; 0x3ca <Endpoint_ClearStatusStage+0x22>
+			 */
+			static inline void Endpoint_ClearIN(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearIN(void)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UEINTX &= ~((1 << TXINI) | (1 << FIFOCON));
+     3da:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     3de:	8e 77       	andi	r24, 0x7E	; 126
+     3e0:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     3e4:	08 95       	ret
+
+000003e6 <Endpoint_WaitUntilReady>:
+			 *  \return Current USB frame number from the USB controller.
+			 */
+			static inline uint16_t USB_Device_GetFrameNumber(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
+			static inline uint16_t USB_Device_GetFrameNumber(void)
+			{
+				return UDFNUM;
+     3e6:	20 91 e4 00 	lds	r18, 0x00E4	; 0x8000e4 <__TEXT_REGION_LENGTH__+0x7e00e4>
+     3ea:	30 91 e5 00 	lds	r19, 0x00E5	; 0x8000e5 <__TEXT_REGION_LENGTH__+0x7e00e5>
+     3ee:	95 e6       	ldi	r25, 0x65	; 101
+			 *  \return The currently selected endpoint's direction, as a \c ENDPOINT_DIR_* mask.
+			 */
+			static inline uint8_t Endpoint_GetEndpointDirection(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline uint8_t Endpoint_GetEndpointDirection(void)
+			{
+				return (UECFG0X & (1 << EPDIR)) ? ENDPOINT_DIR_IN : ENDPOINT_DIR_OUT;
+     3f0:	40 91 ec 00 	lds	r20, 0x00EC	; 0x8000ec <__TEXT_REGION_LENGTH__+0x7e00ec>
+     3f4:	84 2f       	mov	r24, r20
+     3f6:	81 70       	andi	r24, 0x01	; 1
+     3f8:	40 ff       	sbrs	r20, 0
+     3fa:	23 c0       	rjmp	.+70     	; 0x442 <__LOCK_REGION_LENGTH__+0x42>
+			 *  \return Boolean \c true if the current endpoint is ready for an IN packet, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsINReady(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsINReady(void)
+			{
+				return ((UEINTX & (1 << TXINI)) ? true : false);
+     3fc:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+
+	for (;;)
+	{
+		if (Endpoint_GetEndpointDirection() == ENDPOINT_DIR_IN)
+		{
+			if (Endpoint_IsINReady())
+     400:	80 fd       	sbrc	r24, 0
+     402:	1d c0       	rjmp	.+58     	; 0x43e <__LOCK_REGION_LENGTH__+0x3e>
+		{
+			if (Endpoint_IsOUTReceived())
+			  return ENDPOINT_READYWAIT_NoError;
+		}
+		
+		uint8_t USB_DeviceState_LCL = USB_DeviceState;
+     404:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <USB_DeviceState>
+
+		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+     408:	88 23       	and	r24, r24
+     40a:	99 f0       	breq	.+38     	; 0x432 <__LOCK_REGION_LENGTH__+0x32>
+		  return ENDPOINT_READYWAIT_DeviceDisconnected;
+		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+     40c:	85 30       	cpi	r24, 0x05	; 5
+     40e:	99 f0       	breq	.+38     	; 0x436 <__LOCK_REGION_LENGTH__+0x36>
+			 *  \return Boolean \c true if the currently selected endpoint is stalled, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsStalled(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsStalled(void)
+			{
+				return ((UECONX & (1 << STALLRQ)) ? true : false);
+     410:	80 91 eb 00 	lds	r24, 0x00EB	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+		  return ENDPOINT_READYWAIT_BusSuspended;
+		else if (Endpoint_IsStalled())
+     414:	85 fd       	sbrc	r24, 5
+     416:	11 c0       	rjmp	.+34     	; 0x43a <__LOCK_REGION_LENGTH__+0x3a>
+     418:	40 91 e4 00 	lds	r20, 0x00E4	; 0x8000e4 <__TEXT_REGION_LENGTH__+0x7e00e4>
+     41c:	50 91 e5 00 	lds	r21, 0x00E5	; 0x8000e5 <__TEXT_REGION_LENGTH__+0x7e00e5>
+		  return ENDPOINT_READYWAIT_EndpointStalled;
+
+		uint16_t CurrentFrameNumber = USB_Device_GetFrameNumber();
+
+		if (CurrentFrameNumber != PreviousFrameNumber)
+     420:	24 17       	cp	r18, r20
+     422:	35 07       	cpc	r19, r21
+     424:	29 f3       	breq	.-54     	; 0x3f0 <Endpoint_WaitUntilReady+0xa>
+     426:	91 50       	subi	r25, 0x01	; 1
+		{
+			PreviousFrameNumber = CurrentFrameNumber;
+
+			if (!(TimeoutMSRem--))
+     428:	11 f0       	breq	.+4      	; 0x42e <__LOCK_REGION_LENGTH__+0x2e>
+     42a:	9a 01       	movw	r18, r20
+     42c:	e1 cf       	rjmp	.-62     	; 0x3f0 <Endpoint_WaitUntilReady+0xa>
+			  return ENDPOINT_READYWAIT_Timeout;
+     42e:	84 e0       	ldi	r24, 0x04	; 4
+     430:	08 95       	ret
+		}
+		
+		uint8_t USB_DeviceState_LCL = USB_DeviceState;
+
+		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		  return ENDPOINT_READYWAIT_DeviceDisconnected;
+     432:	82 e0       	ldi	r24, 0x02	; 2
+     434:	08 95       	ret
+		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		  return ENDPOINT_READYWAIT_BusSuspended;
+     436:	83 e0       	ldi	r24, 0x03	; 3
+     438:	08 95       	ret
+		else if (Endpoint_IsStalled())
+		  return ENDPOINT_READYWAIT_EndpointStalled;
+     43a:	81 e0       	ldi	r24, 0x01	; 1
+     43c:	08 95       	ret
+	for (;;)
+	{
+		if (Endpoint_GetEndpointDirection() == ENDPOINT_DIR_IN)
+		{
+			if (Endpoint_IsINReady())
+			  return ENDPOINT_READYWAIT_NoError;
+     43e:	80 e0       	ldi	r24, 0x00	; 0
+     440:	08 95       	ret
+			 *  \return Boolean \c true if current endpoint is has received an OUT packet, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsOUTReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsOUTReceived(void)
+			{
+				return ((UEINTX & (1 << RXOUTI)) ? true : false);
+     442:	40 91 e8 00 	lds	r20, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+		}
+		else
+		{
+			if (Endpoint_IsOUTReceived())
+     446:	42 ff       	sbrs	r20, 2
+     448:	dd cf       	rjmp	.-70     	; 0x404 <__LOCK_REGION_LENGTH__+0x4>
+
+			if (!(TimeoutMSRem--))
+			  return ENDPOINT_READYWAIT_Timeout;
+		}
+	}
+}
+     44a:	08 95       	ret
+
+0000044c <USB_ResetInterface>:
+
+	USB_IsInitialized = false;
+}
+
+void USB_ResetInterface(void)
+{
+     44c:	0f 93       	push	r16
+     44e:	1f 93       	push	r17
+     450:	cf 93       	push	r28
+     452:	df 93       	push	r29
+	#if defined(USB_CAN_BE_BOTH)
+	bool UIDModeSelectEnabled = ((UHWCON & (1 << UIDE)) != 0);
+	#endif
+
+	USB_INT_DisableAllInterrupts();
+     454:	49 d0       	rcall	.+146    	; 0x4e8 <USB_INT_DisableAllInterrupts>
+	USB_INT_ClearAllInterrupts();
+     456:	50 d0       	rcall	.+160    	; 0x4f8 <USB_INT_ClearAllInterrupts>
+     458:	c8 ed       	ldi	r28, 0xD8	; 216
+			}
+
+			static inline void USB_Controller_Reset(void) ATTR_ALWAYS_INLINE;
+			static inline void USB_Controller_Reset(void)
+			{
+				USBCON &= ~(1 << USBE);
+     45a:	d0 e0       	ldi	r29, 0x00	; 0
+     45c:	88 81       	ld	r24, Y
+     45e:	8f 77       	andi	r24, 0x7F	; 127
+     460:	88 83       	st	Y, r24
+     462:	88 81       	ld	r24, Y
+				USBCON |=  (1 << USBE);
+     464:	80 68       	ori	r24, 0x80	; 128
+     466:	88 83       	st	Y, r24
+     468:	88 81       	ld	r24, Y
+			}
+
+			static inline void USB_CLK_Unfreeze(void) ATTR_ALWAYS_INLINE;
+			static inline void USB_CLK_Unfreeze(void)
+			{
+				USBCON  &= ~(1 << FRZCLK);
+     46a:	8f 7d       	andi	r24, 0xDF	; 223
+     46c:	88 83       	st	Y, r24
+     46e:	e7 ed       	ldi	r30, 0xD7	; 215
+
+	if (USB_CurrentMode == USB_MODE_Device)
+	{
+		#if defined(USB_CAN_BE_DEVICE)
+		#if (defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR))
+		UHWCON |=  (1 << UIMOD);
+     470:	f0 e0       	ldi	r31, 0x00	; 0
+     472:	80 81       	ld	r24, Z
+     474:	80 68       	ori	r24, 0x80	; 128
+     476:	80 83       	st	Z, r24
+     478:	19 bc       	out	0x29, r1	; 41
+			}
+
+			static inline void USB_PLL_Off(void) ATTR_ALWAYS_INLINE;
+			static inline void USB_PLL_Off(void)
+			{
+				PLLCSR = 0;
+     47a:	10 92 14 01 	sts	0x0114, r1	; 0x800114 <USB_DeviceState>
+}
+
+#if defined(USB_CAN_BE_DEVICE)
+static void USB_Init_Device(void)
+{
+	USB_DeviceState                 = DEVICE_STATE_Unattached;
+     47e:	10 92 10 01 	sts	0x0110, r1	; 0x800110 <USB_Device_ConfigurationNumber>
+	USB_Device_ConfigurationNumber  = 0;
+     482:	10 92 12 01 	sts	0x0112, r1	; 0x800112 <USB_Device_RemoteWakeupEnabled>
+
+	#if !defined(NO_DEVICE_REMOTE_WAKEUP)
+	USB_Device_RemoteWakeupEnabled  = false;
+     486:	10 92 11 01 	sts	0x0111, r1	; 0x800111 <USB_Device_CurrentlySelfPowered>
+	#endif
+
+	#if !defined(NO_DEVICE_SELF_POWER)
+	USB_Device_CurrentlySelfPowered = false;
+     48a:	00 ee       	ldi	r16, 0xE0	; 224
+			}
+
+			static inline void USB_Device_SetFullSpeed(void) ATTR_ALWAYS_INLINE;
+			static inline void USB_Device_SetFullSpeed(void)
+			{
+				UDCON &= ~(1 << LSM);
+     48c:	10 e0       	ldi	r17, 0x00	; 0
+     48e:	f8 01       	movw	r30, r16
+     490:	80 81       	ld	r24, Z
+     492:	8b 7f       	andi	r24, 0xFB	; 251
+     494:	80 83       	st	Z, r24
+     496:	88 81       	ld	r24, Y
+			{
+				switch (Interrupt)
+				{
+					#if (defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR))
+					case USB_INT_VBUSTI:
+						USBCON |= (1 << VBUSTE);
+     498:	81 60       	ori	r24, 0x01	; 1
+     49a:	88 83       	st	Y, r24
+     49c:	42 e0       	ldi	r20, 0x02	; 2
+			                                              const uint8_t Type,
+			                                              const uint8_t Direction,
+			                                              const uint16_t Size,
+			                                              const uint8_t Banks)
+			{
+				return Endpoint_ConfigureEndpoint_Prv(Number, ((Type << EPTYPE0) | (Direction ? (1 << EPDIR) : 0)),
+     49e:	60 e0       	ldi	r22, 0x00	; 0
+     4a0:	80 e0       	ldi	r24, 0x00	; 0
+     4a2:	4e df       	rcall	.-356    	; 0x340 <Endpoint_ConfigureEndpoint_Prv>
+     4a4:	e1 ee       	ldi	r30, 0xE1	; 225
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						UDINT  &= ~(1 << WAKEUPI);
+						break;
+					case USB_INT_SUSPI:
+						UDINT  &= ~(1 << SUSPI);
+     4a6:	f0 e0       	ldi	r31, 0x00	; 0
+     4a8:	80 81       	ld	r24, Z
+     4aa:	8e 7f       	andi	r24, 0xFE	; 254
+     4ac:	80 83       	st	Z, r24
+     4ae:	e2 ee       	ldi	r30, 0xE2	; 226
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						UDIEN  |= (1 << WAKEUPE);
+						break;
+					case USB_INT_SUSPI:
+						UDIEN  |= (1 << SUSPE);
+     4b0:	f0 e0       	ldi	r31, 0x00	; 0
+     4b2:	80 81       	ld	r24, Z
+     4b4:	81 60       	ori	r24, 0x01	; 1
+     4b6:	80 83       	st	Z, r24
+     4b8:	80 81       	ld	r24, Z
+						break;
+					case USB_INT_EORSTI:
+						UDIEN  |= (1 << EORSTE);
+     4ba:	88 60       	ori	r24, 0x08	; 8
+     4bc:	80 83       	st	Z, r24
+     4be:	f8 01       	movw	r30, r16
+			 *  register and despite the datasheet making no mention of its requirement in host mode.
+			 */
+			static inline void USB_Attach(void) ATTR_ALWAYS_INLINE;
+			static inline void USB_Attach(void)
+			{
+				UDCON  &= ~(1 << DETACH);
+     4c0:	80 81       	ld	r24, Z
+     4c2:	8e 7f       	andi	r24, 0xFE	; 254
+     4c4:	80 83       	st	Z, r24
+     4c6:	88 81       	ld	r24, Y
+
+			#if defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR)
+			static inline void USB_OTGPAD_On(void) ATTR_ALWAYS_INLINE;
+			static inline void USB_OTGPAD_On(void)
+			{
+				USBCON  |=  (1 << OTGPADE);
+     4c8:	80 61       	ori	r24, 0x10	; 16
+     4ca:	88 83       	st	Y, r24
+     4cc:	df 91       	pop	r29
+	}
+
+	#if (defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR))
+	USB_OTGPAD_On();
+	#endif
+}
+     4ce:	cf 91       	pop	r28
+     4d0:	1f 91       	pop	r17
+     4d2:	0f 91       	pop	r16
+     4d4:	08 95       	ret
+
+000004d6 <USB_Init>:
+     4d6:	e7 ed       	ldi	r30, 0xD7	; 215
+
+			static inline void USB_REG_On(void) ATTR_ALWAYS_INLINE;
+			static inline void USB_REG_On(void)
+			{
+			#if defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR)
+				UHWCON  |=  (1 << UVREGE);
+     4d8:	f0 e0       	ldi	r31, 0x00	; 0
+     4da:	80 81       	ld	r24, Z
+     4dc:	81 60       	ori	r24, 0x01	; 1
+     4de:	80 83       	st	Z, r24
+		UHWCON &= ~(1 << UIDE);
+		USB_CurrentMode = Mode;
+	}
+	#endif
+
+	USB_IsInitialized = true;
+     4e0:	81 e0       	ldi	r24, 0x01	; 1
+     4e2:	80 93 13 01 	sts	0x0113, r24	; 0x800113 <USB_IsInitialized>
+
+	USB_ResetInterface();
+     4e6:	b2 cf       	rjmp	.-156    	; 0x44c <USB_ResetInterface>
+
+000004e8 <USB_INT_DisableAllInterrupts>:
+#include "../USBInterrupt.h"
+
+void USB_INT_DisableAllInterrupts(void)
+{
+	#if defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR)
+	USBCON &= ~((1 << VBUSTE) | (1 << IDTE));
+     4e8:	e8 ed       	ldi	r30, 0xD8	; 216
+     4ea:	f0 e0       	ldi	r31, 0x00	; 0
+     4ec:	80 81       	ld	r24, Z
+     4ee:	8c 7f       	andi	r24, 0xFC	; 252
+     4f0:	80 83       	st	Z, r24
+	#if defined(USB_CAN_BE_HOST)
+	UHIEN   = 0;
+	#endif
+
+	#if defined(USB_CAN_BE_DEVICE)
+	UDIEN   = 0;
+     4f2:	10 92 e2 00 	sts	0x00E2, r1	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+     4f6:	08 95       	ret
+
+000004f8 <USB_INT_ClearAllInterrupts>:
+}
+
+void USB_INT_ClearAllInterrupts(void)
+{
+	#if defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR)
+	USBINT = 0;
+     4f8:	10 92 da 00 	sts	0x00DA, r1	; 0x8000da <__TEXT_REGION_LENGTH__+0x7e00da>
+	#if defined(USB_CAN_BE_HOST)
+	UHINT  = 0;
+	#endif
+
+	#if defined(USB_CAN_BE_DEVICE)
+	UDINT  = 0;
+     4fc:	10 92 e1 00 	sts	0x00E1, r1	; 0x8000e1 <__TEXT_REGION_LENGTH__+0x7e00e1>
+     500:	08 95       	ret
+
+00000502 <__vector_10>:
+	#endif
+}
+
+ISR(USB_GEN_vect, ISR_BLOCK)
+{
+     502:	1f 92       	push	r1
+     504:	0f 92       	push	r0
+     506:	0f b6       	in	r0, 0x3f	; 63
+     508:	0f 92       	push	r0
+     50a:	11 24       	eor	r1, r1
+     50c:	0b b6       	in	r0, 0x3b	; 59
+     50e:	0f 92       	push	r0
+     510:	2f 93       	push	r18
+     512:	3f 93       	push	r19
+     514:	4f 93       	push	r20
+     516:	5f 93       	push	r21
+     518:	6f 93       	push	r22
+     51a:	7f 93       	push	r23
+     51c:	8f 93       	push	r24
+     51e:	9f 93       	push	r25
+     520:	af 93       	push	r26
+     522:	bf 93       	push	r27
+     524:	ef 93       	push	r30
+     526:	ff 93       	push	r31
+					case USB_INT_SUSPI:
+						return (UDINT  & (1 << SUSPI));
+					case USB_INT_EORSTI:
+						return (UDINT  & (1 << EORSTI));
+					case USB_INT_SOFI:
+						return (UDINT  & (1 << SOFI));
+     528:	80 91 e1 00 	lds	r24, 0x00E1	; 0x8000e1 <__TEXT_REGION_LENGTH__+0x7e00e1>
+	#if defined(USB_CAN_BE_DEVICE)
+	#if !defined(NO_SOF_EVENTS)
+	if (USB_INT_HasOccurred(USB_INT_SOFI) && USB_INT_IsEnabled(USB_INT_SOFI))
+     52c:	82 ff       	sbrs	r24, 2
+     52e:	0a c0       	rjmp	.+20     	; 0x544 <__vector_10+0x42>
+					case USB_INT_SUSPI:
+						return (UDIEN  & (1 << SUSPE));
+					case USB_INT_EORSTI:
+						return (UDIEN  & (1 << EORSTE));
+					case USB_INT_SOFI:
+						return (UDIEN  & (1 << SOFE));
+     530:	80 91 e2 00 	lds	r24, 0x00E2	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+     534:	82 ff       	sbrs	r24, 2
+     536:	06 c0       	rjmp	.+12     	; 0x544 <__vector_10+0x42>
+						break;
+					case USB_INT_EORSTI:
+						UDINT  &= ~(1 << EORSTI);
+						break;
+					case USB_INT_SOFI:
+						UDINT  &= ~(1 << SOFI);
+     538:	80 91 e1 00 	lds	r24, 0x00E1	; 0x8000e1 <__TEXT_REGION_LENGTH__+0x7e00e1>
+     53c:	8b 7f       	andi	r24, 0xFB	; 251
+     53e:	80 93 e1 00 	sts	0x00E1, r24	; 0x8000e1 <__TEXT_REGION_LENGTH__+0x7e00e1>
+	{
+		USB_INT_Clear(USB_INT_SOFI);
+
+		EVENT_USB_Device_StartOfFrame();
+     542:	77 de       	rcall	.-786    	; 0x232 <EVENT_USB_Device_StartOfFrame>
+			{
+				switch (Interrupt)
+				{
+					#if (defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR))
+					case USB_INT_VBUSTI:
+						return (USBINT & (1 << VBUSTI));
+     544:	80 91 da 00 	lds	r24, 0x00DA	; 0x8000da <__TEXT_REGION_LENGTH__+0x7e00da>
+	}
+	#endif
+
+	#if defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR)
+	if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI))
+     548:	80 ff       	sbrs	r24, 0
+     54a:	1d c0       	rjmp	.+58     	; 0x586 <__vector_10+0x84>
+			{
+				switch (Interrupt)
+				{
+					#if (defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR))
+					case USB_INT_VBUSTI:
+						return (USBCON & (1 << VBUSTE));
+     54c:	80 91 d8 00 	lds	r24, 0x00D8	; 0x8000d8 <__TEXT_REGION_LENGTH__+0x7e00d8>
+     550:	80 ff       	sbrs	r24, 0
+     552:	19 c0       	rjmp	.+50     	; 0x586 <__vector_10+0x84>
+			{
+				switch (Interrupt)
+				{
+					#if (defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR))
+					case USB_INT_VBUSTI:
+						USBINT &= ~(1 << VBUSTI);
+     554:	80 91 da 00 	lds	r24, 0x00DA	; 0x8000da <__TEXT_REGION_LENGTH__+0x7e00da>
+     558:	8e 7f       	andi	r24, 0xFE	; 254
+     55a:	80 93 da 00 	sts	0x00DA, r24	; 0x8000da <__TEXT_REGION_LENGTH__+0x7e00da>
+				 *  \return Boolean \c true if the VBUS line is currently detecting power from a host, \c false otherwise.
+				 */
+				static inline bool USB_VBUS_GetStatus(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+				static inline bool USB_VBUS_GetStatus(void)
+				{
+					return ((USBSTA & (1 << VBUS)) ? true : false);
+     55e:	80 91 d9 00 	lds	r24, 0x00D9	; 0x8000d9 <__TEXT_REGION_LENGTH__+0x7e00d9>
+	{
+		USB_INT_Clear(USB_INT_VBUSTI);
+
+		if (USB_VBUS_GetStatus())
+     562:	80 ff       	sbrs	r24, 0
+     564:	0c c0       	rjmp	.+24     	; 0x57e <__vector_10+0x7c>
+
+		/* Inline Functions: */
+			static inline void USB_PLL_On(void) ATTR_ALWAYS_INLINE;
+			static inline void USB_PLL_On(void)
+			{
+				PLLCSR = USB_PLL_PSC;
+     566:	8c e0       	ldi	r24, 0x0C	; 12
+     568:	89 bd       	out	0x29, r24	; 41
+				PLLCSR = (USB_PLL_PSC | (1 << PLLE));
+     56a:	8e e0       	ldi	r24, 0x0E	; 14
+     56c:	89 bd       	out	0x29, r24	; 41
+		{
+			if (!(USB_Options & USB_OPT_MANUAL_PLL))
+			{
+				USB_PLL_On();
+				while (!(USB_PLL_IsReady()));
+     56e:	09 b4       	in	r0, 0x29	; 41
+     570:	00 fe       	sbrs	r0, 0
+     572:	fd cf       	rjmp	.-6      	; 0x56e <__vector_10+0x6c>
+			}
+
+			USB_DeviceState = DEVICE_STATE_Powered;
+     574:	81 e0       	ldi	r24, 0x01	; 1
+     576:	80 93 14 01 	sts	0x0114, r24	; 0x800114 <USB_DeviceState>
+			EVENT_USB_Device_Connect();
+     57a:	46 de       	rcall	.-884    	; 0x208 <EVENT_USB_Device_Connect>
+     57c:	04 c0       	rjmp	.+8      	; 0x586 <__vector_10+0x84>
+			}
+
+			static inline void USB_PLL_Off(void) ATTR_ALWAYS_INLINE;
+			static inline void USB_PLL_Off(void)
+			{
+				PLLCSR = 0;
+     57e:	19 bc       	out	0x29, r1	; 41
+		else
+		{
+			if (!(USB_Options & USB_OPT_MANUAL_PLL))
+			  USB_PLL_Off();
+
+			USB_DeviceState = DEVICE_STATE_Unattached;
+     580:	10 92 14 01 	sts	0x0114, r1	; 0x800114 <USB_DeviceState>
+			EVENT_USB_Device_Disconnect();
+     584:	43 de       	rcall	.-890    	; 0x20c <EVENT_USB_Device_Disconnect>
+					#endif
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						return (UDINT  & (1 << WAKEUPI));
+					case USB_INT_SUSPI:
+						return (UDINT  & (1 << SUSPI));
+     586:	80 91 e1 00 	lds	r24, 0x00E1	; 0x8000e1 <__TEXT_REGION_LENGTH__+0x7e00e1>
+		}
+	}
+	#endif
+
+	if (USB_INT_HasOccurred(USB_INT_SUSPI) && USB_INT_IsEnabled(USB_INT_SUSPI))
+     58a:	80 ff       	sbrs	r24, 0
+     58c:	18 c0       	rjmp	.+48     	; 0x5be <__vector_10+0xbc>
+					#endif
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						return (UDIEN  & (1 << WAKEUPE));
+					case USB_INT_SUSPI:
+						return (UDIEN  & (1 << SUSPE));
+     58e:	80 91 e2 00 	lds	r24, 0x00E2	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+     592:	80 ff       	sbrs	r24, 0
+     594:	14 c0       	rjmp	.+40     	; 0x5be <__vector_10+0xbc>
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						UDIEN  &= ~(1 << WAKEUPE);
+						break;
+					case USB_INT_SUSPI:
+						UDIEN  &= ~(1 << SUSPE);
+     596:	80 91 e2 00 	lds	r24, 0x00E2	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+     59a:	8e 7f       	andi	r24, 0xFE	; 254
+     59c:	80 93 e2 00 	sts	0x00E2, r24	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+						USBCON |= (1 << IDTE);
+						break;
+					#endif
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						UDIEN  |= (1 << WAKEUPE);
+     5a0:	80 91 e2 00 	lds	r24, 0x00E2	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+     5a4:	80 61       	ori	r24, 0x10	; 16
+     5a6:	80 93 e2 00 	sts	0x00E2, r24	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+			#endif
+
+			static inline void USB_CLK_Freeze(void) ATTR_ALWAYS_INLINE;
+			static inline void USB_CLK_Freeze(void)
+			{
+				USBCON  |=  (1 << FRZCLK);
+     5aa:	80 91 d8 00 	lds	r24, 0x00D8	; 0x8000d8 <__TEXT_REGION_LENGTH__+0x7e00d8>
+     5ae:	80 62       	ori	r24, 0x20	; 32
+     5b0:	80 93 d8 00 	sts	0x00D8, r24	; 0x8000d8 <__TEXT_REGION_LENGTH__+0x7e00d8>
+			}
+
+			static inline void USB_PLL_Off(void) ATTR_ALWAYS_INLINE;
+			static inline void USB_PLL_Off(void)
+			{
+				PLLCSR = 0;
+     5b4:	19 bc       	out	0x29, r1	; 41
+
+		#if defined(USB_SERIES_2_AVR) && !defined(NO_LIMITED_CONTROLLER_CONNECT)
+		USB_DeviceState = DEVICE_STATE_Unattached;
+		EVENT_USB_Device_Disconnect();
+		#else
+		USB_DeviceState = DEVICE_STATE_Suspended;
+     5b6:	85 e0       	ldi	r24, 0x05	; 5
+     5b8:	80 93 14 01 	sts	0x0114, r24	; 0x800114 <USB_DeviceState>
+		EVENT_USB_Device_Suspend();
+     5bc:	f3 d2       	rcall	.+1510   	; 0xba4 <USB_Event_Stub>
+					case USB_INT_IDTI:
+						return (USBINT & (1 << IDTI));
+					#endif
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						return (UDINT  & (1 << WAKEUPI));
+     5be:	80 91 e1 00 	lds	r24, 0x00E1	; 0x8000e1 <__TEXT_REGION_LENGTH__+0x7e00e1>
+		#endif
+	}
+
+	if (USB_INT_HasOccurred(USB_INT_WAKEUPI) && USB_INT_IsEnabled(USB_INT_WAKEUPI))
+     5c2:	84 ff       	sbrs	r24, 4
+     5c4:	2d c0       	rjmp	.+90     	; 0x620 <__vector_10+0x11e>
+					case USB_INT_IDTI:
+						return (USBCON & (1 << IDTE));
+					#endif
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						return (UDIEN  & (1 << WAKEUPE));
+     5c6:	80 91 e2 00 	lds	r24, 0x00E2	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+     5ca:	84 ff       	sbrs	r24, 4
+     5cc:	29 c0       	rjmp	.+82     	; 0x620 <__vector_10+0x11e>
+
+		/* Inline Functions: */
+			static inline void USB_PLL_On(void) ATTR_ALWAYS_INLINE;
+			static inline void USB_PLL_On(void)
+			{
+				PLLCSR = USB_PLL_PSC;
+     5ce:	8c e0       	ldi	r24, 0x0C	; 12
+     5d0:	89 bd       	out	0x29, r24	; 41
+				PLLCSR = (USB_PLL_PSC | (1 << PLLE));
+     5d2:	8e e0       	ldi	r24, 0x0E	; 14
+     5d4:	89 bd       	out	0x29, r24	; 41
+	{
+		if (!(USB_Options & USB_OPT_MANUAL_PLL))
+		{
+			USB_PLL_On();
+			while (!(USB_PLL_IsReady()));
+     5d6:	09 b4       	in	r0, 0x29	; 41
+     5d8:	00 fe       	sbrs	r0, 0
+     5da:	fd cf       	rjmp	.-6      	; 0x5d6 <__vector_10+0xd4>
+			}
+
+			static inline void USB_CLK_Unfreeze(void) ATTR_ALWAYS_INLINE;
+			static inline void USB_CLK_Unfreeze(void)
+			{
+				USBCON  &= ~(1 << FRZCLK);
+     5dc:	80 91 d8 00 	lds	r24, 0x00D8	; 0x8000d8 <__TEXT_REGION_LENGTH__+0x7e00d8>
+     5e0:	8f 7d       	andi	r24, 0xDF	; 223
+     5e2:	80 93 d8 00 	sts	0x00D8, r24	; 0x8000d8 <__TEXT_REGION_LENGTH__+0x7e00d8>
+						USBINT &= ~(1 << IDTI);
+						break;
+					#endif
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						UDINT  &= ~(1 << WAKEUPI);
+     5e6:	80 91 e1 00 	lds	r24, 0x00E1	; 0x8000e1 <__TEXT_REGION_LENGTH__+0x7e00e1>
+     5ea:	8f 7e       	andi	r24, 0xEF	; 239
+     5ec:	80 93 e1 00 	sts	0x00E1, r24	; 0x8000e1 <__TEXT_REGION_LENGTH__+0x7e00e1>
+						USBCON &= ~(1 << IDTE);
+						break;
+					#endif
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						UDIEN  &= ~(1 << WAKEUPE);
+     5f0:	80 91 e2 00 	lds	r24, 0x00E2	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+     5f4:	8f 7e       	andi	r24, 0xEF	; 239
+     5f6:	80 93 e2 00 	sts	0x00E2, r24	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						UDIEN  |= (1 << WAKEUPE);
+						break;
+					case USB_INT_SUSPI:
+						UDIEN  |= (1 << SUSPE);
+     5fa:	80 91 e2 00 	lds	r24, 0x00E2	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+     5fe:	81 60       	ori	r24, 0x01	; 1
+     600:	80 93 e2 00 	sts	0x00E2, r24	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+		USB_INT_Clear(USB_INT_WAKEUPI);
+
+		USB_INT_Disable(USB_INT_WAKEUPI);
+		USB_INT_Enable(USB_INT_SUSPI);
+
+		if (USB_Device_ConfigurationNumber)
+     604:	80 91 10 01 	lds	r24, 0x0110	; 0x800110 <USB_Device_ConfigurationNumber>
+     608:	81 11       	cpse	r24, r1
+     60a:	06 c0       	rjmp	.+12     	; 0x618 <__vector_10+0x116>
+			}
+
+			static inline bool USB_Device_IsAddressSet(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
+			static inline bool USB_Device_IsAddressSet(void)
+			{
+				return (UDADDR & (1 << ADDEN));
+     60c:	80 91 e3 00 	lds	r24, 0x00E3	; 0x8000e3 <__TEXT_REGION_LENGTH__+0x7e00e3>
+		  USB_DeviceState = DEVICE_STATE_Configured;
+		else
+		  USB_DeviceState = (USB_Device_IsAddressSet()) ? DEVICE_STATE_Configured : DEVICE_STATE_Powered;
+     610:	87 fd       	sbrc	r24, 7
+     612:	02 c0       	rjmp	.+4      	; 0x618 <__vector_10+0x116>
+     614:	81 e0       	ldi	r24, 0x01	; 1
+     616:	01 c0       	rjmp	.+2      	; 0x61a <__vector_10+0x118>
+     618:	84 e0       	ldi	r24, 0x04	; 4
+     61a:	80 93 14 01 	sts	0x0114, r24	; 0x800114 <USB_DeviceState>
+
+		#if defined(USB_SERIES_2_AVR) && !defined(NO_LIMITED_CONTROLLER_CONNECT)
+		EVENT_USB_Device_Connect();
+		#else
+		EVENT_USB_Device_WakeUp();
+     61e:	c2 d2       	rcall	.+1412   	; 0xba4 <USB_Event_Stub>
+					case USB_INT_WAKEUPI:
+						return (UDINT  & (1 << WAKEUPI));
+					case USB_INT_SUSPI:
+						return (UDINT  & (1 << SUSPI));
+					case USB_INT_EORSTI:
+						return (UDINT  & (1 << EORSTI));
+     620:	80 91 e1 00 	lds	r24, 0x00E1	; 0x8000e1 <__TEXT_REGION_LENGTH__+0x7e00e1>
+		#endif
+	}
+
+	if (USB_INT_HasOccurred(USB_INT_EORSTI) && USB_INT_IsEnabled(USB_INT_EORSTI))
+     624:	83 ff       	sbrs	r24, 3
+     626:	22 c0       	rjmp	.+68     	; 0x66c <__vector_10+0x16a>
+					case USB_INT_WAKEUPI:
+						return (UDIEN  & (1 << WAKEUPE));
+					case USB_INT_SUSPI:
+						return (UDIEN  & (1 << SUSPE));
+					case USB_INT_EORSTI:
+						return (UDIEN  & (1 << EORSTE));
+     628:	80 91 e2 00 	lds	r24, 0x00E2	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+     62c:	83 ff       	sbrs	r24, 3
+     62e:	1e c0       	rjmp	.+60     	; 0x66c <__vector_10+0x16a>
+						break;
+					case USB_INT_SUSPI:
+						UDINT  &= ~(1 << SUSPI);
+						break;
+					case USB_INT_EORSTI:
+						UDINT  &= ~(1 << EORSTI);
+     630:	80 91 e1 00 	lds	r24, 0x00E1	; 0x8000e1 <__TEXT_REGION_LENGTH__+0x7e00e1>
+     634:	87 7f       	andi	r24, 0xF7	; 247
+     636:	80 93 e1 00 	sts	0x00E1, r24	; 0x8000e1 <__TEXT_REGION_LENGTH__+0x7e00e1>
+	{
+		USB_INT_Clear(USB_INT_EORSTI);
+
+		USB_DeviceState                = DEVICE_STATE_Default;
+     63a:	82 e0       	ldi	r24, 0x02	; 2
+     63c:	80 93 14 01 	sts	0x0114, r24	; 0x800114 <USB_DeviceState>
+		USB_Device_ConfigurationNumber = 0;
+     640:	10 92 10 01 	sts	0x0110, r1	; 0x800110 <USB_Device_ConfigurationNumber>
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						UDINT  &= ~(1 << WAKEUPI);
+						break;
+					case USB_INT_SUSPI:
+						UDINT  &= ~(1 << SUSPI);
+     644:	80 91 e1 00 	lds	r24, 0x00E1	; 0x8000e1 <__TEXT_REGION_LENGTH__+0x7e00e1>
+     648:	8e 7f       	andi	r24, 0xFE	; 254
+     64a:	80 93 e1 00 	sts	0x00E1, r24	; 0x8000e1 <__TEXT_REGION_LENGTH__+0x7e00e1>
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						UDIEN  &= ~(1 << WAKEUPE);
+						break;
+					case USB_INT_SUSPI:
+						UDIEN  &= ~(1 << SUSPE);
+     64e:	80 91 e2 00 	lds	r24, 0x00E2	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+     652:	8e 7f       	andi	r24, 0xFE	; 254
+     654:	80 93 e2 00 	sts	0x00E2, r24	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+						USBCON |= (1 << IDTE);
+						break;
+					#endif
+					#if defined(USB_CAN_BE_DEVICE)
+					case USB_INT_WAKEUPI:
+						UDIEN  |= (1 << WAKEUPE);
+     658:	80 91 e2 00 	lds	r24, 0x00E2	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+     65c:	80 61       	ori	r24, 0x10	; 16
+     65e:	80 93 e2 00 	sts	0x00E2, r24	; 0x8000e2 <__TEXT_REGION_LENGTH__+0x7e00e2>
+			                                              const uint8_t Type,
+			                                              const uint8_t Direction,
+			                                              const uint16_t Size,
+			                                              const uint8_t Banks)
+			{
+				return Endpoint_ConfigureEndpoint_Prv(Number, ((Type << EPTYPE0) | (Direction ? (1 << EPDIR) : 0)),
+     662:	42 e0       	ldi	r20, 0x02	; 2
+     664:	60 e0       	ldi	r22, 0x00	; 0
+     666:	80 e0       	ldi	r24, 0x00	; 0
+     668:	6b de       	rcall	.-810    	; 0x340 <Endpoint_ConfigureEndpoint_Prv>
+
+		#if defined(INTERRUPT_CONTROL_ENDPOINT)
+		USB_INT_Enable(USB_INT_RXSTPI);
+		#endif
+
+		EVENT_USB_Device_Reset();
+     66a:	9c d2       	rcall	.+1336   	; 0xba4 <USB_Event_Stub>
+     66c:	ff 91       	pop	r31
+		USB_ResetInterface();
+
+		EVENT_USB_UIDChange();
+	}
+	#endif
+}
+     66e:	ef 91       	pop	r30
+     670:	bf 91       	pop	r27
+     672:	af 91       	pop	r26
+     674:	9f 91       	pop	r25
+     676:	8f 91       	pop	r24
+     678:	7f 91       	pop	r23
+     67a:	6f 91       	pop	r22
+     67c:	5f 91       	pop	r21
+     67e:	4f 91       	pop	r20
+     680:	3f 91       	pop	r19
+     682:	2f 91       	pop	r18
+     684:	0f 90       	pop	r0
+     686:	0b be       	out	0x3b, r0	; 59
+     688:	0f 90       	pop	r0
+     68a:	0f be       	out	0x3f, r0	; 63
+     68c:	0f 90       	pop	r0
+     68e:	1f 90       	pop	r1
+     690:	18 95       	reti
+
+00000692 <Endpoint_Write_Stream_LE>:
+     692:	cf 92       	push	r12
+		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		  return ENDPOINT_RWCSTREAM_BusSuspended;
+	}
+
+	return ENDPOINT_RWCSTREAM_NoError;
+}
+     694:	df 92       	push	r13
+     696:	ef 92       	push	r14
+     698:	ff 92       	push	r15
+     69a:	0f 93       	push	r16
+     69c:	1f 93       	push	r17
+     69e:	cf 93       	push	r28
+     6a0:	df 93       	push	r29
+     6a2:	ec 01       	movw	r28, r24
+     6a4:	8b 01       	movw	r16, r22
+     6a6:	7a 01       	movw	r14, r20
+     6a8:	9e de       	rcall	.-708    	; 0x3e6 <Endpoint_WaitUntilReady>
+     6aa:	81 11       	cpse	r24, r1
+     6ac:	33 c0       	rjmp	.+102    	; 0x714 <Endpoint_Write_Stream_LE+0x82>
+     6ae:	e1 14       	cp	r14, r1
+     6b0:	f1 04       	cpc	r15, r1
+     6b2:	39 f0       	breq	.+14     	; 0x6c2 <Endpoint_Write_Stream_LE+0x30>
+     6b4:	f7 01       	movw	r30, r14
+     6b6:	80 81       	ld	r24, Z
+     6b8:	91 81       	ldd	r25, Z+1	; 0x01
+     6ba:	08 1b       	sub	r16, r24
+     6bc:	19 0b       	sbc	r17, r25
+     6be:	c8 0f       	add	r28, r24
+     6c0:	d9 1f       	adc	r29, r25
+     6c2:	c1 2c       	mov	r12, r1
+     6c4:	d1 2c       	mov	r13, r1
+     6c6:	01 15       	cp	r16, r1
+     6c8:	11 05       	cpc	r17, r1
+     6ca:	19 f1       	breq	.+70     	; 0x712 <Endpoint_Write_Stream_LE+0x80>
+     6cc:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     6d0:	85 fd       	sbrc	r24, 5
+     6d2:	16 c0       	rjmp	.+44     	; 0x700 <Endpoint_Write_Stream_LE+0x6e>
+     6d4:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     6d8:	8e 77       	andi	r24, 0x7E	; 126
+     6da:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     6de:	63 d2       	rcall	.+1222   	; 0xba6 <USB_USBTask>
+     6e0:	e1 14       	cp	r14, r1
+     6e2:	f1 04       	cpc	r15, r1
+     6e4:	49 f0       	breq	.+18     	; 0x6f8 <Endpoint_Write_Stream_LE+0x66>
+     6e6:	f7 01       	movw	r30, r14
+     6e8:	80 81       	ld	r24, Z
+     6ea:	91 81       	ldd	r25, Z+1	; 0x01
+     6ec:	c8 0e       	add	r12, r24
+     6ee:	d9 1e       	adc	r13, r25
+     6f0:	d1 82       	std	Z+1, r13	; 0x01
+     6f2:	c0 82       	st	Z, r12
+     6f4:	85 e0       	ldi	r24, 0x05	; 5
+     6f6:	0e c0       	rjmp	.+28     	; 0x714 <Endpoint_Write_Stream_LE+0x82>
+     6f8:	76 de       	rcall	.-788    	; 0x3e6 <Endpoint_WaitUntilReady>
+     6fa:	88 23       	and	r24, r24
+     6fc:	21 f3       	breq	.-56     	; 0x6c6 <Endpoint_Write_Stream_LE+0x34>
+     6fe:	0a c0       	rjmp	.+20     	; 0x714 <Endpoint_Write_Stream_LE+0x82>
+     700:	89 91       	ld	r24, Y+
+     702:	80 93 f1 00 	sts	0x00F1, r24	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7e00f1>
+     706:	01 50       	subi	r16, 0x01	; 1
+     708:	11 09       	sbc	r17, r1
+     70a:	ff ef       	ldi	r31, 0xFF	; 255
+     70c:	cf 1a       	sub	r12, r31
+     70e:	df 0a       	sbc	r13, r31
+     710:	da cf       	rjmp	.-76     	; 0x6c6 <Endpoint_Write_Stream_LE+0x34>
+     712:	80 e0       	ldi	r24, 0x00	; 0
+     714:	df 91       	pop	r29
+     716:	cf 91       	pop	r28
+     718:	1f 91       	pop	r17
+     71a:	0f 91       	pop	r16
+     71c:	ff 90       	pop	r15
+     71e:	ef 90       	pop	r14
+     720:	df 90       	pop	r13
+     722:	cf 90       	pop	r12
+     724:	08 95       	ret
+
+00000726 <Endpoint_Write_Control_Stream_LE>:
+     726:	20 91 1b 01 	lds	r18, 0x011B	; 0x80011b <USB_ControlRequest+0x6>
+     72a:	30 91 1c 01 	lds	r19, 0x011C	; 0x80011c <USB_ControlRequest+0x7>
+     72e:	26 17       	cp	r18, r22
+     730:	37 07       	cpc	r19, r23
+     732:	48 f0       	brcs	.+18     	; 0x746 <Endpoint_Write_Control_Stream_LE+0x20>
+     734:	61 15       	cp	r22, r1
+     736:	71 05       	cpc	r23, r1
+     738:	39 f4       	brne	.+14     	; 0x748 <Endpoint_Write_Control_Stream_LE+0x22>
+     73a:	20 91 e8 00 	lds	r18, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     73e:	2e 77       	andi	r18, 0x7E	; 126
+     740:	20 93 e8 00 	sts	0x00E8, r18	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     744:	01 c0       	rjmp	.+2      	; 0x748 <Endpoint_Write_Control_Stream_LE+0x22>
+     746:	b9 01       	movw	r22, r18
+     748:	fc 01       	movw	r30, r24
+     74a:	20 e0       	ldi	r18, 0x00	; 0
+     74c:	61 15       	cp	r22, r1
+     74e:	71 05       	cpc	r23, r1
+     750:	69 f1       	breq	.+90     	; 0x7ac <Endpoint_Write_Control_Stream_LE+0x86>
+     752:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <USB_DeviceState>
+     756:	88 23       	and	r24, r24
+     758:	d1 f1       	breq	.+116    	; 0x7ce <Endpoint_Write_Control_Stream_LE+0xa8>
+     75a:	85 30       	cpi	r24, 0x05	; 5
+     75c:	d1 f1       	breq	.+116    	; 0x7d2 <Endpoint_Write_Control_Stream_LE+0xac>
+     75e:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     762:	83 fd       	sbrc	r24, 3
+     764:	32 c0       	rjmp	.+100    	; 0x7ca <Endpoint_Write_Control_Stream_LE+0xa4>
+     766:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     76a:	82 fd       	sbrc	r24, 2
+     76c:	28 c0       	rjmp	.+80     	; 0x7be <Endpoint_Write_Control_Stream_LE+0x98>
+     76e:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     772:	80 ff       	sbrs	r24, 0
+     774:	eb cf       	rjmp	.-42     	; 0x74c <Endpoint_Write_Control_Stream_LE+0x26>
+     776:	80 91 f2 00 	lds	r24, 0x00F2	; 0x8000f2 <__TEXT_REGION_LENGTH__+0x7e00f2>
+     77a:	90 91 f3 00 	lds	r25, 0x00F3	; 0x8000f3 <__TEXT_REGION_LENGTH__+0x7e00f3>
+     77e:	61 15       	cp	r22, r1
+     780:	71 05       	cpc	r23, r1
+     782:	51 f0       	breq	.+20     	; 0x798 <Endpoint_Write_Control_Stream_LE+0x72>
+     784:	88 30       	cpi	r24, 0x08	; 8
+     786:	91 05       	cpc	r25, r1
+     788:	38 f4       	brcc	.+14     	; 0x798 <Endpoint_Write_Control_Stream_LE+0x72>
+     78a:	21 91       	ld	r18, Z+
+     78c:	20 93 f1 00 	sts	0x00F1, r18	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7e00f1>
+     790:	61 50       	subi	r22, 0x01	; 1
+     792:	71 09       	sbc	r23, r1
+     794:	01 96       	adiw	r24, 0x01	; 1
+     796:	f3 cf       	rjmp	.-26     	; 0x77e <Endpoint_Write_Control_Stream_LE+0x58>
+     798:	21 e0       	ldi	r18, 0x01	; 1
+     79a:	08 97       	sbiw	r24, 0x08	; 8
+     79c:	09 f0       	breq	.+2      	; 0x7a0 <Endpoint_Write_Control_Stream_LE+0x7a>
+     79e:	20 e0       	ldi	r18, 0x00	; 0
+     7a0:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     7a4:	8e 77       	andi	r24, 0x7E	; 126
+     7a6:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     7aa:	d0 cf       	rjmp	.-96     	; 0x74c <Endpoint_Write_Control_Stream_LE+0x26>
+     7ac:	21 11       	cpse	r18, r1
+     7ae:	d1 cf       	rjmp	.-94     	; 0x752 <Endpoint_Write_Control_Stream_LE+0x2c>
+     7b0:	06 c0       	rjmp	.+12     	; 0x7be <Endpoint_Write_Control_Stream_LE+0x98>
+     7b2:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <USB_DeviceState>
+     7b6:	88 23       	and	r24, r24
+     7b8:	51 f0       	breq	.+20     	; 0x7ce <Endpoint_Write_Control_Stream_LE+0xa8>
+     7ba:	85 30       	cpi	r24, 0x05	; 5
+     7bc:	51 f0       	breq	.+20     	; 0x7d2 <Endpoint_Write_Control_Stream_LE+0xac>
+     7be:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     7c2:	82 ff       	sbrs	r24, 2
+     7c4:	f6 cf       	rjmp	.-20     	; 0x7b2 <Endpoint_Write_Control_Stream_LE+0x8c>
+     7c6:	80 e0       	ldi	r24, 0x00	; 0
+     7c8:	08 95       	ret
+     7ca:	81 e0       	ldi	r24, 0x01	; 1
+     7cc:	08 95       	ret
+     7ce:	82 e0       	ldi	r24, 0x02	; 2
+     7d0:	08 95       	ret
+     7d2:	83 e0       	ldi	r24, 0x03	; 3
+     7d4:	08 95       	ret
+
+000007d6 <Endpoint_Read_Control_Stream_LE>:
+     7d6:	61 15       	cp	r22, r1
+     7d8:	71 05       	cpc	r23, r1
+     7da:	29 f4       	brne	.+10     	; 0x7e6 <Endpoint_Read_Control_Stream_LE+0x10>
+     7dc:	20 91 e8 00 	lds	r18, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     7e0:	2b 77       	andi	r18, 0x7B	; 123
+     7e2:	20 93 e8 00 	sts	0x00E8, r18	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     7e6:	fc 01       	movw	r30, r24
+     7e8:	61 15       	cp	r22, r1
+     7ea:	71 05       	cpc	r23, r1
+     7ec:	31 f1       	breq	.+76     	; 0x83a <Endpoint_Read_Control_Stream_LE+0x64>
+     7ee:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <USB_DeviceState>
+     7f2:	88 23       	and	r24, r24
+     7f4:	51 f1       	breq	.+84     	; 0x84a <Endpoint_Read_Control_Stream_LE+0x74>
+     7f6:	85 30       	cpi	r24, 0x05	; 5
+     7f8:	51 f1       	breq	.+84     	; 0x84e <Endpoint_Read_Control_Stream_LE+0x78>
+     7fa:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     7fe:	83 fd       	sbrc	r24, 3
+     800:	22 c0       	rjmp	.+68     	; 0x846 <Endpoint_Read_Control_Stream_LE+0x70>
+     802:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     806:	82 ff       	sbrs	r24, 2
+     808:	ef cf       	rjmp	.-34     	; 0x7e8 <Endpoint_Read_Control_Stream_LE+0x12>
+     80a:	80 91 f2 00 	lds	r24, 0x00F2	; 0x8000f2 <__TEXT_REGION_LENGTH__+0x7e00f2>
+     80e:	90 91 f3 00 	lds	r25, 0x00F3	; 0x8000f3 <__TEXT_REGION_LENGTH__+0x7e00f3>
+     812:	89 2b       	or	r24, r25
+     814:	31 f0       	breq	.+12     	; 0x822 <Endpoint_Read_Control_Stream_LE+0x4c>
+     816:	80 91 f1 00 	lds	r24, 0x00F1	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7e00f1>
+     81a:	81 93       	st	Z+, r24
+     81c:	61 50       	subi	r22, 0x01	; 1
+     81e:	71 09       	sbc	r23, r1
+     820:	a1 f7       	brne	.-24     	; 0x80a <Endpoint_Read_Control_Stream_LE+0x34>
+     822:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     826:	8b 77       	andi	r24, 0x7B	; 123
+     828:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     82c:	dd cf       	rjmp	.-70     	; 0x7e8 <Endpoint_Read_Control_Stream_LE+0x12>
+     82e:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <USB_DeviceState>
+     832:	88 23       	and	r24, r24
+     834:	51 f0       	breq	.+20     	; 0x84a <Endpoint_Read_Control_Stream_LE+0x74>
+     836:	85 30       	cpi	r24, 0x05	; 5
+     838:	51 f0       	breq	.+20     	; 0x84e <Endpoint_Read_Control_Stream_LE+0x78>
+     83a:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     83e:	80 ff       	sbrs	r24, 0
+     840:	f6 cf       	rjmp	.-20     	; 0x82e <Endpoint_Read_Control_Stream_LE+0x58>
+     842:	80 e0       	ldi	r24, 0x00	; 0
+     844:	08 95       	ret
+     846:	81 e0       	ldi	r24, 0x01	; 1
+     848:	08 95       	ret
+     84a:	82 e0       	ldi	r24, 0x02	; 2
+     84c:	08 95       	ret
+     84e:	83 e0       	ldi	r24, 0x03	; 3
+     850:	08 95       	ret
+
+00000852 <Endpoint_Write_Control_PStream_LE>:
+                            uint16_t Length)
+{
+	uint8_t* DataStream     = ((uint8_t*)Buffer + TEMPLATE_BUFFER_OFFSET(Length));
+	bool     LastPacketFull = false;
+
+	if (Length > USB_ControlRequest.wLength)
+     852:	20 91 1b 01 	lds	r18, 0x011B	; 0x80011b <USB_ControlRequest+0x6>
+     856:	30 91 1c 01 	lds	r19, 0x011C	; 0x80011c <USB_ControlRequest+0x7>
+     85a:	26 17       	cp	r18, r22
+     85c:	37 07       	cpc	r19, r23
+     85e:	48 f0       	brcs	.+18     	; 0x872 <Endpoint_Write_Control_PStream_LE+0x20>
+	  Length = USB_ControlRequest.wLength;
+	else if (!(Length))
+     860:	61 15       	cp	r22, r1
+     862:	71 05       	cpc	r23, r1
+     864:	39 f4       	brne	.+14     	; 0x874 <Endpoint_Write_Control_PStream_LE+0x22>
+			 */
+			static inline void Endpoint_ClearIN(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearIN(void)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UEINTX &= ~((1 << TXINI) | (1 << FIFOCON));
+     866:	20 91 e8 00 	lds	r18, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     86a:	2e 77       	andi	r18, 0x7E	; 126
+     86c:	20 93 e8 00 	sts	0x00E8, r18	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     870:	01 c0       	rjmp	.+2      	; 0x874 <Endpoint_Write_Control_PStream_LE+0x22>
+     872:	b9 01       	movw	r22, r18
+     874:	fc 01       	movw	r30, r24
+     876:	20 e0       	ldi	r18, 0x00	; 0
+	  Endpoint_ClearIN();
+
+	while (Length || LastPacketFull)
+     878:	61 15       	cp	r22, r1
+     87a:	71 05       	cpc	r23, r1
+     87c:	71 f1       	breq	.+92     	; 0x8da <Endpoint_Write_Control_PStream_LE+0x88>
+	{
+		uint8_t USB_DeviceState_LCL = USB_DeviceState;
+     87e:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <USB_DeviceState>
+
+		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+     882:	88 23       	and	r24, r24
+     884:	d9 f1       	breq	.+118    	; 0x8fc <Endpoint_Write_Control_PStream_LE+0xaa>
+		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
+		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+     886:	85 30       	cpi	r24, 0x05	; 5
+     888:	d9 f1       	breq	.+118    	; 0x900 <Endpoint_Write_Control_PStream_LE+0xae>
+			 *  \return Boolean \c true if the selected endpoint has received a SETUP packet, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsSETUPReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsSETUPReceived(void)
+			{
+				return ((UEINTX & (1 << RXSTPI)) ? true : false);
+     88a:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+		  return ENDPOINT_RWCSTREAM_BusSuspended;
+		else if (Endpoint_IsSETUPReceived())
+     88e:	83 fd       	sbrc	r24, 3
+     890:	33 c0       	rjmp	.+102    	; 0x8f8 <Endpoint_Write_Control_PStream_LE+0xa6>
+			 *  \return Boolean \c true if current endpoint is has received an OUT packet, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsOUTReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsOUTReceived(void)
+			{
+				return ((UEINTX & (1 << RXOUTI)) ? true : false);
+     892:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+		  return ENDPOINT_RWCSTREAM_HostAborted;
+		else if (Endpoint_IsOUTReceived())
+     896:	82 fd       	sbrc	r24, 2
+     898:	29 c0       	rjmp	.+82     	; 0x8ec <Endpoint_Write_Control_PStream_LE+0x9a>
+			 *  \return Boolean \c true if the current endpoint is ready for an IN packet, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsINReady(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsINReady(void)
+			{
+				return ((UEINTX & (1 << TXINI)) ? true : false);
+     89a:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+		  break;
+
+		if (Endpoint_IsINReady())
+     89e:	80 ff       	sbrs	r24, 0
+     8a0:	eb cf       	rjmp	.-42     	; 0x878 <Endpoint_Write_Control_PStream_LE+0x26>
+			 */
+			static inline uint16_t Endpoint_BytesInEndpoint(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline uint16_t Endpoint_BytesInEndpoint(void)
+			{
+				#if defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR)
+					return UEBCX;
+     8a2:	80 91 f2 00 	lds	r24, 0x00F2	; 0x8000f2 <__TEXT_REGION_LENGTH__+0x7e00f2>
+     8a6:	90 91 f3 00 	lds	r25, 0x00F3	; 0x8000f3 <__TEXT_REGION_LENGTH__+0x7e00f3>
+		{
+			uint16_t BytesInEndpoint = Endpoint_BytesInEndpoint();
+
+			while (Length && (BytesInEndpoint < USB_Device_ControlEndpointSize))
+     8aa:	61 15       	cp	r22, r1
+     8ac:	71 05       	cpc	r23, r1
+     8ae:	59 f0       	breq	.+22     	; 0x8c6 <Endpoint_Write_Control_PStream_LE+0x74>
+     8b0:	88 30       	cpi	r24, 0x08	; 8
+     8b2:	91 05       	cpc	r25, r1
+     8b4:	40 f4       	brcc	.+16     	; 0x8c6 <Endpoint_Write_Control_PStream_LE+0x74>
+			{
+				TEMPLATE_TRANSFER_BYTE(DataStream);
+     8b6:	24 91       	lpm	r18, Z
+			 *  \param[in] Data  Data to write into the the currently selected endpoint's FIFO buffer.
+			 */
+			static inline void Endpoint_Write_8(const uint8_t Data) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_Write_8(const uint8_t Data)
+			{
+				UEDATX = Data;
+     8b8:	20 93 f1 00 	sts	0x00F1, r18	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7e00f1>
+				TEMPLATE_BUFFER_MOVE(DataStream, 1);
+     8bc:	31 96       	adiw	r30, 0x01	; 1
+				Length--;
+     8be:	61 50       	subi	r22, 0x01	; 1
+     8c0:	71 09       	sbc	r23, r1
+				BytesInEndpoint++;
+     8c2:	01 96       	adiw	r24, 0x01	; 1
+     8c4:	f2 cf       	rjmp	.-28     	; 0x8aa <Endpoint_Write_Control_PStream_LE+0x58>
+			}
+
+			LastPacketFull = (BytesInEndpoint == USB_Device_ControlEndpointSize);
+     8c6:	21 e0       	ldi	r18, 0x01	; 1
+     8c8:	08 97       	sbiw	r24, 0x08	; 8
+     8ca:	09 f0       	breq	.+2      	; 0x8ce <Endpoint_Write_Control_PStream_LE+0x7c>
+     8cc:	20 e0       	ldi	r18, 0x00	; 0
+			 */
+			static inline void Endpoint_ClearIN(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearIN(void)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UEINTX &= ~((1 << TXINI) | (1 << FIFOCON));
+     8ce:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     8d2:	8e 77       	andi	r24, 0x7E	; 126
+     8d4:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     8d8:	cf cf       	rjmp	.-98     	; 0x878 <Endpoint_Write_Control_PStream_LE+0x26>
+	if (Length > USB_ControlRequest.wLength)
+	  Length = USB_ControlRequest.wLength;
+	else if (!(Length))
+	  Endpoint_ClearIN();
+
+	while (Length || LastPacketFull)
+     8da:	21 11       	cpse	r18, r1
+     8dc:	d0 cf       	rjmp	.-96     	; 0x87e <Endpoint_Write_Control_PStream_LE+0x2c>
+     8de:	06 c0       	rjmp	.+12     	; 0x8ec <Endpoint_Write_Control_PStream_LE+0x9a>
+		}
+	}
+
+	while (!(Endpoint_IsOUTReceived()))
+	{
+		uint8_t USB_DeviceState_LCL = USB_DeviceState;
+     8e0:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <USB_DeviceState>
+
+		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+     8e4:	88 23       	and	r24, r24
+     8e6:	51 f0       	breq	.+20     	; 0x8fc <Endpoint_Write_Control_PStream_LE+0xaa>
+		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
+		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+     8e8:	85 30       	cpi	r24, 0x05	; 5
+     8ea:	51 f0       	breq	.+20     	; 0x900 <Endpoint_Write_Control_PStream_LE+0xae>
+			 *  \return Boolean \c true if current endpoint is has received an OUT packet, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsOUTReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsOUTReceived(void)
+			{
+				return ((UEINTX & (1 << RXOUTI)) ? true : false);
+     8ec:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+			LastPacketFull = (BytesInEndpoint == USB_Device_ControlEndpointSize);
+			Endpoint_ClearIN();
+		}
+	}
+
+	while (!(Endpoint_IsOUTReceived()))
+     8f0:	82 ff       	sbrs	r24, 2
+     8f2:	f6 cf       	rjmp	.-20     	; 0x8e0 <Endpoint_Write_Control_PStream_LE+0x8e>
+		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
+		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		  return ENDPOINT_RWCSTREAM_BusSuspended;
+	}
+
+	return ENDPOINT_RWCSTREAM_NoError;
+     8f4:	80 e0       	ldi	r24, 0x00	; 0
+     8f6:	08 95       	ret
+		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
+		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		  return ENDPOINT_RWCSTREAM_BusSuspended;
+		else if (Endpoint_IsSETUPReceived())
+		  return ENDPOINT_RWCSTREAM_HostAborted;
+     8f8:	81 e0       	ldi	r24, 0x01	; 1
+     8fa:	08 95       	ret
+	while (Length || LastPacketFull)
+	{
+		uint8_t USB_DeviceState_LCL = USB_DeviceState;
+
+		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
+     8fc:	82 e0       	ldi	r24, 0x02	; 2
+     8fe:	08 95       	ret
+		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		  return ENDPOINT_RWCSTREAM_BusSuspended;
+     900:	83 e0       	ldi	r24, 0x03	; 3
+		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		  return ENDPOINT_RWCSTREAM_BusSuspended;
+	}
+
+	return ENDPOINT_RWCSTREAM_NoError;
+}
+     902:	08 95       	ret
+
+00000904 <USB_Device_ProcessControlRequest>:
+#if !defined(NO_DEVICE_REMOTE_WAKEUP)
+bool    USB_Device_RemoteWakeupEnabled;
+#endif
+
+void USB_Device_ProcessControlRequest(void)
+{
+     904:	0f 93       	push	r16
+     906:	1f 93       	push	r17
+     908:	cf 93       	push	r28
+     90a:	df 93       	push	r29
+     90c:	cd b7       	in	r28, 0x3d	; 61
+     90e:	de b7       	in	r29, 0x3e	; 62
+     910:	aa 97       	sbiw	r28, 0x2a	; 42
+     912:	0f b6       	in	r0, 0x3f	; 63
+     914:	f8 94       	cli
+     916:	de bf       	out	0x3e, r29	; 62
+     918:	0f be       	out	0x3f, r0	; 63
+     91a:	cd bf       	out	0x3d, r28	; 61
+     91c:	e5 e1       	ldi	r30, 0x15	; 21
+     91e:	f1 e0       	ldi	r31, 0x01	; 1
+			 *  \return Next byte in the currently selected endpoint's FIFO buffer.
+			 */
+			static inline uint8_t Endpoint_Read_8(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline uint8_t Endpoint_Read_8(void)
+			{
+				return UEDATX;
+     920:	80 91 f1 00 	lds	r24, 0x00F1	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7e00f1>
+	USB_ControlRequest.wLength       = Endpoint_Read_16_LE();
+	#else
+	uint8_t* RequestHeader = (uint8_t*)&USB_ControlRequest;
+
+	for (uint8_t RequestHeaderByte = 0; RequestHeaderByte < sizeof(USB_Request_Header_t); RequestHeaderByte++)
+	  *(RequestHeader++) = Endpoint_Read_8();
+     924:	81 93       	st	Z+, r24
+	USB_ControlRequest.wIndex        = Endpoint_Read_16_LE();
+	USB_ControlRequest.wLength       = Endpoint_Read_16_LE();
+	#else
+	uint8_t* RequestHeader = (uint8_t*)&USB_ControlRequest;
+
+	for (uint8_t RequestHeaderByte = 0; RequestHeaderByte < sizeof(USB_Request_Header_t); RequestHeaderByte++)
+     926:	21 e0       	ldi	r18, 0x01	; 1
+     928:	ed 31       	cpi	r30, 0x1D	; 29
+     92a:	f2 07       	cpc	r31, r18
+     92c:	c9 f7       	brne	.-14     	; 0x920 <USB_Device_ProcessControlRequest+0x1c>
+	  *(RequestHeader++) = Endpoint_Read_8();
+	#endif
+
+	EVENT_USB_Device_ControlRequest();
+     92e:	7e dc       	rcall	.-1796   	; 0x22c <EVENT_USB_Device_ControlRequest>
+			 *  \return Boolean \c true if the selected endpoint has received a SETUP packet, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsSETUPReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsSETUPReceived(void)
+			{
+				return ((UEINTX & (1 << RXSTPI)) ? true : false);
+     930:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+
+	if (Endpoint_IsSETUPReceived())
+     934:	83 ff       	sbrs	r24, 3
+     936:	1d c1       	rjmp	.+570    	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+	{
+		uint8_t bmRequestType = USB_ControlRequest.bmRequestType;
+     938:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <USB_ControlRequest>
+
+		switch (USB_ControlRequest.bRequest)
+     93c:	90 91 16 01 	lds	r25, 0x0116	; 0x800116 <USB_ControlRequest+0x1>
+     940:	49 2f       	mov	r20, r25
+     942:	50 e0       	ldi	r21, 0x00	; 0
+     944:	4a 30       	cpi	r20, 0x0A	; 10
+     946:	51 05       	cpc	r21, r1
+     948:	08 f0       	brcs	.+2      	; 0x94c <USB_Device_ProcessControlRequest+0x48>
+     94a:	13 c1       	rjmp	.+550    	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+     94c:	fa 01       	movw	r30, r20
+     94e:	e4 5b       	subi	r30, 0xB4	; 180
+     950:	ff 4f       	sbci	r31, 0xFF	; 255
+     952:	33 c3       	rjmp	.+1638   	; 0xfba <__tablejump2__>
+		{
+			case REQ_GetStatus:
+				if ((bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE)) ||
+     954:	80 38       	cpi	r24, 0x80	; 128
+     956:	81 f0       	breq	.+32     	; 0x978 <USB_Device_ProcessControlRequest+0x74>
+     958:	82 38       	cpi	r24, 0x82	; 130
+     95a:	09 f0       	breq	.+2      	; 0x95e <USB_Device_ProcessControlRequest+0x5a>
+     95c:	0a c1       	rjmp	.+532    	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+			#endif
+			break;
+		#endif
+		#if !defined(CONTROL_ONLY_DEVICE)
+		case (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_ENDPOINT):
+			Endpoint_SelectEndpoint((uint8_t)USB_ControlRequest.wIndex & ENDPOINT_EPNUM_MASK);
+     95e:	80 91 19 01 	lds	r24, 0x0119	; 0x800119 <USB_ControlRequest+0x4>
+     962:	87 70       	andi	r24, 0x07	; 7
+			 */
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UENUM = EndpointNumber;
+     964:	80 93 e9 00 	sts	0x00E9, r24	; 0x8000e9 <__TEXT_REGION_LENGTH__+0x7e00e9>
+			 *  \return Boolean \c true if the currently selected endpoint is stalled, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsStalled(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsStalled(void)
+			{
+				return ((UECONX & (1 << STALLRQ)) ? true : false);
+     968:	80 91 eb 00 	lds	r24, 0x00EB	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+
+			CurrentStatus = Endpoint_IsStalled();
+     96c:	85 fb       	bst	r24, 5
+     96e:	88 27       	eor	r24, r24
+     970:	80 f9       	bld	r24, 0
+			 */
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UENUM = EndpointNumber;
+     972:	10 92 e9 00 	sts	0x00E9, r1	; 0x8000e9 <__TEXT_REGION_LENGTH__+0x7e00e9>
+     976:	06 c0       	rjmp	.+12     	; 0x984 <USB_Device_ProcessControlRequest+0x80>
+	Endpoint_ClearOUT();
+}
+
+static void USB_Device_GetStatus(void)
+{
+	uint8_t CurrentStatus = 0;
+     978:	80 91 11 01 	lds	r24, 0x0111	; 0x800111 <USB_Device_CurrentlySelfPowered>
+			if (USB_Device_CurrentlySelfPowered)
+			  CurrentStatus |= FEATURE_SELFPOWERED_ENABLED;
+			#endif
+
+			#if !defined(NO_DEVICE_REMOTE_WAKEUP)
+			if (USB_Device_RemoteWakeupEnabled)
+     97c:	90 91 12 01 	lds	r25, 0x0112	; 0x800112 <USB_Device_RemoteWakeupEnabled>
+     980:	91 11       	cpse	r25, r1
+			  CurrentStatus |= FEATURE_REMOTE_WAKEUP_ENABLED;
+     982:	82 60       	ori	r24, 0x02	; 2
+			 *  \note This is not applicable for non CONTROL type endpoints.
+			 */
+			static inline void Endpoint_ClearSETUP(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearSETUP(void)
+			{
+				UEINTX &= ~(1 << RXSTPI);
+     984:	90 91 e8 00 	lds	r25, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     988:	97 7f       	andi	r25, 0xF7	; 247
+     98a:	90 93 e8 00 	sts	0x00E8, r25	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+			 *  \param[in] Data  Data to write to the currently selected endpoint's FIFO buffer.
+			 */
+			static inline void Endpoint_Write_16_LE(const uint16_t Data) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_Write_16_LE(const uint16_t Data)
+			{
+				UEDATX = (Data & 0xFF);
+     98e:	80 93 f1 00 	sts	0x00F1, r24	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7e00f1>
+				UEDATX = (Data >> 8);
+     992:	10 92 f1 00 	sts	0x00F1, r1	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7e00f1>
+     996:	c5 c0       	rjmp	.+394    	; 0xb22 <USB_Device_ProcessControlRequest+0x21e>
+				}
+
+				break;
+			case REQ_ClearFeature:
+			case REQ_SetFeature:
+				if ((bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE)) ||
+     998:	28 2f       	mov	r18, r24
+     99a:	2d 7f       	andi	r18, 0xFD	; 253
+     99c:	09 f0       	breq	.+2      	; 0x9a0 <USB_Device_ProcessControlRequest+0x9c>
+     99e:	e9 c0       	rjmp	.+466    	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+	Endpoint_ClearStatusStage();
+}
+
+static void USB_Device_ClearSetFeature(void)
+{
+	switch (USB_ControlRequest.bmRequestType & CONTROL_REQTYPE_RECIPIENT)
+     9a0:	88 23       	and	r24, r24
+     9a2:	19 f0       	breq	.+6      	; 0x9aa <USB_Device_ProcessControlRequest+0xa6>
+     9a4:	82 30       	cpi	r24, 0x02	; 2
+     9a6:	61 f0       	breq	.+24     	; 0x9c0 <USB_Device_ProcessControlRequest+0xbc>
+     9a8:	e4 c0       	rjmp	.+456    	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+	{
+		#if !defined(NO_DEVICE_REMOTE_WAKEUP)
+		case REQREC_DEVICE:
+			if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_DeviceRemoteWakeup)
+     9aa:	80 91 17 01 	lds	r24, 0x0117	; 0x800117 <USB_ControlRequest+0x2>
+     9ae:	81 30       	cpi	r24, 0x01	; 1
+     9b0:	09 f0       	breq	.+2      	; 0x9b4 <USB_Device_ProcessControlRequest+0xb0>
+     9b2:	df c0       	rjmp	.+446    	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+			  USB_Device_RemoteWakeupEnabled = (USB_ControlRequest.bRequest == REQ_SetFeature);
+     9b4:	93 30       	cpi	r25, 0x03	; 3
+     9b6:	09 f0       	breq	.+2      	; 0x9ba <USB_Device_ProcessControlRequest+0xb6>
+     9b8:	80 e0       	ldi	r24, 0x00	; 0
+     9ba:	80 93 12 01 	sts	0x0112, r24	; 0x800112 <USB_Device_RemoteWakeupEnabled>
+     9be:	2b c0       	rjmp	.+86     	; 0xa16 <USB_Device_ProcessControlRequest+0x112>
+
+			break;
+		#endif
+		#if !defined(CONTROL_ONLY_DEVICE)
+		case REQREC_ENDPOINT:
+			if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_EndpointHalt)
+     9c0:	80 91 17 01 	lds	r24, 0x0117	; 0x800117 <USB_ControlRequest+0x2>
+     9c4:	81 11       	cpse	r24, r1
+     9c6:	27 c0       	rjmp	.+78     	; 0xa16 <USB_Device_ProcessControlRequest+0x112>
+			{
+				uint8_t EndpointIndex = ((uint8_t)USB_ControlRequest.wIndex & ENDPOINT_EPNUM_MASK);
+     9c8:	80 91 19 01 	lds	r24, 0x0119	; 0x800119 <USB_ControlRequest+0x4>
+     9cc:	87 70       	andi	r24, 0x07	; 7
+
+				if (EndpointIndex == ENDPOINT_CONTROLEP)
+     9ce:	09 f4       	brne	.+2      	; 0x9d2 <USB_Device_ProcessControlRequest+0xce>
+     9d0:	d0 c0       	rjmp	.+416    	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+			 */
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UENUM = EndpointNumber;
+     9d2:	80 93 e9 00 	sts	0x00E9, r24	; 0x8000e9 <__TEXT_REGION_LENGTH__+0x7e00e9>
+			 * \return Boolean \c true if the currently selected endpoint is enabled, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsEnabled(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsEnabled(void)
+			{
+				return ((UECONX & (1 << EPEN)) ? true : false);
+     9d6:	20 91 eb 00 	lds	r18, 0x00EB	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+				  return;
+
+				Endpoint_SelectEndpoint(EndpointIndex);
+
+				if (Endpoint_IsEnabled())
+     9da:	20 ff       	sbrs	r18, 0
+     9dc:	1c c0       	rjmp	.+56     	; 0xa16 <USB_Device_ProcessControlRequest+0x112>
+				{
+					if (USB_ControlRequest.bRequest == REQ_SetFeature)
+     9de:	93 30       	cpi	r25, 0x03	; 3
+     9e0:	21 f4       	brne	.+8      	; 0x9ea <USB_Device_ProcessControlRequest+0xe6>
+			 *  \ingroup Group_EndpointPacketManagement_AVR8
+			 */
+			static inline void Endpoint_StallTransaction(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_StallTransaction(void)
+			{
+				UECONX |= (1 << STALLRQ);
+     9e2:	80 91 eb 00 	lds	r24, 0x00EB	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+     9e6:	80 62       	ori	r24, 0x20	; 32
+     9e8:	14 c0       	rjmp	.+40     	; 0xa12 <USB_Device_ProcessControlRequest+0x10e>
+			 *  \ingroup Group_EndpointPacketManagement_AVR8
+			 */
+			static inline void Endpoint_ClearStall(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearStall(void)
+			{
+				UECONX |= (1 << STALLRQC);
+     9ea:	90 91 eb 00 	lds	r25, 0x00EB	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+     9ee:	90 61       	ori	r25, 0x10	; 16
+     9f0:	90 93 eb 00 	sts	0x00EB, r25	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+			 *  \param[in] EndpointNumber Endpoint number whose FIFO buffers are to be reset.
+			 */
+			static inline void Endpoint_ResetEndpoint(const uint8_t EndpointNumber) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ResetEndpoint(const uint8_t EndpointNumber)
+			{
+				UERST = (1 << EndpointNumber);
+     9f4:	21 e0       	ldi	r18, 0x01	; 1
+     9f6:	30 e0       	ldi	r19, 0x00	; 0
+     9f8:	a9 01       	movw	r20, r18
+     9fa:	02 c0       	rjmp	.+4      	; 0xa00 <USB_Device_ProcessControlRequest+0xfc>
+     9fc:	44 0f       	add	r20, r20
+     9fe:	55 1f       	adc	r21, r21
+     a00:	8a 95       	dec	r24
+     a02:	e2 f7       	brpl	.-8      	; 0x9fc <USB_Device_ProcessControlRequest+0xf8>
+     a04:	40 93 ea 00 	sts	0x00EA, r20	; 0x8000ea <__TEXT_REGION_LENGTH__+0x7e00ea>
+				UERST = 0;
+     a08:	10 92 ea 00 	sts	0x00EA, r1	; 0x8000ea <__TEXT_REGION_LENGTH__+0x7e00ea>
+
+			/** Resets the data toggle of the currently selected endpoint. */
+			static inline void Endpoint_ResetDataToggle(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ResetDataToggle(void)
+			{
+				UECONX |= (1 << RSTDT);
+     a0c:	80 91 eb 00 	lds	r24, 0x00EB	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+     a10:	88 60       	ori	r24, 0x08	; 8
+     a12:	80 93 eb 00 	sts	0x00EB, r24	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+			 */
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UENUM = EndpointNumber;
+     a16:	10 92 e9 00 	sts	0x00E9, r1	; 0x8000e9 <__TEXT_REGION_LENGTH__+0x7e00e9>
+			 *  \note This is not applicable for non CONTROL type endpoints.
+			 */
+			static inline void Endpoint_ClearSETUP(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearSETUP(void)
+			{
+				UEINTX &= ~(1 << RXSTPI);
+     a1a:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     a1e:	87 7f       	andi	r24, 0xF7	; 247
+     a20:	83 c0       	rjmp	.+262    	; 0xb28 <USB_Device_ProcessControlRequest+0x224>
+					USB_Device_ClearSetFeature();
+				}
+
+				break;
+			case REQ_SetAddress:
+				if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE))
+     a22:	81 11       	cpse	r24, r1
+     a24:	a6 c0       	rjmp	.+332    	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+	}
+}
+
+static void USB_Device_SetAddress(void)
+{
+	uint8_t    DeviceAddress    = (USB_ControlRequest.wValue & 0x7F);
+     a26:	10 91 17 01 	lds	r17, 0x0117	; 0x800117 <USB_ControlRequest+0x2>
+     a2a:	1f 77       	andi	r17, 0x7F	; 127
+			static inline uint_reg_t GetGlobalInterruptMask(void)
+			{
+				GCC_MEMORY_BARRIER();
+
+				#if (ARCH == ARCH_AVR8)
+				return SREG;
+     a2c:	0f b7       	in	r16, 0x3f	; 63
+			static inline void GlobalInterruptDisable(void)
+			{
+				GCC_MEMORY_BARRIER();
+
+				#if (ARCH == ARCH_AVR8)
+				cli();
+     a2e:	f8 94       	cli
+     a30:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     a34:	87 7f       	andi	r24, 0xF7	; 247
+     a36:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+	uint_reg_t CurrentGlobalInt = GetGlobalInterruptMask();
+	GlobalInterruptDisable();
+				
+	Endpoint_ClearSETUP();
+
+	Endpoint_ClearStatusStage();
+     a3a:	b6 dc       	rcall	.-1684   	; 0x3a8 <Endpoint_ClearStatusStage>
+			 *  \return Boolean \c true if the current endpoint is ready for an IN packet, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsINReady(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsINReady(void)
+			{
+				return ((UEINTX & (1 << TXINI)) ? true : false);
+     a3c:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+
+	while (!(Endpoint_IsINReady()));
+     a40:	80 ff       	sbrs	r24, 0
+     a42:	fc cf       	rjmp	.-8      	; 0xa3c <USB_Device_ProcessControlRequest+0x138>
+			#endif
+
+			static inline void USB_Device_SetDeviceAddress(const uint8_t Address) ATTR_ALWAYS_INLINE;
+			static inline void USB_Device_SetDeviceAddress(const uint8_t Address)
+			{
+				uint8_t Temp = (UDADDR & (1 << ADDEN)) | (Address & 0x7F);
+     a44:	80 91 e3 00 	lds	r24, 0x00E3	; 0x8000e3 <__TEXT_REGION_LENGTH__+0x7e00e3>
+     a48:	80 78       	andi	r24, 0x80	; 128
+     a4a:	81 2b       	or	r24, r17
+
+				UDADDR = Temp;
+     a4c:	80 93 e3 00 	sts	0x00E3, r24	; 0x8000e3 <__TEXT_REGION_LENGTH__+0x7e00e3>
+				UDADDR = Temp | (1 << ADDEN);
+     a50:	80 68       	ori	r24, 0x80	; 128
+     a52:	80 93 e3 00 	sts	0x00E3, r24	; 0x8000e3 <__TEXT_REGION_LENGTH__+0x7e00e3>
+
+	USB_Device_SetDeviceAddress(DeviceAddress);
+	USB_DeviceState = (DeviceAddress) ? DEVICE_STATE_Addressed : DEVICE_STATE_Default;
+     a56:	11 11       	cpse	r17, r1
+     a58:	02 c0       	rjmp	.+4      	; 0xa5e <USB_Device_ProcessControlRequest+0x15a>
+     a5a:	82 e0       	ldi	r24, 0x02	; 2
+     a5c:	01 c0       	rjmp	.+2      	; 0xa60 <USB_Device_ProcessControlRequest+0x15c>
+     a5e:	83 e0       	ldi	r24, 0x03	; 3
+     a60:	80 93 14 01 	sts	0x0114, r24	; 0x800114 <USB_DeviceState>
+			static inline void SetGlobalInterruptMask(const uint_reg_t GlobalIntState)
+			{
+				GCC_MEMORY_BARRIER();
+
+				#if (ARCH == ARCH_AVR8)
+				SREG = GlobalIntState;
+     a64:	0f bf       	out	0x3f, r16	; 63
+				  __builtin_csrf(AVR32_SR_GM_OFFSET);
+				#elif (ARCH == ARCH_XMEGA)
+				SREG = GlobalIntState;				
+				#endif
+				
+				GCC_MEMORY_BARRIER();
+     a66:	85 c0       	rjmp	.+266    	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+				if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE))
+				  USB_Device_SetAddress();
+
+				break;
+			case REQ_GetDescriptor:
+				if ((bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE)) ||
+     a68:	80 58       	subi	r24, 0x80	; 128
+     a6a:	82 30       	cpi	r24, 0x02	; 2
+     a6c:	08 f0       	brcs	.+2      	; 0xa70 <USB_Device_ProcessControlRequest+0x16c>
+     a6e:	81 c0       	rjmp	.+258    	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+	    !(defined(USE_FLASH_DESCRIPTORS) || defined(USE_EEPROM_DESCRIPTORS) || defined(USE_RAM_DESCRIPTORS))
+	uint8_t DescriptorAddressSpace;
+	#endif
+
+	#if !defined(NO_INTERNAL_SERIAL) && (USE_INTERNAL_SERIAL != NO_DESCRIPTOR)
+	if (USB_ControlRequest.wValue == ((DTYPE_String << 8) | USE_INTERNAL_SERIAL))
+     a70:	80 91 17 01 	lds	r24, 0x0117	; 0x800117 <USB_ControlRequest+0x2>
+     a74:	90 91 18 01 	lds	r25, 0x0118	; 0x800118 <USB_ControlRequest+0x3>
+     a78:	8c 3d       	cpi	r24, 0xDC	; 220
+     a7a:	53 e0       	ldi	r21, 0x03	; 3
+     a7c:	95 07       	cpc	r25, r21
+     a7e:	71 f5       	brne	.+92     	; 0xadc <USB_Device_ProcessControlRequest+0x1d8>
+	{
+		USB_Descriptor_Header_t Header;
+		uint16_t                UnicodeString[INTERNAL_SERIAL_LENGTH_BITS / 4];
+	} SignatureDescriptor;
+
+	SignatureDescriptor.Header.Type = DTYPE_String;
+     a80:	83 e0       	ldi	r24, 0x03	; 3
+     a82:	8a 83       	std	Y+2, r24	; 0x02
+	SignatureDescriptor.Header.Size = USB_STRING_LEN(INTERNAL_SERIAL_LENGTH_BITS / 4);
+     a84:	8a e2       	ldi	r24, 0x2A	; 42
+     a86:	89 83       	std	Y+1, r24	; 0x01
+			static inline uint_reg_t GetGlobalInterruptMask(void)
+			{
+				GCC_MEMORY_BARRIER();
+
+				#if (ARCH == ARCH_AVR8)
+				return SREG;
+     a88:	4f b7       	in	r20, 0x3f	; 63
+			static inline void GlobalInterruptDisable(void)
+			{
+				GCC_MEMORY_BARRIER();
+
+				#if (ARCH == ARCH_AVR8)
+				cli();
+     a8a:	f8 94       	cli
+				__builtin_ssrf(AVR32_SR_GM_OFFSET);
+				#elif (ARCH == ARCH_XMEGA)
+				cli();
+				#endif
+
+				GCC_MEMORY_BARRIER();
+     a8c:	de 01       	movw	r26, r28
+     a8e:	13 96       	adiw	r26, 0x03	; 3
+				uint_reg_t CurrentGlobalInt = GetGlobalInterruptMask();
+				GlobalInterruptDisable();
+				
+				uint8_t SigReadAddress = INTERNAL_SERIAL_START_ADDRESS;
+
+				for (uint8_t SerialCharNum = 0; SerialCharNum < (INTERNAL_SERIAL_LENGTH_BITS / 4); SerialCharNum++)
+     a90:	20 e0       	ldi	r18, 0x00	; 0
+			static inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
+			{
+				uint_reg_t CurrentGlobalInt = GetGlobalInterruptMask();
+				GlobalInterruptDisable();
+				
+				uint8_t SigReadAddress = INTERNAL_SERIAL_START_ADDRESS;
+     a92:	3e e0       	ldi	r19, 0x0E	; 14
+
+				for (uint8_t SerialCharNum = 0; SerialCharNum < (INTERNAL_SERIAL_LENGTH_BITS / 4); SerialCharNum++)
+				{
+					uint8_t SerialByte = boot_signature_byte_get(SigReadAddress);
+     a94:	51 e2       	ldi	r21, 0x21	; 33
+     a96:	e3 2f       	mov	r30, r19
+     a98:	f0 e0       	ldi	r31, 0x00	; 0
+     a9a:	50 93 57 00 	sts	0x0057, r21	; 0x800057 <__TEXT_REGION_LENGTH__+0x7e0057>
+     a9e:	e4 91       	lpm	r30, Z
+
+					if (SerialCharNum & 0x01)
+     aa0:	20 ff       	sbrs	r18, 0
+     aa2:	03 c0       	rjmp	.+6      	; 0xaaa <USB_Device_ProcessControlRequest+0x1a6>
+					{
+						SerialByte >>= 4;
+     aa4:	e2 95       	swap	r30
+     aa6:	ef 70       	andi	r30, 0x0F	; 15
+						SigReadAddress++;
+     aa8:	3f 5f       	subi	r19, 0xFF	; 255
+					}
+
+					SerialByte &= 0x0F;
+     aaa:	ef 70       	andi	r30, 0x0F	; 15
+     aac:	8e 2f       	mov	r24, r30
+     aae:	90 e0       	ldi	r25, 0x00	; 0
+
+					UnicodeString[SerialCharNum] = cpu_to_le16((SerialByte >= 10) ?
+     ab0:	ea 30       	cpi	r30, 0x0A	; 10
+     ab2:	10 f0       	brcs	.+4      	; 0xab8 <USB_Device_ProcessControlRequest+0x1b4>
+     ab4:	c7 96       	adiw	r24, 0x37	; 55
+     ab6:	01 c0       	rjmp	.+2      	; 0xaba <USB_Device_ProcessControlRequest+0x1b6>
+     ab8:	c0 96       	adiw	r24, 0x30	; 48
+     aba:	8d 93       	st	X+, r24
+     abc:	9d 93       	st	X+, r25
+				uint_reg_t CurrentGlobalInt = GetGlobalInterruptMask();
+				GlobalInterruptDisable();
+				
+				uint8_t SigReadAddress = INTERNAL_SERIAL_START_ADDRESS;
+
+				for (uint8_t SerialCharNum = 0; SerialCharNum < (INTERNAL_SERIAL_LENGTH_BITS / 4); SerialCharNum++)
+     abe:	2f 5f       	subi	r18, 0xFF	; 255
+     ac0:	24 31       	cpi	r18, 0x14	; 20
+     ac2:	49 f7       	brne	.-46     	; 0xa96 <USB_Device_ProcessControlRequest+0x192>
+			static inline void SetGlobalInterruptMask(const uint_reg_t GlobalIntState)
+			{
+				GCC_MEMORY_BARRIER();
+
+				#if (ARCH == ARCH_AVR8)
+				SREG = GlobalIntState;
+     ac4:	4f bf       	out	0x3f, r20	; 63
+			 *  \note This is not applicable for non CONTROL type endpoints.
+			 */
+			static inline void Endpoint_ClearSETUP(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearSETUP(void)
+			{
+				UEINTX &= ~(1 << RXSTPI);
+     ac6:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     aca:	87 7f       	andi	r24, 0xF7	; 247
+     acc:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+	
+	USB_Device_GetSerialString(SignatureDescriptor.UnicodeString);
+
+	Endpoint_ClearSETUP();
+
+	Endpoint_Write_Control_Stream_LE(&SignatureDescriptor, sizeof(SignatureDescriptor));
+     ad0:	6a e2       	ldi	r22, 0x2A	; 42
+     ad2:	70 e0       	ldi	r23, 0x00	; 0
+     ad4:	ce 01       	movw	r24, r28
+     ad6:	01 96       	adiw	r24, 0x01	; 1
+     ad8:	26 de       	rcall	.-948    	; 0x726 <Endpoint_Write_Control_Stream_LE>
+     ada:	12 c0       	rjmp	.+36     	; 0xb00 <USB_Device_ProcessControlRequest+0x1fc>
+		USB_Device_GetInternalSerialDescriptor();
+		return;
+	}
+	#endif
+
+	if ((DescriptorSize = CALLBACK_USB_GetDescriptor(USB_ControlRequest.wValue, USB_ControlRequest.wIndex,
+     adc:	ae 01       	movw	r20, r28
+     ade:	4f 5f       	subi	r20, 0xFF	; 255
+     ae0:	5f 4f       	sbci	r21, 0xFF	; 255
+     ae2:	60 91 19 01 	lds	r22, 0x0119	; 0x800119 <USB_ControlRequest+0x4>
+     ae6:	eb db       	rcall	.-2090   	; 0x2be <CALLBACK_USB_GetDescriptor>
+     ae8:	bc 01       	movw	r22, r24
+     aea:	89 2b       	or	r24, r25
+     aec:	09 f4       	brne	.+2      	; 0xaf0 <USB_Device_ProcessControlRequest+0x1ec>
+     aee:	41 c0       	rjmp	.+130    	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+     af0:	90 91 e8 00 	lds	r25, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     af4:	97 7f       	andi	r25, 0xF7	; 247
+     af6:	90 93 e8 00 	sts	0x00E8, r25	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+	#if defined(USE_RAM_DESCRIPTORS) || !defined(ARCH_HAS_MULTI_ADDRESS_SPACE)
+	Endpoint_Write_Control_Stream_LE(DescriptorPointer, DescriptorSize);
+	#elif defined(USE_EEPROM_DESCRIPTORS)
+	Endpoint_Write_Control_EStream_LE(DescriptorPointer, DescriptorSize);
+	#elif defined(USE_FLASH_DESCRIPTORS)
+	Endpoint_Write_Control_PStream_LE(DescriptorPointer, DescriptorSize);
+     afa:	89 81       	ldd	r24, Y+1	; 0x01
+     afc:	9a 81       	ldd	r25, Y+2	; 0x02
+     afe:	a9 de       	rcall	.-686    	; 0x852 <Endpoint_Write_Control_PStream_LE>
+			 */
+			static inline void Endpoint_ClearOUT(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearOUT(void)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UEINTX &= ~((1 << RXOUTI) | (1 << FIFOCON));
+     b00:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     b04:	8b 77       	andi	r24, 0x7B	; 123
+     b06:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     b0a:	33 c0       	rjmp	.+102    	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+					USB_Device_GetDescriptor();
+				}
+
+				break;
+			case REQ_GetConfiguration:
+				if (bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE))
+     b0c:	80 38       	cpi	r24, 0x80	; 128
+     b0e:	89 f5       	brne	.+98     	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+			 *  \note This is not applicable for non CONTROL type endpoints.
+			 */
+			static inline void Endpoint_ClearSETUP(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearSETUP(void)
+			{
+				UEINTX &= ~(1 << RXSTPI);
+     b10:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     b14:	87 7f       	andi	r24, 0xF7	; 247
+     b16:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+
+static void USB_Device_GetConfiguration(void)
+{
+	Endpoint_ClearSETUP();
+
+	Endpoint_Write_8(USB_Device_ConfigurationNumber);
+     b1a:	80 91 10 01 	lds	r24, 0x0110	; 0x800110 <USB_Device_ConfigurationNumber>
+			 *  \param[in] Data  Data to write into the the currently selected endpoint's FIFO buffer.
+			 */
+			static inline void Endpoint_Write_8(const uint8_t Data) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_Write_8(const uint8_t Data)
+			{
+				UEDATX = Data;
+     b1e:	80 93 f1 00 	sts	0x00F1, r24	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7e00f1>
+			 */
+			static inline void Endpoint_ClearIN(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearIN(void)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UEINTX &= ~((1 << TXINI) | (1 << FIFOCON));
+     b22:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     b26:	8e 77       	andi	r24, 0x7E	; 126
+     b28:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+	Endpoint_ClearIN();
+
+	Endpoint_ClearStatusStage();
+     b2c:	3d dc       	rcall	.-1926   	; 0x3a8 <Endpoint_ClearStatusStage>
+     b2e:	21 c0       	rjmp	.+66     	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+				if (bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE))
+				  USB_Device_GetConfiguration();
+
+				break;
+			case REQ_SetConfiguration:
+				if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE))
+     b30:	81 11       	cpse	r24, r1
+     b32:	1f c0       	rjmp	.+62     	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+}
+
+static void USB_Device_SetConfiguration(void)
+{
+	#if defined(FIXED_NUM_CONFIGURATIONS)
+	if ((uint8_t)USB_ControlRequest.wValue > FIXED_NUM_CONFIGURATIONS)
+     b34:	80 91 17 01 	lds	r24, 0x0117	; 0x800117 <USB_ControlRequest+0x2>
+     b38:	90 91 18 01 	lds	r25, 0x0118	; 0x800118 <USB_ControlRequest+0x3>
+     b3c:	99 27       	eor	r25, r25
+     b3e:	02 97       	sbiw	r24, 0x02	; 2
+     b40:	c4 f4       	brge	.+48     	; 0xb72 <USB_Device_ProcessControlRequest+0x26e>
+			 *  \note This is not applicable for non CONTROL type endpoints.
+			 */
+			static inline void Endpoint_ClearSETUP(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearSETUP(void)
+			{
+				UEINTX &= ~(1 << RXSTPI);
+     b42:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     b46:	87 7f       	andi	r24, 0xF7	; 247
+     b48:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+	#endif
+	#endif
+
+	Endpoint_ClearSETUP();
+
+	USB_Device_ConfigurationNumber = (uint8_t)USB_ControlRequest.wValue;
+     b4c:	80 91 17 01 	lds	r24, 0x0117	; 0x800117 <USB_ControlRequest+0x2>
+     b50:	80 93 10 01 	sts	0x0110, r24	; 0x800110 <USB_Device_ConfigurationNumber>
+
+	Endpoint_ClearStatusStage();
+     b54:	29 dc       	rcall	.-1966   	; 0x3a8 <Endpoint_ClearStatusStage>
+
+	if (USB_Device_ConfigurationNumber)
+     b56:	80 91 10 01 	lds	r24, 0x0110	; 0x800110 <USB_Device_ConfigurationNumber>
+     b5a:	81 11       	cpse	r24, r1
+     b5c:	06 c0       	rjmp	.+12     	; 0xb6a <USB_Device_ProcessControlRequest+0x266>
+			}
+
+			static inline bool USB_Device_IsAddressSet(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
+			static inline bool USB_Device_IsAddressSet(void)
+			{
+				return (UDADDR & (1 << ADDEN));
+     b5e:	80 91 e3 00 	lds	r24, 0x00E3	; 0x8000e3 <__TEXT_REGION_LENGTH__+0x7e00e3>
+	  USB_DeviceState = DEVICE_STATE_Configured;
+	else
+	  USB_DeviceState = (USB_Device_IsAddressSet()) ? DEVICE_STATE_Configured : DEVICE_STATE_Powered;
+     b62:	87 fd       	sbrc	r24, 7
+     b64:	02 c0       	rjmp	.+4      	; 0xb6a <USB_Device_ProcessControlRequest+0x266>
+     b66:	81 e0       	ldi	r24, 0x01	; 1
+     b68:	01 c0       	rjmp	.+2      	; 0xb6c <USB_Device_ProcessControlRequest+0x268>
+     b6a:	84 e0       	ldi	r24, 0x04	; 4
+     b6c:	80 93 14 01 	sts	0x0114, r24	; 0x800114 <USB_DeviceState>
+
+	EVENT_USB_Device_ConfigurationChanged();
+     b70:	4f db       	rcall	.-2402   	; 0x210 <EVENT_USB_Device_ConfigurationChanged>
+			 *  \return Boolean \c true if the selected endpoint has received a SETUP packet, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsSETUPReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsSETUPReceived(void)
+			{
+				return ((UEINTX & (1 << RXSTPI)) ? true : false);
+     b72:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+
+				break;
+		}
+	}
+
+	if (Endpoint_IsSETUPReceived())
+     b76:	83 ff       	sbrs	r24, 3
+     b78:	0a c0       	rjmp	.+20     	; 0xb8e <USB_Device_ProcessControlRequest+0x28a>
+			 *  \ingroup Group_EndpointPacketManagement_AVR8
+			 */
+			static inline void Endpoint_StallTransaction(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_StallTransaction(void)
+			{
+				UECONX |= (1 << STALLRQ);
+     b7a:	80 91 eb 00 	lds	r24, 0x00EB	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+     b7e:	80 62       	ori	r24, 0x20	; 32
+     b80:	80 93 eb 00 	sts	0x00EB, r24	; 0x8000eb <__TEXT_REGION_LENGTH__+0x7e00eb>
+			 *  \note This is not applicable for non CONTROL type endpoints.
+			 */
+			static inline void Endpoint_ClearSETUP(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearSETUP(void)
+			{
+				UEINTX &= ~(1 << RXSTPI);
+     b84:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     b88:	87 7f       	andi	r24, 0xF7	; 247
+     b8a:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+	{
+		Endpoint_StallTransaction();
+		Endpoint_ClearSETUP();
+	}
+}
+     b8e:	aa 96       	adiw	r28, 0x2a	; 42
+     b90:	0f b6       	in	r0, 0x3f	; 63
+     b92:	f8 94       	cli
+     b94:	de bf       	out	0x3e, r29	; 62
+     b96:	0f be       	out	0x3f, r0	; 63
+     b98:	cd bf       	out	0x3d, r28	; 61
+     b9a:	df 91       	pop	r29
+     b9c:	cf 91       	pop	r28
+     b9e:	1f 91       	pop	r17
+     ba0:	0f 91       	pop	r16
+     ba2:	08 95       	ret
+
+00000ba4 <USB_Event_Stub>:
+#define  __INCLUDE_FROM_EVENTS_C
+#define  __INCLUDE_FROM_USB_DRIVER
+#include "Events.h"
+
+void USB_Event_Stub(void)
+{
+     ba4:	08 95       	ret
+
+00000ba6 <USB_USBTask>:
+#if defined(USB_CAN_BE_DEVICE) && !defined(DEVICE_STATE_AS_GPIOR)
+volatile uint8_t     USB_DeviceState;
+#endif
+
+void USB_USBTask(void)
+{
+     ba6:	cf 93       	push	r28
+}
+
+#if defined(USB_CAN_BE_DEVICE)
+static void USB_DeviceTask(void)
+{
+	if (USB_DeviceState != DEVICE_STATE_Unattached)
+     ba8:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <USB_DeviceState>
+     bac:	88 23       	and	r24, r24
+     bae:	59 f0       	breq	.+22     	; 0xbc6 <USB_USBTask+0x20>
+			 */
+			static inline uint8_t Endpoint_GetCurrentEndpoint(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline uint8_t Endpoint_GetCurrentEndpoint(void)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					return (UENUM & ENDPOINT_EPNUM_MASK);
+     bb0:	c0 91 e9 00 	lds	r28, 0x00E9	; 0x8000e9 <__TEXT_REGION_LENGTH__+0x7e00e9>
+     bb4:	c7 70       	andi	r28, 0x07	; 7
+			 */
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UENUM = EndpointNumber;
+     bb6:	10 92 e9 00 	sts	0x00E9, r1	; 0x8000e9 <__TEXT_REGION_LENGTH__+0x7e00e9>
+			 *  \return Boolean \c true if the selected endpoint has received a SETUP packet, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsSETUPReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsSETUPReceived(void)
+			{
+				return ((UEINTX & (1 << RXSTPI)) ? true : false);
+     bba:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+	{
+		uint8_t PrevEndpoint = Endpoint_GetCurrentEndpoint();
+
+		Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+
+		if (Endpoint_IsSETUPReceived())
+     bbe:	83 fd       	sbrc	r24, 3
+		  USB_Device_ProcessControlRequest();
+     bc0:	a1 de       	rcall	.-702    	; 0x904 <USB_Device_ProcessControlRequest>
+			 */
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UENUM = EndpointNumber;
+     bc2:	c0 93 e9 00 	sts	0x00E9, r28	; 0x8000e9 <__TEXT_REGION_LENGTH__+0x7e00e9>
+		if (USB_CurrentMode == USB_MODE_Device)
+		  USB_DeviceTask();
+		else if (USB_CurrentMode == USB_MODE_Host)
+		  USB_HostTask();
+	#endif
+}
+     bc6:	cf 91       	pop	r28
+     bc8:	08 95       	ret
+
+00000bca <HID_Device_ProcessControlRequest>:
+#define  __INCLUDE_FROM_HID_DRIVER
+#define  __INCLUDE_FROM_HID_DEVICE_C
+#include "HID.h"
+
+void HID_Device_ProcessControlRequest(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo)
+{
+     bca:	6f 92       	push	r6
+     bcc:	7f 92       	push	r7
+     bce:	8f 92       	push	r8
+     bd0:	9f 92       	push	r9
+     bd2:	af 92       	push	r10
+     bd4:	bf 92       	push	r11
+     bd6:	cf 92       	push	r12
+     bd8:	df 92       	push	r13
+     bda:	ef 92       	push	r14
+     bdc:	ff 92       	push	r15
+     bde:	0f 93       	push	r16
+     be0:	1f 93       	push	r17
+     be2:	cf 93       	push	r28
+     be4:	df 93       	push	r29
+     be6:	00 d0       	rcall	.+0      	; 0xbe8 <HID_Device_ProcessControlRequest+0x1e>
+     be8:	1f 92       	push	r1
+     bea:	cd b7       	in	r28, 0x3d	; 61
+     bec:	de b7       	in	r29, 0x3e	; 62
+     bee:	7c 01       	movw	r14, r24
+				Endpoint_ClearStatusStage();
+			}
+
+			break;
+	}
+}
+     bf0:	ad b6       	in	r10, 0x3d	; 61
+     bf2:	be b6       	in	r11, 0x3e	; 62
+			 *  \return Boolean \c true if the selected endpoint has received a SETUP packet, \c false otherwise.
+			 */
+			static inline bool Endpoint_IsSETUPReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsSETUPReceived(void)
+			{
+				return ((UEINTX & (1 << RXSTPI)) ? true : false);
+     bf4:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+#define  __INCLUDE_FROM_HID_DEVICE_C
+#include "HID.h"
+
+void HID_Device_ProcessControlRequest(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo)
+{
+	if (!(Endpoint_IsSETUPReceived()))
+     bf8:	83 ff       	sbrs	r24, 3
+     bfa:	f7 c0       	rjmp	.+494    	; 0xdea <HID_Device_ProcessControlRequest+0x220>
+	  return;
+
+	if (USB_ControlRequest.wIndex != HIDInterfaceInfo->Config.InterfaceNumber)
+     bfc:	f7 01       	movw	r30, r14
+     bfe:	80 81       	ld	r24, Z
+     c00:	90 e0       	ldi	r25, 0x00	; 0
+     c02:	20 91 19 01 	lds	r18, 0x0119	; 0x800119 <USB_ControlRequest+0x4>
+     c06:	30 91 1a 01 	lds	r19, 0x011A	; 0x80011a <USB_ControlRequest+0x5>
+     c0a:	28 17       	cp	r18, r24
+     c0c:	39 07       	cpc	r19, r25
+     c0e:	09 f0       	breq	.+2      	; 0xc12 <HID_Device_ProcessControlRequest+0x48>
+     c10:	ec c0       	rjmp	.+472    	; 0xdea <HID_Device_ProcessControlRequest+0x220>
+	  return;
+
+	switch (USB_ControlRequest.bRequest)
+     c12:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <USB_ControlRequest+0x1>
+     c16:	83 30       	cpi	r24, 0x03	; 3
+     c18:	09 f4       	brne	.+2      	; 0xc1c <HID_Device_ProcessControlRequest+0x52>
+     c1a:	96 c0       	rjmp	.+300    	; 0xd48 <HID_Device_ProcessControlRequest+0x17e>
+     c1c:	30 f4       	brcc	.+12     	; 0xc2a <HID_Device_ProcessControlRequest+0x60>
+     c1e:	81 30       	cpi	r24, 0x01	; 1
+     c20:	71 f0       	breq	.+28     	; 0xc3e <HID_Device_ProcessControlRequest+0x74>
+     c22:	82 30       	cpi	r24, 0x02	; 2
+     c24:	09 f4       	brne	.+2      	; 0xc28 <HID_Device_ProcessControlRequest+0x5e>
+     c26:	c9 c0       	rjmp	.+402    	; 0xdba <HID_Device_ProcessControlRequest+0x1f0>
+     c28:	e0 c0       	rjmp	.+448    	; 0xdea <HID_Device_ProcessControlRequest+0x220>
+     c2a:	8a 30       	cpi	r24, 0x0A	; 10
+     c2c:	09 f4       	brne	.+2      	; 0xc30 <HID_Device_ProcessControlRequest+0x66>
+     c2e:	ad c0       	rjmp	.+346    	; 0xd8a <HID_Device_ProcessControlRequest+0x1c0>
+     c30:	8b 30       	cpi	r24, 0x0B	; 11
+     c32:	09 f4       	brne	.+2      	; 0xc36 <HID_Device_ProcessControlRequest+0x6c>
+     c34:	96 c0       	rjmp	.+300    	; 0xd62 <HID_Device_ProcessControlRequest+0x198>
+     c36:	89 30       	cpi	r24, 0x09	; 9
+     c38:	09 f0       	breq	.+2      	; 0xc3c <HID_Device_ProcessControlRequest+0x72>
+     c3a:	d7 c0       	rjmp	.+430    	; 0xdea <HID_Device_ProcessControlRequest+0x220>
+     c3c:	48 c0       	rjmp	.+144    	; 0xcce <HID_Device_ProcessControlRequest+0x104>
+	{
+		case HID_REQ_GetReport:
+			if (USB_ControlRequest.bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE))
+     c3e:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <USB_ControlRequest>
+     c42:	81 3a       	cpi	r24, 0xA1	; 161
+     c44:	09 f0       	breq	.+2      	; 0xc48 <HID_Device_ProcessControlRequest+0x7e>
+     c46:	d1 c0       	rjmp	.+418    	; 0xdea <HID_Device_ProcessControlRequest+0x220>
+			{
+     c48:	8d b6       	in	r8, 0x3d	; 61
+     c4a:	9e b6       	in	r9, 0x3e	; 62
+				uint16_t ReportSize = 0;
+     c4c:	1a 82       	std	Y+2, r1	; 0x02
+     c4e:	19 82       	std	Y+1, r1	; 0x01
+				uint8_t  ReportID   = (USB_ControlRequest.wValue & 0xFF);
+     c50:	80 91 17 01 	lds	r24, 0x0117	; 0x800117 <USB_ControlRequest+0x2>
+     c54:	10 91 18 01 	lds	r17, 0x0118	; 0x800118 <USB_ControlRequest+0x3>
+     c58:	8b 83       	std	Y+3, r24	; 0x03
+				uint8_t  ReportType = (USB_ControlRequest.wValue >> 8) - 1;
+				uint8_t  ReportData[HIDInterfaceInfo->Config.PrevReportINBufferSize];
+     c5a:	f7 01       	movw	r30, r14
+     c5c:	87 81       	ldd	r24, Z+7	; 0x07
+     c5e:	48 2f       	mov	r20, r24
+     c60:	50 e0       	ldi	r21, 0x00	; 0
+     c62:	8d b7       	in	r24, 0x3d	; 61
+     c64:	9e b7       	in	r25, 0x3e	; 62
+     c66:	84 1b       	sub	r24, r20
+     c68:	95 0b       	sbc	r25, r21
+     c6a:	0f b6       	in	r0, 0x3f	; 63
+     c6c:	f8 94       	cli
+     c6e:	9e bf       	out	0x3e, r25	; 62
+     c70:	0f be       	out	0x3f, r0	; 63
+     c72:	8d bf       	out	0x3d, r24	; 61
+     c74:	ed b7       	in	r30, 0x3d	; 61
+     c76:	fe b7       	in	r31, 0x3e	; 62
+     c78:	31 96       	adiw	r30, 0x01	; 1
+     c7a:	6f 01       	movw	r12, r30
+
+				memset(ReportData, 0, sizeof(ReportData));
+     c7c:	60 e0       	ldi	r22, 0x00	; 0
+     c7e:	70 e0       	ldi	r23, 0x00	; 0
+     c80:	cf 01       	movw	r24, r30
+     c82:	ba d1       	rcall	.+884    	; 0xff8 <memset>
+
+				CALLBACK_HID_Device_CreateHIDReport(HIDInterfaceInfo, &ReportID, ReportType, ReportData, &ReportSize);
+     c84:	4f ef       	ldi	r20, 0xFF	; 255
+     c86:	41 0f       	add	r20, r17
+     c88:	8e 01       	movw	r16, r28
+     c8a:	0f 5f       	subi	r16, 0xFF	; 255
+     c8c:	1f 4f       	sbci	r17, 0xFF	; 255
+     c8e:	96 01       	movw	r18, r12
+     c90:	be 01       	movw	r22, r28
+     c92:	6d 5f       	subi	r22, 0xFD	; 253
+     c94:	7f 4f       	sbci	r23, 0xFF	; 255
+     c96:	c7 01       	movw	r24, r14
+     c98:	d8 da       	rcall	.-2640   	; 0x24a <CALLBACK_HID_Device_CreateHIDReport>
+
+				if (HIDInterfaceInfo->Config.PrevReportINBuffer != NULL)
+     c9a:	f7 01       	movw	r30, r14
+     c9c:	85 81       	ldd	r24, Z+5	; 0x05
+     c9e:	96 81       	ldd	r25, Z+6	; 0x06
+     ca0:	00 97       	sbiw	r24, 0x00	; 0
+     ca2:	21 f0       	breq	.+8      	; 0xcac <HID_Device_ProcessControlRequest+0xe2>
+				{
+					memcpy(HIDInterfaceInfo->Config.PrevReportINBuffer, ReportData,
+     ca4:	47 81       	ldd	r20, Z+7	; 0x07
+     ca6:	50 e0       	ldi	r21, 0x00	; 0
+     ca8:	b6 01       	movw	r22, r12
+     caa:	9d d1       	rcall	.+826    	; 0xfe6 <memcpy>
+			 */
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UENUM = EndpointNumber;
+     cac:	10 92 e9 00 	sts	0x00E9, r1	; 0x8000e9 <__TEXT_REGION_LENGTH__+0x7e00e9>
+			 *  \note This is not applicable for non CONTROL type endpoints.
+			 */
+			static inline void Endpoint_ClearSETUP(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearSETUP(void)
+			{
+				UEINTX &= ~(1 << RXSTPI);
+     cb0:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     cb4:	87 7f       	andi	r24, 0xF7	; 247
+     cb6:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+				}
+				
+				Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+
+				Endpoint_ClearSETUP();
+				Endpoint_Write_Control_Stream_LE(ReportData, ReportSize);
+     cba:	69 81       	ldd	r22, Y+1	; 0x01
+     cbc:	7a 81       	ldd	r23, Y+2	; 0x02
+     cbe:	c6 01       	movw	r24, r12
+     cc0:	32 dd       	rcall	.-1436   	; 0x726 <Endpoint_Write_Control_Stream_LE>
+			 */
+			static inline void Endpoint_ClearOUT(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearOUT(void)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UEINTX &= ~((1 << RXOUTI) | (1 << FIFOCON));
+     cc2:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     cc6:	8b 77       	andi	r24, 0x7B	; 123
+     cc8:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     ccc:	37 c0       	rjmp	.+110    	; 0xd3c <HID_Device_ProcessControlRequest+0x172>
+				Endpoint_ClearOUT();
+			}
+
+			break;
+		case HID_REQ_SetReport:
+			if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE))
+     cce:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <USB_ControlRequest>
+     cd2:	81 32       	cpi	r24, 0x21	; 33
+     cd4:	09 f0       	breq	.+2      	; 0xcd8 <HID_Device_ProcessControlRequest+0x10e>
+     cd6:	89 c0       	rjmp	.+274    	; 0xdea <HID_Device_ProcessControlRequest+0x220>
+			{
+     cd8:	8d b6       	in	r8, 0x3d	; 61
+     cda:	9e b6       	in	r9, 0x3e	; 62
+				uint16_t ReportSize = USB_ControlRequest.wLength;
+     cdc:	00 91 1b 01 	lds	r16, 0x011B	; 0x80011b <USB_ControlRequest+0x6>
+     ce0:	10 91 1c 01 	lds	r17, 0x011C	; 0x80011c <USB_ControlRequest+0x7>
+				uint8_t  ReportID   = (USB_ControlRequest.wValue & 0xFF);
+     ce4:	70 90 17 01 	lds	r7, 0x0117	; 0x800117 <USB_ControlRequest+0x2>
+     ce8:	60 90 18 01 	lds	r6, 0x0118	; 0x800118 <USB_ControlRequest+0x3>
+				uint8_t  ReportType = (USB_ControlRequest.wValue >> 8) - 1;
+				uint8_t  ReportData[ReportSize];
+     cec:	8d b7       	in	r24, 0x3d	; 61
+     cee:	9e b7       	in	r25, 0x3e	; 62
+     cf0:	80 1b       	sub	r24, r16
+     cf2:	91 0b       	sbc	r25, r17
+     cf4:	0f b6       	in	r0, 0x3f	; 63
+     cf6:	f8 94       	cli
+     cf8:	9e bf       	out	0x3e, r25	; 62
+     cfa:	0f be       	out	0x3f, r0	; 63
+     cfc:	8d bf       	out	0x3d, r24	; 61
+     cfe:	ed b7       	in	r30, 0x3d	; 61
+     d00:	fe b7       	in	r31, 0x3e	; 62
+     d02:	31 96       	adiw	r30, 0x01	; 1
+     d04:	6f 01       	movw	r12, r30
+			 *  \note This is not applicable for non CONTROL type endpoints.
+			 */
+			static inline void Endpoint_ClearSETUP(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearSETUP(void)
+			{
+				UEINTX &= ~(1 << RXSTPI);
+     d06:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     d0a:	87 7f       	andi	r24, 0xF7	; 247
+     d0c:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+
+				Endpoint_ClearSETUP();
+				Endpoint_Read_Control_Stream_LE(ReportData, ReportSize);
+     d10:	b8 01       	movw	r22, r16
+     d12:	cf 01       	movw	r24, r30
+     d14:	60 dd       	rcall	.-1344   	; 0x7d6 <Endpoint_Read_Control_Stream_LE>
+			 */
+			static inline void Endpoint_ClearIN(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearIN(void)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UEINTX &= ~((1 << TXINI) | (1 << FIFOCON));
+     d16:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     d1a:	8e 77       	andi	r24, 0x7E	; 126
+     d1c:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+				Endpoint_ClearIN();
+				
+				CALLBACK_HID_Device_ProcessHIDReport(HIDInterfaceInfo, ReportID, ReportType,
+     d20:	21 e0       	ldi	r18, 0x01	; 1
+     d22:	71 10       	cpse	r7, r1
+     d24:	01 c0       	rjmp	.+2      	; 0xd28 <HID_Device_ProcessControlRequest+0x15e>
+     d26:	20 e0       	ldi	r18, 0x00	; 0
+     d28:	30 e0       	ldi	r19, 0x00	; 0
+     d2a:	02 1b       	sub	r16, r18
+     d2c:	13 0b       	sbc	r17, r19
+				                                     &ReportData[ReportID ? 1 : 0], ReportSize - (ReportID ? 1 : 0));
+     d2e:	2c 0d       	add	r18, r12
+
+				Endpoint_ClearSETUP();
+				Endpoint_Read_Control_Stream_LE(ReportData, ReportSize);
+				Endpoint_ClearIN();
+				
+				CALLBACK_HID_Device_ProcessHIDReport(HIDInterfaceInfo, ReportID, ReportType,
+     d30:	3d 1d       	adc	r19, r13
+     d32:	4f ef       	ldi	r20, 0xFF	; 255
+     d34:	46 0d       	add	r20, r6
+     d36:	67 2d       	mov	r22, r7
+     d38:	c7 01       	movw	r24, r14
+     d3a:	c0 da       	rcall	.-2688   	; 0x2bc <CALLBACK_HID_Device_ProcessHIDReport>
+     d3c:	0f b6       	in	r0, 0x3f	; 63
+     d3e:	f8 94       	cli
+     d40:	9e be       	out	0x3e, r9	; 62
+     d42:	0f be       	out	0x3f, r0	; 63
+     d44:	8d be       	out	0x3d, r8	; 61
+     d46:	51 c0       	rjmp	.+162    	; 0xdea <HID_Device_ProcessControlRequest+0x220>
+				                                     &ReportData[ReportID ? 1 : 0], ReportSize - (ReportID ? 1 : 0));
+			}
+
+			break;
+		case HID_REQ_GetProtocol:
+			if (USB_ControlRequest.bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE))
+     d48:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <USB_ControlRequest>
+     d4c:	81 3a       	cpi	r24, 0xA1	; 161
+     d4e:	09 f0       	breq	.+2      	; 0xd52 <HID_Device_ProcessControlRequest+0x188>
+     d50:	4c c0       	rjmp	.+152    	; 0xdea <HID_Device_ProcessControlRequest+0x220>
+			 *  \note This is not applicable for non CONTROL type endpoints.
+			 */
+			static inline void Endpoint_ClearSETUP(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearSETUP(void)
+			{
+				UEINTX &= ~(1 << RXSTPI);
+     d52:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     d56:	87 7f       	andi	r24, 0xF7	; 247
+     d58:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+			{
+				Endpoint_ClearSETUP();
+				Endpoint_Write_8(HIDInterfaceInfo->State.UsingReportProtocol);
+     d5c:	f7 01       	movw	r30, r14
+     d5e:	80 85       	ldd	r24, Z+8	; 0x08
+     d60:	3c c0       	rjmp	.+120    	; 0xdda <HID_Device_ProcessControlRequest+0x210>
+				Endpoint_ClearStatusStage();
+			}
+
+			break;
+		case HID_REQ_SetProtocol:
+			if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE))
+     d62:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <USB_ControlRequest>
+     d66:	81 32       	cpi	r24, 0x21	; 33
+     d68:	09 f0       	breq	.+2      	; 0xd6c <HID_Device_ProcessControlRequest+0x1a2>
+     d6a:	3f c0       	rjmp	.+126    	; 0xdea <HID_Device_ProcessControlRequest+0x220>
+     d6c:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     d70:	87 7f       	andi	r24, 0xF7	; 247
+     d72:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+			{
+				Endpoint_ClearSETUP();
+				Endpoint_ClearStatusStage();
+     d76:	18 db       	rcall	.-2512   	; 0x3a8 <Endpoint_ClearStatusStage>
+
+				HIDInterfaceInfo->State.UsingReportProtocol = ((USB_ControlRequest.wValue & 0xFF) != 0x00);
+     d78:	90 91 17 01 	lds	r25, 0x0117	; 0x800117 <USB_ControlRequest+0x2>
+     d7c:	81 e0       	ldi	r24, 0x01	; 1
+     d7e:	91 11       	cpse	r25, r1
+     d80:	01 c0       	rjmp	.+2      	; 0xd84 <HID_Device_ProcessControlRequest+0x1ba>
+     d82:	80 e0       	ldi	r24, 0x00	; 0
+     d84:	f7 01       	movw	r30, r14
+     d86:	80 87       	std	Z+8, r24	; 0x08
+     d88:	30 c0       	rjmp	.+96     	; 0xdea <HID_Device_ProcessControlRequest+0x220>
+			}
+
+			break;
+		case HID_REQ_SetIdle:
+			if (USB_ControlRequest.bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE))
+     d8a:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <USB_ControlRequest>
+     d8e:	81 32       	cpi	r24, 0x21	; 33
+     d90:	61 f5       	brne	.+88     	; 0xdea <HID_Device_ProcessControlRequest+0x220>
+     d92:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     d96:	87 7f       	andi	r24, 0xF7	; 247
+     d98:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+			{
+				Endpoint_ClearSETUP();
+				Endpoint_ClearStatusStage();
+     d9c:	05 db       	rcall	.-2550   	; 0x3a8 <Endpoint_ClearStatusStage>
+
+				HIDInterfaceInfo->State.IdleCount = ((USB_ControlRequest.wValue & 0xFF00) >> 6);
+     d9e:	80 91 17 01 	lds	r24, 0x0117	; 0x800117 <USB_ControlRequest+0x2>
+     da2:	90 91 18 01 	lds	r25, 0x0118	; 0x800118 <USB_ControlRequest+0x3>
+     da6:	88 27       	eor	r24, r24
+     da8:	36 e0       	ldi	r19, 0x06	; 6
+     daa:	96 95       	lsr	r25
+     dac:	87 95       	ror	r24
+     dae:	3a 95       	dec	r19
+     db0:	e1 f7       	brne	.-8      	; 0xdaa <HID_Device_ProcessControlRequest+0x1e0>
+     db2:	f7 01       	movw	r30, r14
+     db4:	92 87       	std	Z+10, r25	; 0x0a
+     db6:	81 87       	std	Z+9, r24	; 0x09
+     db8:	18 c0       	rjmp	.+48     	; 0xdea <HID_Device_ProcessControlRequest+0x220>
+			}
+
+			break;
+		case HID_REQ_GetIdle:
+			if (USB_ControlRequest.bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE))
+     dba:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <USB_ControlRequest>
+     dbe:	81 3a       	cpi	r24, 0xA1	; 161
+     dc0:	a1 f4       	brne	.+40     	; 0xdea <HID_Device_ProcessControlRequest+0x220>
+     dc2:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     dc6:	87 7f       	andi	r24, 0xF7	; 247
+     dc8:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+			{
+				Endpoint_ClearSETUP();
+				Endpoint_Write_8(HIDInterfaceInfo->State.IdleCount >> 2);
+     dcc:	f7 01       	movw	r30, r14
+     dce:	81 85       	ldd	r24, Z+9	; 0x09
+     dd0:	92 85       	ldd	r25, Z+10	; 0x0a
+     dd2:	96 95       	lsr	r25
+     dd4:	87 95       	ror	r24
+     dd6:	96 95       	lsr	r25
+			 *  \param[in] Data  Data to write into the the currently selected endpoint's FIFO buffer.
+			 */
+			static inline void Endpoint_Write_8(const uint8_t Data) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_Write_8(const uint8_t Data)
+			{
+				UEDATX = Data;
+     dd8:	87 95       	ror	r24
+     dda:	80 93 f1 00 	sts	0x00F1, r24	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7e00f1>
+			 */
+			static inline void Endpoint_ClearIN(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearIN(void)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UEINTX &= ~((1 << TXINI) | (1 << FIFOCON));
+     dde:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     de2:	8e 77       	andi	r24, 0x7E	; 126
+     de4:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+				Endpoint_ClearIN();
+				Endpoint_ClearStatusStage();
+     de8:	df da       	rcall	.-2626   	; 0x3a8 <Endpoint_ClearStatusStage>
+			}
+
+			break;
+	}
+}
+     dea:	0f b6       	in	r0, 0x3f	; 63
+     dec:	f8 94       	cli
+     dee:	be be       	out	0x3e, r11	; 62
+     df0:	0f be       	out	0x3f, r0	; 63
+     df2:	ad be       	out	0x3d, r10	; 61
+     df4:	0f 90       	pop	r0
+     df6:	0f 90       	pop	r0
+     df8:	0f 90       	pop	r0
+     dfa:	df 91       	pop	r29
+     dfc:	cf 91       	pop	r28
+     dfe:	1f 91       	pop	r17
+     e00:	0f 91       	pop	r16
+     e02:	ff 90       	pop	r15
+     e04:	ef 90       	pop	r14
+     e06:	df 90       	pop	r13
+     e08:	cf 90       	pop	r12
+     e0a:	bf 90       	pop	r11
+     e0c:	af 90       	pop	r10
+     e0e:	9f 90       	pop	r9
+     e10:	8f 90       	pop	r8
+     e12:	7f 90       	pop	r7
+     e14:	6f 90       	pop	r6
+     e16:	08 95       	ret
+
+00000e18 <HID_Device_ConfigureEndpoints>:
+
+bool HID_Device_ConfigureEndpoints(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo)
+{
+     e18:	cf 93       	push	r28
+     e1a:	df 93       	push	r29
+     e1c:	fc 01       	movw	r30, r24
+	memset(&HIDInterfaceInfo->State, 0x00, sizeof(HIDInterfaceInfo->State));
+     e1e:	dc 01       	movw	r26, r24
+     e20:	18 96       	adiw	r26, 0x08	; 8
+     e22:	85 e0       	ldi	r24, 0x05	; 5
+     e24:	ed 01       	movw	r28, r26
+     e26:	19 92       	st	Y+, r1
+     e28:	8a 95       	dec	r24
+     e2a:	e9 f7       	brne	.-6      	; 0xe26 <HID_Device_ConfigureEndpoints+0xe>
+	HIDInterfaceInfo->State.UsingReportProtocol = true;
+     e2c:	81 e0       	ldi	r24, 0x01	; 1
+     e2e:	80 87       	std	Z+8, r24	; 0x08
+	HIDInterfaceInfo->State.IdleCount           = 500;
+     e30:	84 ef       	ldi	r24, 0xF4	; 244
+     e32:	91 e0       	ldi	r25, 0x01	; 1
+     e34:	92 87       	std	Z+10, r25	; 0x0a
+     e36:	81 87       	std	Z+9, r24	; 0x09
+
+	if (!(Endpoint_ConfigureEndpoint(HIDInterfaceInfo->Config.ReportINEndpointNumber, EP_TYPE_INTERRUPT,
+     e38:	84 81       	ldd	r24, Z+4	; 0x04
+     e3a:	81 11       	cpse	r24, r1
+     e3c:	02 c0       	rjmp	.+4      	; 0xe42 <HID_Device_ConfigureEndpoints+0x2a>
+     e3e:	40 e0       	ldi	r20, 0x00	; 0
+     e40:	01 c0       	rjmp	.+2      	; 0xe44 <HID_Device_ConfigureEndpoints+0x2c>
+     e42:	44 e0       	ldi	r20, 0x04	; 4
+     e44:	62 81       	ldd	r22, Z+2	; 0x02
+     e46:	73 81       	ldd	r23, Z+3	; 0x03
+     e48:	81 81       	ldd	r24, Z+1	; 0x01
+			static inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes) ATTR_WARN_UNUSED_RESULT ATTR_CONST
+			                                                                       ATTR_ALWAYS_INLINE;
+			static inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
+			{
+				uint8_t  MaskVal    = 0;
+				uint16_t CheckBytes = 8;
+     e4a:	28 e0       	ldi	r18, 0x08	; 8
+     e4c:	30 e0       	ldi	r19, 0x00	; 0
+		/* Inline Functions: */
+			static inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes) ATTR_WARN_UNUSED_RESULT ATTR_CONST
+			                                                                       ATTR_ALWAYS_INLINE;
+			static inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
+			{
+				uint8_t  MaskVal    = 0;
+     e4e:	90 e0       	ldi	r25, 0x00	; 0
+				uint16_t CheckBytes = 8;
+
+				while (CheckBytes < Bytes)
+     e50:	26 17       	cp	r18, r22
+     e52:	37 07       	cpc	r19, r23
+     e54:	20 f4       	brcc	.+8      	; 0xe5e <HID_Device_ConfigureEndpoints+0x46>
+				{
+					MaskVal++;
+     e56:	9f 5f       	subi	r25, 0xFF	; 255
+					CheckBytes <<= 1;
+     e58:	22 0f       	add	r18, r18
+     e5a:	33 1f       	adc	r19, r19
+     e5c:	f9 cf       	rjmp	.-14     	; 0xe50 <HID_Device_ConfigureEndpoints+0x38>
+			                                              const uint8_t Type,
+			                                              const uint8_t Direction,
+			                                              const uint16_t Size,
+			                                              const uint8_t Banks)
+			{
+				return Endpoint_ConfigureEndpoint_Prv(Number, ((Type << EPTYPE0) | (Direction ? (1 << EPDIR) : 0)),
+     e5e:	42 60       	ori	r20, 0x02	; 2
+     e60:	92 95       	swap	r25
+     e62:	90 7f       	andi	r25, 0xF0	; 240
+     e64:	49 2b       	or	r20, r25
+     e66:	61 ec       	ldi	r22, 0xC1	; 193
+	{
+		return false;
+	}
+
+	return true;
+}
+     e68:	df 91       	pop	r29
+     e6a:	cf 91       	pop	r28
+     e6c:	69 ca       	rjmp	.-2862   	; 0x340 <Endpoint_ConfigureEndpoint_Prv>
+
+00000e6e <HID_Device_USBTask>:
+
+void HID_Device_USBTask(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo)
+{
+     e6e:	5f 92       	push	r5
+     e70:	6f 92       	push	r6
+     e72:	7f 92       	push	r7
+     e74:	8f 92       	push	r8
+     e76:	9f 92       	push	r9
+     e78:	af 92       	push	r10
+     e7a:	bf 92       	push	r11
+     e7c:	cf 92       	push	r12
+     e7e:	df 92       	push	r13
+     e80:	ef 92       	push	r14
+     e82:	ff 92       	push	r15
+     e84:	0f 93       	push	r16
+     e86:	1f 93       	push	r17
+     e88:	cf 93       	push	r28
+     e8a:	df 93       	push	r29
+     e8c:	00 d0       	rcall	.+0      	; 0xe8e <HID_Device_USBTask+0x20>
+     e8e:	1f 92       	push	r1
+     e90:	cd b7       	in	r28, 0x3d	; 61
+     e92:	de b7       	in	r29, 0x3e	; 62
+     e94:	7c 01       	movw	r14, r24
+			Endpoint_Write_Stream_LE(ReportINData, ReportINSize, NULL);
+
+			Endpoint_ClearIN();
+		}
+	}
+}
+     e96:	ad b6       	in	r10, 0x3d	; 61
+     e98:	be b6       	in	r11, 0x3e	; 62
+	return true;
+}
+
+void HID_Device_USBTask(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo)
+{
+	if (USB_DeviceState != DEVICE_STATE_Configured)
+     e9a:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <USB_DeviceState>
+     e9e:	84 30       	cpi	r24, 0x04	; 4
+     ea0:	09 f0       	breq	.+2      	; 0xea4 <HID_Device_USBTask+0x36>
+     ea2:	73 c0       	rjmp	.+230    	; 0xf8a <HID_Device_USBTask+0x11c>
+	  return;
+
+	Endpoint_SelectEndpoint(HIDInterfaceInfo->Config.ReportINEndpointNumber);
+     ea4:	f7 01       	movw	r30, r14
+     ea6:	81 81       	ldd	r24, Z+1	; 0x01
+			 */
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UENUM = EndpointNumber;
+     ea8:	80 93 e9 00 	sts	0x00E9, r24	; 0x8000e9 <__TEXT_REGION_LENGTH__+0x7e00e9>
+			 *          on its direction.
+			 */
+			static inline bool Endpoint_IsReadWriteAllowed(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+			static inline bool Endpoint_IsReadWriteAllowed(void)
+			{
+				return ((UEINTX & (1 << RWAL)) ? true : false);
+     eac:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+
+	if (Endpoint_IsReadWriteAllowed())
+     eb0:	85 ff       	sbrs	r24, 5
+     eb2:	6b c0       	rjmp	.+214    	; 0xf8a <HID_Device_USBTask+0x11c>
+	{
+     eb4:	8d b6       	in	r8, 0x3d	; 61
+     eb6:	9e b6       	in	r9, 0x3e	; 62
+		uint8_t  ReportINData[HIDInterfaceInfo->Config.PrevReportINBufferSize];
+     eb8:	47 81       	ldd	r20, Z+7	; 0x07
+     eba:	50 e0       	ldi	r21, 0x00	; 0
+     ebc:	8d b7       	in	r24, 0x3d	; 61
+     ebe:	9e b7       	in	r25, 0x3e	; 62
+     ec0:	84 1b       	sub	r24, r20
+     ec2:	95 0b       	sbc	r25, r21
+     ec4:	0f b6       	in	r0, 0x3f	; 63
+     ec6:	f8 94       	cli
+     ec8:	9e bf       	out	0x3e, r25	; 62
+     eca:	0f be       	out	0x3f, r0	; 63
+     ecc:	8d bf       	out	0x3d, r24	; 61
+     ece:	ed b7       	in	r30, 0x3d	; 61
+     ed0:	fe b7       	in	r31, 0x3e	; 62
+     ed2:	31 96       	adiw	r30, 0x01	; 1
+     ed4:	6f 01       	movw	r12, r30
+		uint8_t  ReportID     = 0;
+     ed6:	1b 82       	std	Y+3, r1	; 0x03
+		uint16_t ReportINSize = 0;
+     ed8:	1a 82       	std	Y+2, r1	; 0x02
+     eda:	19 82       	std	Y+1, r1	; 0x01
+
+		memset(ReportINData, 0, sizeof(ReportINData));
+     edc:	60 e0       	ldi	r22, 0x00	; 0
+     ede:	70 e0       	ldi	r23, 0x00	; 0
+     ee0:	cf 01       	movw	r24, r30
+     ee2:	8a d0       	rcall	.+276    	; 0xff8 <memset>
+
+		bool ForceSend         = CALLBACK_HID_Device_CreateHIDReport(HIDInterfaceInfo, &ReportID, HID_REPORT_ITEM_In,
+     ee4:	8e 01       	movw	r16, r28
+     ee6:	0f 5f       	subi	r16, 0xFF	; 255
+     ee8:	1f 4f       	sbci	r17, 0xFF	; 255
+     eea:	96 01       	movw	r18, r12
+     eec:	40 e0       	ldi	r20, 0x00	; 0
+     eee:	be 01       	movw	r22, r28
+     ef0:	6d 5f       	subi	r22, 0xFD	; 253
+     ef2:	7f 4f       	sbci	r23, 0xFF	; 255
+     ef4:	c7 01       	movw	r24, r14
+     ef6:	a9 d9       	rcall	.-3246   	; 0x24a <CALLBACK_HID_Device_CreateHIDReport>
+     ef8:	58 2e       	mov	r5, r24
+		                                                             ReportINData, &ReportINSize);
+		bool StatesChanged     = false;
+		bool IdlePeriodElapsed = (HIDInterfaceInfo->State.IdleCount && !(HIDInterfaceInfo->State.IdleMSRemaining));
+     efa:	f7 01       	movw	r30, r14
+     efc:	81 85       	ldd	r24, Z+9	; 0x09
+     efe:	92 85       	ldd	r25, Z+10	; 0x0a
+     f00:	89 2b       	or	r24, r25
+     f02:	29 f0       	breq	.+10     	; 0xf0e <HID_Device_USBTask+0xa0>
+     f04:	11 e0       	ldi	r17, 0x01	; 1
+     f06:	83 85       	ldd	r24, Z+11	; 0x0b
+     f08:	94 85       	ldd	r25, Z+12	; 0x0c
+     f0a:	89 2b       	or	r24, r25
+     f0c:	09 f0       	breq	.+2      	; 0xf10 <HID_Device_USBTask+0xa2>
+     f0e:	10 e0       	ldi	r17, 0x00	; 0
+
+		if (HIDInterfaceInfo->Config.PrevReportINBuffer != NULL)
+     f10:	f7 01       	movw	r30, r14
+     f12:	65 80       	ldd	r6, Z+5	; 0x05
+     f14:	76 80       	ldd	r7, Z+6	; 0x06
+     f16:	61 14       	cp	r6, r1
+     f18:	71 04       	cpc	r7, r1
+     f1a:	81 f0       	breq	.+32     	; 0xf3c <HID_Device_USBTask+0xce>
+		{
+			StatesChanged = (memcmp(ReportINData, HIDInterfaceInfo->Config.PrevReportINBuffer, ReportINSize) != 0);
+     f1c:	49 81       	ldd	r20, Y+1	; 0x01
+     f1e:	5a 81       	ldd	r21, Y+2	; 0x02
+     f20:	b3 01       	movw	r22, r6
+     f22:	c6 01       	movw	r24, r12
+     f24:	53 d0       	rcall	.+166    	; 0xfcc <memcmp>
+     f26:	01 e0       	ldi	r16, 0x01	; 1
+     f28:	89 2b       	or	r24, r25
+     f2a:	09 f4       	brne	.+2      	; 0xf2e <HID_Device_USBTask+0xc0>
+     f2c:	00 e0       	ldi	r16, 0x00	; 0
+			memcpy(HIDInterfaceInfo->Config.PrevReportINBuffer, ReportINData, HIDInterfaceInfo->Config.PrevReportINBufferSize);
+     f2e:	f7 01       	movw	r30, r14
+     f30:	47 81       	ldd	r20, Z+7	; 0x07
+     f32:	50 e0       	ldi	r21, 0x00	; 0
+     f34:	b6 01       	movw	r22, r12
+     f36:	c3 01       	movw	r24, r6
+     f38:	56 d0       	rcall	.+172    	; 0xfe6 <memcpy>
+     f3a:	01 c0       	rjmp	.+2      	; 0xf3e <HID_Device_USBTask+0xd0>
+
+		memset(ReportINData, 0, sizeof(ReportINData));
+
+		bool ForceSend         = CALLBACK_HID_Device_CreateHIDReport(HIDInterfaceInfo, &ReportID, HID_REPORT_ITEM_In,
+		                                                             ReportINData, &ReportINSize);
+		bool StatesChanged     = false;
+     f3c:	00 e0       	ldi	r16, 0x00	; 0
+		{
+			StatesChanged = (memcmp(ReportINData, HIDInterfaceInfo->Config.PrevReportINBuffer, ReportINSize) != 0);
+			memcpy(HIDInterfaceInfo->Config.PrevReportINBuffer, ReportINData, HIDInterfaceInfo->Config.PrevReportINBufferSize);
+		}
+
+		if (ReportINSize && (ForceSend || StatesChanged || IdlePeriodElapsed))
+     f3e:	89 81       	ldd	r24, Y+1	; 0x01
+     f40:	9a 81       	ldd	r25, Y+2	; 0x02
+     f42:	89 2b       	or	r24, r25
+     f44:	e9 f0       	breq	.+58     	; 0xf80 <HID_Device_USBTask+0x112>
+     f46:	51 10       	cpse	r5, r1
+     f48:	04 c0       	rjmp	.+8      	; 0xf52 <HID_Device_USBTask+0xe4>
+     f4a:	01 11       	cpse	r16, r1
+     f4c:	02 c0       	rjmp	.+4      	; 0xf52 <HID_Device_USBTask+0xe4>
+     f4e:	10 ff       	sbrs	r17, 0
+     f50:	17 c0       	rjmp	.+46     	; 0xf80 <HID_Device_USBTask+0x112>
+		{
+			HIDInterfaceInfo->State.IdleMSRemaining = HIDInterfaceInfo->State.IdleCount;
+     f52:	f7 01       	movw	r30, r14
+     f54:	81 85       	ldd	r24, Z+9	; 0x09
+     f56:	92 85       	ldd	r25, Z+10	; 0x0a
+     f58:	94 87       	std	Z+12, r25	; 0x0c
+     f5a:	83 87       	std	Z+11, r24	; 0x0b
+
+			Endpoint_SelectEndpoint(HIDInterfaceInfo->Config.ReportINEndpointNumber);
+     f5c:	81 81       	ldd	r24, Z+1	; 0x01
+			 */
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UENUM = EndpointNumber;
+     f5e:	80 93 e9 00 	sts	0x00E9, r24	; 0x8000e9 <__TEXT_REGION_LENGTH__+0x7e00e9>
+
+			if (ReportID)
+     f62:	8b 81       	ldd	r24, Y+3	; 0x03
+     f64:	81 11       	cpse	r24, r1
+			 *  \param[in] Data  Data to write into the the currently selected endpoint's FIFO buffer.
+			 */
+			static inline void Endpoint_Write_8(const uint8_t Data) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_Write_8(const uint8_t Data)
+			{
+				UEDATX = Data;
+     f66:	80 93 f1 00 	sts	0x00F1, r24	; 0x8000f1 <__TEXT_REGION_LENGTH__+0x7e00f1>
+			  Endpoint_Write_8(ReportID);
+
+			Endpoint_Write_Stream_LE(ReportINData, ReportINSize, NULL);
+     f6a:	69 81       	ldd	r22, Y+1	; 0x01
+     f6c:	7a 81       	ldd	r23, Y+2	; 0x02
+     f6e:	40 e0       	ldi	r20, 0x00	; 0
+     f70:	50 e0       	ldi	r21, 0x00	; 0
+     f72:	c6 01       	movw	r24, r12
+     f74:	8e db       	rcall	.-2276   	; 0x692 <Endpoint_Write_Stream_LE>
+			 */
+			static inline void Endpoint_ClearIN(void) ATTR_ALWAYS_INLINE;
+			static inline void Endpoint_ClearIN(void)
+			{
+				#if !defined(CONTROL_ONLY_DEVICE)
+					UEINTX &= ~((1 << TXINI) | (1 << FIFOCON));
+     f76:	80 91 e8 00 	lds	r24, 0x00E8	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     f7a:	8e 77       	andi	r24, 0x7E	; 126
+     f7c:	80 93 e8 00 	sts	0x00E8, r24	; 0x8000e8 <__TEXT_REGION_LENGTH__+0x7e00e8>
+     f80:	0f b6       	in	r0, 0x3f	; 63
+     f82:	f8 94       	cli
+     f84:	9e be       	out	0x3e, r9	; 62
+     f86:	0f be       	out	0x3f, r0	; 63
+     f88:	8d be       	out	0x3d, r8	; 61
+
+			Endpoint_ClearIN();
+		}
+	}
+}
+     f8a:	0f b6       	in	r0, 0x3f	; 63
+     f8c:	f8 94       	cli
+     f8e:	be be       	out	0x3e, r11	; 62
+     f90:	0f be       	out	0x3f, r0	; 63
+     f92:	ad be       	out	0x3d, r10	; 61
+     f94:	0f 90       	pop	r0
+     f96:	0f 90       	pop	r0
+     f98:	0f 90       	pop	r0
+     f9a:	df 91       	pop	r29
+     f9c:	cf 91       	pop	r28
+     f9e:	1f 91       	pop	r17
+     fa0:	0f 91       	pop	r16
+     fa2:	ff 90       	pop	r15
+     fa4:	ef 90       	pop	r14
+     fa6:	df 90       	pop	r13
+     fa8:	cf 90       	pop	r12
+     faa:	bf 90       	pop	r11
+     fac:	af 90       	pop	r10
+     fae:	9f 90       	pop	r9
+     fb0:	8f 90       	pop	r8
+     fb2:	7f 90       	pop	r7
+     fb4:	6f 90       	pop	r6
+     fb6:	5f 90       	pop	r5
+     fb8:	08 95       	ret
+
+00000fba <__tablejump2__>:
+     fba:	ee 0f       	add	r30, r30
+     fbc:	ff 1f       	adc	r31, r31
+     fbe:	00 24       	eor	r0, r0
+     fc0:	00 1c       	adc	r0, r0
+     fc2:	0b be       	out	0x3b, r0	; 59
+     fc4:	07 90       	elpm	r0, Z+
+     fc6:	f6 91       	elpm	r31, Z
+     fc8:	e0 2d       	mov	r30, r0
+     fca:	09 94       	ijmp
+
+00000fcc <memcmp>:
+     fcc:	fb 01       	movw	r30, r22
+     fce:	dc 01       	movw	r26, r24
+     fd0:	04 c0       	rjmp	.+8      	; 0xfda <memcmp+0xe>
+     fd2:	8d 91       	ld	r24, X+
+     fd4:	01 90       	ld	r0, Z+
+     fd6:	80 19       	sub	r24, r0
+     fd8:	21 f4       	brne	.+8      	; 0xfe2 <memcmp+0x16>
+     fda:	41 50       	subi	r20, 0x01	; 1
+     fdc:	50 40       	sbci	r21, 0x00	; 0
+     fde:	c8 f7       	brcc	.-14     	; 0xfd2 <memcmp+0x6>
+     fe0:	88 1b       	sub	r24, r24
+     fe2:	99 0b       	sbc	r25, r25
+     fe4:	08 95       	ret
+
+00000fe6 <memcpy>:
+     fe6:	fb 01       	movw	r30, r22
+     fe8:	dc 01       	movw	r26, r24
+     fea:	02 c0       	rjmp	.+4      	; 0xff0 <memcpy+0xa>
+     fec:	01 90       	ld	r0, Z+
+     fee:	0d 92       	st	X+, r0
+     ff0:	41 50       	subi	r20, 0x01	; 1
+     ff2:	50 40       	sbci	r21, 0x00	; 0
+     ff4:	d8 f7       	brcc	.-10     	; 0xfec <memcpy+0x6>
+     ff6:	08 95       	ret
+
+00000ff8 <memset>:
+     ff8:	dc 01       	movw	r26, r24
+     ffa:	01 c0       	rjmp	.+2      	; 0xffe <memset+0x6>
+     ffc:	6d 93       	st	X+, r22
+     ffe:	41 50       	subi	r20, 0x01	; 1
+    1000:	50 40       	sbci	r21, 0x00	; 0
+    1002:	e0 f7       	brcc	.-8      	; 0xffc <memset+0x4>
+    1004:	08 95       	ret
+
+00001006 <_exit>:
+    1006:	f8 94       	cli
+
+00001008 <__stop_program>:
+    1008:	ff cf       	rjmp	.-2      	; 0x1008 <__stop_program>

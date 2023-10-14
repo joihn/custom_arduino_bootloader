@@ -1,0 +1,556 @@
+   1               		.file	"USBDeviceMode.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.LEDs_SetAllLEDs,"ax",@progbits
+  13               	LEDs_SetAllLEDs:
+  14               	.LFB196:
+  15               		.file 1 "../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h"
+   1:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /*
+   2:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****              LUFA Library
+   3:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+   5:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****            www.lufa-lib.org
+   7:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** */
+   8:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+   9:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /*
+  10:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  12:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   software and its documentation for any purpose is hereby granted
+  14:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   without fee, provided that the above copyright notice appear in
+  15:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   all copies and that both that the copyright notice and this
+  16:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   documentation, and that the name of the author not be used in
+  18:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   advertising or publicity pertaining to distribution of the
+  19:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   software without specific, written prior permission.
+  20:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  21:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   The author disclaim all warranties with regard to this
+  22:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   software, including all implied warranties of merchantability
+  23:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   special, indirect or consequential damages or any damages
+  25:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   in an action of contract, negligence or other tortious action,
+  27:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   arising out of or in connection with the use or performance of
+  28:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   this software.
+  29:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** */
+  30:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  31:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /** \file
+  32:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \brief Board specific LED driver header for the Atmel USBKEY.
+  33:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \copydetails Group_LEDs_USBKEY
+  34:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *
+  35:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  36:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *        dispatch header located in LUFA/Drivers/Board/LEDs.h.
+  37:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  */
+  38:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  39:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /** \ingroup Group_LEDs
+  40:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \defgroup Group_LEDs_USBKEY USBKEY
+  41:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \brief Board specific LED driver header for the Atmel USBKEY.
+  42:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *
+  43:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  Board specific LED driver header for the Atmel USBKEY.
+  44:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *
+  45:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  @{
+  46:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  */
+  47:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  48:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** #ifndef __LEDS_USBKEY_H__
+  49:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** #define __LEDS_USBKEY_H__
+  50:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  51:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Includes: */
+  52:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#include "../../../../Common/Common.h"
+  53:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  54:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Enable C linkage for C++ Compilers: */
+  55:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#if defined(__cplusplus)
+  56:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			extern "C" {
+  57:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#endif
+  58:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  59:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Preprocessor Checks: */
+  60:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#if !defined(__INCLUDE_FROM_LEDS_H)
+  61:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#error Do not include this file directly. Include LUFA/Drivers/Board/LEDS.h instead.
+  62:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#endif
+  63:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  64:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Public Interface - May be used in end-application: */
+  65:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		/* Macros: */
+  66:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the first LED on the board. */
+  67:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED1        (1 << 4)
+  68:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  69:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the second LED on the board. */
+  70:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED2        (1 << 5)
+  71:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  72:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the third LED on the board. */
+  73:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED3        (1 << 7)
+  74:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  75:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the fourth LED on the board. */
+  76:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED4        (1 << 6)
+  77:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  78:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for all the LEDs on the board. */
+  79:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_ALL_LEDS    (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
+  80:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  81:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for none of the board LEDs. */
+  82:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_NO_LEDS     0
+  83:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  84:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		/* Inline Functions: */
+  85:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#if !defined(__DOXYGEN__)
+  86:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_Init(void)
+  87:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  88:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				DDRD  |=  LEDS_ALL_LEDS;
+  89:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD &= ~LEDS_ALL_LEDS;
+  90:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			}
+  91:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  92:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_TurnOnLEDs(const uint8_t LEDMask)
+  93:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  94:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD |= LEDMask;
+  95:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			}
+  96:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  97:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_TurnOffLEDs(const uint8_t LEDMask)
+  98:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  99:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD &= ~LEDMask;
+ 100:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			}
+ 101:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+ 102:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_SetAllLEDs(const uint8_t LEDMask)
+ 103:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  16               		.loc 1 103 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+ 104:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD = ((PORTD & ~LEDS_ALL_LEDS) | LEDMask);
+  23               		.loc 1 104 0
+  24 0000 9BB1      		in r25,0xb
+  25 0002 9F70      		andi r25,lo8(15)
+  26 0004 892B      		or r24,r25
+  27               	.LVL1:
+  28 0006 8BB9      		out 0xb,r24
+  29 0008 0895      		ret
+  30               		.cfi_endproc
+  31               	.LFE196:
+  33               		.section	.text.USBDeviceMode_USBTask,"ax",@progbits
+  34               	.global	USBDeviceMode_USBTask
+  36               	USBDeviceMode_USBTask:
+  37               	.LFB222:
+  38               		.file 2 "USBDeviceMode.c"
+   1:USBDeviceMode.c **** /*
+   2:USBDeviceMode.c ****              LUFA Library
+   3:USBDeviceMode.c ****      Copyright (C) Dean Camera, 2011.
+   4:USBDeviceMode.c **** 
+   5:USBDeviceMode.c ****   dean [at] fourwalledcubicle [dot] com
+   6:USBDeviceMode.c ****            www.lufa-lib.org
+   7:USBDeviceMode.c **** */
+   8:USBDeviceMode.c **** 
+   9:USBDeviceMode.c **** /*
+  10:USBDeviceMode.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:USBDeviceMode.c **** 
+  12:USBDeviceMode.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:USBDeviceMode.c ****   software and its documentation for any purpose is hereby granted
+  14:USBDeviceMode.c ****   without fee, provided that the above copyright notice appear in
+  15:USBDeviceMode.c ****   all copies and that both that the copyright notice and this
+  16:USBDeviceMode.c ****   permission notice and warranty disclaimer appear in supporting
+  17:USBDeviceMode.c ****   documentation, and that the name of the author not be used in
+  18:USBDeviceMode.c ****   advertising or publicity pertaining to distribution of the
+  19:USBDeviceMode.c ****   software without specific, written prior permission.
+  20:USBDeviceMode.c **** 
+  21:USBDeviceMode.c ****   The author disclaim all warranties with regard to this
+  22:USBDeviceMode.c ****   software, including all implied warranties of merchantability
+  23:USBDeviceMode.c ****   and fitness.  In no event shall the author be liable for any
+  24:USBDeviceMode.c ****   special, indirect or consequential damages or any damages
+  25:USBDeviceMode.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:USBDeviceMode.c ****   in an action of contract, negligence or other tortious action,
+  27:USBDeviceMode.c ****   arising out of or in connection with the use or performance of
+  28:USBDeviceMode.c ****   this software.
+  29:USBDeviceMode.c **** */
+  30:USBDeviceMode.c **** 
+  31:USBDeviceMode.c **** /** \file
+  32:USBDeviceMode.c ****  *
+  33:USBDeviceMode.c ****  *  USB Device Mode management functions and variables. This file contains the LUFA code required t
+  34:USBDeviceMode.c ****  *  manage the USB Mass Storage device mode.
+  35:USBDeviceMode.c ****  */
+  36:USBDeviceMode.c **** 
+  37:USBDeviceMode.c **** #include "USBDeviceMode.h"
+  38:USBDeviceMode.c **** 
+  39:USBDeviceMode.c **** /** LUFA RNDIS Class driver interface configuration and state information. This structure is
+  40:USBDeviceMode.c ****  *  passed to all RNDIS Class driver functions, so that multiple instances of the same class
+  41:USBDeviceMode.c ****  *  within a device can be differentiated from one another.
+  42:USBDeviceMode.c ****  */
+  43:USBDeviceMode.c **** USB_ClassInfo_RNDIS_Device_t Ethernet_RNDIS_Interface_Device =
+  44:USBDeviceMode.c **** 	{
+  45:USBDeviceMode.c **** 		.Config =
+  46:USBDeviceMode.c **** 			{
+  47:USBDeviceMode.c **** 				.ControlInterfaceNumber         = 0,
+  48:USBDeviceMode.c **** 
+  49:USBDeviceMode.c **** 				.DataINEndpointNumber           = CDC_TX_EPNUM,
+  50:USBDeviceMode.c **** 				.DataINEndpointSize             = CDC_TXRX_EPSIZE,
+  51:USBDeviceMode.c **** 				.DataINEndpointDoubleBank       = true,
+  52:USBDeviceMode.c **** 
+  53:USBDeviceMode.c **** 				.DataOUTEndpointNumber          = CDC_RX_EPNUM,
+  54:USBDeviceMode.c **** 				.DataOUTEndpointSize            = CDC_TXRX_EPSIZE,
+  55:USBDeviceMode.c **** 				.DataOUTEndpointDoubleBank      = true,
+  56:USBDeviceMode.c **** 
+  57:USBDeviceMode.c **** 				.NotificationEndpointNumber     = CDC_NOTIFICATION_EPNUM,
+  58:USBDeviceMode.c **** 				.NotificationEndpointSize       = CDC_NOTIFICATION_EPSIZE,
+  59:USBDeviceMode.c **** 				.NotificationEndpointDoubleBank = true,
+  60:USBDeviceMode.c **** 
+  61:USBDeviceMode.c **** 				.AdapterVendorDescription       = "LUFA RNDIS Adapter",
+  62:USBDeviceMode.c **** 				.AdapterMACAddress              = {{0x02, 0x00, 0x02, 0x00, 0x02, 0x00}},
+  63:USBDeviceMode.c **** 			},
+  64:USBDeviceMode.c **** 	};
+  65:USBDeviceMode.c **** 	
+  66:USBDeviceMode.c **** /** LUFA Mass Storage Class driver interface configuration and state information. This structure is
+  67:USBDeviceMode.c ****  *  passed to all Mass Storage Class driver functions, so that multiple instances of the same class
+  68:USBDeviceMode.c ****  *  within a device can be differentiated from one another.
+  69:USBDeviceMode.c ****  */
+  70:USBDeviceMode.c **** USB_ClassInfo_MS_Device_t Disk_MS_Interface =
+  71:USBDeviceMode.c **** 	{
+  72:USBDeviceMode.c **** 		.Config =
+  73:USBDeviceMode.c **** 			{
+  74:USBDeviceMode.c **** 				.InterfaceNumber           = 2,
+  75:USBDeviceMode.c **** 
+  76:USBDeviceMode.c **** 				.DataINEndpointNumber      = MASS_STORAGE_IN_EPNUM,
+  77:USBDeviceMode.c **** 				.DataINEndpointSize        = MASS_STORAGE_IO_EPSIZE,
+  78:USBDeviceMode.c **** 				.DataINEndpointDoubleBank  = false,
+  79:USBDeviceMode.c **** 
+  80:USBDeviceMode.c **** 				.DataOUTEndpointNumber     = MASS_STORAGE_OUT_EPNUM,
+  81:USBDeviceMode.c **** 				.DataOUTEndpointSize       = MASS_STORAGE_IO_EPSIZE,
+  82:USBDeviceMode.c **** 				.DataOUTEndpointDoubleBank = false,
+  83:USBDeviceMode.c **** 
+  84:USBDeviceMode.c **** 				.TotalLUNs                 = 1,
+  85:USBDeviceMode.c **** 			},
+  86:USBDeviceMode.c **** 	};
+  87:USBDeviceMode.c **** 
+  88:USBDeviceMode.c **** 
+  89:USBDeviceMode.c **** /** USB device mode management task. This function manages the Mass Storage Device class driver whe
+  90:USBDeviceMode.c ****  *  initialized in USB device mode.
+  91:USBDeviceMode.c ****  */
+  92:USBDeviceMode.c **** void USBDeviceMode_USBTask(void)
+  93:USBDeviceMode.c **** {
+  39               		.loc 2 93 0
+  40               		.cfi_startproc
+  41               	/* prologue: function */
+  42               	/* frame size = 0 */
+  43               	/* stack size = 0 */
+  44               	.L__stack_usage = 0
+  94:USBDeviceMode.c **** 	if (USB_CurrentMode != USB_MODE_Device)
+  45               		.loc 2 94 0
+  46 0000 8091 0000 		lds r24,USB_CurrentMode
+  47 0004 8130      		cpi r24,lo8(1)
+  48 0006 01F4      		brne .L2
+  95:USBDeviceMode.c **** 	  return;
+  96:USBDeviceMode.c **** 
+  97:USBDeviceMode.c **** 	uIPManagement_ManageNetwork();
+  49               		.loc 2 97 0
+  50 0008 0E94 0000 		call uIPManagement_ManageNetwork
+  51               	.LVL2:
+  98:USBDeviceMode.c **** 
+  99:USBDeviceMode.c **** 	RNDIS_Device_USBTask(&Ethernet_RNDIS_Interface_Device);
+  52               		.loc 2 99 0
+  53 000c 80E0      		ldi r24,lo8(Ethernet_RNDIS_Interface_Device)
+  54 000e 90E0      		ldi r25,hi8(Ethernet_RNDIS_Interface_Device)
+  55 0010 0E94 0000 		call RNDIS_Device_USBTask
+  56               	.LVL3:
+ 100:USBDeviceMode.c **** 	MS_Device_USBTask(&Disk_MS_Interface);
+  57               		.loc 2 100 0
+  58 0014 80E0      		ldi r24,lo8(Disk_MS_Interface)
+  59 0016 90E0      		ldi r25,hi8(Disk_MS_Interface)
+  60 0018 0C94 0000 		jmp MS_Device_USBTask
+  61               	.LVL4:
+  62               	.L2:
+  63 001c 0895      		ret
+  64               		.cfi_endproc
+  65               	.LFE222:
+  67               		.section	.text.EVENT_USB_Device_Connect,"ax",@progbits
+  68               	.global	EVENT_USB_Device_Connect
+  70               	EVENT_USB_Device_Connect:
+  71               	.LFB223:
+ 101:USBDeviceMode.c **** }
+ 102:USBDeviceMode.c **** 
+ 103:USBDeviceMode.c **** /** Event handler for the library USB Connection event. */
+ 104:USBDeviceMode.c **** void EVENT_USB_Device_Connect(void)
+ 105:USBDeviceMode.c **** {
+  72               		.loc 2 105 0
+  73               		.cfi_startproc
+  74               	/* prologue: function */
+  75               	/* frame size = 0 */
+  76               	/* stack size = 0 */
+  77               	.L__stack_usage = 0
+ 106:USBDeviceMode.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_ENUMERATING);
+  78               		.loc 2 106 0
+  79 0000 80E3      		ldi r24,lo8(48)
+  80 0002 0E94 0000 		call LEDs_SetAllLEDs
+  81               	.LVL5:
+ 107:USBDeviceMode.c **** 
+ 108:USBDeviceMode.c **** 	uIPManagement_Init();
+  82               		.loc 2 108 0
+  83 0006 0C94 0000 		jmp uIPManagement_Init
+  84               	.LVL6:
+  85               		.cfi_endproc
+  86               	.LFE223:
+  88               		.section	.text.EVENT_USB_Device_Disconnect,"ax",@progbits
+  89               	.global	EVENT_USB_Device_Disconnect
+  91               	EVENT_USB_Device_Disconnect:
+  92               	.LFB224:
+ 109:USBDeviceMode.c **** }
+ 110:USBDeviceMode.c **** 
+ 111:USBDeviceMode.c **** /** Event handler for the library USB Disconnection event. */
+ 112:USBDeviceMode.c **** void EVENT_USB_Device_Disconnect(void)
+ 113:USBDeviceMode.c **** {
+  93               		.loc 2 113 0
+  94               		.cfi_startproc
+  95               	/* prologue: function */
+  96               	/* frame size = 0 */
+  97               	/* stack size = 0 */
+  98               	.L__stack_usage = 0
+ 114:USBDeviceMode.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
+  99               		.loc 2 114 0
+ 100 0000 80E1      		ldi r24,lo8(16)
+ 101 0002 0C94 0000 		jmp LEDs_SetAllLEDs
+ 102               	.LVL7:
+ 103               		.cfi_endproc
+ 104               	.LFE224:
+ 106               		.section	.text.EVENT_USB_Device_ConfigurationChanged,"ax",@progbits
+ 107               	.global	EVENT_USB_Device_ConfigurationChanged
+ 109               	EVENT_USB_Device_ConfigurationChanged:
+ 110               	.LFB225:
+ 115:USBDeviceMode.c **** }
+ 116:USBDeviceMode.c **** 
+ 117:USBDeviceMode.c **** /** Event handler for the library USB Configuration Changed event. */
+ 118:USBDeviceMode.c **** void EVENT_USB_Device_ConfigurationChanged(void)
+ 119:USBDeviceMode.c **** {
+ 111               		.loc 2 119 0
+ 112               		.cfi_startproc
+ 113 0000 CF93      		push r28
+ 114               	.LCFI0:
+ 115               		.cfi_def_cfa_offset 3
+ 116               		.cfi_offset 28, -2
+ 117               	/* prologue: function */
+ 118               	/* frame size = 0 */
+ 119               	/* stack size = 1 */
+ 120               	.L__stack_usage = 1
+ 121               	.LVL8:
+ 120:USBDeviceMode.c **** 	bool ConfigSuccess = true;
+ 121:USBDeviceMode.c **** 
+ 122:USBDeviceMode.c **** 	ConfigSuccess &= RNDIS_Device_ConfigureEndpoints(&Ethernet_RNDIS_Interface_Device);
+ 122               		.loc 2 122 0
+ 123 0002 80E0      		ldi r24,lo8(Ethernet_RNDIS_Interface_Device)
+ 124 0004 90E0      		ldi r25,hi8(Ethernet_RNDIS_Interface_Device)
+ 125 0006 0E94 0000 		call RNDIS_Device_ConfigureEndpoints
+ 126               	.LVL9:
+ 127 000a C82F      		mov r28,r24
+ 128               	.LVL10:
+ 123:USBDeviceMode.c **** 	ConfigSuccess &= MS_Device_ConfigureEndpoints(&Disk_MS_Interface);
+ 129               		.loc 2 123 0
+ 130 000c 80E0      		ldi r24,lo8(Disk_MS_Interface)
+ 131 000e 90E0      		ldi r25,hi8(Disk_MS_Interface)
+ 132               	.LVL11:
+ 133 0010 0E94 0000 		call MS_Device_ConfigureEndpoints
+ 134               	.LVL12:
+ 124:USBDeviceMode.c **** 
+ 125:USBDeviceMode.c **** 	LEDs_SetAllLEDs(ConfigSuccess ? LEDMASK_USB_READY : LEDMASK_USB_ERROR);
+ 135               		.loc 2 125 0
+ 136 0014 CC23      		tst r28
+ 137 0016 01F0      		breq .L11
+ 138 0018 8111      		cpse r24,__zero_reg__
+ 139 001a 00C0      		rjmp .L10
+ 140               	.L11:
+ 141 001c 80E9      		ldi r24,lo8(-112)
+ 142               	.LVL13:
+ 143 001e 00C0      		rjmp .L8
+ 144               	.LVL14:
+ 145               	.L10:
+ 146 0020 80E2      		ldi r24,lo8(32)
+ 147               	.LVL15:
+ 148               	.L8:
+ 149               	/* epilogue start */
+ 126:USBDeviceMode.c **** }
+ 150               		.loc 2 126 0 discriminator 4
+ 151 0022 CF91      		pop r28
+ 125:USBDeviceMode.c **** }
+ 152               		.loc 2 125 0 discriminator 4
+ 153 0024 0C94 0000 		jmp LEDs_SetAllLEDs
+ 154               	.LVL16:
+ 155               		.cfi_endproc
+ 156               	.LFE225:
+ 158               		.section	.text.EVENT_USB_Device_ControlRequest,"ax",@progbits
+ 159               	.global	EVENT_USB_Device_ControlRequest
+ 161               	EVENT_USB_Device_ControlRequest:
+ 162               	.LFB226:
+ 127:USBDeviceMode.c **** 
+ 128:USBDeviceMode.c **** /** Event handler for the library USB Control Request reception event. */
+ 129:USBDeviceMode.c **** void EVENT_USB_Device_ControlRequest(void)
+ 130:USBDeviceMode.c **** {
+ 163               		.loc 2 130 0
+ 164               		.cfi_startproc
+ 165               	/* prologue: function */
+ 166               	/* frame size = 0 */
+ 167               	/* stack size = 0 */
+ 168               	.L__stack_usage = 0
+ 131:USBDeviceMode.c **** 	RNDIS_Device_ProcessControlRequest(&Ethernet_RNDIS_Interface_Device);
+ 169               		.loc 2 131 0
+ 170 0000 80E0      		ldi r24,lo8(Ethernet_RNDIS_Interface_Device)
+ 171 0002 90E0      		ldi r25,hi8(Ethernet_RNDIS_Interface_Device)
+ 172 0004 0E94 0000 		call RNDIS_Device_ProcessControlRequest
+ 173               	.LVL17:
+ 132:USBDeviceMode.c **** 	MS_Device_ProcessControlRequest(&Disk_MS_Interface);
+ 174               		.loc 2 132 0
+ 175 0008 80E0      		ldi r24,lo8(Disk_MS_Interface)
+ 176 000a 90E0      		ldi r25,hi8(Disk_MS_Interface)
+ 177 000c 0C94 0000 		jmp MS_Device_ProcessControlRequest
+ 178               	.LVL18:
+ 179               		.cfi_endproc
+ 180               	.LFE226:
+ 182               		.section	.text.CALLBACK_MS_Device_SCSICommandReceived,"ax",@progbits
+ 183               	.global	CALLBACK_MS_Device_SCSICommandReceived
+ 185               	CALLBACK_MS_Device_SCSICommandReceived:
+ 186               	.LFB227:
+ 133:USBDeviceMode.c **** }
+ 134:USBDeviceMode.c **** 
+ 135:USBDeviceMode.c **** /** Mass Storage class driver callback function the reception of SCSI commands from the host, which
+ 136:USBDeviceMode.c ****  *
+ 137:USBDeviceMode.c ****  *  \param[in] MSInterfaceInfo  Pointer to the Mass Storage class interface configuration structure
+ 138:USBDeviceMode.c ****  */
+ 139:USBDeviceMode.c **** bool CALLBACK_MS_Device_SCSICommandReceived(USB_ClassInfo_MS_Device_t* const MSInterfaceInfo)
+ 140:USBDeviceMode.c **** {
+ 187               		.loc 2 140 0
+ 188               		.cfi_startproc
+ 189               	.LVL19:
+ 190 0000 CF93      		push r28
+ 191               	.LCFI1:
+ 192               		.cfi_def_cfa_offset 3
+ 193               		.cfi_offset 28, -2
+ 194 0002 DF93      		push r29
+ 195               	.LCFI2:
+ 196               		.cfi_def_cfa_offset 4
+ 197               		.cfi_offset 29, -3
+ 198               	/* prologue: function */
+ 199               	/* frame size = 0 */
+ 200               	/* stack size = 2 */
+ 201               	.L__stack_usage = 2
+ 202 0004 EC01      		movw r28,r24
+ 141:USBDeviceMode.c **** 	bool CommandSuccess;
+ 142:USBDeviceMode.c **** 
+ 143:USBDeviceMode.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_BUSY);
+ 203               		.loc 2 143 0
+ 204 0006 80ED      		ldi r24,lo8(-48)
+ 205               	.LVL20:
+ 206 0008 0E94 0000 		call LEDs_SetAllLEDs
+ 207               	.LVL21:
+ 144:USBDeviceMode.c **** 	CommandSuccess = SCSI_DecodeSCSICommand(MSInterfaceInfo);
+ 208               		.loc 2 144 0
+ 209 000c CE01      		movw r24,r28
+ 210 000e 0E94 0000 		call SCSI_DecodeSCSICommand
+ 211               	.LVL22:
+ 212 0012 C82F      		mov r28,r24
+ 213               	.LVL23:
+ 145:USBDeviceMode.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_READY);
+ 214               		.loc 2 145 0
+ 215 0014 80E2      		ldi r24,lo8(32)
+ 216               	.LVL24:
+ 217 0016 0E94 0000 		call LEDs_SetAllLEDs
+ 218               	.LVL25:
+ 146:USBDeviceMode.c **** 
+ 147:USBDeviceMode.c **** 	return CommandSuccess;
+ 148:USBDeviceMode.c **** }
+ 219               		.loc 2 148 0
+ 220 001a 8C2F      		mov r24,r28
+ 221               	/* epilogue start */
+ 222 001c DF91      		pop r29
+ 223 001e CF91      		pop r28
+ 224               	.LVL26:
+ 225 0020 0895      		ret
+ 226               		.cfi_endproc
+ 227               	.LFE227:
+ 229               	.global	Disk_MS_Interface
+ 230               		.data
+ 233               	Disk_MS_Interface:
+ 234 0000 02        		.byte	2
+ 235 0001 03        		.byte	3
+ 236 0002 4000      		.word	64
+ 237 0004 00        		.byte	0
+ 238 0005 04        		.byte	4
+ 239 0006 4000      		.word	64
+ 240 0008 00        		.byte	0
+ 241 0009 01        		.byte	1
+ 242 000a 0000 0000 		.zero	45
+ 242      0000 0000 
+ 242      0000 0000 
+ 242      0000 0000 
+ 242      0000 0000 
+ 243               	.global	Ethernet_RNDIS_Interface_Device
+ 244               		.section	.rodata.str1.1,"aMS",@progbits,1
+ 245               	.LC0:
+ 246 0000 4C55 4641 		.string	"LUFA RNDIS Adapter"
+ 246      2052 4E44 
+ 246      4953 2041 
+ 246      6461 7074 
+ 246      6572 00
+ 247               		.data
+ 250               	Ethernet_RNDIS_Interface_Device:
+ 251 0037 00        		.byte	0
+ 252 0038 01        		.byte	1
+ 253 0039 4000      		.word	64
+ 254 003b 01        		.byte	1
+ 255 003c 02        		.byte	2
+ 256 003d 4000      		.word	64
+ 257 003f 01        		.byte	1
+ 258 0040 05        		.byte	5
+ 259 0041 0800      		.word	8
+ 260 0043 01        		.byte	1
+ 261 0044 0000      		.word	.LC0
+ 262 0046 02        		.byte	2
+ 263 0047 00        		.byte	0
+ 264 0048 02        		.byte	2
+ 265 0049 00        		.byte	0
+ 266 004a 02        		.byte	2
+ 267 004b 00        		.byte	0
+ 268 004c 0000 0000 		.zero	134
+ 268      0000 0000 
+ 268      0000 0000 
+ 268      0000 0000 
+ 268      0000 0000 
+ 269               		.text
+ 270               	.Letext0:
+ 271               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 272               		.file 4 "../../LUFA/Drivers/USB/Class/Device/../Common/MassStorage.h"
+ 273               		.file 5 "../../LUFA/Drivers/USB/Class/Device/MassStorage.h"
+ 274               		.file 6 "../../LUFA/Drivers/USB/Class/Device/../Common/RNDIS.h"
+ 275               		.file 7 "../../LUFA/Drivers/USB/Class/Device/RNDIS.h"
+ 276               		.file 8 "../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"
+ 277               		.file 9 "../../LUFA/Drivers/USB/Core/USBTask.h"
+ 278               		.file 10 "Lib/uIPManagement.h"
+ 279               		.file 11 "Lib/SCSI.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 USBDeviceMode.c
+     /tmp/cch26Yi3.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cch26Yi3.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cch26Yi3.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cch26Yi3.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cch26Yi3.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cch26Yi3.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cch26Yi3.s:13     .text.LEDs_SetAllLEDs:0000000000000000 LEDs_SetAllLEDs
+     /tmp/cch26Yi3.s:36     .text.USBDeviceMode_USBTask:0000000000000000 USBDeviceMode_USBTask
+     /tmp/cch26Yi3.s:250    .data:0000000000000037 Ethernet_RNDIS_Interface_Device
+     /tmp/cch26Yi3.s:233    .data:0000000000000000 Disk_MS_Interface
+     /tmp/cch26Yi3.s:70     .text.EVENT_USB_Device_Connect:0000000000000000 EVENT_USB_Device_Connect
+     /tmp/cch26Yi3.s:91     .text.EVENT_USB_Device_Disconnect:0000000000000000 EVENT_USB_Device_Disconnect
+     /tmp/cch26Yi3.s:109    .text.EVENT_USB_Device_ConfigurationChanged:0000000000000000 EVENT_USB_Device_ConfigurationChanged
+     /tmp/cch26Yi3.s:161    .text.EVENT_USB_Device_ControlRequest:0000000000000000 EVENT_USB_Device_ControlRequest
+     /tmp/cch26Yi3.s:185    .text.CALLBACK_MS_Device_SCSICommandReceived:0000000000000000 CALLBACK_MS_Device_SCSICommandReceived
+
+UNDEFINED SYMBOLS
+USB_CurrentMode
+uIPManagement_ManageNetwork
+RNDIS_Device_USBTask
+MS_Device_USBTask
+uIPManagement_Init
+RNDIS_Device_ConfigureEndpoints
+MS_Device_ConfigureEndpoints
+RNDIS_Device_ProcessControlRequest
+MS_Device_ProcessControlRequest
+SCSI_DecodeSCSICommand
+__do_copy_data

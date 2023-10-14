@@ -1,0 +1,692 @@
+   1               		.file	"ConfigDescriptor.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.DComp_NextAudioControlInterface,"ax",@progbits
+  12               	.global	DComp_NextAudioControlInterface
+  14               	DComp_NextAudioControlInterface:
+  15               	.LFB159:
+  16               		.file 1 "ConfigDescriptor.c"
+   1:ConfigDescriptor.c **** /*
+   2:ConfigDescriptor.c ****              LUFA Library
+   3:ConfigDescriptor.c ****      Copyright (C) Dean Camera, 2011.
+   4:ConfigDescriptor.c **** 
+   5:ConfigDescriptor.c ****   dean [at] fourwalledcubicle [dot] com
+   6:ConfigDescriptor.c ****            www.lufa-lib.org
+   7:ConfigDescriptor.c **** */
+   8:ConfigDescriptor.c **** 
+   9:ConfigDescriptor.c **** /*
+  10:ConfigDescriptor.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:ConfigDescriptor.c **** 
+  12:ConfigDescriptor.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:ConfigDescriptor.c ****   software and its documentation for any purpose is hereby granted
+  14:ConfigDescriptor.c ****   without fee, provided that the above copyright notice appear in
+  15:ConfigDescriptor.c ****   all copies and that both that the copyright notice and this
+  16:ConfigDescriptor.c ****   permission notice and warranty disclaimer appear in supporting
+  17:ConfigDescriptor.c ****   documentation, and that the name of the author not be used in
+  18:ConfigDescriptor.c ****   advertising or publicity pertaining to distribution of the
+  19:ConfigDescriptor.c ****   software without specific, written prior permission.
+  20:ConfigDescriptor.c **** 
+  21:ConfigDescriptor.c ****   The author disclaim all warranties with regard to this
+  22:ConfigDescriptor.c ****   software, including all implied warranties of merchantability
+  23:ConfigDescriptor.c ****   and fitness.  In no event shall the author be liable for any
+  24:ConfigDescriptor.c ****   special, indirect or consequential damages or any damages
+  25:ConfigDescriptor.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:ConfigDescriptor.c ****   in an action of contract, negligence or other tortious action,
+  27:ConfigDescriptor.c ****   arising out of or in connection with the use or performance of
+  28:ConfigDescriptor.c ****   this software.
+  29:ConfigDescriptor.c **** */
+  30:ConfigDescriptor.c **** 
+  31:ConfigDescriptor.c **** /** \file
+  32:ConfigDescriptor.c ****  *
+  33:ConfigDescriptor.c ****  *  USB Device Configuration Descriptor processing routines, to determine the correct pipe configur
+  34:ConfigDescriptor.c ****  *  needed to communication with an attached USB device. Descriptors are special  computer-readable
+  35:ConfigDescriptor.c ****  *  which the host requests upon device enumeration, to determine the device's capabilities and fun
+  36:ConfigDescriptor.c ****  */
+  37:ConfigDescriptor.c **** 
+  38:ConfigDescriptor.c **** #include "ConfigDescriptor.h"
+  39:ConfigDescriptor.c **** 
+  40:ConfigDescriptor.c **** /** Index of the currently used Audio Streaming Interface within the device. */
+  41:ConfigDescriptor.c **** uint8_t StreamingInterfaceIndex      = 0;
+  42:ConfigDescriptor.c **** 
+  43:ConfigDescriptor.c **** /** Alternative Setting of the currently used Audio Streaming Interface within the device. */
+  44:ConfigDescriptor.c **** uint8_t StreamingInterfaceAltSetting = 0;
+  45:ConfigDescriptor.c **** 
+  46:ConfigDescriptor.c **** /** Address of the streaming audio endpoint currently in use within the device. */
+  47:ConfigDescriptor.c **** uint8_t StreamingEndpointAddress     = 0;
+  48:ConfigDescriptor.c **** 
+  49:ConfigDescriptor.c **** 
+  50:ConfigDescriptor.c **** /** Reads and processes an attached device's descriptors, to determine compatibility and pipe confi
+  51:ConfigDescriptor.c ****  *  routine will read in the entire configuration descriptor, and configure the hosts pipes to corr
+  52:ConfigDescriptor.c ****  *  with compatible devices.
+  53:ConfigDescriptor.c ****  *
+  54:ConfigDescriptor.c ****  *  This routine searches for a Streaming Audio interface descriptor containing a valid Isochronous
+  55:ConfigDescriptor.c ****  *
+  56:ConfigDescriptor.c ****  *  \return An error code from the \ref AudioHost_GetConfigDescriptorDataCodes_t enum.
+  57:ConfigDescriptor.c ****  */
+  58:ConfigDescriptor.c **** uint8_t ProcessConfigurationDescriptor(void)
+  59:ConfigDescriptor.c **** {
+  60:ConfigDescriptor.c **** 	uint8_t  ConfigDescriptorData[512];
+  61:ConfigDescriptor.c **** 	void*    CurrConfigLocation = ConfigDescriptorData;
+  62:ConfigDescriptor.c **** 	uint16_t CurrConfigBytesRem;
+  63:ConfigDescriptor.c **** 
+  64:ConfigDescriptor.c **** 	USB_Descriptor_Interface_t* AudioControlInterface   = NULL;
+  65:ConfigDescriptor.c **** 	USB_Descriptor_Interface_t* AudioStreamingInterface = NULL;
+  66:ConfigDescriptor.c **** 	USB_Descriptor_Endpoint_t*  DataOUTEndpoint         = NULL;
+  67:ConfigDescriptor.c **** 
+  68:ConfigDescriptor.c **** 	/* Retrieve the entire configuration descriptor into the allocated buffer */
+  69:ConfigDescriptor.c **** 	switch (USB_Host_GetDeviceConfigDescriptor(1, &CurrConfigBytesRem, ConfigDescriptorData, sizeof(Co
+  70:ConfigDescriptor.c **** 	{
+  71:ConfigDescriptor.c **** 		case HOST_GETCONFIG_Successful:
+  72:ConfigDescriptor.c **** 			break;
+  73:ConfigDescriptor.c **** 		case HOST_GETCONFIG_InvalidData:
+  74:ConfigDescriptor.c **** 			return InvalidConfigDataReturned;
+  75:ConfigDescriptor.c **** 		case HOST_GETCONFIG_BuffOverflow:
+  76:ConfigDescriptor.c **** 			return DescriptorTooLarge;
+  77:ConfigDescriptor.c **** 		default:
+  78:ConfigDescriptor.c **** 			return ControlError;
+  79:ConfigDescriptor.c **** 	}
+  80:ConfigDescriptor.c **** 
+  81:ConfigDescriptor.c **** 	while (!(DataOUTEndpoint))
+  82:ConfigDescriptor.c **** 	{
+  83:ConfigDescriptor.c **** 		/* See if we've found a likely compatible interface, and if there is an endpoint within that inte
+  84:ConfigDescriptor.c **** 		if (!(AudioControlInterface) ||
+  85:ConfigDescriptor.c **** 		    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+  86:ConfigDescriptor.c **** 		                              DComp_NextAudioInterfaceDataEndpoint) != DESCRIPTOR_SEARCH_COMP_Fou
+  87:ConfigDescriptor.c **** 		{
+  88:ConfigDescriptor.c **** 			/* Check if we haven't found an Audio Control interface yet, or if we have run out of related Au
+  89:ConfigDescriptor.c **** 			if (!(AudioControlInterface) ||
+  90:ConfigDescriptor.c **** 			    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+  91:ConfigDescriptor.c **** 				                          DComp_NextAudioStreamInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+  92:ConfigDescriptor.c **** 			{
+  93:ConfigDescriptor.c **** 				/* Find a new Audio Control interface if the current one doesn't contain a compatible streaming
+  94:ConfigDescriptor.c **** 				if (USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+  95:ConfigDescriptor.c **** 				                              DComp_NextAudioControlInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+  96:ConfigDescriptor.c **** 				{
+  97:ConfigDescriptor.c **** 					/* Descriptor not found, error out */
+  98:ConfigDescriptor.c **** 					return NoCompatibleInterfaceFound;
+  99:ConfigDescriptor.c **** 				}
+ 100:ConfigDescriptor.c **** 
+ 101:ConfigDescriptor.c **** 				/* Save the interface in case we need to refer back to it later */
+ 102:ConfigDescriptor.c **** 				AudioControlInterface = DESCRIPTOR_PCAST(CurrConfigLocation, USB_Descriptor_Interface_t);			
+ 103:ConfigDescriptor.c **** 
+ 104:ConfigDescriptor.c **** 				/* Find the next Audio Streaming interface within that Audio Control interface */
+ 105:ConfigDescriptor.c **** 				if (USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+ 106:ConfigDescriptor.c **** 				                              DComp_NextAudioStreamInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+ 107:ConfigDescriptor.c **** 				{
+ 108:ConfigDescriptor.c **** 					/* Descriptor not found, error out */
+ 109:ConfigDescriptor.c **** 					return NoCompatibleInterfaceFound;
+ 110:ConfigDescriptor.c **** 				}
+ 111:ConfigDescriptor.c **** 			}
+ 112:ConfigDescriptor.c **** 
+ 113:ConfigDescriptor.c **** 			/* Save the interface in case we need to refer back to it later */
+ 114:ConfigDescriptor.c **** 			AudioStreamingInterface = DESCRIPTOR_PCAST(CurrConfigLocation, USB_Descriptor_Interface_t);
+ 115:ConfigDescriptor.c **** 
+ 116:ConfigDescriptor.c **** 			/* Skip the remainder of the loop as we have not found an endpoint yet */
+ 117:ConfigDescriptor.c **** 			continue;
+ 118:ConfigDescriptor.c **** 		}
+ 119:ConfigDescriptor.c **** 
+ 120:ConfigDescriptor.c **** 		/* Retrieve the endpoint address from the endpoint descriptor */
+ 121:ConfigDescriptor.c **** 		USB_Descriptor_Endpoint_t* EndpointData = DESCRIPTOR_PCAST(CurrConfigLocation, USB_Descriptor_End
+ 122:ConfigDescriptor.c **** 
+ 123:ConfigDescriptor.c **** 		/* Save the endpoint if it is an OUT type endpoint */
+ 124:ConfigDescriptor.c **** 		if ((EndpointData->EndpointAddress & ENDPOINT_DIR_MASK) == ENDPOINT_DIR_OUT)
+ 125:ConfigDescriptor.c **** 		  DataOUTEndpoint = EndpointData;
+ 126:ConfigDescriptor.c **** 	}
+ 127:ConfigDescriptor.c **** 
+ 128:ConfigDescriptor.c **** 	StreamingInterfaceIndex      = AudioStreamingInterface->InterfaceNumber;
+ 129:ConfigDescriptor.c **** 	StreamingInterfaceAltSetting = AudioStreamingInterface->AlternateSetting;
+ 130:ConfigDescriptor.c **** 	StreamingEndpointAddress     = DataOUTEndpoint->EndpointAddress;
+ 131:ConfigDescriptor.c **** 
+ 132:ConfigDescriptor.c **** 	/* Configure the Audio data OUT pipe */
+ 133:ConfigDescriptor.c **** 	Pipe_ConfigurePipe(AUDIO_DATA_OUT_PIPE, EP_TYPE_ISOCHRONOUS, PIPE_TOKEN_OUT,
+ 134:ConfigDescriptor.c **** 	                   DataOUTEndpoint->EndpointAddress, DataOUTEndpoint->EndpointSize, PIPE_BANK_DOUB
+ 135:ConfigDescriptor.c **** 
+ 136:ConfigDescriptor.c **** 	/* Valid data found, return success */
+ 137:ConfigDescriptor.c **** 	return SuccessfulConfigRead;
+ 138:ConfigDescriptor.c **** }
+ 139:ConfigDescriptor.c **** 
+ 140:ConfigDescriptor.c **** /** Descriptor comparator function. This comparator function is can be called while processing an a
+ 141:ConfigDescriptor.c ****  *  configuration descriptor, to search for a specific sub descriptor. It can also be used to abort
+ 142:ConfigDescriptor.c ****  *  descriptor processing if an incompatible descriptor configuration is found.
+ 143:ConfigDescriptor.c ****  *
+ 144:ConfigDescriptor.c ****  *  This comparator searches for the next Interface descriptor of the correct Audio Control Class, 
+ 145:ConfigDescriptor.c ****  *
+ 146:ConfigDescriptor.c ****  *  \return A value from the DSEARCH_Return_ErrorCodes_t enum
+ 147:ConfigDescriptor.c ****  */
+ 148:ConfigDescriptor.c **** uint8_t DComp_NextAudioControlInterface(void* CurrentDescriptor)
+ 149:ConfigDescriptor.c **** {
+  17               		.loc 1 149 0
+  18               		.cfi_startproc
+  19               	.LVL0:
+  20               	/* prologue: function */
+  21               	/* frame size = 0 */
+  22               	/* stack size = 0 */
+  23               	.L__stack_usage = 0
+  24 0000 FC01      		movw r30,r24
+  25               	.LVL1:
+ 150:ConfigDescriptor.c **** 	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+ 151:ConfigDescriptor.c **** 
+ 152:ConfigDescriptor.c **** 	if (Header->Type == DTYPE_Interface)
+  26               		.loc 1 152 0
+  27 0002 8181      		ldd r24,Z+1
+  28               	.LVL2:
+  29 0004 8430      		cpi r24,lo8(4)
+  30 0006 01F4      		brne .L6
+  31               	.LVL3:
+  32               	.LBB2:
+ 153:ConfigDescriptor.c **** 	{
+ 154:ConfigDescriptor.c **** 		USB_Descriptor_Interface_t* Interface = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Interf
+ 155:ConfigDescriptor.c **** 
+ 156:ConfigDescriptor.c **** 		if ((Interface->Class    == AUDIO_CSCP_AudioClass) &&
+  33               		.loc 1 156 0
+  34 0008 8581      		ldd r24,Z+5
+  35 000a 8130      		cpi r24,lo8(1)
+  36 000c 01F4      		brne .L6
+  37               		.loc 1 156 0 is_stmt 0 discriminator 1
+  38 000e 8681      		ldd r24,Z+6
+  39 0010 8130      		cpi r24,lo8(1)
+  40 0012 01F4      		brne .L6
+ 157:ConfigDescriptor.c **** 		    (Interface->SubClass == AUDIO_CSCP_ControlSubclass) &&
+ 158:ConfigDescriptor.c **** 		    (Interface->Protocol == AUDIO_CSCP_ControlProtocol))
+  41               		.loc 1 158 0 is_stmt 1
+  42 0014 8781      		ldd r24,Z+7
+ 157:ConfigDescriptor.c **** 		    (Interface->SubClass == AUDIO_CSCP_ControlSubclass) &&
+  43               		.loc 1 157 0
+  44 0016 8111      		cpse r24,__zero_reg__
+  45 0018 00C0      		rjmp .L6
+  46 001a 0895      		ret
+  47               	.LVL4:
+  48               	.L6:
+  49               	.LBE2:
+ 159:ConfigDescriptor.c **** 		{
+ 160:ConfigDescriptor.c **** 			return DESCRIPTOR_SEARCH_Found;
+ 161:ConfigDescriptor.c **** 		}
+ 162:ConfigDescriptor.c **** 	}
+ 163:ConfigDescriptor.c **** 
+ 164:ConfigDescriptor.c **** 	return DESCRIPTOR_SEARCH_NotFound;
+  50               		.loc 1 164 0
+  51 001c 82E0      		ldi r24,lo8(2)
+ 165:ConfigDescriptor.c **** }
+  52               		.loc 1 165 0
+  53 001e 0895      		ret
+  54               		.cfi_endproc
+  55               	.LFE159:
+  57               		.section	.text.DComp_NextAudioStreamInterface,"ax",@progbits
+  58               	.global	DComp_NextAudioStreamInterface
+  60               	DComp_NextAudioStreamInterface:
+  61               	.LFB160:
+ 166:ConfigDescriptor.c **** 
+ 167:ConfigDescriptor.c **** /** Descriptor comparator function. This comparator function is can be called while processing an a
+ 168:ConfigDescriptor.c ****  *  configuration descriptor, to search for a specific sub descriptor. It can also be used to abort
+ 169:ConfigDescriptor.c ****  *  descriptor processing if an incompatible descriptor configuration is found.
+ 170:ConfigDescriptor.c ****  *
+ 171:ConfigDescriptor.c ****  *  This comparator searches for the next Interface descriptor of the correct Audio Streaming Class
+ 172:ConfigDescriptor.c ****  *
+ 173:ConfigDescriptor.c ****  *  \return A value from the DSEARCH_Return_ErrorCodes_t enum
+ 174:ConfigDescriptor.c ****  */
+ 175:ConfigDescriptor.c **** uint8_t DComp_NextAudioStreamInterface(void* CurrentDescriptor)
+ 176:ConfigDescriptor.c **** {
+  62               		.loc 1 176 0
+  63               		.cfi_startproc
+  64               	.LVL5:
+  65               	/* prologue: function */
+  66               	/* frame size = 0 */
+  67               	/* stack size = 0 */
+  68               	.L__stack_usage = 0
+  69 0000 FC01      		movw r30,r24
+  70               	.LVL6:
+ 177:ConfigDescriptor.c **** 	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+ 178:ConfigDescriptor.c **** 
+ 179:ConfigDescriptor.c **** 	if (Header->Type == DTYPE_Interface)
+  71               		.loc 1 179 0
+  72 0002 8181      		ldd r24,Z+1
+  73               	.LVL7:
+  74 0004 8430      		cpi r24,lo8(4)
+  75 0006 01F4      		brne .L12
+  76               	.LVL8:
+  77               	.LBB3:
+ 180:ConfigDescriptor.c **** 	{
+ 181:ConfigDescriptor.c **** 		USB_Descriptor_Interface_t* Interface = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Interf
+ 182:ConfigDescriptor.c **** 
+ 183:ConfigDescriptor.c **** 		if ((Interface->Class    == AUDIO_CSCP_AudioClass) &&
+  78               		.loc 1 183 0
+  79 0008 8581      		ldd r24,Z+5
+  80 000a 8130      		cpi r24,lo8(1)
+  81 000c 01F4      		brne .L12
+ 184:ConfigDescriptor.c **** 		    (Interface->SubClass == AUDIO_CSCP_AudioStreamingSubclass) &&
+  82               		.loc 1 184 0 discriminator 1
+  83 000e 8681      		ldd r24,Z+6
+ 183:ConfigDescriptor.c **** 		    (Interface->SubClass == AUDIO_CSCP_AudioStreamingSubclass) &&
+  84               		.loc 1 183 0 discriminator 1
+  85 0010 8230      		cpi r24,lo8(2)
+  86 0012 01F4      		brne .L12
+ 185:ConfigDescriptor.c **** 		    (Interface->Protocol == AUDIO_CSCP_StreamingProtocol))
+  87               		.loc 1 185 0
+  88 0014 9781      		ldd r25,Z+7
+ 184:ConfigDescriptor.c **** 		    (Interface->SubClass == AUDIO_CSCP_AudioStreamingSubclass) &&
+  89               		.loc 1 184 0
+  90 0016 9111      		cpse r25,__zero_reg__
+  91 0018 00C0      		rjmp .L9
+ 186:ConfigDescriptor.c **** 		{
+ 187:ConfigDescriptor.c **** 			return DESCRIPTOR_SEARCH_Found;
+  92               		.loc 1 187 0
+  93 001a 80E0      		ldi r24,0
+  94 001c 0895      		ret
+  95               	.LVL9:
+  96               	.L12:
+  97               	.LBE3:
+ 188:ConfigDescriptor.c **** 		}
+ 189:ConfigDescriptor.c **** 	}
+ 190:ConfigDescriptor.c **** 
+ 191:ConfigDescriptor.c **** 	return DESCRIPTOR_SEARCH_NotFound;
+  98               		.loc 1 191 0
+  99 001e 82E0      		ldi r24,lo8(2)
+ 100               	.L9:
+ 192:ConfigDescriptor.c **** }
+ 101               		.loc 1 192 0
+ 102 0020 0895      		ret
+ 103               		.cfi_endproc
+ 104               	.LFE160:
+ 106               		.section	.text.DComp_NextAudioInterfaceDataEndpoint,"ax",@progbits
+ 107               	.global	DComp_NextAudioInterfaceDataEndpoint
+ 109               	DComp_NextAudioInterfaceDataEndpoint:
+ 110               	.LFB161:
+ 193:ConfigDescriptor.c **** 
+ 194:ConfigDescriptor.c **** /** Descriptor comparator function. This comparator function is can be called while processing an a
+ 195:ConfigDescriptor.c ****  *  configuration descriptor, to search for a specific sub descriptor. It can also be used to abort
+ 196:ConfigDescriptor.c ****  *  descriptor processing if an incompatible descriptor configuration is found.
+ 197:ConfigDescriptor.c ****  *
+ 198:ConfigDescriptor.c ****  *  This comparator searches for the next Isochronous Endpoint descriptor within the current interf
+ 199:ConfigDescriptor.c ****  *  search if another interface descriptor is found before the next endpoint.
+ 200:ConfigDescriptor.c ****  *
+ 201:ConfigDescriptor.c ****  *  \return A value from the DSEARCH_Return_ErrorCodes_t enum
+ 202:ConfigDescriptor.c ****  */
+ 203:ConfigDescriptor.c **** uint8_t DComp_NextAudioInterfaceDataEndpoint(void* CurrentDescriptor)
+ 204:ConfigDescriptor.c **** {
+ 111               		.loc 1 204 0
+ 112               		.cfi_startproc
+ 113               	.LVL10:
+ 114               	/* prologue: function */
+ 115               	/* frame size = 0 */
+ 116               	/* stack size = 0 */
+ 117               	.L__stack_usage = 0
+ 118 0000 FC01      		movw r30,r24
+ 119               	.LVL11:
+ 205:ConfigDescriptor.c **** 	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+ 206:ConfigDescriptor.c **** 
+ 207:ConfigDescriptor.c **** 	if (Header->Type == DTYPE_Endpoint)
+ 120               		.loc 1 207 0
+ 121 0002 9181      		ldd r25,Z+1
+ 122 0004 9530      		cpi r25,lo8(5)
+ 123 0006 01F4      		brne .L14
+ 124               	.LVL12:
+ 125               	.LBB4:
+ 208:ConfigDescriptor.c **** 	{
+ 209:ConfigDescriptor.c **** 		USB_Descriptor_Endpoint_t* Endpoint = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Endpoint
+ 210:ConfigDescriptor.c **** 
+ 211:ConfigDescriptor.c **** 		if ((Endpoint->Attributes & EP_TYPE_MASK) == EP_TYPE_ISOCHRONOUS)
+ 126               		.loc 1 211 0
+ 127 0008 8381      		ldd r24,Z+3
+ 128               	.LVL13:
+ 129 000a 8370      		andi r24,lo8(3)
+ 130 000c 8130      		cpi r24,lo8(1)
+ 131 000e 01F4      		brne .L17
+ 212:ConfigDescriptor.c **** 		  return DESCRIPTOR_SEARCH_Found;
+ 132               		.loc 1 212 0
+ 133 0010 80E0      		ldi r24,0
+ 134 0012 0895      		ret
+ 135               	.LVL14:
+ 136               	.L14:
+ 137               	.LBE4:
+ 213:ConfigDescriptor.c **** 	}
+ 214:ConfigDescriptor.c **** 	else if (Header->Type == DTYPE_Interface)
+ 138               		.loc 1 214 0
+ 139 0014 9430      		cpi r25,lo8(4)
+ 140 0016 01F4      		brne .L17
+ 215:ConfigDescriptor.c **** 	{
+ 216:ConfigDescriptor.c **** 		return DESCRIPTOR_SEARCH_Fail;
+ 141               		.loc 1 216 0
+ 142 0018 81E0      		ldi r24,lo8(1)
+ 143               	.LVL15:
+ 144 001a 0895      		ret
+ 145               	.L17:
+ 217:ConfigDescriptor.c **** 	}
+ 218:ConfigDescriptor.c **** 
+ 219:ConfigDescriptor.c **** 	return DESCRIPTOR_SEARCH_NotFound;
+ 146               		.loc 1 219 0
+ 147 001c 82E0      		ldi r24,lo8(2)
+ 220:ConfigDescriptor.c **** }
+ 148               		.loc 1 220 0
+ 149 001e 0895      		ret
+ 150               		.cfi_endproc
+ 151               	.LFE161:
+ 153               		.section	.text.ProcessConfigurationDescriptor,"ax",@progbits
+ 154               	.global	ProcessConfigurationDescriptor
+ 156               	ProcessConfigurationDescriptor:
+ 157               	.LFB158:
+  59:ConfigDescriptor.c **** 	uint8_t  ConfigDescriptorData[512];
+ 158               		.loc 1 59 0
+ 159               		.cfi_startproc
+ 160 0000 CF92      		push r12
+ 161               	.LCFI0:
+ 162               		.cfi_def_cfa_offset 3
+ 163               		.cfi_offset 12, -2
+ 164 0002 DF92      		push r13
+ 165               	.LCFI1:
+ 166               		.cfi_def_cfa_offset 4
+ 167               		.cfi_offset 13, -3
+ 168 0004 EF92      		push r14
+ 169               	.LCFI2:
+ 170               		.cfi_def_cfa_offset 5
+ 171               		.cfi_offset 14, -4
+ 172 0006 FF92      		push r15
+ 173               	.LCFI3:
+ 174               		.cfi_def_cfa_offset 6
+ 175               		.cfi_offset 15, -5
+ 176 0008 0F93      		push r16
+ 177               	.LCFI4:
+ 178               		.cfi_def_cfa_offset 7
+ 179               		.cfi_offset 16, -6
+ 180 000a 1F93      		push r17
+ 181               	.LCFI5:
+ 182               		.cfi_def_cfa_offset 8
+ 183               		.cfi_offset 17, -7
+ 184 000c CF93      		push r28
+ 185               	.LCFI6:
+ 186               		.cfi_def_cfa_offset 9
+ 187               		.cfi_offset 28, -8
+ 188 000e DF93      		push r29
+ 189               	.LCFI7:
+ 190               		.cfi_def_cfa_offset 10
+ 191               		.cfi_offset 29, -9
+ 192 0010 CDB7      		in r28,__SP_L__
+ 193 0012 DEB7      		in r29,__SP_H__
+ 194               	.LCFI8:
+ 195               		.cfi_def_cfa_register 28
+ 196 0014 C450      		subi r28,4
+ 197 0016 D240      		sbci r29,2
+ 198               	.LCFI9:
+ 199               		.cfi_def_cfa_offset 526
+ 200 0018 0FB6      		in __tmp_reg__,__SREG__
+ 201 001a F894      		cli
+ 202 001c DEBF      		out __SP_H__,r29
+ 203 001e 0FBE      		out __SREG__,__tmp_reg__
+ 204 0020 CDBF      		out __SP_L__,r28
+ 205               	/* prologue: function */
+ 206               	/* frame size = 516 */
+ 207               	/* stack size = 524 */
+ 208               	.L__stack_usage = 524
+  61:ConfigDescriptor.c **** 	uint16_t CurrConfigBytesRem;
+ 209               		.loc 1 61 0
+ 210 0022 AE01      		movw r20,r28
+ 211 0024 4F5F      		subi r20,-1
+ 212 0026 5F4F      		sbci r21,-1
+ 213 0028 CD5F      		subi r28,lo8(-515)
+ 214 002a DD4F      		sbci r29,hi8(-515)
+ 215 002c 5983      		std Y+1,r21
+ 216 002e 4883      		st Y,r20
+ 217 0030 C350      		subi r28,lo8(515)
+ 218 0032 D240      		sbci r29,hi8(515)
+ 219               	.LVL16:
+  69:ConfigDescriptor.c **** 	{
+ 220               		.loc 1 69 0
+ 221 0034 20E0      		ldi r18,0
+ 222 0036 32E0      		ldi r19,lo8(2)
+ 223 0038 BE01      		movw r22,r28
+ 224 003a 6F5F      		subi r22,-1
+ 225 003c 7D4F      		sbci r23,-3
+ 226 003e 81E0      		ldi r24,lo8(1)
+ 227 0040 0E94 0000 		call USB_Host_GetDeviceConfigDescriptor
+ 228               	.LVL17:
+ 229 0044 8530      		cpi r24,lo8(5)
+ 230 0046 01F4      		brne .+2
+ 231 0048 00C0      		rjmp .L32
+ 232 004a 8630      		cpi r24,lo8(6)
+ 233 004c 01F0      		breq .L21
+ 234 004e 8111      		cpse r24,__zero_reg__
+ 235 0050 00C0      		rjmp .L39
+ 236 0052 00E0      		ldi r16,0
+ 237 0054 10E0      		ldi r17,0
+ 238 0056 C12C      		mov r12,__zero_reg__
+ 239 0058 D12C      		mov r13,__zero_reg__
+ 240 005a 00C0      		rjmp .L23
+ 241               	.L21:
+  74:ConfigDescriptor.c **** 		case HOST_GETCONFIG_BuffOverflow:
+ 242               		.loc 1 74 0
+ 243 005c 33E0      		ldi r19,lo8(3)
+ 244 005e F32E      		mov r15,r19
+ 245 0060 00C0      		rjmp .L40
+ 246               	.L39:
+  78:ConfigDescriptor.c **** 	}
+ 247               		.loc 1 78 0
+ 248 0062 FF24      		clr r15
+ 249 0064 F394      		inc r15
+ 250 0066 00C0      		rjmp .L40
+ 251               	.LVL18:
+ 252               	.L43:
+ 253               	.LBB5:
+  85:ConfigDescriptor.c **** 		                              DComp_NextAudioInterfaceDataEndpoint) != DESCRIPTOR_SEARCH_COMP_Fou
+ 254               		.loc 1 85 0 discriminator 1
+ 255 0068 40E0      		ldi r20,lo8(gs(DComp_NextAudioInterfaceDataEndpoint))
+ 256 006a 50E0      		ldi r21,hi8(gs(DComp_NextAudioInterfaceDataEndpoint))
+ 257 006c BE01      		movw r22,r28
+ 258 006e 6D5F      		subi r22,-3
+ 259 0070 7D4F      		sbci r23,-3
+ 260 0072 CE01      		movw r24,r28
+ 261 0074 8F5F      		subi r24,-1
+ 262 0076 9D4F      		sbci r25,-3
+ 263 0078 0E94 0000 		call USB_GetNextDescriptorComp
+ 264               	.LVL19:
+ 265 007c F82E      		mov r15,r24
+  84:ConfigDescriptor.c **** 		    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+ 266               		.loc 1 84 0 discriminator 1
+ 267 007e 8823      		tst r24
+ 268 0080 01F0      		breq .L42
+  90:ConfigDescriptor.c **** 				                          DComp_NextAudioStreamInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+ 269               		.loc 1 90 0
+ 270 0082 40E0      		ldi r20,lo8(gs(DComp_NextAudioStreamInterface))
+ 271 0084 50E0      		ldi r21,hi8(gs(DComp_NextAudioStreamInterface))
+ 272 0086 BE01      		movw r22,r28
+ 273 0088 6D5F      		subi r22,-3
+ 274 008a 7D4F      		sbci r23,-3
+ 275 008c CE01      		movw r24,r28
+ 276 008e 8F5F      		subi r24,-1
+ 277 0090 9D4F      		sbci r25,-3
+ 278 0092 0E94 0000 		call USB_GetNextDescriptorComp
+ 279               	.LVL20:
+  89:ConfigDescriptor.c **** 			    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+ 280               		.loc 1 89 0
+ 281 0096 8823      		tst r24
+ 282 0098 01F0      		breq .L31
+ 283               	.L24:
+  94:ConfigDescriptor.c **** 				                              DComp_NextAudioControlInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+ 284               		.loc 1 94 0
+ 285 009a 40E0      		ldi r20,lo8(gs(DComp_NextAudioControlInterface))
+ 286 009c 50E0      		ldi r21,hi8(gs(DComp_NextAudioControlInterface))
+ 287 009e BE01      		movw r22,r28
+ 288 00a0 6D5F      		subi r22,-3
+ 289 00a2 7D4F      		sbci r23,-3
+ 290 00a4 CE01      		movw r24,r28
+ 291 00a6 8F5F      		subi r24,-1
+ 292 00a8 9D4F      		sbci r25,-3
+ 293 00aa 0E94 0000 		call USB_GetNextDescriptorComp
+ 294               	.LVL21:
+ 295 00ae 8111      		cpse r24,__zero_reg__
+ 296 00b0 00C0      		rjmp .L28
+ 102:ConfigDescriptor.c **** 
+ 297               		.loc 1 102 0
+ 298 00b2 CD5F      		subi r28,lo8(-515)
+ 299 00b4 DD4F      		sbci r29,hi8(-515)
+ 300 00b6 C880      		ld r12,Y
+ 301 00b8 D980      		ldd r13,Y+1
+ 302 00ba C350      		subi r28,lo8(515)
+ 303 00bc D240      		sbci r29,hi8(515)
+ 304               	.LVL22:
+ 105:ConfigDescriptor.c **** 				                              DComp_NextAudioStreamInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+ 305               		.loc 1 105 0
+ 306 00be 40E0      		ldi r20,lo8(gs(DComp_NextAudioStreamInterface))
+ 307 00c0 50E0      		ldi r21,hi8(gs(DComp_NextAudioStreamInterface))
+ 308 00c2 BE01      		movw r22,r28
+ 309 00c4 6D5F      		subi r22,-3
+ 310 00c6 7D4F      		sbci r23,-3
+ 311 00c8 CE01      		movw r24,r28
+ 312 00ca 8F5F      		subi r24,-1
+ 313 00cc 9D4F      		sbci r25,-3
+ 314 00ce 0E94 0000 		call USB_GetNextDescriptorComp
+ 315               	.LVL23:
+ 316 00d2 8111      		cpse r24,__zero_reg__
+ 317 00d4 00C0      		rjmp .L28
+ 318               	.L31:
+ 114:ConfigDescriptor.c **** 
+ 319               		.loc 1 114 0
+ 320 00d6 CD5F      		subi r28,lo8(-515)
+ 321 00d8 DD4F      		sbci r29,hi8(-515)
+ 322 00da 0881      		ld r16,Y
+ 323 00dc 1981      		ldd r17,Y+1
+ 324 00de C350      		subi r28,lo8(515)
+ 325 00e0 D240      		sbci r29,hi8(515)
+ 326               	.LVL24:
+ 327               	.L23:
+  84:ConfigDescriptor.c **** 		    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+ 328               		.loc 1 84 0
+ 329 00e2 C114      		cp r12,__zero_reg__
+ 330 00e4 D104      		cpc r13,__zero_reg__
+ 331 00e6 01F0      		breq .+2
+ 332 00e8 00C0      		rjmp .L43
+ 333 00ea 00C0      		rjmp .L24
+ 334               	.L28:
+  98:ConfigDescriptor.c **** 				}
+ 335               		.loc 1 98 0
+ 336 00ec 24E0      		ldi r18,lo8(4)
+ 337 00ee F22E      		mov r15,r18
+ 338 00f0 00C0      		rjmp .L40
+ 339               	.L42:
+ 121:ConfigDescriptor.c **** 
+ 340               		.loc 1 121 0
+ 341 00f2 CD5F      		subi r28,lo8(-515)
+ 342 00f4 DD4F      		sbci r29,hi8(-515)
+ 343 00f6 E881      		ld r30,Y
+ 344 00f8 F981      		ldd r31,Y+1
+ 345 00fa C350      		subi r28,lo8(515)
+ 346 00fc D240      		sbci r29,hi8(515)
+ 347               	.LVL25:
+ 124:ConfigDescriptor.c **** 		  DataOUTEndpoint = EndpointData;
+ 348               		.loc 1 124 0
+ 349 00fe 2281      		ldd r18,Z+2
+ 350 0100 27FD      		sbrc r18,7
+ 351 0102 00C0      		rjmp .L23
+ 352               	.LVL26:
+ 353               	.LBE5:
+  81:ConfigDescriptor.c **** 	{
+ 354               		.loc 1 81 0
+ 355 0104 3097      		sbiw r30,0
+ 356 0106 01F0      		breq .L23
+ 128:ConfigDescriptor.c **** 	StreamingInterfaceAltSetting = AudioStreamingInterface->AlternateSetting;
+ 357               		.loc 1 128 0
+ 358 0108 D801      		movw r26,r16
+ 359 010a 1296      		adiw r26,2
+ 360 010c 8C91      		ld r24,X
+ 361 010e 1297      		sbiw r26,2
+ 362 0110 8093 0000 		sts StreamingInterfaceIndex,r24
+ 129:ConfigDescriptor.c **** 	StreamingEndpointAddress     = DataOUTEndpoint->EndpointAddress;
+ 363               		.loc 1 129 0
+ 364 0114 1396      		adiw r26,3
+ 365 0116 8C91      		ld r24,X
+ 366 0118 8093 0000 		sts StreamingInterfaceAltSetting,r24
+ 130:ConfigDescriptor.c **** 
+ 367               		.loc 1 130 0
+ 368 011c 2093 0000 		sts StreamingEndpointAddress,r18
+ 133:ConfigDescriptor.c **** 	                   DataOUTEndpoint->EndpointAddress, DataOUTEndpoint->EndpointSize, PIPE_BANK_DOUB
+ 369               		.loc 1 133 0
+ 370 0120 0481      		ldd r16,Z+4
+ 371 0122 1581      		ldd r17,Z+5
+ 372               	.LVL27:
+ 373 0124 94E0      		ldi r25,lo8(4)
+ 374 0126 E92E      		mov r14,r25
+ 375 0128 40E2      		ldi r20,lo8(32)
+ 376 012a 61E0      		ldi r22,lo8(1)
+ 377 012c 81E0      		ldi r24,lo8(1)
+ 378 012e 0E94 0000 		call Pipe_ConfigurePipe
+ 379               	.LVL28:
+ 137:ConfigDescriptor.c **** }
+ 380               		.loc 1 137 0
+ 381 0132 00C0      		rjmp .L40
+ 382               	.LVL29:
+ 383               	.L32:
+  76:ConfigDescriptor.c **** 		default:
+ 384               		.loc 1 76 0
+ 385 0134 82E0      		ldi r24,lo8(2)
+ 386 0136 F82E      		mov r15,r24
+ 387               	.LVL30:
+ 388               	.L40:
+ 138:ConfigDescriptor.c **** 
+ 389               		.loc 1 138 0
+ 390 0138 8F2D      		mov r24,r15
+ 391               	/* epilogue start */
+ 392 013a CC5F      		subi r28,-4
+ 393 013c DD4F      		sbci r29,-3
+ 394 013e 0FB6      		in __tmp_reg__,__SREG__
+ 395 0140 F894      		cli
+ 396 0142 DEBF      		out __SP_H__,r29
+ 397 0144 0FBE      		out __SREG__,__tmp_reg__
+ 398 0146 CDBF      		out __SP_L__,r28
+ 399 0148 DF91      		pop r29
+ 400 014a CF91      		pop r28
+ 401 014c 1F91      		pop r17
+ 402 014e 0F91      		pop r16
+ 403 0150 FF90      		pop r15
+ 404 0152 EF90      		pop r14
+ 405 0154 DF90      		pop r13
+ 406 0156 CF90      		pop r12
+ 407 0158 0895      		ret
+ 408               		.cfi_endproc
+ 409               	.LFE158:
+ 411               	.global	StreamingEndpointAddress
+ 412               		.section .bss
+ 415               	StreamingEndpointAddress:
+ 416 0000 00        		.zero	1
+ 417               	.global	StreamingInterfaceAltSetting
+ 420               	StreamingInterfaceAltSetting:
+ 421 0001 00        		.zero	1
+ 422               	.global	StreamingInterfaceIndex
+ 425               	StreamingInterfaceIndex:
+ 426 0002 00        		.zero	1
+ 427               		.text
+ 428               	.Letext0:
+ 429               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 430               		.file 3 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../StdDescriptors.h"
+ 431               		.file 4 "../../../../LUFA/Drivers/USB/Core/ConfigDescriptor.h"
+ 432               		.file 5 "../../../../LUFA/Drivers/USB/Class/Host/../Common/Audio.h"
+ 433               		.file 6 "/usr/lib/avr/include/stdio.h"
+ 434               		.file 7 "ConfigDescriptor.h"
+ 435               		.file 8 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+ 436               		.file 9 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 437               		.file 10 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ConfigDescriptor.c
+     /tmp/ccT7qRjM.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccT7qRjM.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccT7qRjM.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccT7qRjM.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccT7qRjM.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccT7qRjM.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccT7qRjM.s:14     .text.DComp_NextAudioControlInterface:0000000000000000 DComp_NextAudioControlInterface
+     /tmp/ccT7qRjM.s:60     .text.DComp_NextAudioStreamInterface:0000000000000000 DComp_NextAudioStreamInterface
+     /tmp/ccT7qRjM.s:109    .text.DComp_NextAudioInterfaceDataEndpoint:0000000000000000 DComp_NextAudioInterfaceDataEndpoint
+     /tmp/ccT7qRjM.s:156    .text.ProcessConfigurationDescriptor:0000000000000000 ProcessConfigurationDescriptor
+     /tmp/ccT7qRjM.s:425    .bss:0000000000000002 StreamingInterfaceIndex
+     /tmp/ccT7qRjM.s:420    .bss:0000000000000001 StreamingInterfaceAltSetting
+     /tmp/ccT7qRjM.s:415    .bss:0000000000000000 StreamingEndpointAddress
+
+UNDEFINED SYMBOLS
+USB_Host_GetDeviceConfigDescriptor
+USB_GetNextDescriptorComp
+Pipe_ConfigurePipe
+__do_clear_bss

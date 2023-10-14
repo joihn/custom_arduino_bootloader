@@ -1,0 +1,394 @@
+   1               		.file	"IP.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.IP_ProcessIPPacket,"ax",@progbits
+  12               	.global	IP_ProcessIPPacket
+  14               	IP_ProcessIPPacket:
+  15               	.LFB104:
+  16               		.file 1 "Lib/IP.c"
+   1:Lib/IP.c      **** /*
+   2:Lib/IP.c      ****              LUFA Library
+   3:Lib/IP.c      ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/IP.c      **** 
+   5:Lib/IP.c      ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/IP.c      ****            www.lufa-lib.org
+   7:Lib/IP.c      **** */
+   8:Lib/IP.c      **** 
+   9:Lib/IP.c      **** /*
+  10:Lib/IP.c      ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/IP.c      **** 
+  12:Lib/IP.c      ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/IP.c      ****   software and its documentation for any purpose is hereby granted
+  14:Lib/IP.c      ****   without fee, provided that the above copyright notice appear in
+  15:Lib/IP.c      ****   all copies and that both that the copyright notice and this
+  16:Lib/IP.c      ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/IP.c      ****   documentation, and that the name of the author not be used in
+  18:Lib/IP.c      ****   advertising or publicity pertaining to distribution of the
+  19:Lib/IP.c      ****   software without specific, written prior permission.
+  20:Lib/IP.c      **** 
+  21:Lib/IP.c      ****   The author disclaim all warranties with regard to this
+  22:Lib/IP.c      ****   software, including all implied warranties of merchantability
+  23:Lib/IP.c      ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/IP.c      ****   special, indirect or consequential damages or any damages
+  25:Lib/IP.c      ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/IP.c      ****   in an action of contract, negligence or other tortious action,
+  27:Lib/IP.c      ****   arising out of or in connection with the use or performance of
+  28:Lib/IP.c      ****   this software.
+  29:Lib/IP.c      **** */
+  30:Lib/IP.c      **** 
+  31:Lib/IP.c      **** /** \file
+  32:Lib/IP.c      ****  *
+  33:Lib/IP.c      ****  *  Internet Protocol (IP) packet handling routines. This protocol handles IP packets from the
+  34:Lib/IP.c      ****  *  host which typically encapsulate other protocols such as ICMP, UDP and TCP.
+  35:Lib/IP.c      ****  */
+  36:Lib/IP.c      **** 
+  37:Lib/IP.c      **** #include "IP.h"
+  38:Lib/IP.c      **** 
+  39:Lib/IP.c      **** /** Processes an IP packet inside an Ethernet frame, and writes the appropriate response
+  40:Lib/IP.c      ****  *  to the output Ethernet frame if one is created by a sub-protocol handler.
+  41:Lib/IP.c      ****  *
+  42:Lib/IP.c      ****  *  \param[in] FrameIN        Pointer to the incoming Ethernet frame information structure
+  43:Lib/IP.c      ****  *  \param[in] InDataStart    Pointer to the start of the incoming packet's IP header
+  44:Lib/IP.c      ****  *  \param[out] OutDataStart  Pointer to the start of the outgoing packet's IP header
+  45:Lib/IP.c      ****  *
+  46:Lib/IP.c      ****  *  \return The number of bytes written to the out Ethernet frame if any, NO_RESPONSE if no
+  47:Lib/IP.c      ****  *           response was generated, NO_PROCESS if the packet processing was deferred until the
+  48:Lib/IP.c      ****  *           next Ethernet packet handler iteration
+  49:Lib/IP.c      ****  */
+  50:Lib/IP.c      **** int16_t IP_ProcessIPPacket(Ethernet_Frame_Info_t* const FrameIN,
+  51:Lib/IP.c      ****                            void* InDataStart,
+  52:Lib/IP.c      ****                            void* OutDataStart)
+  53:Lib/IP.c      **** {
+  17               		.loc 1 53 0
+  18               		.cfi_startproc
+  19               	.LVL0:
+  20 0000 AF92      		push r10
+  21               	.LCFI0:
+  22               		.cfi_def_cfa_offset 3
+  23               		.cfi_offset 10, -2
+  24 0002 BF92      		push r11
+  25               	.LCFI1:
+  26               		.cfi_def_cfa_offset 4
+  27               		.cfi_offset 11, -3
+  28 0004 CF92      		push r12
+  29               	.LCFI2:
+  30               		.cfi_def_cfa_offset 5
+  31               		.cfi_offset 12, -4
+  32 0006 DF92      		push r13
+  33               	.LCFI3:
+  34               		.cfi_def_cfa_offset 6
+  35               		.cfi_offset 13, -5
+  36 0008 EF92      		push r14
+  37               	.LCFI4:
+  38               		.cfi_def_cfa_offset 7
+  39               		.cfi_offset 14, -6
+  40 000a FF92      		push r15
+  41               	.LCFI5:
+  42               		.cfi_def_cfa_offset 8
+  43               		.cfi_offset 15, -7
+  44 000c 0F93      		push r16
+  45               	.LCFI6:
+  46               		.cfi_def_cfa_offset 9
+  47               		.cfi_offset 16, -8
+  48 000e 1F93      		push r17
+  49               	.LCFI7:
+  50               		.cfi_def_cfa_offset 10
+  51               		.cfi_offset 17, -9
+  52 0010 CF93      		push r28
+  53               	.LCFI8:
+  54               		.cfi_def_cfa_offset 11
+  55               		.cfi_offset 28, -10
+  56 0012 DF93      		push r29
+  57               	.LCFI9:
+  58               		.cfi_def_cfa_offset 12
+  59               		.cfi_offset 29, -11
+  60               	/* prologue: function */
+  61               	/* frame size = 0 */
+  62               	/* stack size = 10 */
+  63               	.L__stack_usage = 10
+  64 0014 6C01      		movw r12,r24
+  65 0016 7B01      		movw r14,r22
+  66 0018 EA01      		movw r28,r20
+  54:Lib/IP.c      **** 	DecodeIPHeader(InDataStart);
+  67               		.loc 1 54 0
+  68 001a CB01      		movw r24,r22
+  69               	.LVL1:
+  70 001c 0E94 0000 		call DecodeIPHeader
+  71               	.LVL2:
+  55:Lib/IP.c      **** 
+  56:Lib/IP.c      **** 	IP_Header_t* IPHeaderIN  = (IP_Header_t*)InDataStart;
+  57:Lib/IP.c      **** 	IP_Header_t* IPHeaderOUT = (IP_Header_t*)OutDataStart;
+  58:Lib/IP.c      **** 
+  59:Lib/IP.c      **** 	/* Header length is specified in number of longs in the packet header, convert to bytes */
+  60:Lib/IP.c      **** 	uint16_t HeaderLengthBytes = (IPHeaderIN->HeaderLength * sizeof(uint32_t));
+  72               		.loc 1 60 0
+  73 0020 F701      		movw r30,r14
+  74 0022 0081      		ld r16,Z
+  75 0024 0F70      		andi r16,lo8(15)
+  76 0026 F4E0      		ldi r31,lo8(4)
+  77 0028 0F9F      		mul r16,r31
+  78 002a 8001      		movw r16,r0
+  79 002c 1124      		clr __zero_reg__
+  80               	.LVL3:
+  61:Lib/IP.c      **** 
+  62:Lib/IP.c      **** 	int16_t  RetSize = NO_RESPONSE;
+  63:Lib/IP.c      **** 
+  64:Lib/IP.c      **** 	/* Check to ensure the IP packet is addressed to the virtual webserver's IP or the broadcast IP ad
+  65:Lib/IP.c      **** 	if (!(IP_COMPARE(&IPHeaderIN->DestinationAddress, &ServerIPAddress)) &&
+  81               		.loc 1 65 0
+  82 002e 5701      		movw r10,r14
+  83 0030 80E1      		ldi r24,16
+  84 0032 A80E      		add r10,r24
+  85 0034 B11C      		adc r11,__zero_reg__
+  86 0036 44E0      		ldi r20,lo8(4)
+  87 0038 50E0      		ldi r21,0
+  88 003a 60E0      		ldi r22,lo8(ServerIPAddress)
+  89 003c 70E0      		ldi r23,hi8(ServerIPAddress)
+  90 003e C501      		movw r24,r10
+  91 0040 0E94 0000 		call memcmp
+  92               	.LVL4:
+  93 0044 892B      		or r24,r25
+  94 0046 01F0      		breq .L2
+  66:Lib/IP.c      **** 	    !(IP_COMPARE(&IPHeaderIN->DestinationAddress, &BroadcastIPAddress)))
+  95               		.loc 1 66 0 discriminator 1
+  96 0048 44E0      		ldi r20,lo8(4)
+  97 004a 50E0      		ldi r21,0
+  98 004c 60E0      		ldi r22,lo8(BroadcastIPAddress)
+  99 004e 70E0      		ldi r23,hi8(BroadcastIPAddress)
+ 100 0050 C501      		movw r24,r10
+ 101 0052 0E94 0000 		call memcmp
+ 102               	.LVL5:
+  65:Lib/IP.c      **** 	    !(IP_COMPARE(&IPHeaderIN->DestinationAddress, &BroadcastIPAddress)))
+ 103               		.loc 1 65 0 discriminator 1
+ 104 0056 892B      		or r24,r25
+ 105 0058 01F0      		breq .+2
+ 106 005a 00C0      		rjmp .L14
+ 107               	.L2:
+  67:Lib/IP.c      **** 	{
+  68:Lib/IP.c      **** 		return NO_RESPONSE;
+  69:Lib/IP.c      **** 	}
+  70:Lib/IP.c      **** 
+  71:Lib/IP.c      **** 	/* Pass off the IP payload to the appropriate protocol processing routine */
+  72:Lib/IP.c      **** 	switch (IPHeaderIN->Protocol)
+ 108               		.loc 1 72 0
+ 109 005c F701      		movw r30,r14
+ 110 005e 8185      		ldd r24,Z+9
+ 111 0060 8630      		cpi r24,lo8(6)
+ 112 0062 01F0      		breq .L4
+ 113 0064 8131      		cpi r24,lo8(17)
+ 114 0066 01F0      		breq .L5
+ 115 0068 8130      		cpi r24,lo8(1)
+ 116 006a 01F0      		breq .+2
+ 117 006c 00C0      		rjmp .L14
+  73:Lib/IP.c      **** 	{
+  74:Lib/IP.c      **** 		case PROTOCOL_ICMP:
+  75:Lib/IP.c      **** 			RetSize = ICMP_ProcessICMPPacket(FrameIN,
+ 118               		.loc 1 75 0
+ 119 006e B701      		movw r22,r14
+ 120 0070 600F      		add r22,r16
+ 121 0072 711F      		adc r23,r17
+ 122 0074 AE01      		movw r20,r28
+ 123 0076 4C5E      		subi r20,-20
+ 124 0078 5F4F      		sbci r21,-1
+ 125 007a C601      		movw r24,r12
+ 126 007c 0E94 0000 		call ICMP_ProcessICMPPacket
+ 127               	.LVL6:
+  76:Lib/IP.c      **** 			                                 &((uint8_t*)InDataStart)[HeaderLengthBytes],
+  77:Lib/IP.c      **** 			                                 &((uint8_t*)OutDataStart)[sizeof(IP_Header_t)]);
+  78:Lib/IP.c      **** 			break;
+ 128               		.loc 1 78 0
+ 129 0080 00C0      		rjmp .L7
+ 130               	.LVL7:
+ 131               	.L4:
+  79:Lib/IP.c      **** 		case PROTOCOL_TCP:
+  80:Lib/IP.c      **** 			RetSize = TCP_ProcessTCPPacket(InDataStart,
+ 132               		.loc 1 80 0
+ 133 0082 B701      		movw r22,r14
+ 134 0084 600F      		add r22,r16
+ 135 0086 711F      		adc r23,r17
+ 136 0088 AE01      		movw r20,r28
+ 137 008a 4C5E      		subi r20,-20
+ 138 008c 5F4F      		sbci r21,-1
+ 139 008e C701      		movw r24,r14
+ 140 0090 0E94 0000 		call TCP_ProcessTCPPacket
+ 141               	.LVL8:
+  81:Lib/IP.c      **** 			                               &((uint8_t*)InDataStart)[HeaderLengthBytes],
+  82:Lib/IP.c      **** 			                               &((uint8_t*)OutDataStart)[sizeof(IP_Header_t)]);
+  83:Lib/IP.c      **** 			break;
+ 142               		.loc 1 83 0
+ 143 0094 00C0      		rjmp .L7
+ 144               	.LVL9:
+ 145               	.L5:
+  84:Lib/IP.c      **** 		case PROTOCOL_UDP:
+  85:Lib/IP.c      **** 			RetSize = UDP_ProcessUDPPacket(InDataStart,
+ 146               		.loc 1 85 0
+ 147 0096 B701      		movw r22,r14
+ 148 0098 600F      		add r22,r16
+ 149 009a 711F      		adc r23,r17
+ 150 009c AE01      		movw r20,r28
+ 151 009e 4C5E      		subi r20,-20
+ 152 00a0 5F4F      		sbci r21,-1
+ 153 00a2 C701      		movw r24,r14
+ 154 00a4 0E94 0000 		call UDP_ProcessUDPPacket
+ 155               	.LVL10:
+ 156               	.L7:
+  86:Lib/IP.c      **** 			                               &((uint8_t*)InDataStart)[HeaderLengthBytes],
+  87:Lib/IP.c      **** 			                               &((uint8_t*)OutDataStart)[sizeof(IP_Header_t)]);
+  88:Lib/IP.c      **** 			break;
+  89:Lib/IP.c      **** 	}
+  90:Lib/IP.c      **** 
+  91:Lib/IP.c      **** 	/* Check to see if the protocol processing routine has filled out a response */
+  92:Lib/IP.c      **** 	if (RetSize > 0)
+ 157               		.loc 1 92 0
+ 158 00a8 1816      		cp __zero_reg__,r24
+ 159 00aa 1906      		cpc __zero_reg__,r25
+ 160 00ac 04F4      		brge .L3
+  93:Lib/IP.c      **** 	{
+  94:Lib/IP.c      **** 		/* Fill out the response IP packet header */
+  95:Lib/IP.c      **** 		IPHeaderOUT->TotalLength        = SwapEndian_16(sizeof(IP_Header_t) + RetSize);
+ 161               		.loc 1 95 0
+ 162 00ae 8C01      		movw r16,r24
+ 163               	.LVL11:
+ 164 00b0 0C5E      		subi r16,-20
+ 165 00b2 1F4F      		sbci r17,-1
+ 166 00b4 1A83      		std Y+2,r17
+ 167 00b6 0B83      		std Y+3,r16
+  96:Lib/IP.c      **** 		IPHeaderOUT->TypeOfService      = 0;
+ 168               		.loc 1 96 0
+ 169 00b8 1982      		std Y+1,__zero_reg__
+  97:Lib/IP.c      **** 		IPHeaderOUT->HeaderLength       = (sizeof(IP_Header_t) / sizeof(uint32_t));
+  98:Lib/IP.c      **** 		IPHeaderOUT->Version            = 4;
+ 170               		.loc 1 98 0
+ 171 00ba 85E4      		ldi r24,lo8(69)
+ 172               	.LVL12:
+ 173 00bc 8883      		st Y,r24
+  99:Lib/IP.c      **** 		IPHeaderOUT->Flags              = 0;
+ 100:Lib/IP.c      **** 		IPHeaderOUT->FragmentOffset     = 0;
+ 174               		.loc 1 100 0
+ 175 00be 1E82      		std Y+6,__zero_reg__
+ 176 00c0 1F82      		std Y+7,__zero_reg__
+ 101:Lib/IP.c      **** 		IPHeaderOUT->Identification     = 0;
+ 177               		.loc 1 101 0
+ 178 00c2 1D82      		std Y+5,__zero_reg__
+ 179 00c4 1C82      		std Y+4,__zero_reg__
+ 102:Lib/IP.c      **** 		IPHeaderOUT->HeaderChecksum     = 0;
+ 180               		.loc 1 102 0
+ 181 00c6 1B86      		std Y+11,__zero_reg__
+ 182 00c8 1A86      		std Y+10,__zero_reg__
+ 103:Lib/IP.c      **** 		IPHeaderOUT->Protocol           = IPHeaderIN->Protocol;
+ 183               		.loc 1 103 0
+ 184 00ca F701      		movw r30,r14
+ 185 00cc 8185      		ldd r24,Z+9
+ 186 00ce 8987      		std Y+9,r24
+ 104:Lib/IP.c      **** 		IPHeaderOUT->TTL                = DEFAULT_TTL;
+ 187               		.loc 1 104 0
+ 188 00d0 80E8      		ldi r24,lo8(-128)
+ 189 00d2 8887      		std Y+8,r24
+ 105:Lib/IP.c      **** 		IPHeaderOUT->SourceAddress      = IPHeaderIN->DestinationAddress;
+ 190               		.loc 1 105 0
+ 191 00d4 8089      		ldd r24,Z+16
+ 192 00d6 9189      		ldd r25,Z+17
+ 193 00d8 A289      		ldd r26,Z+18
+ 194 00da B389      		ldd r27,Z+19
+ 195 00dc 8C87      		std Y+12,r24
+ 196 00de 9D87      		std Y+13,r25
+ 197 00e0 AE87      		std Y+14,r26
+ 198 00e2 BF87      		std Y+15,r27
+ 106:Lib/IP.c      **** 		IPHeaderOUT->DestinationAddress = IPHeaderIN->SourceAddress;
+ 199               		.loc 1 106 0
+ 200 00e4 8485      		ldd r24,Z+12
+ 201 00e6 9585      		ldd r25,Z+13
+ 202 00e8 A685      		ldd r26,Z+14
+ 203 00ea B785      		ldd r27,Z+15
+ 204 00ec 888B      		std Y+16,r24
+ 205 00ee 998B      		std Y+17,r25
+ 206 00f0 AA8B      		std Y+18,r26
+ 207 00f2 BB8B      		std Y+19,r27
+ 107:Lib/IP.c      **** 
+ 108:Lib/IP.c      **** 		IPHeaderOUT->HeaderChecksum     = Ethernet_Checksum16(IPHeaderOUT, sizeof(IP_Header_t));
+ 208               		.loc 1 108 0
+ 209 00f4 64E1      		ldi r22,lo8(20)
+ 210 00f6 70E0      		ldi r23,0
+ 211 00f8 CE01      		movw r24,r28
+ 212 00fa 0E94 0000 		call Ethernet_Checksum16
+ 213               	.LVL13:
+ 214 00fe 9B87      		std Y+11,r25
+ 215 0100 8A87      		std Y+10,r24
+ 109:Lib/IP.c      **** 
+ 110:Lib/IP.c      **** 		/* Return the size of the response so far */
+ 111:Lib/IP.c      **** 		return (sizeof(IP_Header_t) + RetSize);
+ 216               		.loc 1 111 0
+ 217 0102 C801      		movw r24,r16
+ 218 0104 00C0      		rjmp .L3
+ 219               	.LVL14:
+ 220               	.L14:
+  62:Lib/IP.c      **** 
+ 221               		.loc 1 62 0
+ 222 0106 80E0      		ldi r24,0
+ 223 0108 90E0      		ldi r25,0
+ 224               	.LVL15:
+ 225               	.L3:
+ 226               	/* epilogue start */
+ 112:Lib/IP.c      **** 	}
+ 113:Lib/IP.c      **** 
+ 114:Lib/IP.c      **** 	return RetSize;
+ 115:Lib/IP.c      **** }
+ 227               		.loc 1 115 0
+ 228 010a DF91      		pop r29
+ 229 010c CF91      		pop r28
+ 230               	.LVL16:
+ 231 010e 1F91      		pop r17
+ 232 0110 0F91      		pop r16
+ 233 0112 FF90      		pop r15
+ 234 0114 EF90      		pop r14
+ 235               	.LVL17:
+ 236 0116 DF90      		pop r13
+ 237 0118 CF90      		pop r12
+ 238               	.LVL18:
+ 239 011a BF90      		pop r11
+ 240 011c AF90      		pop r10
+ 241               	.LVL19:
+ 242 011e 0895      		ret
+ 243               		.cfi_endproc
+ 244               	.LFE104:
+ 246               		.text
+ 247               	.Letext0:
+ 248               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 249               		.file 3 "/usr/lib/avr/include/stdio.h"
+ 250               		.file 4 "Lib/EthernetProtocols.h"
+ 251               		.file 5 "Lib/IP.h"
+ 252               		.file 6 "../../../../LUFA/Drivers/USB/Class/Device/../../../../Common/Endianness.h"
+ 253               		.file 7 "../../../../LUFA/Drivers/USB/Class/Device/../../Core/USBTask.h"
+ 254               		.file 8 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 255               		.file 9 "Lib/Ethernet.h"
+ 256               		.file 10 "Lib/ProtocolDecoders.h"
+ 257               		.file 11 "/usr/lib/avr/include/string.h"
+ 258               		.file 12 "Lib/ICMP.h"
+ 259               		.file 13 "Lib/TCP.h"
+ 260               		.file 14 "Lib/UDP.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 IP.c
+     /tmp/cc7m4XUw.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc7m4XUw.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc7m4XUw.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc7m4XUw.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc7m4XUw.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc7m4XUw.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc7m4XUw.s:14     .text.IP_ProcessIPPacket:0000000000000000 IP_ProcessIPPacket
+
+UNDEFINED SYMBOLS
+DecodeIPHeader
+ServerIPAddress
+memcmp
+BroadcastIPAddress
+ICMP_ProcessICMPPacket
+TCP_ProcessTCPPacket
+UDP_ProcessUDPPacket
+Ethernet_Checksum16

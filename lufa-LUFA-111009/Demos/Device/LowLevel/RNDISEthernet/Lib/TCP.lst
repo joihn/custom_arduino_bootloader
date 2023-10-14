@@ -1,0 +1,3359 @@
+   1               		.file	"TCP.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.SwapEndian_32,"ax",@progbits
+  13               	SwapEndian_32:
+  14               	.LFB9:
+  15               		.file 1 "../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h"
+   1:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** /*
+   2:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+   5:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** */
+   8:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+   9:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** /*
+  10:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+  12:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+  21:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****   this software.
+  29:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** */
+  30:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+  31:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** /** \file
+  32:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  *  \brief Endianness and Byte Ordering macros and functions.
+  33:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  *
+  34:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  *  \copydetails Group_Endianness
+  35:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  */
+  36:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+  37:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** /** \ingroup Group_Endianness
+  38:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  *  \defgroup Group_ByteSwapping Byte Reordering
+  39:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  *  \brief Macros and functions for forced byte reordering.
+  40:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  */
+  41:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+  42:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** /** \ingroup Group_Endianness
+  43:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  *  \defgroup Group_EndianConversion Endianness Conversion
+  44:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  *  \brief Macros and functions for automatic endianness conversion.
+  45:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  */
+  46:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+  47:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** /** \ingroup Group_Common
+  48:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  *  \defgroup Group_Endianness Endianness and Byte Ordering
+  49:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  *  \brief Convenience macros and functions relating to byte (re-)ordering
+  50:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  *
+  51:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  *  Common library convenience macros and functions relating to byte (re-)ordering.
+  52:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  *
+  53:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  *  @{
+  54:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h ****  */
+  55:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+  56:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** #ifndef __LUFA_ENDIANNESS_H__
+  57:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** #define __LUFA_ENDIANNESS_H__
+  58:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+  59:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 	/* Enable C linkage for C++ Compilers: */
+  60:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 		#if defined(__cplusplus)
+  61:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			extern "C" {
+  62:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 		#endif
+  63:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+  64:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 	/* Preprocessor Checks: */
+  65:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 		#if !defined(__INCLUDE_FROM_COMMON_H)
+  66:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			#error Do not include this file directly. Include LUFA/Common/Common.h instead to gain this func
+  67:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 		#endif
+  68:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 		
+  69:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 		#if !(defined(ARCH_BIG_ENDIAN) || defined(ARCH_LITTLE_ENDIAN))
+  70:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			#error ARCH_BIG_ENDIAN or ARCH_LITTLE_ENDIAN not set for the specified architecture.
+  71:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 		#endif
+  72:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+  73:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 	/* Public Interface - May be used in end-application: */
+  74:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 		/* Macros: */
+  75:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			/** Swaps the byte ordering of a 16-bit value at compile-time. Do not use this macro for swappin
+  76:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  of dynamic values computed at runtime, use \ref SwapEndian_16() instead. The result of this 
+  77:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  inside struct or other variable initializers outside of a function, something that is not po
+  78:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  inline function variant.
+  79:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *
+  80:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+  81:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *
+  82:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  \param[in] x  16-bit value whose byte ordering is to be swapped.
+  83:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *
+  84:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  \return Input value with the byte ordering reversed.
+  85:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 */
+  86:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			#define SWAPENDIAN_16(x)            (uint16_t)((((x) & 0xFF00) >> 8) | (((x) & 0x00FF) << 8))
+  87:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+  88:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			/** Swaps the byte ordering of a 32-bit value at compile-time. Do not use this macro for swappin
+  89:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  of dynamic values computed at runtime- use \ref SwapEndian_32() instead. The result of this 
+  90:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  inside struct or other variable initializers outside of a function, something that is not po
+  91:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  inline function variant.
+  92:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *
+  93:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+  94:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *
+  95:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  \param[in] x  32-bit value whose byte ordering is to be swapped.
+  96:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *
+  97:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  \return Input value with the byte ordering reversed.
+  98:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 */
+  99:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			#define SWAPENDIAN_32(x)            (uint32_t)((((x) & 0xFF000000UL) >> 24UL) | (((x) & 0x00FF00
+ 100:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			                                               (((x) & 0x0000FF00UL) << 8UL)  | (((x) & 0x000000
+ 101:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 102:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			#if defined(ARCH_BIG_ENDIAN) && !defined(le16_to_cpu)
+ 103:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define le16_to_cpu(x)           SwapEndian_16(x)
+ 104:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define le32_to_cpu(x)           SwapEndian_32(x)
+ 105:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define be16_to_cpu(x)           (x)
+ 106:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define be32_to_cpu(x)           (x)
+ 107:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define cpu_to_le16(x)           SwapEndian_16(x)
+ 108:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define cpu_to_le32(x)           SwapEndian_32(x)
+ 109:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define cpu_to_be16(x)           (x)
+ 110:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define cpu_to_be32(x)           (x)
+ 111:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define LE16_TO_CPU(x)           SWAPENDIAN_16(x)
+ 112:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define LE32_TO_CPU(x)           SWAPENDIAN_32(x)
+ 113:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define BE16_TO_CPU(x)           (x)
+ 114:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define BE32_TO_CPU(x)           (x)
+ 115:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define CPU_TO_LE16(x)           SWAPENDIAN_16(x)
+ 116:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define CPU_TO_LE32(x)           SWAPENDIAN_32(x)
+ 117:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define CPU_TO_BE16(x)           (x)
+ 118:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define CPU_TO_BE32(x)           (x)			
+ 119:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			#elif !defined(le16_to_cpu)
+ 120:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** \name Run-time endianness conversion */
+ 121:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				//@{
+ 122:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			
+ 123:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 16-bit piece of data and the
+ 124:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 125:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 126:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 127:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 128:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 129:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref LE16_TO_CPU instead.
+ 130:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 131:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 132:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 133:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 134:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 135:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 136:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 137:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define le16_to_cpu(x)           (x)
+ 138:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 139:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 32-bit piece of data and the
+ 140:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 141:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 142:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 143:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 144:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 145:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref LE32_TO_CPU instead.
+ 146:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 147:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 148:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 149:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 150:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 151:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 152:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 153:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define le32_to_cpu(x)           (x)
+ 154:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 155:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 16-bit piece of data and the
+ 156:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 157:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 158:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 159:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 160:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 161:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref BE16_TO_CPU instead.
+ 162:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 163:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 164:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 165:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 166:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 167:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 168:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 169:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define be16_to_cpu(x)           SwapEndian_16(x)
+ 170:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 171:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 32-bit piece of data and the
+ 172:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 173:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 174:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 175:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 176:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 177:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref BE32_TO_CPU instead.
+ 178:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 179:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 180:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 181:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 182:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 183:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 184:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 185:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define be32_to_cpu(x)           SwapEndian_32(x)
+ 186:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 187:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 188:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 189:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 190:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 191:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 192:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 193:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_LE16 instead.
+ 194:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 195:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 196:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 197:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 198:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 199:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 200:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 201:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define cpu_to_le16(x)           (x)
+ 202:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 203:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 204:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 205:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 206:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 207:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 208:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 209:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_LE32 instead.
+ 210:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 211:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 212:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 213:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 214:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 215:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 216:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 217:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define cpu_to_le32(x)           (x)
+ 218:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 219:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 220:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 221:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 222:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 223:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 224:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 225:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_BE16 instead.
+ 226:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 227:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 228:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 229:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 230:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 231:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 232:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 233:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define cpu_to_be16(x)           SwapEndian_16(x)
+ 234:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 235:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 236:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 237:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 238:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 239:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 240:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 241:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_BE32 instead.
+ 242:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 243:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 244:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 245:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 246:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 247:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 248:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 249:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define cpu_to_be32(x)           SwapEndian_32(x)
+ 250:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 251:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				//@}
+ 252:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 253:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** \name Compile-time endianness conversion */
+ 254:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				//@{
+ 255:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 256:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 16-bit piece of data and the
+ 257:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 258:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 259:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 260:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 261:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run time endianness
+ 262:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref le16_to_cpu instead.
+ 263:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 264:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 265:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 266:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 267:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 268:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 269:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 270:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define LE16_TO_CPU(x)           (x)
+ 271:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 272:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 32-bit piece of data and the
+ 273:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 274:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 275:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 276:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 277:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run time endianness
+ 278:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref le32_to_cpu instead.
+ 279:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 280:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 281:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 282:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 283:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 284:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 285:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 286:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define LE32_TO_CPU(x)           (x)
+ 287:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 288:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 16-bit piece of data and the
+ 289:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 290:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 291:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 292:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 293:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 294:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref be16_to_cpu instead.
+ 295:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 296:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 297:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 298:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 299:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 300:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 301:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 302:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define BE16_TO_CPU(x)           SWAPENDIAN_16(x)
+ 303:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 304:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 32-bit piece of data and the
+ 305:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 306:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 307:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 308:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 309:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 310:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref be32_to_cpu instead.
+ 311:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 312:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 313:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 314:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 315:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 316:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 317:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 318:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define BE32_TO_CPU(x)           SWAPENDIAN_32(x)
+ 319:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 320:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 321:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 322:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 323:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 324:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 325:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 326:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_le16 instead.
+ 327:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 328:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 329:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 330:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 331:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 332:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 333:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 334:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define CPU_TO_LE16(x)           (x)
+ 335:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 336:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 337:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 338:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 339:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 340:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 341:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 342:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_le32 instead.
+ 343:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 344:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 345:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 346:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 347:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 348:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 349:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 350:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define CPU_TO_LE32(x)           (x)
+ 351:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 352:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 353:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 354:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 355:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 356:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 357:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 358:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_be16 instead.
+ 359:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 360:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 361:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 362:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 363:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 364:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 365:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 366:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define CPU_TO_BE16(x)           SWAPENDIAN_16(x)
+ 367:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 368:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 369:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 370:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 371:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 372:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 373:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 374:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_be32 instead.
+ 375:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 376:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 377:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 378:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 379:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *
+ 380:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 381:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				 */
+ 382:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				#define CPU_TO_BE32(x)           SWAPENDIAN_32(x)
+ 383:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 384:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				//! @}
+ 385:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			#endif
+ 386:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 387:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 		/* Inline Functions: */
+ 388:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			/** Function to reverse the byte ordering of the individual bytes in a 16 bit value.
+ 389:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *
+ 390:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+ 391:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *
+ 392:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  \param[in] Word  Word of data whose bytes are to be swapped.
+ 393:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *
+ 394:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  \return Input data with the individual bytes reversed.
+ 395:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 */
+ 396:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			static inline uint16_t SwapEndian_16(const uint16_t Word) ATTR_WARN_UNUSED_RESULT ATTR_CONST;
+ 397:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			static inline uint16_t SwapEndian_16(const uint16_t Word)
+ 398:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			{
+ 399:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				if (GCC_IS_COMPILE_CONST(Word))
+ 400:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				  return SWAPENDIAN_16(Word);
+ 401:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			
+ 402:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				uint8_t Temp;
+ 403:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 404:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				union
+ 405:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				{
+ 406:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 					uint16_t Word;
+ 407:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 					uint8_t  Bytes[2];
+ 408:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				} Data;
+ 409:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 410:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				Data.Word = Word;
+ 411:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 412:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				Temp = Data.Bytes[0];
+ 413:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				Data.Bytes[0] = Data.Bytes[1];
+ 414:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				Data.Bytes[1] = Temp;
+ 415:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 416:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				return Data.Word;
+ 417:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			}
+ 418:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 419:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			/** Function to reverse the byte ordering of the individual bytes in a 32 bit value.
+ 420:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *
+ 421:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+ 422:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *
+ 423:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  \param[in] DWord  Double word of data whose bytes are to be swapped.
+ 424:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *
+ 425:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 *  \return Input data with the individual bytes reversed.
+ 426:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			 */
+ 427:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			static inline uint32_t SwapEndian_32(const uint32_t DWord) ATTR_WARN_UNUSED_RESULT ATTR_CONST;
+ 428:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			static inline uint32_t SwapEndian_32(const uint32_t DWord)
+ 429:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			{
+  16               		.loc 1 429 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+  23 0000 9B01      		movw r18,r22
+ 430:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				if (GCC_IS_COMPILE_CONST(DWord))
+ 431:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				  return SWAPENDIAN_32(DWord);
+ 432:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 433:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				uint8_t Temp;
+ 434:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 435:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				union
+ 436:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				{
+ 437:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 					uint32_t DWord;
+ 438:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 					uint8_t  Bytes[4];
+ 439:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				} Data;
+ 440:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 441:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				Data.DWord = DWord;
+ 442:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 443:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				Temp = Data.Bytes[0];
+ 444:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				Data.Bytes[0] = Data.Bytes[3];
+ 445:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				Data.Bytes[3] = Temp;
+ 446:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 447:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				Temp = Data.Bytes[1];
+ 448:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				Data.Bytes[1] = Data.Bytes[2];
+ 449:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				Data.Bytes[2] = Temp;
+ 450:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+ 451:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				return Data.DWord;
+ 452:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 			}
+  24               		.loc 1 452 0
+  25 0002 692F      		mov r22,r25
+  26               	.LVL1:
+  27 0004 782F      		mov r23,r24
+  28 0006 832F      		mov r24,r19
+  29 0008 922F      		mov r25,r18
+  30 000a 0895      		ret
+  31               		.cfi_endproc
+  32               	.LFE9:
+  34               		.section	.text.SwapEndian_16,"ax",@progbits
+  36               	SwapEndian_16:
+  37               	.LFB8:
+ 398:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 				if (GCC_IS_COMPILE_CONST(Word))
+  38               		.loc 1 398 0
+  39               		.cfi_startproc
+  40               	.LVL2:
+  41               	/* prologue: function */
+  42               	/* frame size = 0 */
+  43               	/* stack size = 0 */
+  44               	.L__stack_usage = 0
+  45 0000 282F      		mov r18,r24
+  46 0002 892F      		mov r24,r25
+  47               	.LVL3:
+ 417:../../../../LUFA/Drivers/Peripheral/../../Common/Endianness.h **** 
+  48               		.loc 1 417 0
+  49 0004 922F      		mov r25,r18
+  50 0006 0895      		ret
+  51               		.cfi_endproc
+  52               	.LFE8:
+  54               		.section	.text.TCP_Checksum16,"ax",@progbits
+  56               	TCP_Checksum16:
+  57               	.LFB112:
+  58               		.file 2 "Lib/TCP.c"
+   1:Lib/TCP.c     **** /*
+   2:Lib/TCP.c     ****              LUFA Library
+   3:Lib/TCP.c     ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/TCP.c     **** 
+   5:Lib/TCP.c     ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/TCP.c     ****            www.lufa-lib.org
+   7:Lib/TCP.c     **** */
+   8:Lib/TCP.c     **** 
+   9:Lib/TCP.c     **** /*
+  10:Lib/TCP.c     ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/TCP.c     **** 
+  12:Lib/TCP.c     ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/TCP.c     ****   software and its documentation for any purpose is hereby granted
+  14:Lib/TCP.c     ****   without fee, provided that the above copyright notice appear in
+  15:Lib/TCP.c     ****   all copies and that both that the copyright notice and this
+  16:Lib/TCP.c     ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/TCP.c     ****   documentation, and that the name of the author not be used in
+  18:Lib/TCP.c     ****   advertising or publicity pertaining to distribution of the
+  19:Lib/TCP.c     ****   software without specific, written prior permission.
+  20:Lib/TCP.c     **** 
+  21:Lib/TCP.c     ****   The author disclaim all warranties with regard to this
+  22:Lib/TCP.c     ****   software, including all implied warranties of merchantability
+  23:Lib/TCP.c     ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/TCP.c     ****   special, indirect or consequential damages or any damages
+  25:Lib/TCP.c     ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/TCP.c     ****   in an action of contract, negligence or other tortious action,
+  27:Lib/TCP.c     ****   arising out of or in connection with the use or performance of
+  28:Lib/TCP.c     ****   this software.
+  29:Lib/TCP.c     **** */
+  30:Lib/TCP.c     **** 
+  31:Lib/TCP.c     **** /** \file
+  32:Lib/TCP.c     ****  *
+  33:Lib/TCP.c     ****  *  Transmission Control Protocol (TCP) packet handling routines. This protocol handles the reliabl
+  34:Lib/TCP.c     ****  *  and reception of packets to and from devices on a network, to "ports" on the device. It is used
+  35:Lib/TCP.c     ****  *  delivery must be reliable and correct, e.g. HTTP, TELNET and most other non-streaming protocols
+  36:Lib/TCP.c     ****  */
+  37:Lib/TCP.c     **** 
+  38:Lib/TCP.c     **** #define  INCLUDE_FROM_TCP_C
+  39:Lib/TCP.c     **** #include "TCP.h"
+  40:Lib/TCP.c     **** 
+  41:Lib/TCP.c     **** /** Port state table array. This contains the current status of TCP ports in the device. To save on
+  42:Lib/TCP.c     ****  *  stored - closed ports may be overwritten at any time, and the system will assume any ports not 
+  43:Lib/TCP.c     ****  *  allows for MAX_OPEN_TCP_PORTS to be less than the number of ports used by the application if de
+  44:Lib/TCP.c     ****  */
+  45:Lib/TCP.c     **** TCP_PortState_t        PortStateTable[MAX_OPEN_TCP_PORTS];
+  46:Lib/TCP.c     **** 
+  47:Lib/TCP.c     **** /** Connection state table array. This contains the current status of TCP connections in the device
+  48:Lib/TCP.c     ****  *  (non-closed) connections are stored - closed connections may be overwritten at any time, and th
+  49:Lib/TCP.c     ****  *  not present in the array are closed.
+  50:Lib/TCP.c     ****  */
+  51:Lib/TCP.c     **** TCP_ConnectionState_t  ConnectionStateTable[MAX_TCP_CONNECTIONS];
+  52:Lib/TCP.c     **** 
+  53:Lib/TCP.c     **** 
+  54:Lib/TCP.c     **** /** Task to handle the calling of each registered application's callback function, to process and g
+  55:Lib/TCP.c     ****  *  level. If an application produces a response, this task constructs the appropriate Ethernet fra
+  56:Lib/TCP.c     ****  *  buffer for later transmission.
+  57:Lib/TCP.c     ****  */
+  58:Lib/TCP.c     **** void TCP_Task(void)
+  59:Lib/TCP.c     **** {
+  60:Lib/TCP.c     **** 	/* Run each application in sequence, to process incoming and generate outgoing packets */
+  61:Lib/TCP.c     **** 	for (uint8_t CSTableEntry = 0; CSTableEntry < MAX_TCP_CONNECTIONS; CSTableEntry++)
+  62:Lib/TCP.c     **** 	{
+  63:Lib/TCP.c     **** 		/* Find the corresponding port entry in the port table */
+  64:Lib/TCP.c     **** 		for (uint8_t PTableEntry = 0; PTableEntry < MAX_OPEN_TCP_PORTS; PTableEntry++)
+  65:Lib/TCP.c     **** 		{
+  66:Lib/TCP.c     **** 			/* Run the application handler for the port */
+  67:Lib/TCP.c     **** 			if ((PortStateTable[PTableEntry].Port  == ConnectionStateTable[CSTableEntry].Port) &&
+  68:Lib/TCP.c     **** 			    (PortStateTable[PTableEntry].State == TCP_Port_Open))
+  69:Lib/TCP.c     **** 			{
+  70:Lib/TCP.c     **** 				PortStateTable[PTableEntry].ApplicationHandler(&ConnectionStateTable[CSTableEntry],
+  71:Lib/TCP.c     **** 				                                               &ConnectionStateTable[CSTableEntry].Info.Buffer)
+  72:Lib/TCP.c     **** 			}
+  73:Lib/TCP.c     **** 		}
+  74:Lib/TCP.c     **** 	}
+  75:Lib/TCP.c     **** 
+  76:Lib/TCP.c     **** 	/* Bail out early if there is already a frame waiting to be sent in the Ethernet OUT buffer */
+  77:Lib/TCP.c     **** 	if (FrameOUT.FrameLength)
+  78:Lib/TCP.c     **** 	  return;
+  79:Lib/TCP.c     **** 
+  80:Lib/TCP.c     **** 	/* Send response packets from each application as the TCP packet buffers are filled by the applica
+  81:Lib/TCP.c     **** 	for (uint8_t CSTableEntry = 0; CSTableEntry < MAX_TCP_CONNECTIONS; CSTableEntry++)
+  82:Lib/TCP.c     **** 	{
+  83:Lib/TCP.c     **** 		/* For each completely received packet, pass it along to the listening application */
+  84:Lib/TCP.c     **** 		if ((ConnectionStateTable[CSTableEntry].Info.Buffer.Direction == TCP_PACKETDIR_OUT) &&
+  85:Lib/TCP.c     **** 		    (ConnectionStateTable[CSTableEntry].Info.Buffer.Ready))
+  86:Lib/TCP.c     **** 		{
+  87:Lib/TCP.c     **** 			Ethernet_Frame_Header_t* FrameOUTHeader = (Ethernet_Frame_Header_t*)&FrameOUT.FrameData;
+  88:Lib/TCP.c     **** 			IP_Header_t*             IPHeaderOUT    = (IP_Header_t*)&FrameOUT.FrameData[sizeof(Ethernet_Fram
+  89:Lib/TCP.c     **** 			TCP_Header_t*            TCPHeaderOUT   = (TCP_Header_t*)&FrameOUT.FrameData[sizeof(Ethernet_Fra
+  90:Lib/TCP.c     **** 			                                                                             sizeof(IP_Header_t)
+  91:Lib/TCP.c     **** 			void*                    TCPDataOUT     = &FrameOUT.FrameData[sizeof(Ethernet_Frame_Header_t) +
+  92:Lib/TCP.c     **** 			                                                              sizeof(IP_Header_t) +
+  93:Lib/TCP.c     **** 			                                                              sizeof(TCP_Header_t)];
+  94:Lib/TCP.c     **** 
+  95:Lib/TCP.c     **** 			uint16_t PacketSize = ConnectionStateTable[CSTableEntry].Info.Buffer.Length;
+  96:Lib/TCP.c     **** 
+  97:Lib/TCP.c     **** 			/* Fill out the TCP data */
+  98:Lib/TCP.c     **** 			TCPHeaderOUT->SourcePort           = ConnectionStateTable[CSTableEntry].Port;
+  99:Lib/TCP.c     **** 			TCPHeaderOUT->DestinationPort      = ConnectionStateTable[CSTableEntry].RemotePort;
+ 100:Lib/TCP.c     **** 			TCPHeaderOUT->SequenceNumber       = SwapEndian_32(ConnectionStateTable[CSTableEntry].Info.Seque
+ 101:Lib/TCP.c     **** 			TCPHeaderOUT->AcknowledgmentNumber = SwapEndian_32(ConnectionStateTable[CSTableEntry].Info.Seque
+ 102:Lib/TCP.c     **** 			TCPHeaderOUT->DataOffset           = (sizeof(TCP_Header_t) / sizeof(uint32_t));
+ 103:Lib/TCP.c     **** 			TCPHeaderOUT->WindowSize           = SwapEndian_16(TCP_WINDOW_SIZE);
+ 104:Lib/TCP.c     **** 
+ 105:Lib/TCP.c     **** 			TCPHeaderOUT->Flags                = TCP_FLAG_ACK;
+ 106:Lib/TCP.c     **** 			TCPHeaderOUT->UrgentPointer        = 0;
+ 107:Lib/TCP.c     **** 			TCPHeaderOUT->Checksum             = 0;
+ 108:Lib/TCP.c     **** 			TCPHeaderOUT->Reserved             = 0;
+ 109:Lib/TCP.c     **** 
+ 110:Lib/TCP.c     **** 			memcpy(TCPDataOUT, ConnectionStateTable[CSTableEntry].Info.Buffer.Data, PacketSize);
+ 111:Lib/TCP.c     **** 
+ 112:Lib/TCP.c     **** 			ConnectionStateTable[CSTableEntry].Info.SequenceNumberOut += PacketSize;
+ 113:Lib/TCP.c     **** 
+ 114:Lib/TCP.c     **** 			TCPHeaderOUT->Checksum             = TCP_Checksum16(TCPHeaderOUT, ServerIPAddress,
+ 115:Lib/TCP.c     **** 			                                                    ConnectionStateTable[CSTableEntry].RemoteAdd
+ 116:Lib/TCP.c     **** 			                                                    (sizeof(TCP_Header_t) + PacketSize));
+ 117:Lib/TCP.c     **** 
+ 118:Lib/TCP.c     **** 			PacketSize += sizeof(TCP_Header_t);
+ 119:Lib/TCP.c     **** 
+ 120:Lib/TCP.c     **** 			/* Fill out the response IP header */
+ 121:Lib/TCP.c     **** 			IPHeaderOUT->TotalLength        = SwapEndian_16(sizeof(IP_Header_t) + PacketSize);
+ 122:Lib/TCP.c     **** 			IPHeaderOUT->TypeOfService      = 0;
+ 123:Lib/TCP.c     **** 			IPHeaderOUT->HeaderLength       = (sizeof(IP_Header_t) / sizeof(uint32_t));
+ 124:Lib/TCP.c     **** 			IPHeaderOUT->Version            = 4;
+ 125:Lib/TCP.c     **** 			IPHeaderOUT->Flags              = 0;
+ 126:Lib/TCP.c     **** 			IPHeaderOUT->FragmentOffset     = 0;
+ 127:Lib/TCP.c     **** 			IPHeaderOUT->Identification     = 0;
+ 128:Lib/TCP.c     **** 			IPHeaderOUT->HeaderChecksum     = 0;
+ 129:Lib/TCP.c     **** 			IPHeaderOUT->Protocol           = PROTOCOL_TCP;
+ 130:Lib/TCP.c     **** 			IPHeaderOUT->TTL                = DEFAULT_TTL;
+ 131:Lib/TCP.c     **** 			IPHeaderOUT->SourceAddress      = ServerIPAddress;
+ 132:Lib/TCP.c     **** 			IPHeaderOUT->DestinationAddress = ConnectionStateTable[CSTableEntry].RemoteAddress;
+ 133:Lib/TCP.c     **** 
+ 134:Lib/TCP.c     **** 			IPHeaderOUT->HeaderChecksum     = Ethernet_Checksum16(IPHeaderOUT, sizeof(IP_Header_t));
+ 135:Lib/TCP.c     **** 
+ 136:Lib/TCP.c     **** 			PacketSize += sizeof(IP_Header_t);
+ 137:Lib/TCP.c     **** 
+ 138:Lib/TCP.c     **** 			/* Fill out the response Ethernet frame header */
+ 139:Lib/TCP.c     **** 			FrameOUTHeader->Source          = ServerMACAddress;
+ 140:Lib/TCP.c     **** 			FrameOUTHeader->Destination     = (MAC_Address_t){{0x02, 0x00, 0x02, 0x00, 0x02, 0x00}};
+ 141:Lib/TCP.c     **** 			FrameOUTHeader->EtherType       = SwapEndian_16(ETHERTYPE_IPV4);
+ 142:Lib/TCP.c     **** 
+ 143:Lib/TCP.c     **** 			PacketSize += sizeof(Ethernet_Frame_Header_t);
+ 144:Lib/TCP.c     **** 
+ 145:Lib/TCP.c     **** 			/* Set the response length in the buffer and indicate that a response is ready to be sent */
+ 146:Lib/TCP.c     **** 			FrameOUT.FrameLength            = PacketSize;
+ 147:Lib/TCP.c     **** 
+ 148:Lib/TCP.c     **** 			ConnectionStateTable[CSTableEntry].Info.Buffer.Ready = false;
+ 149:Lib/TCP.c     **** 
+ 150:Lib/TCP.c     **** 			break;
+ 151:Lib/TCP.c     **** 		}
+ 152:Lib/TCP.c     **** 	}
+ 153:Lib/TCP.c     **** }
+ 154:Lib/TCP.c     **** 
+ 155:Lib/TCP.c     **** /** Initializes the TCP protocol handler, clearing the port and connection state tables. This must 
+ 156:Lib/TCP.c     ****  *  processed.
+ 157:Lib/TCP.c     ****  */
+ 158:Lib/TCP.c     **** void TCP_Init(void)
+ 159:Lib/TCP.c     **** {
+ 160:Lib/TCP.c     **** 	/* Initialize the port state table with all CLOSED entries */
+ 161:Lib/TCP.c     **** 	for (uint8_t PTableEntry = 0; PTableEntry < MAX_OPEN_TCP_PORTS; PTableEntry++)
+ 162:Lib/TCP.c     **** 	  PortStateTable[PTableEntry].State = TCP_Port_Closed;
+ 163:Lib/TCP.c     **** 
+ 164:Lib/TCP.c     **** 	/* Initialize the connection table with all CLOSED entries */
+ 165:Lib/TCP.c     **** 	for (uint8_t CSTableEntry = 0; CSTableEntry < MAX_TCP_CONNECTIONS; CSTableEntry++)
+ 166:Lib/TCP.c     **** 	  ConnectionStateTable[CSTableEntry].State = TCP_Connection_Closed;
+ 167:Lib/TCP.c     **** }
+ 168:Lib/TCP.c     **** 
+ 169:Lib/TCP.c     **** /** Sets the state and callback handler of the given port, specified in big endian to the given sta
+ 170:Lib/TCP.c     ****  *
+ 171:Lib/TCP.c     ****  *  \param[in] Port     Port whose state and callback function to set, specified in big endian
+ 172:Lib/TCP.c     ****  *  \param[in] State    New state of the port, a value from the \ref TCP_PortStates_t enum
+ 173:Lib/TCP.c     ****  *  \param[in] Handler  Application callback handler for the port
+ 174:Lib/TCP.c     ****  *
+ 175:Lib/TCP.c     ****  *  \return Boolean true if the port state was set, false otherwise (no more space in the port stat
+ 176:Lib/TCP.c     ****  */
+ 177:Lib/TCP.c     **** bool TCP_SetPortState(const uint16_t Port,
+ 178:Lib/TCP.c     ****                       const uint8_t State,
+ 179:Lib/TCP.c     ****                       void (*Handler)(TCP_ConnectionState_t*, TCP_ConnectionBuffer_t*))
+ 180:Lib/TCP.c     **** {
+ 181:Lib/TCP.c     **** 	/* Note, Port number should be specified in BIG endian to simplify network code */
+ 182:Lib/TCP.c     **** 
+ 183:Lib/TCP.c     **** 	/* Check to see if the port entry is already in the port state table */
+ 184:Lib/TCP.c     **** 	for (uint8_t PTableEntry = 0; PTableEntry < MAX_OPEN_TCP_PORTS; PTableEntry++)
+ 185:Lib/TCP.c     **** 	{
+ 186:Lib/TCP.c     **** 		/* Find existing entry for the port in the table, update it if found */
+ 187:Lib/TCP.c     **** 		if (PortStateTable[PTableEntry].Port == Port)
+ 188:Lib/TCP.c     **** 		{
+ 189:Lib/TCP.c     **** 			PortStateTable[PTableEntry].State = State;
+ 190:Lib/TCP.c     **** 			PortStateTable[PTableEntry].ApplicationHandler = Handler;
+ 191:Lib/TCP.c     **** 			return true;
+ 192:Lib/TCP.c     **** 		}
+ 193:Lib/TCP.c     **** 	}
+ 194:Lib/TCP.c     **** 
+ 195:Lib/TCP.c     **** 	/* Check if trying to open the port -- if so we need to find an unused (closed) entry and replace 
+ 196:Lib/TCP.c     **** 	if (State == TCP_Port_Open)
+ 197:Lib/TCP.c     **** 	{
+ 198:Lib/TCP.c     **** 		for (uint8_t PTableEntry = 0; PTableEntry < MAX_OPEN_TCP_PORTS; PTableEntry++)
+ 199:Lib/TCP.c     **** 		{
+ 200:Lib/TCP.c     **** 			/* Find a closed port entry in the table, change it to the given port and state */
+ 201:Lib/TCP.c     **** 			if (PortStateTable[PTableEntry].State == TCP_Port_Closed)
+ 202:Lib/TCP.c     **** 			{
+ 203:Lib/TCP.c     **** 				PortStateTable[PTableEntry].Port  = Port;
+ 204:Lib/TCP.c     **** 				PortStateTable[PTableEntry].State = State;
+ 205:Lib/TCP.c     **** 				PortStateTable[PTableEntry].ApplicationHandler = Handler;
+ 206:Lib/TCP.c     **** 				return true;
+ 207:Lib/TCP.c     **** 			}
+ 208:Lib/TCP.c     **** 		}
+ 209:Lib/TCP.c     **** 
+ 210:Lib/TCP.c     **** 		/* Port not in table and no room to add it, return failure */
+ 211:Lib/TCP.c     **** 		return false;
+ 212:Lib/TCP.c     **** 	}
+ 213:Lib/TCP.c     **** 	else
+ 214:Lib/TCP.c     **** 	{
+ 215:Lib/TCP.c     **** 		/* Port not in table but trying to close it, so operation successful */
+ 216:Lib/TCP.c     **** 		return true;
+ 217:Lib/TCP.c     **** 	}
+ 218:Lib/TCP.c     **** }
+ 219:Lib/TCP.c     **** 
+ 220:Lib/TCP.c     **** /** Retrieves the current state of a given TCP port, specified in big endian.
+ 221:Lib/TCP.c     ****  *
+ 222:Lib/TCP.c     ****  *  \param[in] Port  TCP port whose state is to be retrieved, given in big-endian
+ 223:Lib/TCP.c     ****  *
+ 224:Lib/TCP.c     ****  *  \return A value from the \ref TCP_PortStates_t enum
+ 225:Lib/TCP.c     ****  */
+ 226:Lib/TCP.c     **** uint8_t TCP_GetPortState(const uint16_t Port)
+ 227:Lib/TCP.c     **** {
+ 228:Lib/TCP.c     **** 	/* Note, Port number should be specified in BIG endian to simplify network code */
+ 229:Lib/TCP.c     **** 
+ 230:Lib/TCP.c     **** 	for (uint8_t PTableEntry = 0; PTableEntry < MAX_OPEN_TCP_PORTS; PTableEntry++)
+ 231:Lib/TCP.c     **** 	{
+ 232:Lib/TCP.c     **** 		/* Find existing entry for the port in the table, return the port status if found */
+ 233:Lib/TCP.c     **** 		if (PortStateTable[PTableEntry].Port == Port)
+ 234:Lib/TCP.c     **** 		  return PortStateTable[PTableEntry].State;
+ 235:Lib/TCP.c     **** 	}
+ 236:Lib/TCP.c     **** 
+ 237:Lib/TCP.c     **** 	/* Port not in table, assume closed */
+ 238:Lib/TCP.c     **** 	return TCP_Port_Closed;
+ 239:Lib/TCP.c     **** }
+ 240:Lib/TCP.c     **** 
+ 241:Lib/TCP.c     **** /** Sets the connection state of the given port, remote address and remote port to the given TCP co
+ 242:Lib/TCP.c     ****  *  connection exists in the connection state table it is updated, otherwise it is created if possi
+ 243:Lib/TCP.c     ****  *
+ 244:Lib/TCP.c     ****  *  \param[in] Port           TCP port of the connection on the device, specified in big endian
+ 245:Lib/TCP.c     ****  *  \param[in] RemoteAddress  Remote protocol IP address of the connected device
+ 246:Lib/TCP.c     ****  *  \param[in] RemotePort     TCP port of the remote device in the connection, specified in big end
+ 247:Lib/TCP.c     ****  *  \param[in] State          TCP connection state, a value from the \ref TCP_ConnectionStates_t en
+ 248:Lib/TCP.c     ****  *
+ 249:Lib/TCP.c     ****  *  \return Boolean true if the connection was updated or created, false otherwise (no more space i
+ 250:Lib/TCP.c     ****  */
+ 251:Lib/TCP.c     **** bool TCP_SetConnectionState(const uint16_t Port,
+ 252:Lib/TCP.c     ****                             const IP_Address_t RemoteAddress,
+ 253:Lib/TCP.c     ****                             const uint16_t RemotePort,
+ 254:Lib/TCP.c     ****                             const uint8_t State)
+ 255:Lib/TCP.c     **** {
+ 256:Lib/TCP.c     **** 	/* Note, Port number should be specified in BIG endian to simplify network code */
+ 257:Lib/TCP.c     **** 
+ 258:Lib/TCP.c     **** 	for (uint8_t CSTableEntry = 0; CSTableEntry < MAX_TCP_CONNECTIONS; CSTableEntry++)
+ 259:Lib/TCP.c     **** 	{
+ 260:Lib/TCP.c     **** 		/* Find port entry in the table */
+ 261:Lib/TCP.c     **** 		if ((ConnectionStateTable[CSTableEntry].Port == Port) &&
+ 262:Lib/TCP.c     **** 		     IP_COMPARE(&ConnectionStateTable[CSTableEntry].RemoteAddress, &RemoteAddress) &&
+ 263:Lib/TCP.c     **** 			 ConnectionStateTable[CSTableEntry].RemotePort == RemotePort)
+ 264:Lib/TCP.c     **** 		{
+ 265:Lib/TCP.c     **** 			ConnectionStateTable[CSTableEntry].State = State;
+ 266:Lib/TCP.c     **** 			return true;
+ 267:Lib/TCP.c     **** 		}
+ 268:Lib/TCP.c     **** 	}
+ 269:Lib/TCP.c     **** 
+ 270:Lib/TCP.c     **** 	for (uint8_t CSTableEntry = 0; CSTableEntry < MAX_TCP_CONNECTIONS; CSTableEntry++)
+ 271:Lib/TCP.c     **** 	{
+ 272:Lib/TCP.c     **** 		/* Find empty entry in the table */
+ 273:Lib/TCP.c     **** 		if (ConnectionStateTable[CSTableEntry].State == TCP_Connection_Closed)
+ 274:Lib/TCP.c     **** 		{
+ 275:Lib/TCP.c     **** 			ConnectionStateTable[CSTableEntry].Port          = Port;
+ 276:Lib/TCP.c     **** 			ConnectionStateTable[CSTableEntry].RemoteAddress = RemoteAddress;
+ 277:Lib/TCP.c     **** 			ConnectionStateTable[CSTableEntry].RemotePort    = RemotePort;
+ 278:Lib/TCP.c     **** 			ConnectionStateTable[CSTableEntry].State         = State;
+ 279:Lib/TCP.c     **** 			return true;
+ 280:Lib/TCP.c     **** 		}
+ 281:Lib/TCP.c     **** 	}
+ 282:Lib/TCP.c     **** 
+ 283:Lib/TCP.c     **** 	return false;
+ 284:Lib/TCP.c     **** }
+ 285:Lib/TCP.c     **** 
+ 286:Lib/TCP.c     **** /** Retrieves the current state of a given TCP connection to a host.
+ 287:Lib/TCP.c     ****  *
+ 288:Lib/TCP.c     ****  *  \param[in] Port           TCP port on the device in the connection, specified in big endian
+ 289:Lib/TCP.c     ****  *  \param[in] RemoteAddress  Remote protocol IP address of the connected host
+ 290:Lib/TCP.c     ****  *  \param[in] RemotePort     Remote TCP port of the connected host, specified in big endian
+ 291:Lib/TCP.c     ****  *
+ 292:Lib/TCP.c     ****  *  \return A value from the \ref TCP_ConnectionStates_t enum
+ 293:Lib/TCP.c     ****  */
+ 294:Lib/TCP.c     **** uint8_t TCP_GetConnectionState(const uint16_t Port,
+ 295:Lib/TCP.c     ****                                const IP_Address_t RemoteAddress,
+ 296:Lib/TCP.c     ****                                const uint16_t RemotePort)
+ 297:Lib/TCP.c     **** {
+ 298:Lib/TCP.c     **** 	/* Note, Port number should be specified in BIG endian to simplify network code */
+ 299:Lib/TCP.c     **** 
+ 300:Lib/TCP.c     **** 	for (uint8_t CSTableEntry = 0; CSTableEntry < MAX_TCP_CONNECTIONS; CSTableEntry++)
+ 301:Lib/TCP.c     **** 	{
+ 302:Lib/TCP.c     **** 		/* Find port entry in the table */
+ 303:Lib/TCP.c     **** 		if ((ConnectionStateTable[CSTableEntry].Port == Port) &&
+ 304:Lib/TCP.c     **** 		     IP_COMPARE(&ConnectionStateTable[CSTableEntry].RemoteAddress, &RemoteAddress) &&
+ 305:Lib/TCP.c     **** 			 ConnectionStateTable[CSTableEntry].RemotePort == RemotePort)
+ 306:Lib/TCP.c     **** 
+ 307:Lib/TCP.c     **** 		{
+ 308:Lib/TCP.c     **** 			return ConnectionStateTable[CSTableEntry].State;
+ 309:Lib/TCP.c     **** 		}
+ 310:Lib/TCP.c     **** 	}
+ 311:Lib/TCP.c     **** 
+ 312:Lib/TCP.c     **** 	return TCP_Connection_Closed;
+ 313:Lib/TCP.c     **** }
+ 314:Lib/TCP.c     **** 
+ 315:Lib/TCP.c     **** /** Retrieves the connection info structure of a given connection to a host.
+ 316:Lib/TCP.c     ****  *
+ 317:Lib/TCP.c     ****  *  \param[in] Port           TCP port on the device in the connection, specified in big endian
+ 318:Lib/TCP.c     ****  *  \param[in] RemoteAddress  Remote protocol IP address of the connected host
+ 319:Lib/TCP.c     ****  *  \param[in] RemotePort     Remote TCP port of the connected host, specified in big endian
+ 320:Lib/TCP.c     ****  *
+ 321:Lib/TCP.c     ****  *  \return ConnectionInfo structure of the connection if found, NULL otherwise
+ 322:Lib/TCP.c     ****  */
+ 323:Lib/TCP.c     **** TCP_ConnectionInfo_t* TCP_GetConnectionInfo(const uint16_t Port,
+ 324:Lib/TCP.c     ****                                             const IP_Address_t RemoteAddress,
+ 325:Lib/TCP.c     ****                                             const uint16_t RemotePort)
+ 326:Lib/TCP.c     **** {
+ 327:Lib/TCP.c     **** 	/* Note, Port number should be specified in BIG endian to simplify network code */
+ 328:Lib/TCP.c     **** 
+ 329:Lib/TCP.c     **** 	for (uint8_t CSTableEntry = 0; CSTableEntry < MAX_TCP_CONNECTIONS; CSTableEntry++)
+ 330:Lib/TCP.c     **** 	{
+ 331:Lib/TCP.c     **** 		/* Find port entry in the table */
+ 332:Lib/TCP.c     **** 		if ((ConnectionStateTable[CSTableEntry].Port == Port) &&
+ 333:Lib/TCP.c     **** 		     IP_COMPARE(&ConnectionStateTable[CSTableEntry].RemoteAddress, &RemoteAddress) &&
+ 334:Lib/TCP.c     **** 			 ConnectionStateTable[CSTableEntry].RemotePort == RemotePort)
+ 335:Lib/TCP.c     **** 		{
+ 336:Lib/TCP.c     **** 			return &ConnectionStateTable[CSTableEntry].Info;
+ 337:Lib/TCP.c     **** 		}
+ 338:Lib/TCP.c     **** 	}
+ 339:Lib/TCP.c     **** 
+ 340:Lib/TCP.c     **** 	return NULL;
+ 341:Lib/TCP.c     **** }
+ 342:Lib/TCP.c     **** 
+ 343:Lib/TCP.c     **** /** Processes a TCP packet inside an Ethernet frame, and writes the appropriate response
+ 344:Lib/TCP.c     ****  *  to the output Ethernet frame if one is created by a application handler.
+ 345:Lib/TCP.c     ****  *
+ 346:Lib/TCP.c     ****  *  \param[in] IPHeaderInStart     Pointer to the start of the incoming packet's IP header
+ 347:Lib/TCP.c     ****  *  \param[in] TCPHeaderInStart    Pointer to the start of the incoming packet's TCP header
+ 348:Lib/TCP.c     ****  *  \param[out] TCPHeaderOutStart  Pointer to the start of the outgoing packet's TCP header
+ 349:Lib/TCP.c     ****  *
+ 350:Lib/TCP.c     ****  *  \return The number of bytes written to the out Ethernet frame if any, NO_RESPONSE if no
+ 351:Lib/TCP.c     ****  *           response was generated, NO_PROCESS if the packet processing was deferred until the
+ 352:Lib/TCP.c     ****  *           next Ethernet packet handler iteration
+ 353:Lib/TCP.c     ****  */
+ 354:Lib/TCP.c     **** int16_t TCP_ProcessTCPPacket(void* IPHeaderInStart,
+ 355:Lib/TCP.c     ****                              void* TCPHeaderInStart,
+ 356:Lib/TCP.c     ****                              void* TCPHeaderOutStart)
+ 357:Lib/TCP.c     **** {
+ 358:Lib/TCP.c     **** 	IP_Header_t*  IPHeaderIN   = (IP_Header_t*)IPHeaderInStart;
+ 359:Lib/TCP.c     **** 	TCP_Header_t* TCPHeaderIN  = (TCP_Header_t*)TCPHeaderInStart;
+ 360:Lib/TCP.c     **** 	TCP_Header_t* TCPHeaderOUT = (TCP_Header_t*)TCPHeaderOutStart;
+ 361:Lib/TCP.c     **** 
+ 362:Lib/TCP.c     **** 	TCP_ConnectionInfo_t* ConnectionInfo;
+ 363:Lib/TCP.c     **** 
+ 364:Lib/TCP.c     **** 	DecodeTCPHeader(TCPHeaderInStart);
+ 365:Lib/TCP.c     **** 
+ 366:Lib/TCP.c     **** 	bool PacketResponse = false;
+ 367:Lib/TCP.c     **** 
+ 368:Lib/TCP.c     **** 	/* Check if the destination port is open and allows incoming connections */
+ 369:Lib/TCP.c     **** 	if (TCP_GetPortState(TCPHeaderIN->DestinationPort) == TCP_Port_Open)
+ 370:Lib/TCP.c     **** 	{
+ 371:Lib/TCP.c     **** 		/* Detect SYN from host to start a connection */
+ 372:Lib/TCP.c     **** 		if (TCPHeaderIN->Flags & TCP_FLAG_SYN)
+ 373:Lib/TCP.c     **** 		  TCP_SetConnectionState(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddress, TCPHeaderIN->So
+ 374:Lib/TCP.c     **** 
+ 375:Lib/TCP.c     **** 		/* Detect RST from host to abort existing connection */
+ 376:Lib/TCP.c     **** 		if (TCPHeaderIN->Flags & TCP_FLAG_RST)
+ 377:Lib/TCP.c     **** 		{
+ 378:Lib/TCP.c     **** 			if (TCP_SetConnectionState(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddress,
+ 379:Lib/TCP.c     **** 			                           TCPHeaderIN->SourcePort, TCP_Connection_Closed))
+ 380:Lib/TCP.c     **** 			{
+ 381:Lib/TCP.c     **** 				TCPHeaderOUT->Flags = (TCP_FLAG_RST | TCP_FLAG_ACK);
+ 382:Lib/TCP.c     **** 				PacketResponse = true;
+ 383:Lib/TCP.c     **** 			}
+ 384:Lib/TCP.c     **** 		}
+ 385:Lib/TCP.c     **** 		else
+ 386:Lib/TCP.c     **** 		{
+ 387:Lib/TCP.c     **** 			/* Process the incoming TCP packet based on the current connection state for the sender and port
+ 388:Lib/TCP.c     **** 			switch (TCP_GetConnectionState(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddress, TCPHeade
+ 389:Lib/TCP.c     **** 			{
+ 390:Lib/TCP.c     **** 				case TCP_Connection_Listen:
+ 391:Lib/TCP.c     **** 					if (TCPHeaderIN->Flags == TCP_FLAG_SYN)
+ 392:Lib/TCP.c     **** 					{
+ 393:Lib/TCP.c     **** 						/* SYN connection starts a connection with a peer */
+ 394:Lib/TCP.c     **** 						if (TCP_SetConnectionState(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddress,
+ 395:Lib/TCP.c     **** 						                           TCPHeaderIN->SourcePort, TCP_Connection_SYNReceived))
+ 396:Lib/TCP.c     **** 						{
+ 397:Lib/TCP.c     **** 							TCPHeaderOUT->Flags = (TCP_FLAG_SYN | TCP_FLAG_ACK);
+ 398:Lib/TCP.c     **** 
+ 399:Lib/TCP.c     **** 							ConnectionInfo = TCP_GetConnectionInfo(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddre
+ 400:Lib/TCP.c     **** 
+ 401:Lib/TCP.c     **** 							ConnectionInfo->SequenceNumberIn  = (SwapEndian_32(TCPHeaderIN->SequenceNumber) + 1);
+ 402:Lib/TCP.c     **** 							ConnectionInfo->SequenceNumberOut = 0;
+ 403:Lib/TCP.c     **** 							ConnectionInfo->Buffer.InUse      = false;
+ 404:Lib/TCP.c     **** 						}
+ 405:Lib/TCP.c     **** 						else
+ 406:Lib/TCP.c     **** 						{
+ 407:Lib/TCP.c     **** 							TCPHeaderOUT->Flags = TCP_FLAG_RST;
+ 408:Lib/TCP.c     **** 						}
+ 409:Lib/TCP.c     **** 
+ 410:Lib/TCP.c     **** 						PacketResponse      = true;
+ 411:Lib/TCP.c     **** 					}
+ 412:Lib/TCP.c     **** 
+ 413:Lib/TCP.c     **** 					break;
+ 414:Lib/TCP.c     **** 				case TCP_Connection_SYNReceived:
+ 415:Lib/TCP.c     **** 					if (TCPHeaderIN->Flags == TCP_FLAG_ACK)
+ 416:Lib/TCP.c     **** 					{
+ 417:Lib/TCP.c     **** 						/* ACK during the connection process completes the connection to a peer */
+ 418:Lib/TCP.c     **** 
+ 419:Lib/TCP.c     **** 						TCP_SetConnectionState(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddress,
+ 420:Lib/TCP.c     **** 											   TCPHeaderIN->SourcePort, TCP_Connection_Established);
+ 421:Lib/TCP.c     **** 
+ 422:Lib/TCP.c     **** 						ConnectionInfo = TCP_GetConnectionInfo(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddres
+ 423:Lib/TCP.c     **** 															   TCPHeaderIN->SourcePort);
+ 424:Lib/TCP.c     **** 
+ 425:Lib/TCP.c     **** 						ConnectionInfo->SequenceNumberOut++;
+ 426:Lib/TCP.c     **** 					}
+ 427:Lib/TCP.c     **** 
+ 428:Lib/TCP.c     **** 					break;
+ 429:Lib/TCP.c     **** 				case TCP_Connection_Established:
+ 430:Lib/TCP.c     **** 					if (TCPHeaderIN->Flags == (TCP_FLAG_FIN | TCP_FLAG_ACK))
+ 431:Lib/TCP.c     **** 					{
+ 432:Lib/TCP.c     **** 						/* FIN ACK when connected to a peer starts the finalization process */
+ 433:Lib/TCP.c     **** 
+ 434:Lib/TCP.c     **** 						TCPHeaderOUT->Flags = (TCP_FLAG_FIN | TCP_FLAG_ACK);
+ 435:Lib/TCP.c     **** 						PacketResponse      = true;
+ 436:Lib/TCP.c     **** 
+ 437:Lib/TCP.c     **** 						TCP_SetConnectionState(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddress,
+ 438:Lib/TCP.c     **** 											   TCPHeaderIN->SourcePort, TCP_Connection_CloseWait);
+ 439:Lib/TCP.c     **** 
+ 440:Lib/TCP.c     **** 						ConnectionInfo = TCP_GetConnectionInfo(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddres
+ 441:Lib/TCP.c     **** 															   TCPHeaderIN->SourcePort);
+ 442:Lib/TCP.c     **** 
+ 443:Lib/TCP.c     **** 						ConnectionInfo->SequenceNumberIn++;
+ 444:Lib/TCP.c     **** 						ConnectionInfo->SequenceNumberOut++;
+ 445:Lib/TCP.c     **** 					}
+ 446:Lib/TCP.c     **** 					else if ((TCPHeaderIN->Flags == TCP_FLAG_ACK) || (TCPHeaderIN->Flags == (TCP_FLAG_ACK | TCP_FL
+ 447:Lib/TCP.c     **** 					{
+ 448:Lib/TCP.c     **** 						ConnectionInfo = TCP_GetConnectionInfo(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddres
+ 449:Lib/TCP.c     **** 															   TCPHeaderIN->SourcePort);
+ 450:Lib/TCP.c     **** 
+ 451:Lib/TCP.c     **** 						/* Check if the buffer is currently in use either by a buffered data to send, or receive */
+ 452:Lib/TCP.c     **** 						if ((ConnectionInfo->Buffer.InUse == false) && (ConnectionInfo->Buffer.Ready == false))
+ 453:Lib/TCP.c     **** 						{
+ 454:Lib/TCP.c     **** 							ConnectionInfo->Buffer.Direction = TCP_PACKETDIR_IN;
+ 455:Lib/TCP.c     **** 							ConnectionInfo->Buffer.InUse     = true;
+ 456:Lib/TCP.c     **** 							ConnectionInfo->Buffer.Length    = 0;
+ 457:Lib/TCP.c     **** 						}
+ 458:Lib/TCP.c     **** 
+ 459:Lib/TCP.c     **** 						/* Check if the buffer has been claimed by us to read in data from the peer */
+ 460:Lib/TCP.c     **** 						if ((ConnectionInfo->Buffer.Direction == TCP_PACKETDIR_IN) &&
+ 461:Lib/TCP.c     **** 							(ConnectionInfo->Buffer.Length != TCP_WINDOW_SIZE))
+ 462:Lib/TCP.c     **** 						{
+ 463:Lib/TCP.c     **** 							uint16_t IPOffset   = (IPHeaderIN->HeaderLength * sizeof(uint32_t));
+ 464:Lib/TCP.c     **** 							uint16_t TCPOffset  = (TCPHeaderIN->DataOffset * sizeof(uint32_t));
+ 465:Lib/TCP.c     **** 							uint16_t DataLength = (SwapEndian_16(IPHeaderIN->TotalLength) - IPOffset - TCPOffset);
+ 466:Lib/TCP.c     **** 
+ 467:Lib/TCP.c     **** 							/* Copy the packet data into the buffer */
+ 468:Lib/TCP.c     **** 							memcpy(&ConnectionInfo->Buffer.Data[ConnectionInfo->Buffer.Length],
+ 469:Lib/TCP.c     **** 								   &((uint8_t*)TCPHeaderInStart)[TCPOffset],
+ 470:Lib/TCP.c     **** 								   DataLength);
+ 471:Lib/TCP.c     **** 
+ 472:Lib/TCP.c     **** 							ConnectionInfo->SequenceNumberIn += DataLength;
+ 473:Lib/TCP.c     **** 							ConnectionInfo->Buffer.Length    += DataLength;
+ 474:Lib/TCP.c     **** 
+ 475:Lib/TCP.c     **** 							/* Check if the buffer is full or if the PSH flag is set, if so indicate buffer ready */
+ 476:Lib/TCP.c     **** 							if ((!(TCP_WINDOW_SIZE - ConnectionInfo->Buffer.Length)) || (TCPHeaderIN->Flags & TCP_FLAG_P
+ 477:Lib/TCP.c     **** 							{
+ 478:Lib/TCP.c     **** 								ConnectionInfo->Buffer.InUse = false;
+ 479:Lib/TCP.c     **** 								ConnectionInfo->Buffer.Ready = true;
+ 480:Lib/TCP.c     **** 
+ 481:Lib/TCP.c     **** 								TCPHeaderOUT->Flags = TCP_FLAG_ACK;
+ 482:Lib/TCP.c     **** 								PacketResponse      = true;
+ 483:Lib/TCP.c     **** 							}
+ 484:Lib/TCP.c     **** 						}
+ 485:Lib/TCP.c     **** 						else
+ 486:Lib/TCP.c     **** 						{
+ 487:Lib/TCP.c     **** 							/* Buffer is currently in use by the application, defer processing of the incoming packet */
+ 488:Lib/TCP.c     **** 							return NO_PROCESS;
+ 489:Lib/TCP.c     **** 						}
+ 490:Lib/TCP.c     **** 					}
+ 491:Lib/TCP.c     **** 
+ 492:Lib/TCP.c     **** 					break;
+ 493:Lib/TCP.c     **** 				case TCP_Connection_Closing:
+ 494:Lib/TCP.c     **** 						ConnectionInfo = TCP_GetConnectionInfo(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddres
+ 495:Lib/TCP.c     **** 															   TCPHeaderIN->SourcePort);
+ 496:Lib/TCP.c     **** 
+ 497:Lib/TCP.c     **** 						TCPHeaderOUT->Flags = (TCP_FLAG_ACK | TCP_FLAG_FIN);
+ 498:Lib/TCP.c     **** 						PacketResponse      = true;
+ 499:Lib/TCP.c     **** 
+ 500:Lib/TCP.c     **** 						ConnectionInfo->Buffer.InUse = false;
+ 501:Lib/TCP.c     **** 
+ 502:Lib/TCP.c     **** 						TCP_SetConnectionState(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddress,
+ 503:Lib/TCP.c     **** 											   TCPHeaderIN->SourcePort, TCP_Connection_FINWait1);
+ 504:Lib/TCP.c     **** 
+ 505:Lib/TCP.c     **** 					break;
+ 506:Lib/TCP.c     **** 				case TCP_Connection_FINWait1:
+ 507:Lib/TCP.c     **** 					if (TCPHeaderIN->Flags == (TCP_FLAG_FIN | TCP_FLAG_ACK))
+ 508:Lib/TCP.c     **** 					{
+ 509:Lib/TCP.c     **** 						ConnectionInfo = TCP_GetConnectionInfo(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddres
+ 510:Lib/TCP.c     **** 															   TCPHeaderIN->SourcePort);
+ 511:Lib/TCP.c     **** 
+ 512:Lib/TCP.c     **** 						TCPHeaderOUT->Flags = TCP_FLAG_ACK;
+ 513:Lib/TCP.c     **** 						PacketResponse      = true;
+ 514:Lib/TCP.c     **** 
+ 515:Lib/TCP.c     **** 						ConnectionInfo->SequenceNumberIn++;
+ 516:Lib/TCP.c     **** 						ConnectionInfo->SequenceNumberOut++;
+ 517:Lib/TCP.c     **** 
+ 518:Lib/TCP.c     **** 						TCP_SetConnectionState(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddress,
+ 519:Lib/TCP.c     **** 											   TCPHeaderIN->SourcePort, TCP_Connection_Closed);
+ 520:Lib/TCP.c     **** 					}
+ 521:Lib/TCP.c     **** 					else if (TCPHeaderIN->Flags == TCP_FLAG_ACK)
+ 522:Lib/TCP.c     **** 					{
+ 523:Lib/TCP.c     **** 						TCP_SetConnectionState(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddress,
+ 524:Lib/TCP.c     **** 											   TCPHeaderIN->SourcePort, TCP_Connection_FINWait2);
+ 525:Lib/TCP.c     **** 					}
+ 526:Lib/TCP.c     **** 
+ 527:Lib/TCP.c     **** 					break;
+ 528:Lib/TCP.c     **** 				case TCP_Connection_FINWait2:
+ 529:Lib/TCP.c     **** 					if (TCPHeaderIN->Flags == (TCP_FLAG_FIN | TCP_FLAG_ACK))
+ 530:Lib/TCP.c     **** 					{
+ 531:Lib/TCP.c     **** 						ConnectionInfo = TCP_GetConnectionInfo(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddres
+ 532:Lib/TCP.c     **** 															   TCPHeaderIN->SourcePort);
+ 533:Lib/TCP.c     **** 
+ 534:Lib/TCP.c     **** 						TCPHeaderOUT->Flags = TCP_FLAG_ACK;
+ 535:Lib/TCP.c     **** 						PacketResponse      = true;
+ 536:Lib/TCP.c     **** 
+ 537:Lib/TCP.c     **** 						ConnectionInfo->SequenceNumberIn++;
+ 538:Lib/TCP.c     **** 						ConnectionInfo->SequenceNumberOut++;
+ 539:Lib/TCP.c     **** 
+ 540:Lib/TCP.c     **** 						TCP_SetConnectionState(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddress,
+ 541:Lib/TCP.c     **** 											   TCPHeaderIN->SourcePort, TCP_Connection_Closed);
+ 542:Lib/TCP.c     **** 					}
+ 543:Lib/TCP.c     **** 
+ 544:Lib/TCP.c     **** 					break;
+ 545:Lib/TCP.c     **** 				case TCP_Connection_CloseWait:
+ 546:Lib/TCP.c     **** 					if (TCPHeaderIN->Flags == TCP_FLAG_ACK)
+ 547:Lib/TCP.c     **** 					{
+ 548:Lib/TCP.c     **** 						TCP_SetConnectionState(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddress,
+ 549:Lib/TCP.c     **** 											   TCPHeaderIN->SourcePort, TCP_Connection_Closed);
+ 550:Lib/TCP.c     **** 					}
+ 551:Lib/TCP.c     **** 
+ 552:Lib/TCP.c     **** 					break;
+ 553:Lib/TCP.c     **** 			}
+ 554:Lib/TCP.c     **** 		}
+ 555:Lib/TCP.c     **** 	}
+ 556:Lib/TCP.c     **** 	else
+ 557:Lib/TCP.c     **** 	{
+ 558:Lib/TCP.c     **** 		/* Port is not open, indicate via a RST/ACK response to the sender */
+ 559:Lib/TCP.c     **** 		TCPHeaderOUT->Flags = (TCP_FLAG_RST | TCP_FLAG_ACK);
+ 560:Lib/TCP.c     **** 		PacketResponse      = true;
+ 561:Lib/TCP.c     **** 	}
+ 562:Lib/TCP.c     **** 
+ 563:Lib/TCP.c     **** 	/* Check if we need to respond to the sent packet */
+ 564:Lib/TCP.c     **** 	if (PacketResponse)
+ 565:Lib/TCP.c     **** 	{
+ 566:Lib/TCP.c     **** 		ConnectionInfo = TCP_GetConnectionInfo(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddress,
+ 567:Lib/TCP.c     **** 		                                       TCPHeaderIN->SourcePort);
+ 568:Lib/TCP.c     **** 
+ 569:Lib/TCP.c     **** 		TCPHeaderOUT->SourcePort           = TCPHeaderIN->DestinationPort;
+ 570:Lib/TCP.c     **** 		TCPHeaderOUT->DestinationPort      = TCPHeaderIN->SourcePort;
+ 571:Lib/TCP.c     **** 		TCPHeaderOUT->SequenceNumber       = SwapEndian_32(ConnectionInfo->SequenceNumberOut);
+ 572:Lib/TCP.c     **** 		TCPHeaderOUT->AcknowledgmentNumber = SwapEndian_32(ConnectionInfo->SequenceNumberIn);
+ 573:Lib/TCP.c     **** 		TCPHeaderOUT->DataOffset           = (sizeof(TCP_Header_t) / sizeof(uint32_t));
+ 574:Lib/TCP.c     **** 
+ 575:Lib/TCP.c     **** 		if (!(ConnectionInfo->Buffer.InUse))
+ 576:Lib/TCP.c     **** 		  TCPHeaderOUT->WindowSize         = SwapEndian_16(TCP_WINDOW_SIZE);
+ 577:Lib/TCP.c     **** 		else
+ 578:Lib/TCP.c     **** 		  TCPHeaderOUT->WindowSize         = SwapEndian_16(TCP_WINDOW_SIZE - ConnectionInfo->Buffer.Lengt
+ 579:Lib/TCP.c     **** 
+ 580:Lib/TCP.c     **** 		TCPHeaderOUT->UrgentPointer        = 0;
+ 581:Lib/TCP.c     **** 		TCPHeaderOUT->Checksum             = 0;
+ 582:Lib/TCP.c     **** 		TCPHeaderOUT->Reserved             = 0;
+ 583:Lib/TCP.c     **** 
+ 584:Lib/TCP.c     **** 		TCPHeaderOUT->Checksum             = TCP_Checksum16(TCPHeaderOUT, IPHeaderIN->DestinationAddress,
+ 585:Lib/TCP.c     **** 		                                                    IPHeaderIN->SourceAddress, sizeof(TCP_Header_
+ 586:Lib/TCP.c     **** 
+ 587:Lib/TCP.c     **** 		return sizeof(TCP_Header_t);
+ 588:Lib/TCP.c     **** 	}
+ 589:Lib/TCP.c     **** 
+ 590:Lib/TCP.c     **** 	return NO_RESPONSE;
+ 591:Lib/TCP.c     **** }
+ 592:Lib/TCP.c     **** 
+ 593:Lib/TCP.c     **** /** Calculates the appropriate TCP checksum, consisting of the addition of the one's compliment of 
+ 594:Lib/TCP.c     ****  *  complimented.
+ 595:Lib/TCP.c     ****  *
+ 596:Lib/TCP.c     ****  *  \param[in] TCPHeaderOutStart   Pointer to the start of the packet's outgoing TCP header
+ 597:Lib/TCP.c     ****  *  \param[in] SourceAddress       Source protocol IP address of the outgoing IP header
+ 598:Lib/TCP.c     ****  *  \param[in] DestinationAddress  Destination protocol IP address of the outgoing IP header
+ 599:Lib/TCP.c     ****  *  \param[in] TCPOutSize          Size in bytes of the TCP data header and payload
+ 600:Lib/TCP.c     ****  *
+ 601:Lib/TCP.c     ****  *  \return A 16-bit TCP checksum value
+ 602:Lib/TCP.c     ****  */
+ 603:Lib/TCP.c     **** static uint16_t TCP_Checksum16(void* TCPHeaderOutStart,
+ 604:Lib/TCP.c     ****                                const IP_Address_t SourceAddress,
+ 605:Lib/TCP.c     ****                                const IP_Address_t DestinationAddress,
+ 606:Lib/TCP.c     ****                                uint16_t TCPOutSize)
+ 607:Lib/TCP.c     **** {
+  59               		.loc 2 607 0
+  60               		.cfi_startproc
+  61               	.LVL4:
+  62 0000 8F92      		push r8
+  63               	.LCFI0:
+  64               		.cfi_def_cfa_offset 3
+  65               		.cfi_offset 8, -2
+  66 0002 9F92      		push r9
+  67               	.LCFI1:
+  68               		.cfi_def_cfa_offset 4
+  69               		.cfi_offset 9, -3
+  70 0004 AF92      		push r10
+  71               	.LCFI2:
+  72               		.cfi_def_cfa_offset 5
+  73               		.cfi_offset 10, -4
+  74 0006 BF92      		push r11
+  75               	.LCFI3:
+  76               		.cfi_def_cfa_offset 6
+  77               		.cfi_offset 11, -5
+  78 0008 EF92      		push r14
+  79               	.LCFI4:
+  80               		.cfi_def_cfa_offset 7
+  81               		.cfi_offset 14, -6
+  82 000a FF92      		push r15
+  83               	.LCFI5:
+  84               		.cfi_def_cfa_offset 8
+  85               		.cfi_offset 15, -7
+  86 000c 0F93      		push r16
+  87               	.LCFI6:
+  88               		.cfi_def_cfa_offset 9
+  89               		.cfi_offset 16, -8
+  90 000e 1F93      		push r17
+  91               	.LCFI7:
+  92               		.cfi_def_cfa_offset 10
+  93               		.cfi_offset 17, -9
+  94 0010 CF93      		push r28
+  95               	.LCFI8:
+  96               		.cfi_def_cfa_offset 11
+  97               		.cfi_offset 28, -10
+  98 0012 DF93      		push r29
+  99               	.LCFI9:
+ 100               		.cfi_def_cfa_offset 12
+ 101               		.cfi_offset 29, -11
+ 102               	/* prologue: function */
+ 103               	/* frame size = 0 */
+ 104               	/* stack size = 10 */
+ 105               	.L__stack_usage = 10
+ 106 0014 EC01      		movw r28,r24
+ 107               	.LVL5:
+ 108 0016 CB01      		movw r24,r22
+ 109               	.LVL6:
+ 110 0018 A0E0      		ldi r26,0
+ 111 001a B0E0      		ldi r27,0
+ 112 001c 840F      		add r24,r20
+ 113 001e 951F      		adc r25,r21
+ 114 0020 A11D      		adc r26,__zero_reg__
+ 115 0022 B11D      		adc r27,__zero_reg__
+ 116 0024 9A5F      		subi r25,-6
+ 117 0026 AF4F      		sbci r26,-1
+ 118 0028 BF4F      		sbci r27,-1
+ 119 002a 800F      		add r24,r16
+ 120 002c 911F      		adc r25,r17
+ 121 002e A11D      		adc r26,__zero_reg__
+ 122 0030 B11D      		adc r27,__zero_reg__
+ 123               	.LVL7:
+ 608:Lib/TCP.c     **** 	uint32_t Checksum = 0;
+ 609:Lib/TCP.c     **** 
+ 610:Lib/TCP.c     **** 	/* TCP/IP checksums are the addition of the one's compliment of each word including the IP pseudo-
+ 611:Lib/TCP.c     **** 	   complimented */
+ 612:Lib/TCP.c     **** 
+ 613:Lib/TCP.c     **** 	Checksum += ((uint16_t*)&SourceAddress)[0];
+ 614:Lib/TCP.c     **** 	Checksum += ((uint16_t*)&SourceAddress)[1];
+ 615:Lib/TCP.c     **** 	Checksum += ((uint16_t*)&DestinationAddress)[0];
+ 616:Lib/TCP.c     **** 	Checksum += ((uint16_t*)&DestinationAddress)[1];
+ 617:Lib/TCP.c     **** 	Checksum += SwapEndian_16(PROTOCOL_TCP);
+ 124               		.loc 2 617 0
+ 125 0032 4C01      		movw r8,r24
+ 126 0034 5D01      		movw r10,r26
+ 127 0036 820E      		add r8,r18
+ 128 0038 931E      		adc r9,r19
+ 129 003a A11C      		adc r10,__zero_reg__
+ 130 003c B11C      		adc r11,__zero_reg__
+ 131               	.LVL8:
+ 618:Lib/TCP.c     **** 	Checksum += SwapEndian_16(TCPOutSize);
+ 132               		.loc 2 618 0
+ 133 003e C701      		movw r24,r14
+ 134 0040 0E94 0000 		call SwapEndian_16
+ 135               	.LVL9:
+ 136 0044 A501      		movw r20,r10
+ 137 0046 9401      		movw r18,r8
+ 138 0048 280F      		add r18,r24
+ 139 004a 391F      		adc r19,r25
+ 140 004c 411D      		adc r20,__zero_reg__
+ 141 004e 511D      		adc r21,__zero_reg__
+ 142 0050 DA01      		movw r26,r20
+ 143 0052 C901      		movw r24,r18
+ 144               	.LVL10:
+ 145               	.LBB20:
+ 619:Lib/TCP.c     **** 
+ 620:Lib/TCP.c     **** 	for (uint16_t CurrWord = 0; CurrWord < (TCPOutSize >> 1); CurrWord++)
+ 146               		.loc 2 620 0
+ 147 0054 A701      		movw r20,r14
+ 148 0056 5695      		lsr r21
+ 149 0058 4795      		ror r20
+ 150 005a FE01      		movw r30,r28
+ 151 005c 20E0      		ldi r18,0
+ 152 005e 30E0      		ldi r19,0
+ 153               	.LVL11:
+ 154               	.L4:
+ 155               		.loc 2 620 0 is_stmt 0 discriminator 1
+ 156 0060 2417      		cp r18,r20
+ 157 0062 3507      		cpc r19,r21
+ 158 0064 01F0      		breq .L13
+ 621:Lib/TCP.c     **** 	  Checksum += ((uint16_t*)TCPHeaderOutStart)[CurrWord];
+ 159               		.loc 2 621 0 is_stmt 1 discriminator 3
+ 160 0066 6191      		ld r22,Z+
+ 161 0068 7191      		ld r23,Z+
+ 162 006a 860F      		add r24,r22
+ 163 006c 971F      		adc r25,r23
+ 164 006e A11D      		adc r26,__zero_reg__
+ 165 0070 B11D      		adc r27,__zero_reg__
+ 166               	.LVL12:
+ 620:Lib/TCP.c     **** 	  Checksum += ((uint16_t*)TCPHeaderOutStart)[CurrWord];
+ 167               		.loc 2 620 0 discriminator 3
+ 168 0072 2F5F      		subi r18,-1
+ 169 0074 3F4F      		sbci r19,-1
+ 170               	.LVL13:
+ 171 0076 00C0      		rjmp .L4
+ 172               	.L13:
+ 173               	.LBE20:
+ 622:Lib/TCP.c     **** 
+ 623:Lib/TCP.c     **** 	if (TCPOutSize & 0x01)
+ 174               		.loc 2 623 0
+ 175 0078 E0FE      		sbrs r14,0
+ 176 007a 00C0      		rjmp .L7
+ 624:Lib/TCP.c     **** 	  Checksum += (((uint16_t*)TCPHeaderOutStart)[TCPOutSize >> 1] & 0x00FF);
+ 177               		.loc 2 624 0
+ 178 007c 220F      		lsl r18
+ 179 007e 331F      		rol r19
+ 180               	.LVL14:
+ 181 0080 C20F      		add r28,r18
+ 182 0082 D31F      		adc r29,r19
+ 183               	.LVL15:
+ 184 0084 2881      		ld r18,Y
+ 185 0086 820F      		add r24,r18
+ 186 0088 911D      		adc r25,__zero_reg__
+ 187 008a A11D      		adc r26,__zero_reg__
+ 188 008c B11D      		adc r27,__zero_reg__
+ 189               	.LVL16:
+ 190               	.L7:
+ 625:Lib/TCP.c     **** 
+ 626:Lib/TCP.c     **** 	while (Checksum & 0xFFFF0000)
+ 191               		.loc 2 626 0
+ 192 008e AC01      		movw r20,r24
+ 193 0090 BD01      		movw r22,r26
+ 194 0092 4427      		clr r20
+ 195 0094 5527      		clr r21
+ 196 0096 452B      		or r20,r21
+ 197 0098 462B      		or r20,r22
+ 198 009a 472B      		or r20,r23
+ 199 009c 01F0      		breq .L14
+ 627:Lib/TCP.c     **** 	  Checksum = ((Checksum & 0xFFFF) + (Checksum >> 16));
+ 200               		.loc 2 627 0
+ 201 009e AC01      		movw r20,r24
+ 202 00a0 BD01      		movw r22,r26
+ 203 00a2 6627      		clr r22
+ 204 00a4 7727      		clr r23
+ 205 00a6 CD01      		movw r24,r26
+ 206 00a8 AA27      		clr r26
+ 207 00aa BB27      		clr r27
+ 208               	.LVL17:
+ 209 00ac 840F      		add r24,r20
+ 210 00ae 951F      		adc r25,r21
+ 211 00b0 A61F      		adc r26,r22
+ 212 00b2 B71F      		adc r27,r23
+ 213               	.LVL18:
+ 214 00b4 00C0      		rjmp .L7
+ 215               	.L14:
+ 628:Lib/TCP.c     **** 
+ 629:Lib/TCP.c     **** 	return ~Checksum;
+ 216               		.loc 2 629 0
+ 217 00b6 8095      		com r24
+ 218 00b8 9095      		com r25
+ 219               	.LVL19:
+ 220               	/* epilogue start */
+ 630:Lib/TCP.c     **** }
+ 221               		.loc 2 630 0
+ 222 00ba DF91      		pop r29
+ 223 00bc CF91      		pop r28
+ 224 00be 1F91      		pop r17
+ 225 00c0 0F91      		pop r16
+ 226               	.LVL20:
+ 227 00c2 FF90      		pop r15
+ 228 00c4 EF90      		pop r14
+ 229               	.LVL21:
+ 230 00c6 BF90      		pop r11
+ 231 00c8 AF90      		pop r10
+ 232 00ca 9F90      		pop r9
+ 233 00cc 8F90      		pop r8
+ 234 00ce 0895      		ret
+ 235               		.cfi_endproc
+ 236               	.LFE112:
+ 238               		.section	.rodata
+ 239               	.LC0:
+ 240 0000 02        		.byte	2
+ 241 0001 00        		.byte	0
+ 242 0002 02        		.byte	2
+ 243 0003 00        		.byte	0
+ 244 0004 02        		.byte	2
+ 245 0005 00        		.byte	0
+ 246               		.section	.text.TCP_Task,"ax",@progbits
+ 247               	.global	TCP_Task
+ 249               	TCP_Task:
+ 250               	.LFB104:
+  59:Lib/TCP.c     **** 	/* Run each application in sequence, to process incoming and generate outgoing packets */
+ 251               		.loc 2 59 0
+ 252               		.cfi_startproc
+ 253 0000 4F92      		push r4
+ 254               	.LCFI10:
+ 255               		.cfi_def_cfa_offset 3
+ 256               		.cfi_offset 4, -2
+ 257 0002 5F92      		push r5
+ 258               	.LCFI11:
+ 259               		.cfi_def_cfa_offset 4
+ 260               		.cfi_offset 5, -3
+ 261 0004 6F92      		push r6
+ 262               	.LCFI12:
+ 263               		.cfi_def_cfa_offset 5
+ 264               		.cfi_offset 6, -4
+ 265 0006 7F92      		push r7
+ 266               	.LCFI13:
+ 267               		.cfi_def_cfa_offset 6
+ 268               		.cfi_offset 7, -5
+ 269 0008 8F92      		push r8
+ 270               	.LCFI14:
+ 271               		.cfi_def_cfa_offset 7
+ 272               		.cfi_offset 8, -6
+ 273 000a 9F92      		push r9
+ 274               	.LCFI15:
+ 275               		.cfi_def_cfa_offset 8
+ 276               		.cfi_offset 9, -7
+ 277 000c AF92      		push r10
+ 278               	.LCFI16:
+ 279               		.cfi_def_cfa_offset 9
+ 280               		.cfi_offset 10, -8
+ 281 000e BF92      		push r11
+ 282               	.LCFI17:
+ 283               		.cfi_def_cfa_offset 10
+ 284               		.cfi_offset 11, -9
+ 285 0010 CF92      		push r12
+ 286               	.LCFI18:
+ 287               		.cfi_def_cfa_offset 11
+ 288               		.cfi_offset 12, -10
+ 289 0012 DF92      		push r13
+ 290               	.LCFI19:
+ 291               		.cfi_def_cfa_offset 12
+ 292               		.cfi_offset 13, -11
+ 293 0014 EF92      		push r14
+ 294               	.LCFI20:
+ 295               		.cfi_def_cfa_offset 13
+ 296               		.cfi_offset 14, -12
+ 297 0016 FF92      		push r15
+ 298               	.LCFI21:
+ 299               		.cfi_def_cfa_offset 14
+ 300               		.cfi_offset 15, -13
+ 301 0018 0F93      		push r16
+ 302               	.LCFI22:
+ 303               		.cfi_def_cfa_offset 15
+ 304               		.cfi_offset 16, -14
+ 305 001a 1F93      		push r17
+ 306               	.LCFI23:
+ 307               		.cfi_def_cfa_offset 16
+ 308               		.cfi_offset 17, -15
+ 309 001c CF93      		push r28
+ 310               	.LCFI24:
+ 311               		.cfi_def_cfa_offset 17
+ 312               		.cfi_offset 28, -16
+ 313 001e DF93      		push r29
+ 314               	.LCFI25:
+ 315               		.cfi_def_cfa_offset 18
+ 316               		.cfi_offset 29, -17
+ 317               	/* prologue: function */
+ 318               	/* frame size = 0 */
+ 319               	/* stack size = 16 */
+ 320               	.L__stack_usage = 16
+ 321               	.LVL22:
+ 322 0020 C0E0      		ldi r28,lo8(ConnectionStateTable)
+ 323 0022 D0E0      		ldi r29,hi8(ConnectionStateTable)
+ 324 0024 00E0      		ldi r16,lo8(ConnectionStateTable+1602)
+ 325 0026 10E0      		ldi r17,hi8(ConnectionStateTable+1602)
+ 326               	.LVL23:
+ 327               	.L16:
+ 328               	.LBB21:
+ 329               	.LBB22:
+  67:Lib/TCP.c     **** 			    (PortStateTable[PTableEntry].State == TCP_Port_Open))
+ 330               		.loc 2 67 0
+ 331 0028 2091 0000 		lds r18,PortStateTable
+ 332 002c 3091 0000 		lds r19,PortStateTable+1
+ 333 0030 8881      		ld r24,Y
+ 334 0032 9981      		ldd r25,Y+1
+ 335 0034 2817      		cp r18,r24
+ 336 0036 3907      		cpc r19,r25
+ 337 0038 01F4      		brne .L17
+  67:Lib/TCP.c     **** 			    (PortStateTable[PTableEntry].State == TCP_Port_Open))
+ 338               		.loc 2 67 0 is_stmt 0 discriminator 1
+ 339 003a 8091 0000 		lds r24,PortStateTable+2
+ 340 003e 8130      		cpi r24,lo8(1)
+ 341 0040 01F4      		brne .L17
+  70:Lib/TCP.c     **** 				                                               &ConnectionStateTable[CSTableEntry].Info.Buffer)
+ 342               		.loc 2 70 0 is_stmt 1
+ 343 0042 E091 0000 		lds r30,PortStateTable+3
+ 344 0046 F091 0000 		lds r31,PortStateTable+3+1
+ 345 004a BE01      		movw r22,r28
+ 346 004c 605F      		subi r22,-16
+ 347 004e 7F4F      		sbci r23,-1
+ 348 0050 CE01      		movw r24,r28
+ 349 0052 0995      		icall
+ 350               	.LVL24:
+ 351               	.L17:
+ 352 0054 CA5E      		subi r28,-22
+ 353 0056 DD4F      		sbci r29,-3
+ 354               	.LBE22:
+  61:Lib/TCP.c     **** 	{
+ 355               		.loc 2 61 0 discriminator 2
+ 356 0058 0C17      		cp r16,r28
+ 357 005a 1D07      		cpc r17,r29
+ 358 005c 01F4      		brne .L16
+ 359               	.LBE21:
+  77:Lib/TCP.c     **** 	  return;
+ 360               		.loc 2 77 0
+ 361 005e 8091 0000 		lds r24,FrameOUT+1500
+ 362 0062 9091 0000 		lds r25,FrameOUT+1500+1
+ 363 0066 892B      		or r24,r25
+ 364 0068 01F0      		breq .+2
+ 365 006a 00C0      		rjmp .L15
+ 366 006c E0E0      		ldi r30,lo8(ConnectionStateTable+530)
+ 367 006e F0E0      		ldi r31,hi8(ConnectionStateTable+530)
+ 368 0070 80E0      		ldi r24,0
+ 369 0072 90E0      		ldi r25,0
+ 370               	.L22:
+ 371               	.LVL25:
+ 372               	.LBB23:
+  84:Lib/TCP.c     **** 		    (ConnectionStateTable[CSTableEntry].Info.Buffer.Ready))
+ 373               		.loc 2 84 0
+ 374 0074 2081      		ld r18,Z
+ 375 0076 2223      		tst r18
+ 376 0078 01F4      		brne .+2
+ 377 007a 00C0      		rjmp .L21
+  84:Lib/TCP.c     **** 		    (ConnectionStateTable[CSTableEntry].Info.Buffer.Ready))
+ 378               		.loc 2 84 0 is_stmt 0 discriminator 1
+ 379 007c 2181      		ldd r18,Z+1
+ 380 007e 2223      		tst r18
+ 381 0080 01F4      		brne .+2
+ 382 0082 00C0      		rjmp .L21
+ 383               	.LVL26:
+ 384               	.LBB24:
+  95:Lib/TCP.c     **** 
+ 385               		.loc 2 95 0 is_stmt 1
+ 386 0084 26E1      		ldi r18,lo8(22)
+ 387 0086 32E0      		ldi r19,lo8(2)
+ 388 0088 829F      		mul r24,r18
+ 389 008a 8001      		movw r16,r0
+ 390 008c 839F      		mul r24,r19
+ 391 008e 100D      		add r17,r0
+ 392 0090 929F      		mul r25,r18
+ 393 0092 100D      		add r17,r0
+ 394 0094 1124      		clr r1
+ 395 0096 E801      		movw r28,r16
+ 396 0098 C050      		subi r28,lo8(-(ConnectionStateTable))
+ 397 009a D040      		sbci r29,hi8(-(ConnectionStateTable))
+ 398 009c C888      		ldd r12,Y+16
+ 399 009e D988      		ldd r13,Y+17
+ 400               	.LVL27:
+  98:Lib/TCP.c     **** 			TCPHeaderOUT->DestinationPort      = ConnectionStateTable[CSTableEntry].RemotePort;
+ 401               		.loc 2 98 0
+ 402 00a0 8881      		ld r24,Y
+ 403 00a2 9981      		ldd r25,Y+1
+ 404               	.LVL28:
+ 405 00a4 9093 0000 		sts FrameOUT+34+1,r25
+ 406 00a8 8093 0000 		sts FrameOUT+34,r24
+  99:Lib/TCP.c     **** 			TCPHeaderOUT->SequenceNumber       = SwapEndian_32(ConnectionStateTable[CSTableEntry].Info.Seque
+ 407               		.loc 2 99 0
+ 408 00ac 8A81      		ldd r24,Y+2
+ 409 00ae 9B81      		ldd r25,Y+3
+ 410 00b0 9093 0000 		sts FrameOUT+36+1,r25
+ 411 00b4 8093 0000 		sts FrameOUT+36,r24
+ 100:Lib/TCP.c     **** 			TCPHeaderOUT->AcknowledgmentNumber = SwapEndian_32(ConnectionStateTable[CSTableEntry].Info.Seque
+ 412               		.loc 2 100 0
+ 413 00b8 8C84      		ldd r8,Y+12
+ 414 00ba 9D84      		ldd r9,Y+13
+ 415 00bc AE84      		ldd r10,Y+14
+ 416 00be BF84      		ldd r11,Y+15
+ 417 00c0 C501      		movw r24,r10
+ 418 00c2 B401      		movw r22,r8
+ 419 00c4 0E94 0000 		call SwapEndian_32
+ 420               	.LVL29:
+ 421 00c8 6093 0000 		sts FrameOUT+38,r22
+ 422 00cc 7093 0000 		sts FrameOUT+38+1,r23
+ 423 00d0 8093 0000 		sts FrameOUT+38+2,r24
+ 424 00d4 9093 0000 		sts FrameOUT+38+3,r25
+ 101:Lib/TCP.c     **** 			TCPHeaderOUT->DataOffset           = (sizeof(TCP_Header_t) / sizeof(uint32_t));
+ 425               		.loc 2 101 0
+ 426 00d8 6885      		ldd r22,Y+8
+ 427 00da 7985      		ldd r23,Y+9
+ 428 00dc 8A85      		ldd r24,Y+10
+ 429 00de 9B85      		ldd r25,Y+11
+ 430 00e0 0E94 0000 		call SwapEndian_32
+ 431               	.LVL30:
+ 432 00e4 6093 0000 		sts FrameOUT+42,r22
+ 433 00e8 7093 0000 		sts FrameOUT+42+1,r23
+ 434 00ec 8093 0000 		sts FrameOUT+42+2,r24
+ 435 00f0 9093 0000 		sts FrameOUT+42+3,r25
+ 103:Lib/TCP.c     **** 
+ 436               		.loc 2 103 0
+ 437 00f4 82E0      		ldi r24,lo8(2)
+ 438 00f6 90E0      		ldi r25,0
+ 439 00f8 9093 0000 		sts FrameOUT+48+1,r25
+ 440 00fc 8093 0000 		sts FrameOUT+48,r24
+ 105:Lib/TCP.c     **** 			TCPHeaderOUT->UrgentPointer        = 0;
+ 441               		.loc 2 105 0
+ 442 0100 80E1      		ldi r24,lo8(16)
+ 443 0102 8093 0000 		sts FrameOUT+47,r24
+ 106:Lib/TCP.c     **** 			TCPHeaderOUT->Checksum             = 0;
+ 444               		.loc 2 106 0
+ 445 0106 1092 0000 		sts FrameOUT+52+1,__zero_reg__
+ 446 010a 1092 0000 		sts FrameOUT+52,__zero_reg__
+ 107:Lib/TCP.c     **** 			TCPHeaderOUT->Reserved             = 0;
+ 447               		.loc 2 107 0
+ 448 010e 1092 0000 		sts FrameOUT+50+1,__zero_reg__
+ 449 0112 1092 0000 		sts FrameOUT+50,__zero_reg__
+ 108:Lib/TCP.c     **** 
+ 450               		.loc 2 108 0
+ 451 0116 80E5      		ldi r24,lo8(80)
+ 452 0118 8093 0000 		sts FrameOUT+46,r24
+ 110:Lib/TCP.c     **** 
+ 453               		.loc 2 110 0
+ 454 011c B801      		movw r22,r16
+ 455 011e 6050      		subi r22,lo8(-(ConnectionStateTable+18))
+ 456 0120 7040      		sbci r23,hi8(-(ConnectionStateTable+18))
+ 457 0122 A601      		movw r20,r12
+ 458 0124 80E0      		ldi r24,lo8(FrameOUT+54)
+ 459 0126 90E0      		ldi r25,hi8(FrameOUT+54)
+ 460               	.LVL31:
+ 461 0128 0E94 0000 		call memcpy
+ 462               	.LVL32:
+ 112:Lib/TCP.c     **** 
+ 463               		.loc 2 112 0
+ 464 012c 8C0C      		add r8,r12
+ 465 012e 9D1C      		adc r9,r13
+ 466 0130 A11C      		adc r10,__zero_reg__
+ 467 0132 B11C      		adc r11,__zero_reg__
+ 468 0134 8C86      		std Y+12,r8
+ 469 0136 9D86      		std Y+13,r9
+ 470 0138 AE86      		std Y+14,r10
+ 471 013a BF86      		std Y+15,r11
+ 114:Lib/TCP.c     **** 			                                                    ConnectionStateTable[CSTableEntry].RemoteAdd
+ 472               		.loc 2 114 0
+ 473 013c 7601      		movw r14,r12
+ 474 013e 84E1      		ldi r24,20
+ 475 0140 E80E      		add r14,r24
+ 476 0142 F11C      		adc r15,__zero_reg__
+ 477 0144 4C80      		ldd r4,Y+4
+ 478 0146 5D80      		ldd r5,Y+5
+ 479 0148 6E80      		ldd r6,Y+6
+ 480 014a 7F80      		ldd r7,Y+7
+ 481 014c 8090 0000 		lds r8,ServerIPAddress
+ 482 0150 9090 0000 		lds r9,ServerIPAddress+1
+ 483 0154 A090 0000 		lds r10,ServerIPAddress+2
+ 484 0158 B090 0000 		lds r11,ServerIPAddress+3
+ 485 015c 9301      		movw r18,r6
+ 486 015e 8201      		movw r16,r4
+ 487 0160 B501      		movw r22,r10
+ 488 0162 A401      		movw r20,r8
+ 489 0164 80E0      		ldi r24,lo8(FrameOUT+34)
+ 490 0166 90E0      		ldi r25,hi8(FrameOUT+34)
+ 491               	.LVL33:
+ 492 0168 0E94 0000 		call TCP_Checksum16
+ 493               	.LVL34:
+ 494 016c 9093 0000 		sts FrameOUT+50+1,r25
+ 495 0170 8093 0000 		sts FrameOUT+50,r24
+ 496               	.LVL35:
+ 121:Lib/TCP.c     **** 			IPHeaderOUT->TypeOfService      = 0;
+ 497               		.loc 2 121 0
+ 498 0174 C601      		movw r24,r12
+ 499 0176 8896      		adiw r24,40
+ 500 0178 0E94 0000 		call SwapEndian_16
+ 501               	.LVL36:
+ 502 017c 9093 0000 		sts FrameOUT+16+1,r25
+ 503 0180 8093 0000 		sts FrameOUT+16,r24
+ 122:Lib/TCP.c     **** 			IPHeaderOUT->HeaderLength       = (sizeof(IP_Header_t) / sizeof(uint32_t));
+ 504               		.loc 2 122 0
+ 505 0184 1092 0000 		sts FrameOUT+15,__zero_reg__
+ 124:Lib/TCP.c     **** 			IPHeaderOUT->Flags              = 0;
+ 506               		.loc 2 124 0
+ 507 0188 85E4      		ldi r24,lo8(69)
+ 508 018a 8093 0000 		sts FrameOUT+14,r24
+ 126:Lib/TCP.c     **** 			IPHeaderOUT->Identification     = 0;
+ 509               		.loc 2 126 0
+ 510 018e 1092 0000 		sts FrameOUT+20,__zero_reg__
+ 511 0192 1092 0000 		sts FrameOUT+21,__zero_reg__
+ 127:Lib/TCP.c     **** 			IPHeaderOUT->HeaderChecksum     = 0;
+ 512               		.loc 2 127 0
+ 513 0196 1092 0000 		sts FrameOUT+18+1,__zero_reg__
+ 514 019a 1092 0000 		sts FrameOUT+18,__zero_reg__
+ 128:Lib/TCP.c     **** 			IPHeaderOUT->Protocol           = PROTOCOL_TCP;
+ 515               		.loc 2 128 0
+ 516 019e 1092 0000 		sts FrameOUT+24+1,__zero_reg__
+ 517 01a2 1092 0000 		sts FrameOUT+24,__zero_reg__
+ 129:Lib/TCP.c     **** 			IPHeaderOUT->TTL                = DEFAULT_TTL;
+ 518               		.loc 2 129 0
+ 519 01a6 16E0      		ldi r17,lo8(6)
+ 520 01a8 1093 0000 		sts FrameOUT+23,r17
+ 130:Lib/TCP.c     **** 			IPHeaderOUT->SourceAddress      = ServerIPAddress;
+ 521               		.loc 2 130 0
+ 522 01ac 80E8      		ldi r24,lo8(-128)
+ 523 01ae 8093 0000 		sts FrameOUT+22,r24
+ 131:Lib/TCP.c     **** 			IPHeaderOUT->DestinationAddress = ConnectionStateTable[CSTableEntry].RemoteAddress;
+ 524               		.loc 2 131 0
+ 525 01b2 8092 0000 		sts FrameOUT+26,r8
+ 526 01b6 9092 0000 		sts FrameOUT+26+1,r9
+ 527 01ba A092 0000 		sts FrameOUT+26+2,r10
+ 528 01be B092 0000 		sts FrameOUT+26+3,r11
+ 132:Lib/TCP.c     **** 
+ 529               		.loc 2 132 0
+ 530 01c2 4092 0000 		sts FrameOUT+30,r4
+ 531 01c6 5092 0000 		sts FrameOUT+30+1,r5
+ 532 01ca 6092 0000 		sts FrameOUT+30+2,r6
+ 533 01ce 7092 0000 		sts FrameOUT+30+3,r7
+ 134:Lib/TCP.c     **** 
+ 534               		.loc 2 134 0
+ 535 01d2 64E1      		ldi r22,lo8(20)
+ 536 01d4 70E0      		ldi r23,0
+ 537 01d6 80E0      		ldi r24,lo8(FrameOUT+14)
+ 538 01d8 90E0      		ldi r25,hi8(FrameOUT+14)
+ 539               	.LVL37:
+ 540 01da 0E94 0000 		call Ethernet_Checksum16
+ 541               	.LVL38:
+ 542 01de 9093 0000 		sts FrameOUT+24+1,r25
+ 543 01e2 8093 0000 		sts FrameOUT+24,r24
+ 544               	.LVL39:
+ 139:Lib/TCP.c     **** 			FrameOUTHeader->Destination     = (MAC_Address_t){{0x02, 0x00, 0x02, 0x00, 0x02, 0x00}};
+ 545               		.loc 2 139 0
+ 546 01e6 E0E0      		ldi r30,lo8(ServerMACAddress)
+ 547 01e8 F0E0      		ldi r31,hi8(ServerMACAddress)
+ 548 01ea A0E0      		ldi r26,lo8(FrameOUT+6)
+ 549 01ec B0E0      		ldi r27,hi8(FrameOUT+6)
+ 550 01ee 812F      		mov r24,r17
+ 551               		0:
+ 552 01f0 0190      		ld r0,Z+
+ 553 01f2 0D92      		st X+,r0
+ 554 01f4 8A95      		dec r24
+ 555 01f6 01F4      		brne 0b
+ 140:Lib/TCP.c     **** 			FrameOUTHeader->EtherType       = SwapEndian_16(ETHERTYPE_IPV4);
+ 556               		.loc 2 140 0
+ 557 01f8 E0E0      		ldi r30,lo8(.LC0)
+ 558 01fa F0E0      		ldi r31,hi8(.LC0)
+ 559 01fc A0E0      		ldi r26,lo8(FrameOUT)
+ 560 01fe B0E0      		ldi r27,hi8(FrameOUT)
+ 561               		0:
+ 562 0200 0190      		ld r0,Z+
+ 563 0202 0D92      		st X+,r0
+ 564 0204 1A95      		dec r17
+ 565 0206 01F4      		brne 0b
+ 141:Lib/TCP.c     **** 
+ 566               		.loc 2 141 0
+ 567 0208 88E0      		ldi r24,lo8(8)
+ 568 020a 90E0      		ldi r25,0
+ 569 020c 9093 0000 		sts FrameOUT+12+1,r25
+ 570 0210 8093 0000 		sts FrameOUT+12,r24
+ 571               	.LVL40:
+ 146:Lib/TCP.c     **** 
+ 572               		.loc 2 146 0
+ 573 0214 86E3      		ldi r24,54
+ 574 0216 C80E      		add r12,r24
+ 575 0218 D11C      		adc r13,__zero_reg__
+ 576               	.LVL41:
+ 577 021a D092 0000 		sts FrameOUT+1500+1,r13
+ 578 021e C092 0000 		sts FrameOUT+1500,r12
+ 148:Lib/TCP.c     **** 
+ 579               		.loc 2 148 0
+ 580 0222 CD5E      		subi r28,-19
+ 581 0224 DD4F      		sbci r29,-3
+ 582 0226 1882      		st Y,__zero_reg__
+ 150:Lib/TCP.c     **** 		}
+ 583               		.loc 2 150 0
+ 584 0228 00C0      		rjmp .L15
+ 585               	.LVL42:
+ 586               	.L21:
+ 587 022a 0196      		adiw r24,1
+ 588               	.LVL43:
+ 589 022c EA5E      		subi r30,-22
+ 590 022e FD4F      		sbci r31,-3
+ 591               	.LBE24:
+  81:Lib/TCP.c     **** 	{
+ 592               		.loc 2 81 0 discriminator 2
+ 593 0230 8330      		cpi r24,3
+ 594 0232 9105      		cpc r25,__zero_reg__
+ 595 0234 01F0      		breq .+2
+ 596 0236 00C0      		rjmp .L22
+ 597               	.LVL44:
+ 598               	.L15:
+ 599               	/* epilogue start */
+ 600               	.LBE23:
+ 153:Lib/TCP.c     **** 
+ 601               		.loc 2 153 0
+ 602 0238 DF91      		pop r29
+ 603 023a CF91      		pop r28
+ 604 023c 1F91      		pop r17
+ 605 023e 0F91      		pop r16
+ 606 0240 FF90      		pop r15
+ 607 0242 EF90      		pop r14
+ 608 0244 DF90      		pop r13
+ 609 0246 CF90      		pop r12
+ 610 0248 BF90      		pop r11
+ 611 024a AF90      		pop r10
+ 612 024c 9F90      		pop r9
+ 613 024e 8F90      		pop r8
+ 614 0250 7F90      		pop r7
+ 615 0252 6F90      		pop r6
+ 616 0254 5F90      		pop r5
+ 617 0256 4F90      		pop r4
+ 618 0258 0895      		ret
+ 619               		.cfi_endproc
+ 620               	.LFE104:
+ 622               		.section	.text.TCP_Init,"ax",@progbits
+ 623               	.global	TCP_Init
+ 625               	TCP_Init:
+ 626               	.LFB105:
+ 159:Lib/TCP.c     **** 	/* Initialize the port state table with all CLOSED entries */
+ 627               		.loc 2 159 0
+ 628               		.cfi_startproc
+ 629               	/* prologue: function */
+ 630               	/* frame size = 0 */
+ 631               	/* stack size = 0 */
+ 632               	.L__stack_usage = 0
+ 633               	.LVL45:
+ 634               	.LBB25:
+ 162:Lib/TCP.c     **** 
+ 635               		.loc 2 162 0
+ 636 0000 1092 0000 		sts PortStateTable+2,__zero_reg__
+ 637               	.LVL46:
+ 638               	.LBE25:
+ 639               	.LBB26:
+ 166:Lib/TCP.c     **** }
+ 640               		.loc 2 166 0
+ 641 0004 8AE0      		ldi r24,lo8(10)
+ 642 0006 8093 0000 		sts ConnectionStateTable+533,r24
+ 643               	.LVL47:
+ 644 000a 8093 0000 		sts ConnectionStateTable+1067,r24
+ 645               	.LVL48:
+ 646 000e 8093 0000 		sts ConnectionStateTable+1601,r24
+ 647               	.LVL49:
+ 648 0012 0895      		ret
+ 649               	.LBE26:
+ 650               		.cfi_endproc
+ 651               	.LFE105:
+ 653               		.section	.text.TCP_SetPortState,"ax",@progbits
+ 654               	.global	TCP_SetPortState
+ 656               	TCP_SetPortState:
+ 657               	.LFB106:
+ 180:Lib/TCP.c     **** 	/* Note, Port number should be specified in BIG endian to simplify network code */
+ 658               		.loc 2 180 0
+ 659               		.cfi_startproc
+ 660               	.LVL50:
+ 661               	/* prologue: function */
+ 662               	/* frame size = 0 */
+ 663               	/* stack size = 0 */
+ 664               	.L__stack_usage = 0
+ 665               	.LBB27:
+ 187:Lib/TCP.c     **** 		{
+ 666               		.loc 2 187 0
+ 667 0000 2091 0000 		lds r18,PortStateTable
+ 668 0004 3091 0000 		lds r19,PortStateTable+1
+ 669 0008 2817      		cp r18,r24
+ 670 000a 3907      		cpc r19,r25
+ 671 000c 01F0      		breq .L36
+ 672               	.LVL51:
+ 673               	.LBE27:
+ 196:Lib/TCP.c     **** 	{
+ 674               		.loc 2 196 0
+ 675 000e 6130      		cpi r22,lo8(1)
+ 676 0010 01F4      		brne .L34
+ 677               	.LVL52:
+ 678               	.LBB28:
+ 201:Lib/TCP.c     **** 			{
+ 679               		.loc 2 201 0
+ 680 0012 2091 0000 		lds r18,PortStateTable+2
+ 681 0016 2111      		cpse r18,__zero_reg__
+ 682 0018 00C0      		rjmp .L35
+ 203:Lib/TCP.c     **** 				PortStateTable[PTableEntry].State = State;
+ 683               		.loc 2 203 0
+ 684 001a 9093 0000 		sts PortStateTable+1,r25
+ 685 001e 8093 0000 		sts PortStateTable,r24
+ 686               	.LVL53:
+ 687               	.L36:
+ 204:Lib/TCP.c     **** 				PortStateTable[PTableEntry].ApplicationHandler = Handler;
+ 688               		.loc 2 204 0
+ 689 0022 6093 0000 		sts PortStateTable+2,r22
+ 205:Lib/TCP.c     **** 				return true;
+ 690               		.loc 2 205 0
+ 691 0026 5093 0000 		sts PortStateTable+3+1,r21
+ 692 002a 4093 0000 		sts PortStateTable+3,r20
+ 693               	.L34:
+ 694               	.LBE28:
+ 216:Lib/TCP.c     **** 	}
+ 695               		.loc 2 216 0
+ 696 002e 81E0      		ldi r24,lo8(1)
+ 697               	.LVL54:
+ 698 0030 0895      		ret
+ 699               	.LVL55:
+ 700               	.L35:
+ 211:Lib/TCP.c     **** 	}
+ 701               		.loc 2 211 0
+ 702 0032 80E0      		ldi r24,0
+ 703               	.LVL56:
+ 218:Lib/TCP.c     **** 
+ 704               		.loc 2 218 0
+ 705 0034 0895      		ret
+ 706               		.cfi_endproc
+ 707               	.LFE106:
+ 709               		.section	.text.TCP_GetPortState,"ax",@progbits
+ 710               	.global	TCP_GetPortState
+ 712               	TCP_GetPortState:
+ 713               	.LFB107:
+ 227:Lib/TCP.c     **** 	/* Note, Port number should be specified in BIG endian to simplify network code */
+ 714               		.loc 2 227 0
+ 715               		.cfi_startproc
+ 716               	.LVL57:
+ 717               	/* prologue: function */
+ 718               	/* frame size = 0 */
+ 719               	/* stack size = 0 */
+ 720               	.L__stack_usage = 0
+ 721               	.LBB29:
+ 233:Lib/TCP.c     **** 		  return PortStateTable[PTableEntry].State;
+ 722               		.loc 2 233 0
+ 723 0000 2091 0000 		lds r18,PortStateTable
+ 724 0004 3091 0000 		lds r19,PortStateTable+1
+ 725 0008 2817      		cp r18,r24
+ 726 000a 3907      		cpc r19,r25
+ 727 000c 01F4      		brne .L39
+ 234:Lib/TCP.c     **** 	}
+ 728               		.loc 2 234 0
+ 729 000e 8091 0000 		lds r24,PortStateTable+2
+ 730               	.LVL58:
+ 731 0012 0895      		ret
+ 732               	.LVL59:
+ 733               	.L39:
+ 734               	.LBE29:
+ 238:Lib/TCP.c     **** }
+ 735               		.loc 2 238 0
+ 736 0014 80E0      		ldi r24,0
+ 737               	.LVL60:
+ 239:Lib/TCP.c     **** 
+ 738               		.loc 2 239 0
+ 739 0016 0895      		ret
+ 740               		.cfi_endproc
+ 741               	.LFE107:
+ 743               		.section	.text.TCP_SetConnectionState,"ax",@progbits
+ 744               	.global	TCP_SetConnectionState
+ 746               	TCP_SetConnectionState:
+ 747               	.LFB108:
+ 255:Lib/TCP.c     **** 	/* Note, Port number should be specified in BIG endian to simplify network code */
+ 748               		.loc 2 255 0
+ 749               		.cfi_startproc
+ 750               	.LVL61:
+ 751 0000 9F92      		push r9
+ 752               	.LCFI26:
+ 753               		.cfi_def_cfa_offset 3
+ 754               		.cfi_offset 9, -2
+ 755 0002 AF92      		push r10
+ 756               	.LCFI27:
+ 757               		.cfi_def_cfa_offset 4
+ 758               		.cfi_offset 10, -3
+ 759 0004 BF92      		push r11
+ 760               	.LCFI28:
+ 761               		.cfi_def_cfa_offset 5
+ 762               		.cfi_offset 11, -4
+ 763 0006 CF92      		push r12
+ 764               	.LCFI29:
+ 765               		.cfi_def_cfa_offset 6
+ 766               		.cfi_offset 12, -5
+ 767 0008 DF92      		push r13
+ 768               	.LCFI30:
+ 769               		.cfi_def_cfa_offset 7
+ 770               		.cfi_offset 13, -6
+ 771 000a EF92      		push r14
+ 772               	.LCFI31:
+ 773               		.cfi_def_cfa_offset 8
+ 774               		.cfi_offset 14, -7
+ 775 000c FF92      		push r15
+ 776               	.LCFI32:
+ 777               		.cfi_def_cfa_offset 9
+ 778               		.cfi_offset 15, -8
+ 779 000e 0F93      		push r16
+ 780               	.LCFI33:
+ 781               		.cfi_def_cfa_offset 10
+ 782               		.cfi_offset 16, -9
+ 783 0010 1F93      		push r17
+ 784               	.LCFI34:
+ 785               		.cfi_def_cfa_offset 11
+ 786               		.cfi_offset 17, -10
+ 787 0012 CF93      		push r28
+ 788               	.LCFI35:
+ 789               		.cfi_def_cfa_offset 12
+ 790               		.cfi_offset 28, -11
+ 791 0014 DF93      		push r29
+ 792               	.LCFI36:
+ 793               		.cfi_def_cfa_offset 13
+ 794               		.cfi_offset 29, -12
+ 795 0016 00D0      		rcall .
+ 796 0018 00D0      		rcall .
+ 797               	.LCFI37:
+ 798               		.cfi_def_cfa_offset 17
+ 799 001a CDB7      		in r28,__SP_L__
+ 800 001c DEB7      		in r29,__SP_H__
+ 801               	.LCFI38:
+ 802               		.cfi_def_cfa_register 28
+ 803               	/* prologue: function */
+ 804               	/* frame size = 4 */
+ 805               	/* stack size = 15 */
+ 806               	.L__stack_usage = 15
+ 807 001e 6C01      		movw r12,r24
+ 808 0020 4983      		std Y+1,r20
+ 809 0022 5A83      		std Y+2,r21
+ 810 0024 6B83      		std Y+3,r22
+ 811 0026 7C83      		std Y+4,r23
+ 812 0028 7901      		movw r14,r18
+ 813 002a 902E      		mov r9,r16
+ 814               	.LVL62:
+ 815 002c 00E0      		ldi r16,lo8(ConnectionStateTable)
+ 816 002e 10E0      		ldi r17,hi8(ConnectionStateTable)
+ 817               	.LVL63:
+ 255:Lib/TCP.c     **** 	/* Note, Port number should be specified in BIG endian to simplify network code */
+ 818               		.loc 2 255 0
+ 819 0030 A12C      		mov r10,__zero_reg__
+ 820 0032 B12C      		mov r11,__zero_reg__
+ 821               	.LVL64:
+ 822               	.L43:
+ 823               	.LBB30:
+ 261:Lib/TCP.c     **** 		     IP_COMPARE(&ConnectionStateTable[CSTableEntry].RemoteAddress, &RemoteAddress) &&
+ 824               		.loc 2 261 0
+ 825 0034 F801      		movw r30,r16
+ 826 0036 8081      		ld r24,Z
+ 827 0038 9181      		ldd r25,Z+1
+ 828 003a 8C15      		cp r24,r12
+ 829 003c 9D05      		cpc r25,r13
+ 830 003e 01F4      		brne .L41
+ 262:Lib/TCP.c     **** 			 ConnectionStateTable[CSTableEntry].RemotePort == RemotePort)
+ 831               		.loc 2 262 0 discriminator 1
+ 832 0040 44E0      		ldi r20,lo8(4)
+ 833 0042 50E0      		ldi r21,0
+ 834 0044 BE01      		movw r22,r28
+ 835 0046 6F5F      		subi r22,-1
+ 836 0048 7F4F      		sbci r23,-1
+ 837 004a C801      		movw r24,r16
+ 838 004c 0496      		adiw r24,4
+ 839 004e 0E94 0000 		call memcmp
+ 840               	.LVL65:
+ 261:Lib/TCP.c     **** 		     IP_COMPARE(&ConnectionStateTable[CSTableEntry].RemoteAddress, &RemoteAddress) &&
+ 841               		.loc 2 261 0 discriminator 1
+ 842 0052 892B      		or r24,r25
+ 843 0054 01F4      		brne .L41
+ 262:Lib/TCP.c     **** 			 ConnectionStateTable[CSTableEntry].RemotePort == RemotePort)
+ 844               		.loc 2 262 0
+ 845 0056 F801      		movw r30,r16
+ 846 0058 8281      		ldd r24,Z+2
+ 847 005a 9381      		ldd r25,Z+3
+ 848 005c 8E15      		cp r24,r14
+ 849 005e 9F05      		cpc r25,r15
+ 850 0060 01F4      		brne .L41
+ 265:Lib/TCP.c     **** 			return true;
+ 851               		.loc 2 265 0
+ 852 0062 86E1      		ldi r24,lo8(22)
+ 853 0064 92E0      		ldi r25,lo8(2)
+ 854 0066 A89E      		mul r10,r24
+ 855 0068 F001      		movw r30,r0
+ 856 006a A99E      		mul r10,r25
+ 857 006c F00D      		add r31,r0
+ 858 006e B89E      		mul r11,r24
+ 859 0070 F00D      		add r31,r0
+ 860 0072 1124      		clr r1
+ 861 0074 E050      		subi r30,lo8(-(ConnectionStateTable+533))
+ 862 0076 F040      		sbci r31,hi8(-(ConnectionStateTable+533))
+ 863 0078 00C0      		rjmp .L49
+ 864               	.L41:
+ 865               	.LVL66:
+ 866 007a FFEF      		ldi r31,-1
+ 867 007c AF1A      		sub r10,r31
+ 868 007e BF0A      		sbc r11,r31
+ 869               	.LVL67:
+ 870 0080 0A5E      		subi r16,-22
+ 871 0082 1D4F      		sbci r17,-3
+ 258:Lib/TCP.c     **** 	{
+ 872               		.loc 2 258 0 discriminator 2
+ 873 0084 83E0      		ldi r24,3
+ 874 0086 A816      		cp r10,r24
+ 875 0088 B104      		cpc r11,__zero_reg__
+ 876 008a 01F4      		brne .L43
+ 877               	.LVL68:
+ 878               	.LBE30:
+ 879               	.LBB31:
+ 273:Lib/TCP.c     **** 		{
+ 880               		.loc 2 273 0
+ 881 008c 8091 0000 		lds r24,ConnectionStateTable+533
+ 882 0090 8A30      		cpi r24,lo8(10)
+ 883 0092 01F0      		breq .L45
+ 884               	.LVL69:
+ 885 0094 8091 0000 		lds r24,ConnectionStateTable+1067
+ 886 0098 8A30      		cpi r24,lo8(10)
+ 887 009a 01F0      		breq .L46
+ 888               	.LVL70:
+ 889 009c 8091 0000 		lds r24,ConnectionStateTable+1601
+ 890 00a0 8A30      		cpi r24,lo8(10)
+ 891 00a2 01F4      		brne .L47
+ 892 00a4 82E0      		ldi r24,lo8(2)
+ 893 00a6 90E0      		ldi r25,0
+ 894 00a8 00C0      		rjmp .L44
+ 895               	.LVL71:
+ 896               	.L45:
+ 897 00aa 80E0      		ldi r24,0
+ 898 00ac 90E0      		ldi r25,0
+ 899 00ae 00C0      		rjmp .L44
+ 900               	.LVL72:
+ 901               	.L46:
+ 902 00b0 81E0      		ldi r24,lo8(1)
+ 903 00b2 90E0      		ldi r25,0
+ 904               	.LVL73:
+ 905               	.L44:
+ 275:Lib/TCP.c     **** 			ConnectionStateTable[CSTableEntry].RemoteAddress = RemoteAddress;
+ 906               		.loc 2 275 0
+ 907 00b4 26E1      		ldi r18,lo8(22)
+ 908 00b6 32E0      		ldi r19,lo8(2)
+ 909 00b8 829F      		mul r24,r18
+ 910 00ba F001      		movw r30,r0
+ 911 00bc 839F      		mul r24,r19
+ 912 00be F00D      		add r31,r0
+ 913 00c0 929F      		mul r25,r18
+ 914 00c2 F00D      		add r31,r0
+ 915 00c4 1124      		clr r1
+ 916 00c6 E050      		subi r30,lo8(-(ConnectionStateTable))
+ 917 00c8 F040      		sbci r31,hi8(-(ConnectionStateTable))
+ 918 00ca D182      		std Z+1,r13
+ 919 00cc C082      		st Z,r12
+ 276:Lib/TCP.c     **** 			ConnectionStateTable[CSTableEntry].RemotePort    = RemotePort;
+ 920               		.loc 2 276 0
+ 921 00ce 8981      		ldd r24,Y+1
+ 922 00d0 9A81      		ldd r25,Y+2
+ 923 00d2 AB81      		ldd r26,Y+3
+ 924 00d4 BC81      		ldd r27,Y+4
+ 925 00d6 8483      		std Z+4,r24
+ 926 00d8 9583      		std Z+5,r25
+ 927 00da A683      		std Z+6,r26
+ 928 00dc B783      		std Z+7,r27
+ 277:Lib/TCP.c     **** 			ConnectionStateTable[CSTableEntry].State         = State;
+ 929               		.loc 2 277 0
+ 930 00de F382      		std Z+3,r15
+ 931 00e0 E282      		std Z+2,r14
+ 278:Lib/TCP.c     **** 			return true;
+ 932               		.loc 2 278 0
+ 933 00e2 EB5E      		subi r30,-21
+ 934 00e4 FD4F      		sbci r31,-3
+ 935               	.LVL74:
+ 936               	.L49:
+ 937 00e6 9082      		st Z,r9
+ 279:Lib/TCP.c     **** 		}
+ 938               		.loc 2 279 0
+ 939 00e8 81E0      		ldi r24,lo8(1)
+ 940 00ea 00C0      		rjmp .L42
+ 941               	.LVL75:
+ 942               	.L47:
+ 943               	.LBE31:
+ 283:Lib/TCP.c     **** }
+ 944               		.loc 2 283 0
+ 945 00ec 80E0      		ldi r24,0
+ 946               	.LVL76:
+ 947               	.L42:
+ 948               	/* epilogue start */
+ 284:Lib/TCP.c     **** 
+ 949               		.loc 2 284 0
+ 950 00ee 0F90      		pop __tmp_reg__
+ 951 00f0 0F90      		pop __tmp_reg__
+ 952 00f2 0F90      		pop __tmp_reg__
+ 953 00f4 0F90      		pop __tmp_reg__
+ 954 00f6 DF91      		pop r29
+ 955 00f8 CF91      		pop r28
+ 956 00fa 1F91      		pop r17
+ 957 00fc 0F91      		pop r16
+ 958 00fe FF90      		pop r15
+ 959 0100 EF90      		pop r14
+ 960               	.LVL77:
+ 961 0102 DF90      		pop r13
+ 962 0104 CF90      		pop r12
+ 963               	.LVL78:
+ 964 0106 BF90      		pop r11
+ 965 0108 AF90      		pop r10
+ 966 010a 9F90      		pop r9
+ 967               	.LVL79:
+ 968 010c 0895      		ret
+ 969               		.cfi_endproc
+ 970               	.LFE108:
+ 972               		.section	.text.TCP_GetConnectionState,"ax",@progbits
+ 973               	.global	TCP_GetConnectionState
+ 975               	TCP_GetConnectionState:
+ 976               	.LFB109:
+ 297:Lib/TCP.c     **** 	/* Note, Port number should be specified in BIG endian to simplify network code */
+ 977               		.loc 2 297 0
+ 978               		.cfi_startproc
+ 979               	.LVL80:
+ 980 0000 AF92      		push r10
+ 981               	.LCFI39:
+ 982               		.cfi_def_cfa_offset 3
+ 983               		.cfi_offset 10, -2
+ 984 0002 BF92      		push r11
+ 985               	.LCFI40:
+ 986               		.cfi_def_cfa_offset 4
+ 987               		.cfi_offset 11, -3
+ 988 0004 CF92      		push r12
+ 989               	.LCFI41:
+ 990               		.cfi_def_cfa_offset 5
+ 991               		.cfi_offset 12, -4
+ 992 0006 DF92      		push r13
+ 993               	.LCFI42:
+ 994               		.cfi_def_cfa_offset 6
+ 995               		.cfi_offset 13, -5
+ 996 0008 EF92      		push r14
+ 997               	.LCFI43:
+ 998               		.cfi_def_cfa_offset 7
+ 999               		.cfi_offset 14, -6
+ 1000 000a FF92      		push r15
+ 1001               	.LCFI44:
+ 1002               		.cfi_def_cfa_offset 8
+ 1003               		.cfi_offset 15, -7
+ 1004 000c 0F93      		push r16
+ 1005               	.LCFI45:
+ 1006               		.cfi_def_cfa_offset 9
+ 1007               		.cfi_offset 16, -8
+ 1008 000e 1F93      		push r17
+ 1009               	.LCFI46:
+ 1010               		.cfi_def_cfa_offset 10
+ 1011               		.cfi_offset 17, -9
+ 1012 0010 CF93      		push r28
+ 1013               	.LCFI47:
+ 1014               		.cfi_def_cfa_offset 11
+ 1015               		.cfi_offset 28, -10
+ 1016 0012 DF93      		push r29
+ 1017               	.LCFI48:
+ 1018               		.cfi_def_cfa_offset 12
+ 1019               		.cfi_offset 29, -11
+ 1020 0014 00D0      		rcall .
+ 1021 0016 00D0      		rcall .
+ 1022               	.LCFI49:
+ 1023               		.cfi_def_cfa_offset 16
+ 1024 0018 CDB7      		in r28,__SP_L__
+ 1025 001a DEB7      		in r29,__SP_H__
+ 1026               	.LCFI50:
+ 1027               		.cfi_def_cfa_register 28
+ 1028               	/* prologue: function */
+ 1029               	/* frame size = 4 */
+ 1030               	/* stack size = 14 */
+ 1031               	.L__stack_usage = 14
+ 1032 001c 6C01      		movw r12,r24
+ 1033 001e 4983      		std Y+1,r20
+ 1034 0020 5A83      		std Y+2,r21
+ 1035 0022 6B83      		std Y+3,r22
+ 1036 0024 7C83      		std Y+4,r23
+ 1037 0026 5901      		movw r10,r18
+ 1038               	.LVL81:
+ 1039 0028 00E0      		ldi r16,lo8(ConnectionStateTable)
+ 1040 002a 10E0      		ldi r17,hi8(ConnectionStateTable)
+ 297:Lib/TCP.c     **** 	/* Note, Port number should be specified in BIG endian to simplify network code */
+ 1041               		.loc 2 297 0
+ 1042 002c E12C      		mov r14,__zero_reg__
+ 1043 002e F12C      		mov r15,__zero_reg__
+ 1044               	.LVL82:
+ 1045               	.L53:
+ 1046               	.LBB32:
+ 303:Lib/TCP.c     **** 		     IP_COMPARE(&ConnectionStateTable[CSTableEntry].RemoteAddress, &RemoteAddress) &&
+ 1047               		.loc 2 303 0
+ 1048 0030 F801      		movw r30,r16
+ 1049 0032 8081      		ld r24,Z
+ 1050 0034 9181      		ldd r25,Z+1
+ 1051 0036 8C15      		cp r24,r12
+ 1052 0038 9D05      		cpc r25,r13
+ 1053 003a 01F4      		brne .L51
+ 304:Lib/TCP.c     **** 			 ConnectionStateTable[CSTableEntry].RemotePort == RemotePort)
+ 1054               		.loc 2 304 0 discriminator 1
+ 1055 003c 44E0      		ldi r20,lo8(4)
+ 1056 003e 50E0      		ldi r21,0
+ 1057 0040 BE01      		movw r22,r28
+ 1058 0042 6F5F      		subi r22,-1
+ 1059 0044 7F4F      		sbci r23,-1
+ 1060 0046 C801      		movw r24,r16
+ 1061 0048 0496      		adiw r24,4
+ 1062 004a 0E94 0000 		call memcmp
+ 1063               	.LVL83:
+ 303:Lib/TCP.c     **** 		     IP_COMPARE(&ConnectionStateTable[CSTableEntry].RemoteAddress, &RemoteAddress) &&
+ 1064               		.loc 2 303 0 discriminator 1
+ 1065 004e 892B      		or r24,r25
+ 1066 0050 01F4      		brne .L51
+ 304:Lib/TCP.c     **** 			 ConnectionStateTable[CSTableEntry].RemotePort == RemotePort)
+ 1067               		.loc 2 304 0
+ 1068 0052 F801      		movw r30,r16
+ 1069 0054 8281      		ldd r24,Z+2
+ 1070 0056 9381      		ldd r25,Z+3
+ 1071 0058 8A15      		cp r24,r10
+ 1072 005a 9B05      		cpc r25,r11
+ 1073 005c 01F4      		brne .L51
+ 308:Lib/TCP.c     **** 		}
+ 1074               		.loc 2 308 0
+ 1075 005e 86E1      		ldi r24,lo8(22)
+ 1076 0060 92E0      		ldi r25,lo8(2)
+ 1077 0062 E89E      		mul r14,r24
+ 1078 0064 F001      		movw r30,r0
+ 1079 0066 E99E      		mul r14,r25
+ 1080 0068 F00D      		add r31,r0
+ 1081 006a F89E      		mul r15,r24
+ 1082 006c F00D      		add r31,r0
+ 1083 006e 1124      		clr r1
+ 1084 0070 E050      		subi r30,lo8(-(ConnectionStateTable+533))
+ 1085 0072 F040      		sbci r31,hi8(-(ConnectionStateTable+533))
+ 1086 0074 8081      		ld r24,Z
+ 1087 0076 00C0      		rjmp .L52
+ 1088               	.L51:
+ 1089               	.LVL84:
+ 1090 0078 FFEF      		ldi r31,-1
+ 1091 007a EF1A      		sub r14,r31
+ 1092 007c FF0A      		sbc r15,r31
+ 1093               	.LVL85:
+ 1094 007e 0A5E      		subi r16,-22
+ 1095 0080 1D4F      		sbci r17,-3
+ 300:Lib/TCP.c     **** 	{
+ 1096               		.loc 2 300 0 discriminator 2
+ 1097 0082 83E0      		ldi r24,3
+ 1098 0084 E816      		cp r14,r24
+ 1099 0086 F104      		cpc r15,__zero_reg__
+ 1100 0088 01F4      		brne .L53
+ 1101               	.LBE32:
+ 312:Lib/TCP.c     **** }
+ 1102               		.loc 2 312 0
+ 1103 008a 8AE0      		ldi r24,lo8(10)
+ 1104               	.LVL86:
+ 1105               	.L52:
+ 1106               	/* epilogue start */
+ 313:Lib/TCP.c     **** 
+ 1107               		.loc 2 313 0
+ 1108 008c 0F90      		pop __tmp_reg__
+ 1109 008e 0F90      		pop __tmp_reg__
+ 1110 0090 0F90      		pop __tmp_reg__
+ 1111 0092 0F90      		pop __tmp_reg__
+ 1112 0094 DF91      		pop r29
+ 1113 0096 CF91      		pop r28
+ 1114 0098 1F91      		pop r17
+ 1115 009a 0F91      		pop r16
+ 1116 009c FF90      		pop r15
+ 1117 009e EF90      		pop r14
+ 1118 00a0 DF90      		pop r13
+ 1119 00a2 CF90      		pop r12
+ 1120               	.LVL87:
+ 1121 00a4 BF90      		pop r11
+ 1122 00a6 AF90      		pop r10
+ 1123               	.LVL88:
+ 1124 00a8 0895      		ret
+ 1125               		.cfi_endproc
+ 1126               	.LFE109:
+ 1128               		.section	.text.TCP_GetConnectionInfo,"ax",@progbits
+ 1129               	.global	TCP_GetConnectionInfo
+ 1131               	TCP_GetConnectionInfo:
+ 1132               	.LFB110:
+ 326:Lib/TCP.c     **** 	/* Note, Port number should be specified in BIG endian to simplify network code */
+ 1133               		.loc 2 326 0
+ 1134               		.cfi_startproc
+ 1135               	.LVL89:
+ 1136 0000 AF92      		push r10
+ 1137               	.LCFI51:
+ 1138               		.cfi_def_cfa_offset 3
+ 1139               		.cfi_offset 10, -2
+ 1140 0002 BF92      		push r11
+ 1141               	.LCFI52:
+ 1142               		.cfi_def_cfa_offset 4
+ 1143               		.cfi_offset 11, -3
+ 1144 0004 CF92      		push r12
+ 1145               	.LCFI53:
+ 1146               		.cfi_def_cfa_offset 5
+ 1147               		.cfi_offset 12, -4
+ 1148 0006 DF92      		push r13
+ 1149               	.LCFI54:
+ 1150               		.cfi_def_cfa_offset 6
+ 1151               		.cfi_offset 13, -5
+ 1152 0008 EF92      		push r14
+ 1153               	.LCFI55:
+ 1154               		.cfi_def_cfa_offset 7
+ 1155               		.cfi_offset 14, -6
+ 1156 000a FF92      		push r15
+ 1157               	.LCFI56:
+ 1158               		.cfi_def_cfa_offset 8
+ 1159               		.cfi_offset 15, -7
+ 1160 000c 0F93      		push r16
+ 1161               	.LCFI57:
+ 1162               		.cfi_def_cfa_offset 9
+ 1163               		.cfi_offset 16, -8
+ 1164 000e 1F93      		push r17
+ 1165               	.LCFI58:
+ 1166               		.cfi_def_cfa_offset 10
+ 1167               		.cfi_offset 17, -9
+ 1168 0010 CF93      		push r28
+ 1169               	.LCFI59:
+ 1170               		.cfi_def_cfa_offset 11
+ 1171               		.cfi_offset 28, -10
+ 1172 0012 DF93      		push r29
+ 1173               	.LCFI60:
+ 1174               		.cfi_def_cfa_offset 12
+ 1175               		.cfi_offset 29, -11
+ 1176 0014 00D0      		rcall .
+ 1177 0016 00D0      		rcall .
+ 1178               	.LCFI61:
+ 1179               		.cfi_def_cfa_offset 16
+ 1180 0018 CDB7      		in r28,__SP_L__
+ 1181 001a DEB7      		in r29,__SP_H__
+ 1182               	.LCFI62:
+ 1183               		.cfi_def_cfa_register 28
+ 1184               	/* prologue: function */
+ 1185               	/* frame size = 4 */
+ 1186               	/* stack size = 14 */
+ 1187               	.L__stack_usage = 14
+ 1188 001c 6C01      		movw r12,r24
+ 1189 001e 4983      		std Y+1,r20
+ 1190 0020 5A83      		std Y+2,r21
+ 1191 0022 6B83      		std Y+3,r22
+ 1192 0024 7C83      		std Y+4,r23
+ 1193 0026 5901      		movw r10,r18
+ 1194               	.LVL90:
+ 1195 0028 00E0      		ldi r16,lo8(ConnectionStateTable)
+ 1196 002a 10E0      		ldi r17,hi8(ConnectionStateTable)
+ 326:Lib/TCP.c     **** 	/* Note, Port number should be specified in BIG endian to simplify network code */
+ 1197               		.loc 2 326 0
+ 1198 002c E12C      		mov r14,__zero_reg__
+ 1199 002e F12C      		mov r15,__zero_reg__
+ 1200               	.LVL91:
+ 1201               	.L58:
+ 1202               	.LBB33:
+ 332:Lib/TCP.c     **** 		     IP_COMPARE(&ConnectionStateTable[CSTableEntry].RemoteAddress, &RemoteAddress) &&
+ 1203               		.loc 2 332 0
+ 1204 0030 F801      		movw r30,r16
+ 1205 0032 8081      		ld r24,Z
+ 1206 0034 9181      		ldd r25,Z+1
+ 1207 0036 8C15      		cp r24,r12
+ 1208 0038 9D05      		cpc r25,r13
+ 1209 003a 01F4      		brne .L56
+ 333:Lib/TCP.c     **** 			 ConnectionStateTable[CSTableEntry].RemotePort == RemotePort)
+ 1210               		.loc 2 333 0 discriminator 1
+ 1211 003c 44E0      		ldi r20,lo8(4)
+ 1212 003e 50E0      		ldi r21,0
+ 1213 0040 BE01      		movw r22,r28
+ 1214 0042 6F5F      		subi r22,-1
+ 1215 0044 7F4F      		sbci r23,-1
+ 1216 0046 C801      		movw r24,r16
+ 1217 0048 0496      		adiw r24,4
+ 1218 004a 0E94 0000 		call memcmp
+ 1219               	.LVL92:
+ 332:Lib/TCP.c     **** 		     IP_COMPARE(&ConnectionStateTable[CSTableEntry].RemoteAddress, &RemoteAddress) &&
+ 1220               		.loc 2 332 0 discriminator 1
+ 1221 004e 892B      		or r24,r25
+ 1222 0050 01F4      		brne .L56
+ 333:Lib/TCP.c     **** 			 ConnectionStateTable[CSTableEntry].RemotePort == RemotePort)
+ 1223               		.loc 2 333 0
+ 1224 0052 F801      		movw r30,r16
+ 1225 0054 8281      		ldd r24,Z+2
+ 1226 0056 9381      		ldd r25,Z+3
+ 1227 0058 8A15      		cp r24,r10
+ 1228 005a 9B05      		cpc r25,r11
+ 1229 005c 01F4      		brne .L56
+ 336:Lib/TCP.c     **** 		}
+ 1230               		.loc 2 336 0
+ 1231 005e 26E1      		ldi r18,lo8(22)
+ 1232 0060 32E0      		ldi r19,lo8(2)
+ 1233 0062 E29E      		mul r14,r18
+ 1234 0064 C001      		movw r24,r0
+ 1235 0066 E39E      		mul r14,r19
+ 1236 0068 900D      		add r25,r0
+ 1237 006a F29E      		mul r15,r18
+ 1238 006c 900D      		add r25,r0
+ 1239 006e 1124      		clr r1
+ 1240 0070 8050      		subi r24,lo8(-(ConnectionStateTable+8))
+ 1241 0072 9040      		sbci r25,hi8(-(ConnectionStateTable+8))
+ 1242 0074 00C0      		rjmp .L57
+ 1243               	.L56:
+ 1244               	.LVL93:
+ 1245 0076 FFEF      		ldi r31,-1
+ 1246 0078 EF1A      		sub r14,r31
+ 1247 007a FF0A      		sbc r15,r31
+ 1248               	.LVL94:
+ 1249 007c 0A5E      		subi r16,-22
+ 1250 007e 1D4F      		sbci r17,-3
+ 329:Lib/TCP.c     **** 	{
+ 1251               		.loc 2 329 0 discriminator 2
+ 1252 0080 83E0      		ldi r24,3
+ 1253 0082 E816      		cp r14,r24
+ 1254 0084 F104      		cpc r15,__zero_reg__
+ 1255 0086 01F4      		brne .L58
+ 1256               	.LBE33:
+ 340:Lib/TCP.c     **** }
+ 1257               		.loc 2 340 0
+ 1258 0088 80E0      		ldi r24,0
+ 1259 008a 90E0      		ldi r25,0
+ 1260               	.LVL95:
+ 1261               	.L57:
+ 1262               	/* epilogue start */
+ 341:Lib/TCP.c     **** 
+ 1263               		.loc 2 341 0
+ 1264 008c 0F90      		pop __tmp_reg__
+ 1265 008e 0F90      		pop __tmp_reg__
+ 1266 0090 0F90      		pop __tmp_reg__
+ 1267 0092 0F90      		pop __tmp_reg__
+ 1268 0094 DF91      		pop r29
+ 1269 0096 CF91      		pop r28
+ 1270 0098 1F91      		pop r17
+ 1271 009a 0F91      		pop r16
+ 1272 009c FF90      		pop r15
+ 1273 009e EF90      		pop r14
+ 1274 00a0 DF90      		pop r13
+ 1275 00a2 CF90      		pop r12
+ 1276               	.LVL96:
+ 1277 00a4 BF90      		pop r11
+ 1278 00a6 AF90      		pop r10
+ 1279               	.LVL97:
+ 1280 00a8 0895      		ret
+ 1281               		.cfi_endproc
+ 1282               	.LFE110:
+ 1284               		.section	.text.TCP_ProcessTCPPacket,"ax",@progbits
+ 1285               	.global	TCP_ProcessTCPPacket
+ 1287               	TCP_ProcessTCPPacket:
+ 1288               	.LFB111:
+ 357:Lib/TCP.c     **** 	IP_Header_t*  IPHeaderIN   = (IP_Header_t*)IPHeaderInStart;
+ 1289               		.loc 2 357 0
+ 1290               		.cfi_startproc
+ 1291               	.LVL98:
+ 1292 0000 4F92      		push r4
+ 1293               	.LCFI63:
+ 1294               		.cfi_def_cfa_offset 3
+ 1295               		.cfi_offset 4, -2
+ 1296 0002 5F92      		push r5
+ 1297               	.LCFI64:
+ 1298               		.cfi_def_cfa_offset 4
+ 1299               		.cfi_offset 5, -3
+ 1300 0004 6F92      		push r6
+ 1301               	.LCFI65:
+ 1302               		.cfi_def_cfa_offset 5
+ 1303               		.cfi_offset 6, -4
+ 1304 0006 7F92      		push r7
+ 1305               	.LCFI66:
+ 1306               		.cfi_def_cfa_offset 6
+ 1307               		.cfi_offset 7, -5
+ 1308 0008 8F92      		push r8
+ 1309               	.LCFI67:
+ 1310               		.cfi_def_cfa_offset 7
+ 1311               		.cfi_offset 8, -6
+ 1312 000a 9F92      		push r9
+ 1313               	.LCFI68:
+ 1314               		.cfi_def_cfa_offset 8
+ 1315               		.cfi_offset 9, -7
+ 1316 000c AF92      		push r10
+ 1317               	.LCFI69:
+ 1318               		.cfi_def_cfa_offset 9
+ 1319               		.cfi_offset 10, -8
+ 1320 000e BF92      		push r11
+ 1321               	.LCFI70:
+ 1322               		.cfi_def_cfa_offset 10
+ 1323               		.cfi_offset 11, -9
+ 1324 0010 CF92      		push r12
+ 1325               	.LCFI71:
+ 1326               		.cfi_def_cfa_offset 11
+ 1327               		.cfi_offset 12, -10
+ 1328 0012 DF92      		push r13
+ 1329               	.LCFI72:
+ 1330               		.cfi_def_cfa_offset 12
+ 1331               		.cfi_offset 13, -11
+ 1332 0014 EF92      		push r14
+ 1333               	.LCFI73:
+ 1334               		.cfi_def_cfa_offset 13
+ 1335               		.cfi_offset 14, -12
+ 1336 0016 FF92      		push r15
+ 1337               	.LCFI74:
+ 1338               		.cfi_def_cfa_offset 14
+ 1339               		.cfi_offset 15, -13
+ 1340 0018 0F93      		push r16
+ 1341               	.LCFI75:
+ 1342               		.cfi_def_cfa_offset 15
+ 1343               		.cfi_offset 16, -14
+ 1344 001a 1F93      		push r17
+ 1345               	.LCFI76:
+ 1346               		.cfi_def_cfa_offset 16
+ 1347               		.cfi_offset 17, -15
+ 1348 001c CF93      		push r28
+ 1349               	.LCFI77:
+ 1350               		.cfi_def_cfa_offset 17
+ 1351               		.cfi_offset 28, -16
+ 1352 001e DF93      		push r29
+ 1353               	.LCFI78:
+ 1354               		.cfi_def_cfa_offset 18
+ 1355               		.cfi_offset 29, -17
+ 1356               	/* prologue: function */
+ 1357               	/* frame size = 0 */
+ 1358               	/* stack size = 16 */
+ 1359               	.L__stack_usage = 16
+ 1360 0020 7C01      		movw r14,r24
+ 1361 0022 EB01      		movw r28,r22
+ 1362 0024 6A01      		movw r12,r20
+ 1363               	.LVL99:
+ 364:Lib/TCP.c     **** 
+ 1364               		.loc 2 364 0
+ 1365 0026 CB01      		movw r24,r22
+ 1366               	.LVL100:
+ 1367 0028 0E94 0000 		call DecodeTCPHeader
+ 1368               	.LVL101:
+ 369:Lib/TCP.c     **** 	{
+ 1369               		.loc 2 369 0
+ 1370 002c AA80      		ldd r10,Y+2
+ 1371 002e BB80      		ldd r11,Y+3
+ 1372 0030 C501      		movw r24,r10
+ 1373 0032 0E94 0000 		call TCP_GetPortState
+ 1374               	.LVL102:
+ 1375 0036 8130      		cpi r24,lo8(1)
+ 1376 0038 01F4      		brne .L61
+ 372:Lib/TCP.c     **** 		  TCP_SetConnectionState(TCPHeaderIN->DestinationPort, IPHeaderIN->SourceAddress, TCPHeaderIN->So
+ 1377               		.loc 2 372 0
+ 1378 003a 8D85      		ldd r24,Y+13
+ 1379 003c 81FF      		sbrs r24,1
+ 1380 003e 00C0      		rjmp .L62
+ 373:Lib/TCP.c     **** 
+ 1381               		.loc 2 373 0
+ 1382 0040 2881      		ld r18,Y
+ 1383 0042 3981      		ldd r19,Y+1
+ 1384 0044 D701      		movw r26,r14
+ 1385 0046 1C96      		adiw r26,12
+ 1386 0048 4D91      		ld r20,X+
+ 1387 004a 5D91      		ld r21,X+
+ 1388 004c 6D91      		ld r22,X+
+ 1389 004e 7C91      		ld r23,X
+ 1390 0050 1F97      		sbiw r26,12+3
+ 1391 0052 00E0      		ldi r16,0
+ 1392 0054 C501      		movw r24,r10
+ 1393 0056 0E94 0000 		call TCP_SetConnectionState
+ 1394               	.LVL103:
+ 1395               	.L62:
+ 376:Lib/TCP.c     **** 		{
+ 1396               		.loc 2 376 0
+ 1397 005a 1D85      		ldd r17,Y+13
+ 1398 005c AA80      		ldd r10,Y+2
+ 1399 005e BB80      		ldd r11,Y+3
+ 1400 0060 8880      		ld r8,Y
+ 1401 0062 9980      		ldd r9,Y+1
+ 1402 0064 F701      		movw r30,r14
+ 1403 0066 4484      		ldd r4,Z+12
+ 1404 0068 5584      		ldd r5,Z+13
+ 1405 006a 6684      		ldd r6,Z+14
+ 1406 006c 7784      		ldd r7,Z+15
+ 1407 006e 12FF      		sbrs r17,2
+ 1408 0070 00C0      		rjmp .L63
+ 378:Lib/TCP.c     **** 			                           TCPHeaderIN->SourcePort, TCP_Connection_Closed))
+ 1409               		.loc 2 378 0
+ 1410 0072 0AE0      		ldi r16,lo8(10)
+ 1411 0074 9401      		movw r18,r8
+ 1412 0076 B301      		movw r22,r6
+ 1413 0078 A201      		movw r20,r4
+ 1414 007a C501      		movw r24,r10
+ 1415 007c 0E94 0000 		call TCP_SetConnectionState
+ 1416               	.LVL104:
+ 1417 0080 8823      		tst r24
+ 1418 0082 01F4      		brne .+2
+ 1419 0084 00C0      		rjmp .L66
+ 1420               	.L61:
+ 381:Lib/TCP.c     **** 				PacketResponse = true;
+ 1421               		.loc 2 381 0
+ 1422 0086 84E1      		ldi r24,lo8(20)
+ 1423 0088 D601      		movw r26,r12
+ 1424 008a 1D96      		adiw r26,13
+ 1425 008c 8C93      		st X,r24
+ 1426               	.LVL105:
+ 1427 008e 00C0      		rjmp .L65
+ 1428               	.LVL106:
+ 1429               	.L63:
+ 388:Lib/TCP.c     **** 			{
+ 1430               		.loc 2 388 0
+ 1431 0090 9401      		movw r18,r8
+ 1432 0092 B301      		movw r22,r6
+ 1433 0094 A201      		movw r20,r4
+ 1434 0096 C501      		movw r24,r10
+ 1435 0098 0E94 0000 		call TCP_GetConnectionState
+ 1436               	.LVL107:
+ 1437 009c 90E0      		ldi r25,0
+ 1438 009e 8830      		cpi r24,8
+ 1439 00a0 9105      		cpc r25,__zero_reg__
+ 1440 00a2 00F0      		brlo .+2
+ 1441 00a4 00C0      		rjmp .L66
+ 1442 00a6 FC01      		movw r30,r24
+ 1443 00a8 E050      		subi r30,lo8(-(gs(.L68)))
+ 1444 00aa F040      		sbci r31,hi8(-(gs(.L68)))
+ 1445 00ac 0C94 0000 		jmp __tablejump2__
+ 1446               		.section	.progmem.gcc_sw_table.TCP_ProcessTCPPacket,"a",@progbits
+ 1447               		.p2align	1
+ 1448               	.L68:
+ 1449 0000 0000      		.word gs(.L67)
+ 1450 0002 0000      		.word gs(.L66)
+ 1451 0004 0000      		.word gs(.L69)
+ 1452 0006 0000      		.word gs(.L70)
+ 1453 0008 0000      		.word gs(.L71)
+ 1454 000a 0000      		.word gs(.L72)
+ 1455 000c 0000      		.word gs(.L73)
+ 1456 000e 0000      		.word gs(.L74)
+ 1457               		.section	.text.TCP_ProcessTCPPacket
+ 1458               	.L67:
+ 391:Lib/TCP.c     **** 					{
+ 1459               		.loc 2 391 0
+ 1460 00b0 1230      		cpi r17,lo8(2)
+ 1461 00b2 01F0      		breq .+2
+ 1462 00b4 00C0      		rjmp .L66
+ 394:Lib/TCP.c     **** 						                           TCPHeaderIN->SourcePort, TCP_Connection_SYNReceived))
+ 1463               		.loc 2 394 0
+ 1464 00b6 02E0      		ldi r16,lo8(2)
+ 1465 00b8 9401      		movw r18,r8
+ 1466 00ba B301      		movw r22,r6
+ 1467 00bc A201      		movw r20,r4
+ 1468 00be C501      		movw r24,r10
+ 1469 00c0 0E94 0000 		call TCP_SetConnectionState
+ 1470               	.LVL108:
+ 1471 00c4 8823      		tst r24
+ 1472 00c6 01F0      		breq .L75
+ 397:Lib/TCP.c     **** 
+ 1473               		.loc 2 397 0
+ 1474 00c8 82E1      		ldi r24,lo8(18)
+ 1475 00ca F601      		movw r30,r12
+ 1476 00cc 8587      		std Z+13,r24
+ 399:Lib/TCP.c     **** 
+ 1477               		.loc 2 399 0
+ 1478 00ce 2881      		ld r18,Y
+ 1479 00d0 3981      		ldd r19,Y+1
+ 1480 00d2 D701      		movw r26,r14
+ 1481 00d4 1C96      		adiw r26,12
+ 1482 00d6 4D91      		ld r20,X+
+ 1483 00d8 5D91      		ld r21,X+
+ 1484 00da 6D91      		ld r22,X+
+ 1485 00dc 7C91      		ld r23,X
+ 1486 00de 1F97      		sbiw r26,12+3
+ 1487 00e0 8A81      		ldd r24,Y+2
+ 1488 00e2 9B81      		ldd r25,Y+3
+ 1489 00e4 0E94 0000 		call TCP_GetConnectionInfo
+ 1490               	.LVL109:
+ 1491 00e8 8C01      		movw r16,r24
+ 1492               	.LVL110:
+ 401:Lib/TCP.c     **** 							ConnectionInfo->SequenceNumberOut = 0;
+ 1493               		.loc 2 401 0
+ 1494 00ea 6C81      		ldd r22,Y+4
+ 1495 00ec 7D81      		ldd r23,Y+5
+ 1496 00ee 8E81      		ldd r24,Y+6
+ 1497 00f0 9F81      		ldd r25,Y+7
+ 1498 00f2 0E94 0000 		call SwapEndian_32
+ 1499               	.LVL111:
+ 1500 00f6 DC01      		movw r26,r24
+ 1501 00f8 CB01      		movw r24,r22
+ 1502 00fa 0196      		adiw r24,1
+ 1503 00fc A11D      		adc r26,__zero_reg__
+ 1504 00fe B11D      		adc r27,__zero_reg__
+ 1505 0100 F801      		movw r30,r16
+ 1506 0102 8083      		st Z,r24
+ 1507 0104 9183      		std Z+1,r25
+ 1508 0106 A283      		std Z+2,r26
+ 1509 0108 B383      		std Z+3,r27
+ 402:Lib/TCP.c     **** 							ConnectionInfo->Buffer.InUse      = false;
+ 1510               		.loc 2 402 0
+ 1511 010a 1482      		std Z+4,__zero_reg__
+ 1512 010c 1582      		std Z+5,__zero_reg__
+ 1513 010e 1682      		std Z+6,__zero_reg__
+ 1514 0110 1782      		std Z+7,__zero_reg__
+ 403:Lib/TCP.c     **** 						}
+ 1515               		.loc 2 403 0
+ 1516 0112 E45F      		subi r30,-12
+ 1517 0114 FD4F      		sbci r31,-3
+ 1518 0116 1082      		st Z,__zero_reg__
+ 1519 0118 00C0      		rjmp .L65
+ 1520               	.LVL112:
+ 1521               	.L75:
+ 407:Lib/TCP.c     **** 						}
+ 1522               		.loc 2 407 0
+ 1523 011a 84E0      		ldi r24,lo8(4)
+ 1524 011c 00C0      		rjmp .L103
+ 1525               	.L69:
+ 415:Lib/TCP.c     **** 					{
+ 1526               		.loc 2 415 0
+ 1527 011e 1031      		cpi r17,lo8(16)
+ 1528 0120 01F0      		breq .+2
+ 1529 0122 00C0      		rjmp .L66
+ 419:Lib/TCP.c     **** 											   TCPHeaderIN->SourcePort, TCP_Connection_Established);
+ 1530               		.loc 2 419 0
+ 1531 0124 03E0      		ldi r16,lo8(3)
+ 1532 0126 9401      		movw r18,r8
+ 1533 0128 B301      		movw r22,r6
+ 1534 012a A201      		movw r20,r4
+ 1535 012c C501      		movw r24,r10
+ 1536 012e 0E94 0000 		call TCP_SetConnectionState
+ 1537               	.LVL113:
+ 422:Lib/TCP.c     **** 															   TCPHeaderIN->SourcePort);
+ 1538               		.loc 2 422 0
+ 1539 0132 2881      		ld r18,Y
+ 1540 0134 3981      		ldd r19,Y+1
+ 1541 0136 D701      		movw r26,r14
+ 1542 0138 1C96      		adiw r26,12
+ 1543 013a 4D91      		ld r20,X+
+ 1544 013c 5D91      		ld r21,X+
+ 1545 013e 6D91      		ld r22,X+
+ 1546 0140 7C91      		ld r23,X
+ 1547 0142 1F97      		sbiw r26,12+3
+ 1548 0144 8A81      		ldd r24,Y+2
+ 1549 0146 9B81      		ldd r25,Y+3
+ 1550 0148 0E94 0000 		call TCP_GetConnectionInfo
+ 1551               	.LVL114:
+ 425:Lib/TCP.c     **** 					}
+ 1552               		.loc 2 425 0
+ 1553 014c FC01      		movw r30,r24
+ 1554 014e 4481      		ldd r20,Z+4
+ 1555 0150 5581      		ldd r21,Z+5
+ 1556 0152 6681      		ldd r22,Z+6
+ 1557 0154 7781      		ldd r23,Z+7
+ 1558 0156 4F5F      		subi r20,-1
+ 1559 0158 5F4F      		sbci r21,-1
+ 1560 015a 6F4F      		sbci r22,-1
+ 1561 015c 7F4F      		sbci r23,-1
+ 1562 015e 4483      		std Z+4,r20
+ 1563 0160 5583      		std Z+5,r21
+ 1564 0162 6683      		std Z+6,r22
+ 1565 0164 7783      		std Z+7,r23
+ 1566 0166 00C0      		rjmp .L66
+ 1567               	.LVL115:
+ 1568               	.L70:
+ 430:Lib/TCP.c     **** 					{
+ 1569               		.loc 2 430 0
+ 1570 0168 1131      		cpi r17,lo8(17)
+ 1571 016a 01F4      		brne .L76
+ 434:Lib/TCP.c     **** 						PacketResponse      = true;
+ 1572               		.loc 2 434 0
+ 1573 016c F601      		movw r30,r12
+ 1574 016e 1587      		std Z+13,r17
+ 1575               	.LVL116:
+ 437:Lib/TCP.c     **** 											   TCPHeaderIN->SourcePort, TCP_Connection_CloseWait);
+ 1576               		.loc 2 437 0
+ 1577 0170 2881      		ld r18,Y
+ 1578 0172 3981      		ldd r19,Y+1
+ 1579 0174 D701      		movw r26,r14
+ 1580 0176 1C96      		adiw r26,12
+ 1581 0178 4D91      		ld r20,X+
+ 1582 017a 5D91      		ld r21,X+
+ 1583 017c 6D91      		ld r22,X+
+ 1584 017e 7C91      		ld r23,X
+ 1585 0180 1F97      		sbiw r26,12+3
+ 1586 0182 06E0      		ldi r16,lo8(6)
+ 1587 0184 8A81      		ldd r24,Y+2
+ 1588 0186 9B81      		ldd r25,Y+3
+ 1589 0188 0E94 0000 		call TCP_SetConnectionState
+ 1590               	.LVL117:
+ 440:Lib/TCP.c     **** 															   TCPHeaderIN->SourcePort);
+ 1591               		.loc 2 440 0
+ 1592 018c 2881      		ld r18,Y
+ 1593 018e 3981      		ldd r19,Y+1
+ 1594 0190 F701      		movw r30,r14
+ 1595 0192 4485      		ldd r20,Z+12
+ 1596 0194 5585      		ldd r21,Z+13
+ 1597 0196 6685      		ldd r22,Z+14
+ 1598 0198 7785      		ldd r23,Z+15
+ 1599 019a 8A81      		ldd r24,Y+2
+ 1600 019c 9B81      		ldd r25,Y+3
+ 1601 019e 0E94 0000 		call TCP_GetConnectionInfo
+ 1602               	.LVL118:
+ 1603 01a2 FC01      		movw r30,r24
+ 1604               	.LVL119:
+ 443:Lib/TCP.c     **** 						ConnectionInfo->SequenceNumberOut++;
+ 1605               		.loc 2 443 0
+ 1606 01a4 8081      		ld r24,Z
+ 1607 01a6 9181      		ldd r25,Z+1
+ 1608 01a8 A281      		ldd r26,Z+2
+ 1609 01aa B381      		ldd r27,Z+3
+ 1610               	.LVL120:
+ 1611 01ac 0196      		adiw r24,1
+ 1612 01ae A11D      		adc r26,__zero_reg__
+ 1613 01b0 B11D      		adc r27,__zero_reg__
+ 1614 01b2 8083      		st Z,r24
+ 1615 01b4 9183      		std Z+1,r25
+ 1616 01b6 A283      		std Z+2,r26
+ 1617 01b8 B383      		std Z+3,r27
+ 444:Lib/TCP.c     **** 					}
+ 1618               		.loc 2 444 0
+ 1619 01ba 8481      		ldd r24,Z+4
+ 1620 01bc 9581      		ldd r25,Z+5
+ 1621 01be A681      		ldd r26,Z+6
+ 1622 01c0 B781      		ldd r27,Z+7
+ 1623 01c2 0196      		adiw r24,1
+ 1624 01c4 A11D      		adc r26,__zero_reg__
+ 1625 01c6 B11D      		adc r27,__zero_reg__
+ 1626 01c8 8483      		std Z+4,r24
+ 1627 01ca 9583      		std Z+5,r25
+ 1628 01cc A683      		std Z+6,r26
+ 1629 01ce B783      		std Z+7,r27
+ 1630 01d0 00C0      		rjmp .L65
+ 1631               	.LVL121:
+ 1632               	.L76:
+ 446:Lib/TCP.c     **** 					{
+ 1633               		.loc 2 446 0
+ 1634 01d2 177F      		andi r17,lo8(-9)
+ 1635 01d4 1031      		cpi r17,lo8(16)
+ 1636 01d6 01F0      		breq .+2
+ 1637 01d8 00C0      		rjmp .L66
+ 448:Lib/TCP.c     **** 															   TCPHeaderIN->SourcePort);
+ 1638               		.loc 2 448 0
+ 1639 01da 9401      		movw r18,r8
+ 1640 01dc B301      		movw r22,r6
+ 1641 01de A201      		movw r20,r4
+ 1642 01e0 C501      		movw r24,r10
+ 1643 01e2 0E94 0000 		call TCP_GetConnectionInfo
+ 1644               	.LVL122:
+ 1645 01e6 8C01      		movw r16,r24
+ 1646               	.LVL123:
+ 452:Lib/TCP.c     **** 						{
+ 1647               		.loc 2 452 0
+ 1648 01e8 4C01      		movw r8,r24
+ 1649 01ea F4EF      		ldi r31,-12
+ 1650 01ec 8F1A      		sub r8,r31
+ 1651 01ee FDEF      		ldi r31,-3
+ 1652 01f0 9F0A      		sbc r9,r31
+ 1653 01f2 D401      		movw r26,r8
+ 1654 01f4 8C91      		ld r24,X
+ 1655 01f6 F801      		movw r30,r16
+ 1656 01f8 E65F      		subi r30,-10
+ 1657 01fa FD4F      		sbci r31,-3
+ 1658 01fc 8111      		cpse r24,__zero_reg__
+ 1659 01fe 00C0      		rjmp .L77
+ 452:Lib/TCP.c     **** 						{
+ 1660               		.loc 2 452 0 is_stmt 0 discriminator 1
+ 1661 0200 1197      		sbiw r26,1
+ 1662 0202 8C91      		ld r24,X
+ 1663 0204 8111      		cpse r24,__zero_reg__
+ 1664 0206 00C0      		rjmp .L77
+ 454:Lib/TCP.c     **** 							ConnectionInfo->Buffer.InUse     = true;
+ 1665               		.loc 2 454 0 is_stmt 1
+ 1666 0208 1082      		st Z,__zero_reg__
+ 455:Lib/TCP.c     **** 							ConnectionInfo->Buffer.Length    = 0;
+ 1667               		.loc 2 455 0
+ 1668 020a 81E0      		ldi r24,lo8(1)
+ 1669 020c D401      		movw r26,r8
+ 1670 020e 8C93      		st X,r24
+ 456:Lib/TCP.c     **** 						}
+ 1671               		.loc 2 456 0
+ 1672 0210 D801      		movw r26,r16
+ 1673 0212 1996      		adiw r26,8+1
+ 1674 0214 1C92      		st X,__zero_reg__
+ 1675 0216 1E92      		st -X,__zero_reg__
+ 1676 0218 1897      		sbiw r26,8
+ 1677               	.L77:
+ 460:Lib/TCP.c     **** 							(ConnectionInfo->Buffer.Length != TCP_WINDOW_SIZE))
+ 1678               		.loc 2 460 0
+ 1679 021a 8081      		ld r24,Z
+ 1680 021c 8111      		cpse r24,__zero_reg__
+ 1681 021e 00C0      		rjmp .L85
+ 461:Lib/TCP.c     **** 						{
+ 1682               		.loc 2 461 0 discriminator 1
+ 1683 0220 F801      		movw r30,r16
+ 1684 0222 6084      		ldd r6,Z+8
+ 1685 0224 7184      		ldd r7,Z+9
+ 460:Lib/TCP.c     **** 							(ConnectionInfo->Buffer.Length != TCP_WINDOW_SIZE))
+ 1686               		.loc 2 460 0 discriminator 1
+ 1687 0226 6114      		cp r6,__zero_reg__
+ 1688 0228 F2E0      		ldi r31,2
+ 1689 022a 7F06      		cpc r7,r31
+ 1690 022c 01F4      		brne .+2
+ 1691 022e 00C0      		rjmp .L85
+ 1692               	.LBB34:
+ 463:Lib/TCP.c     **** 							uint16_t TCPOffset  = (TCPHeaderIN->DataOffset * sizeof(uint32_t));
+ 1693               		.loc 2 463 0
+ 1694 0230 D701      		movw r26,r14
+ 1695 0232 8C91      		ld r24,X
+ 1696 0234 8F70      		andi r24,lo8(15)
+ 1697 0236 B4E0      		ldi r27,lo8(4)
+ 1698 0238 8B9F      		mul r24,r27
+ 1699 023a 5001      		movw r10,r0
+ 1700 023c 1124      		clr __zero_reg__
+ 1701               	.LVL124:
+ 464:Lib/TCP.c     **** 							uint16_t DataLength = (SwapEndian_16(IPHeaderIN->TotalLength) - IPOffset - TCPOffset);
+ 1702               		.loc 2 464 0
+ 1703 023e 4C84      		ldd r4,Y+12
+ 1704 0240 4294      		swap r4
+ 1705 0242 9FE0      		ldi r25,lo8(15)
+ 1706 0244 4922      		and r4,r25
+ 1707 0246 E4E0      		ldi r30,lo8(4)
+ 1708 0248 4E9E      		mul r4,r30
+ 1709 024a 2001      		movw r4,r0
+ 1710 024c 1124      		clr __zero_reg__
+ 1711               	.LVL125:
+ 465:Lib/TCP.c     **** 
+ 1712               		.loc 2 465 0
+ 1713 024e D701      		movw r26,r14
+ 1714 0250 1296      		adiw r26,2
+ 1715 0252 8D91      		ld r24,X+
+ 1716 0254 9C91      		ld r25,X
+ 1717 0256 1397      		sbiw r26,2+1
+ 1718 0258 0E94 0000 		call SwapEndian_16
+ 1719               	.LVL126:
+ 1720 025c 8A19      		sub r24,r10
+ 1721 025e 9B09      		sbc r25,r11
+ 1722 0260 5C01      		movw r10,r24
+ 1723               	.LVL127:
+ 1724 0262 A418      		sub r10,r4
+ 1725 0264 B508      		sbc r11,r5
+ 1726               	.LVL128:
+ 468:Lib/TCP.c     **** 								   &((uint8_t*)TCPHeaderInStart)[TCPOffset],
+ 1727               		.loc 2 468 0
+ 1728 0266 C301      		movw r24,r6
+ 1729 0268 0A96      		adiw r24,10
+ 1730 026a BE01      		movw r22,r28
+ 1731 026c 640D      		add r22,r4
+ 1732 026e 751D      		adc r23,r5
+ 1733 0270 A501      		movw r20,r10
+ 1734 0272 800F      		add r24,r16
+ 1735 0274 911F      		adc r25,r17
+ 1736 0276 0E94 0000 		call memcpy
+ 1737               	.LVL129:
+ 472:Lib/TCP.c     **** 							ConnectionInfo->Buffer.Length    += DataLength;
+ 1738               		.loc 2 472 0
+ 1739 027a F801      		movw r30,r16
+ 1740 027c 8081      		ld r24,Z
+ 1741 027e 9181      		ldd r25,Z+1
+ 1742 0280 A281      		ldd r26,Z+2
+ 1743 0282 B381      		ldd r27,Z+3
+ 1744 0284 8A0D      		add r24,r10
+ 1745 0286 9B1D      		adc r25,r11
+ 1746 0288 A11D      		adc r26,__zero_reg__
+ 1747 028a B11D      		adc r27,__zero_reg__
+ 1748 028c 8083      		st Z,r24
+ 1749 028e 9183      		std Z+1,r25
+ 1750 0290 A283      		std Z+2,r26
+ 1751 0292 B383      		std Z+3,r27
+ 473:Lib/TCP.c     **** 
+ 1752               		.loc 2 473 0
+ 1753 0294 8085      		ldd r24,Z+8
+ 1754 0296 9185      		ldd r25,Z+9
+ 1755 0298 A80E      		add r10,r24
+ 1756 029a B91E      		adc r11,r25
+ 1757               	.LVL130:
+ 1758 029c B186      		std Z+9,r11
+ 1759 029e A086      		std Z+8,r10
+ 476:Lib/TCP.c     **** 							{
+ 1760               		.loc 2 476 0
+ 1761 02a0 A114      		cp r10,__zero_reg__
+ 1762 02a2 F2E0      		ldi r31,2
+ 1763 02a4 BF06      		cpc r11,r31
+ 1764 02a6 01F0      		breq .L79
+ 476:Lib/TCP.c     **** 							{
+ 1765               		.loc 2 476 0 is_stmt 0 discriminator 1
+ 1766 02a8 8D85      		ldd r24,Y+13
+ 1767 02aa 83FF      		sbrs r24,3
+ 1768 02ac 00C0      		rjmp .L66
+ 1769               	.L79:
+ 478:Lib/TCP.c     **** 								ConnectionInfo->Buffer.Ready = true;
+ 1770               		.loc 2 478 0 is_stmt 1
+ 1771 02ae D401      		movw r26,r8
+ 1772 02b0 1C92      		st X,__zero_reg__
+ 479:Lib/TCP.c     **** 
+ 1773               		.loc 2 479 0
+ 1774 02b2 F801      		movw r30,r16
+ 1775 02b4 E55F      		subi r30,-11
+ 1776 02b6 FD4F      		sbci r31,-3
+ 1777 02b8 81E0      		ldi r24,lo8(1)
+ 1778 02ba 8083      		st Z,r24
+ 481:Lib/TCP.c     **** 								PacketResponse      = true;
+ 1779               		.loc 2 481 0
+ 1780 02bc 80E1      		ldi r24,lo8(16)
+ 1781               	.LVL131:
+ 1782               	.L103:
+ 1783 02be F601      		movw r30,r12
+ 1784 02c0 8587      		std Z+13,r24
+ 1785               	.LVL132:
+ 1786 02c2 00C0      		rjmp .L65
+ 1787               	.LVL133:
+ 1788               	.L74:
+ 1789               	.LBE34:
+ 494:Lib/TCP.c     **** 															   TCPHeaderIN->SourcePort);
+ 1790               		.loc 2 494 0
+ 1791 02c4 9401      		movw r18,r8
+ 1792 02c6 B301      		movw r22,r6
+ 1793 02c8 A201      		movw r20,r4
+ 1794 02ca C501      		movw r24,r10
+ 1795 02cc 0E94 0000 		call TCP_GetConnectionInfo
+ 1796               	.LVL134:
+ 497:Lib/TCP.c     **** 						PacketResponse      = true;
+ 1797               		.loc 2 497 0
+ 1798 02d0 21E1      		ldi r18,lo8(17)
+ 1799 02d2 D601      		movw r26,r12
+ 1800 02d4 1D96      		adiw r26,13
+ 1801 02d6 2C93      		st X,r18
+ 1802               	.LVL135:
+ 500:Lib/TCP.c     **** 
+ 1803               		.loc 2 500 0
+ 1804 02d8 845F      		subi r24,-12
+ 1805 02da 9D4F      		sbci r25,-3
+ 1806               	.LVL136:
+ 1807 02dc FC01      		movw r30,r24
+ 1808 02de 1082      		st Z,__zero_reg__
+ 502:Lib/TCP.c     **** 											   TCPHeaderIN->SourcePort, TCP_Connection_FINWait1);
+ 1809               		.loc 2 502 0
+ 1810 02e0 2881      		ld r18,Y
+ 1811 02e2 3981      		ldd r19,Y+1
+ 1812 02e4 D701      		movw r26,r14
+ 1813 02e6 1C96      		adiw r26,12
+ 1814 02e8 4D91      		ld r20,X+
+ 1815 02ea 5D91      		ld r21,X+
+ 1816 02ec 6D91      		ld r22,X+
+ 1817 02ee 7C91      		ld r23,X
+ 1818 02f0 1F97      		sbiw r26,12+3
+ 1819 02f2 04E0      		ldi r16,lo8(4)
+ 1820 02f4 00C0      		rjmp .L104
+ 1821               	.LVL137:
+ 1822               	.L71:
+ 507:Lib/TCP.c     **** 					{
+ 1823               		.loc 2 507 0
+ 1824 02f6 1131      		cpi r17,lo8(17)
+ 1825 02f8 01F0      		breq .L102
+ 521:Lib/TCP.c     **** 					{
+ 1826               		.loc 2 521 0
+ 1827 02fa 1031      		cpi r17,lo8(16)
+ 1828 02fc 01F0      		breq .+2
+ 1829 02fe 00C0      		rjmp .L66
+ 523:Lib/TCP.c     **** 											   TCPHeaderIN->SourcePort, TCP_Connection_FINWait2);
+ 1830               		.loc 2 523 0
+ 1831 0300 05E0      		ldi r16,lo8(5)
+ 1832 0302 00C0      		rjmp .L101
+ 1833               	.L72:
+ 529:Lib/TCP.c     **** 					{
+ 1834               		.loc 2 529 0
+ 1835 0304 1131      		cpi r17,lo8(17)
+ 1836 0306 01F4      		brne .L66
+ 1837               	.L102:
+ 531:Lib/TCP.c     **** 															   TCPHeaderIN->SourcePort);
+ 1838               		.loc 2 531 0
+ 1839 0308 9401      		movw r18,r8
+ 1840 030a B301      		movw r22,r6
+ 1841 030c A201      		movw r20,r4
+ 1842 030e C501      		movw r24,r10
+ 1843 0310 0E94 0000 		call TCP_GetConnectionInfo
+ 1844               	.LVL138:
+ 1845 0314 FC01      		movw r30,r24
+ 1846               	.LVL139:
+ 534:Lib/TCP.c     **** 						PacketResponse      = true;
+ 1847               		.loc 2 534 0
+ 1848 0316 80E1      		ldi r24,lo8(16)
+ 1849               	.LVL140:
+ 1850 0318 D601      		movw r26,r12
+ 1851 031a 1D96      		adiw r26,13
+ 1852 031c 8C93      		st X,r24
+ 1853               	.LVL141:
+ 537:Lib/TCP.c     **** 						ConnectionInfo->SequenceNumberOut++;
+ 1854               		.loc 2 537 0
+ 1855 031e 8081      		ld r24,Z
+ 1856 0320 9181      		ldd r25,Z+1
+ 1857 0322 A281      		ldd r26,Z+2
+ 1858 0324 B381      		ldd r27,Z+3
+ 1859 0326 0196      		adiw r24,1
+ 1860 0328 A11D      		adc r26,__zero_reg__
+ 1861 032a B11D      		adc r27,__zero_reg__
+ 1862 032c 8083      		st Z,r24
+ 1863 032e 9183      		std Z+1,r25
+ 1864 0330 A283      		std Z+2,r26
+ 1865 0332 B383      		std Z+3,r27
+ 538:Lib/TCP.c     **** 
+ 1866               		.loc 2 538 0
+ 1867 0334 8481      		ldd r24,Z+4
+ 1868 0336 9581      		ldd r25,Z+5
+ 1869 0338 A681      		ldd r26,Z+6
+ 1870 033a B781      		ldd r27,Z+7
+ 1871 033c 0196      		adiw r24,1
+ 1872 033e A11D      		adc r26,__zero_reg__
+ 1873 0340 B11D      		adc r27,__zero_reg__
+ 1874 0342 8483      		std Z+4,r24
+ 1875 0344 9583      		std Z+5,r25
+ 1876 0346 A683      		std Z+6,r26
+ 1877 0348 B783      		std Z+7,r27
+ 540:Lib/TCP.c     **** 											   TCPHeaderIN->SourcePort, TCP_Connection_Closed);
+ 1878               		.loc 2 540 0
+ 1879 034a 2881      		ld r18,Y
+ 1880 034c 3981      		ldd r19,Y+1
+ 1881 034e F701      		movw r30,r14
+ 1882               	.LVL142:
+ 1883 0350 4485      		ldd r20,Z+12
+ 1884 0352 5585      		ldd r21,Z+13
+ 1885 0354 6685      		ldd r22,Z+14
+ 1886 0356 7785      		ldd r23,Z+15
+ 1887 0358 0AE0      		ldi r16,lo8(10)
+ 1888               	.L104:
+ 1889 035a 8A81      		ldd r24,Y+2
+ 1890 035c 9B81      		ldd r25,Y+3
+ 1891 035e 0E94 0000 		call TCP_SetConnectionState
+ 1892               	.LVL143:
+ 1893 0362 00C0      		rjmp .L65
+ 1894               	.LVL144:
+ 1895               	.L73:
+ 546:Lib/TCP.c     **** 					{
+ 1896               		.loc 2 546 0
+ 1897 0364 1031      		cpi r17,lo8(16)
+ 1898 0366 01F4      		brne .L66
+ 548:Lib/TCP.c     **** 											   TCPHeaderIN->SourcePort, TCP_Connection_Closed);
+ 1899               		.loc 2 548 0
+ 1900 0368 0AE0      		ldi r16,lo8(10)
+ 1901               	.L101:
+ 1902 036a 9401      		movw r18,r8
+ 1903 036c B301      		movw r22,r6
+ 1904 036e A201      		movw r20,r4
+ 1905 0370 C501      		movw r24,r10
+ 1906 0372 0E94 0000 		call TCP_SetConnectionState
+ 1907               	.LVL145:
+ 1908 0376 00C0      		rjmp .L66
+ 1909               	.LVL146:
+ 1910               	.L85:
+ 488:Lib/TCP.c     **** 						}
+ 1911               		.loc 2 488 0
+ 1912 0378 8FEF      		ldi r24,lo8(-1)
+ 1913 037a 9FEF      		ldi r25,lo8(-1)
+ 1914 037c 00C0      		rjmp .L98
+ 1915               	.LVL147:
+ 1916               	.L66:
+ 590:Lib/TCP.c     **** }
+ 1917               		.loc 2 590 0
+ 1918 037e 80E0      		ldi r24,0
+ 1919 0380 90E0      		ldi r25,0
+ 1920 0382 00C0      		rjmp .L98
+ 1921               	.LVL148:
+ 1922               	.L65:
+ 566:Lib/TCP.c     **** 		                                       TCPHeaderIN->SourcePort);
+ 1923               		.loc 2 566 0
+ 1924 0384 AA80      		ldd r10,Y+2
+ 1925 0386 BB80      		ldd r11,Y+3
+ 1926 0388 2881      		ld r18,Y
+ 1927 038a 3981      		ldd r19,Y+1
+ 1928 038c D701      		movw r26,r14
+ 1929 038e 1C96      		adiw r26,12
+ 1930 0390 4D91      		ld r20,X+
+ 1931 0392 5D91      		ld r21,X+
+ 1932 0394 6D91      		ld r22,X+
+ 1933 0396 7C91      		ld r23,X
+ 1934 0398 1F97      		sbiw r26,12+3
+ 1935 039a C501      		movw r24,r10
+ 1936 039c 0E94 0000 		call TCP_GetConnectionInfo
+ 1937               	.LVL149:
+ 1938 03a0 8C01      		movw r16,r24
+ 1939               	.LVL150:
+ 569:Lib/TCP.c     **** 		TCPHeaderOUT->DestinationPort      = TCPHeaderIN->SourcePort;
+ 1940               		.loc 2 569 0
+ 1941 03a2 F601      		movw r30,r12
+ 1942 03a4 B182      		std Z+1,r11
+ 1943 03a6 A082      		st Z,r10
+ 570:Lib/TCP.c     **** 		TCPHeaderOUT->SequenceNumber       = SwapEndian_32(ConnectionInfo->SequenceNumberOut);
+ 1944               		.loc 2 570 0
+ 1945 03a8 8881      		ld r24,Y
+ 1946 03aa 9981      		ldd r25,Y+1
+ 1947 03ac 9383      		std Z+3,r25
+ 1948 03ae 8283      		std Z+2,r24
+ 571:Lib/TCP.c     **** 		TCPHeaderOUT->AcknowledgmentNumber = SwapEndian_32(ConnectionInfo->SequenceNumberIn);
+ 1949               		.loc 2 571 0
+ 1950 03b0 D801      		movw r26,r16
+ 1951 03b2 1496      		adiw r26,4
+ 1952 03b4 6D91      		ld r22,X+
+ 1953 03b6 7D91      		ld r23,X+
+ 1954 03b8 8D91      		ld r24,X+
+ 1955 03ba 9C91      		ld r25,X
+ 1956 03bc 1797      		sbiw r26,4+3
+ 1957 03be 0E94 0000 		call SwapEndian_32
+ 1958               	.LVL151:
+ 1959 03c2 F601      		movw r30,r12
+ 1960 03c4 6483      		std Z+4,r22
+ 1961 03c6 7583      		std Z+5,r23
+ 1962 03c8 8683      		std Z+6,r24
+ 1963 03ca 9783      		std Z+7,r25
+ 572:Lib/TCP.c     **** 		TCPHeaderOUT->DataOffset           = (sizeof(TCP_Header_t) / sizeof(uint32_t));
+ 1964               		.loc 2 572 0
+ 1965 03cc D801      		movw r26,r16
+ 1966 03ce 6D91      		ld r22,X+
+ 1967 03d0 7D91      		ld r23,X+
+ 1968 03d2 8D91      		ld r24,X+
+ 1969 03d4 9C91      		ld r25,X
+ 1970 03d6 0E94 0000 		call SwapEndian_32
+ 1971               	.LVL152:
+ 1972 03da F601      		movw r30,r12
+ 1973 03dc 6087      		std Z+8,r22
+ 1974 03de 7187      		std Z+9,r23
+ 1975 03e0 8287      		std Z+10,r24
+ 1976 03e2 9387      		std Z+11,r25
+ 573:Lib/TCP.c     **** 
+ 1977               		.loc 2 573 0
+ 1978 03e4 8485      		ldd r24,Z+12
+ 1979 03e6 8F70      		andi r24,lo8(15)
+ 1980 03e8 8065      		ori r24,lo8(80)
+ 1981 03ea 8487      		std Z+12,r24
+ 575:Lib/TCP.c     **** 		  TCPHeaderOUT->WindowSize         = SwapEndian_16(TCP_WINDOW_SIZE);
+ 1982               		.loc 2 575 0
+ 1983 03ec F801      		movw r30,r16
+ 1984 03ee E45F      		subi r30,-12
+ 1985 03f0 FD4F      		sbci r31,-3
+ 1986 03f2 8081      		ld r24,Z
+ 1987 03f4 8111      		cpse r24,__zero_reg__
+ 1988 03f6 00C0      		rjmp .L82
+ 576:Lib/TCP.c     **** 		else
+ 1989               		.loc 2 576 0
+ 1990 03f8 82E0      		ldi r24,lo8(2)
+ 1991 03fa 90E0      		ldi r25,0
+ 1992 03fc 00C0      		rjmp .L100
+ 1993               	.L82:
+ 578:Lib/TCP.c     **** 
+ 1994               		.loc 2 578 0
+ 1995 03fe F801      		movw r30,r16
+ 1996 0400 2085      		ldd r18,Z+8
+ 1997 0402 3185      		ldd r19,Z+9
+ 1998 0404 80E0      		ldi r24,0
+ 1999 0406 92E0      		ldi r25,lo8(2)
+ 2000 0408 821B      		sub r24,r18
+ 2001 040a 930B      		sbc r25,r19
+ 2002 040c 0E94 0000 		call SwapEndian_16
+ 2003               	.LVL153:
+ 2004               	.L100:
+ 2005 0410 D601      		movw r26,r12
+ 2006 0412 1F96      		adiw r26,14+1
+ 2007 0414 9C93      		st X,r25
+ 2008 0416 8E93      		st -X,r24
+ 2009 0418 1E97      		sbiw r26,14
+ 580:Lib/TCP.c     **** 		TCPHeaderOUT->Checksum             = 0;
+ 2010               		.loc 2 580 0
+ 2011 041a F601      		movw r30,r12
+ 2012 041c 138A      		std Z+19,__zero_reg__
+ 2013 041e 128A      		std Z+18,__zero_reg__
+ 581:Lib/TCP.c     **** 		TCPHeaderOUT->Reserved             = 0;
+ 2014               		.loc 2 581 0
+ 2015 0420 118A      		std Z+17,__zero_reg__
+ 2016 0422 108A      		std Z+16,__zero_reg__
+ 582:Lib/TCP.c     **** 
+ 2017               		.loc 2 582 0
+ 2018 0424 8485      		ldd r24,Z+12
+ 2019 0426 807F      		andi r24,lo8(-16)
+ 2020 0428 8487      		std Z+12,r24
+ 584:Lib/TCP.c     **** 		                                                    IPHeaderIN->SourceAddress, sizeof(TCP_Header_
+ 2021               		.loc 2 584 0
+ 2022 042a D701      		movw r26,r14
+ 2023 042c 1C96      		adiw r26,12
+ 2024 042e 0D91      		ld r16,X+
+ 2025 0430 1D91      		ld r17,X+
+ 2026 0432 2D91      		ld r18,X+
+ 2027 0434 3C91      		ld r19,X
+ 2028 0436 1F97      		sbiw r26,12+3
+ 2029               	.LVL154:
+ 2030 0438 5096      		adiw r26,16
+ 2031 043a 4D91      		ld r20,X+
+ 2032 043c 5D91      		ld r21,X+
+ 2033 043e 6D91      		ld r22,X+
+ 2034 0440 7C91      		ld r23,X
+ 2035 0442 5397      		sbiw r26,16+3
+ 2036 0444 84E1      		ldi r24,lo8(20)
+ 2037 0446 E82E      		mov r14,r24
+ 2038 0448 F12C      		mov r15,__zero_reg__
+ 2039               	.LVL155:
+ 2040 044a C601      		movw r24,r12
+ 2041 044c 0E94 0000 		call TCP_Checksum16
+ 2042               	.LVL156:
+ 2043 0450 F601      		movw r30,r12
+ 2044 0452 918B      		std Z+17,r25
+ 2045 0454 808B      		std Z+16,r24
+ 587:Lib/TCP.c     **** 	}
+ 2046               		.loc 2 587 0
+ 2047 0456 84E1      		ldi r24,lo8(20)
+ 2048 0458 90E0      		ldi r25,0
+ 2049               	.LVL157:
+ 2050               	.L98:
+ 2051               	/* epilogue start */
+ 591:Lib/TCP.c     **** 
+ 2052               		.loc 2 591 0
+ 2053 045a DF91      		pop r29
+ 2054 045c CF91      		pop r28
+ 2055               	.LVL158:
+ 2056 045e 1F91      		pop r17
+ 2057 0460 0F91      		pop r16
+ 2058 0462 FF90      		pop r15
+ 2059 0464 EF90      		pop r14
+ 2060 0466 DF90      		pop r13
+ 2061 0468 CF90      		pop r12
+ 2062               	.LVL159:
+ 2063 046a BF90      		pop r11
+ 2064 046c AF90      		pop r10
+ 2065 046e 9F90      		pop r9
+ 2066 0470 8F90      		pop r8
+ 2067 0472 7F90      		pop r7
+ 2068 0474 6F90      		pop r6
+ 2069 0476 5F90      		pop r5
+ 2070 0478 4F90      		pop r4
+ 2071 047a 0895      		ret
+ 2072               		.cfi_endproc
+ 2073               	.LFE111:
+ 2075               		.comm	ConnectionStateTable,1602,1
+ 2076               		.comm	PortStateTable,5,1
+ 2077               		.text
+ 2078               	.Letext0:
+ 2079               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 2080               		.file 4 "Lib/EthernetProtocols.h"
+ 2081               		.file 5 "/usr/lib/avr/include/stdio.h"
+ 2082               		.file 6 "../../../../LUFA/Drivers/USB/Class/Device/../Common/RNDIS.h"
+ 2083               		.file 7 "Lib/IP.h"
+ 2084               		.file 8 "Lib/Ethernet.h"
+ 2085               		.file 9 "Lib/TCP.h"
+ 2086               		.file 10 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 2087               		.file 11 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+ 2088               		.file 12 "/usr/lib/avr/include/string.h"
+ 2089               		.file 13 "Lib/ProtocolDecoders.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 TCP.c
+     /tmp/ccslOcha.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccslOcha.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccslOcha.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccslOcha.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccslOcha.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccslOcha.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccslOcha.s:13     .text.SwapEndian_32:0000000000000000 SwapEndian_32
+     /tmp/ccslOcha.s:36     .text.SwapEndian_16:0000000000000000 SwapEndian_16
+     /tmp/ccslOcha.s:56     .text.TCP_Checksum16:0000000000000000 TCP_Checksum16
+     /tmp/ccslOcha.s:249    .text.TCP_Task:0000000000000000 TCP_Task
+                            *COM*:0000000000000642 ConnectionStateTable
+                            *COM*:0000000000000005 PortStateTable
+     /tmp/ccslOcha.s:625    .text.TCP_Init:0000000000000000 TCP_Init
+     /tmp/ccslOcha.s:656    .text.TCP_SetPortState:0000000000000000 TCP_SetPortState
+     /tmp/ccslOcha.s:712    .text.TCP_GetPortState:0000000000000000 TCP_GetPortState
+     /tmp/ccslOcha.s:746    .text.TCP_SetConnectionState:0000000000000000 TCP_SetConnectionState
+     /tmp/ccslOcha.s:975    .text.TCP_GetConnectionState:0000000000000000 TCP_GetConnectionState
+     /tmp/ccslOcha.s:1131   .text.TCP_GetConnectionInfo:0000000000000000 TCP_GetConnectionInfo
+     /tmp/ccslOcha.s:1287   .text.TCP_ProcessTCPPacket:0000000000000000 TCP_ProcessTCPPacket
+
+UNDEFINED SYMBOLS
+FrameOUT
+memcpy
+ServerIPAddress
+Ethernet_Checksum16
+ServerMACAddress
+memcmp
+DecodeTCPHeader
+__tablejump2__
+__do_copy_data
+__do_clear_bss

@@ -1,0 +1,267 @@
+   1               		.file	"DHCPCommon.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.DHCPCommon_SetOption,"ax",@progbits
+  12               	.global	DHCPCommon_SetOption
+  14               	DHCPCommon_SetOption:
+  15               	.LFB5:
+  16               		.file 1 "Lib/DHCPCommon.c"
+   1:Lib/DHCPCommon.c **** /*
+   2:Lib/DHCPCommon.c ****              LUFA Library
+   3:Lib/DHCPCommon.c ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/DHCPCommon.c **** 
+   5:Lib/DHCPCommon.c ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/DHCPCommon.c ****            www.lufa-lib.org
+   7:Lib/DHCPCommon.c **** */
+   8:Lib/DHCPCommon.c **** 
+   9:Lib/DHCPCommon.c **** /*
+  10:Lib/DHCPCommon.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/DHCPCommon.c **** 
+  12:Lib/DHCPCommon.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/DHCPCommon.c ****   software and its documentation for any purpose is hereby granted
+  14:Lib/DHCPCommon.c ****   without fee, provided that the above copyright notice appear in
+  15:Lib/DHCPCommon.c ****   all copies and that both that the copyright notice and this
+  16:Lib/DHCPCommon.c ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/DHCPCommon.c ****   documentation, and that the name of the author not be used in
+  18:Lib/DHCPCommon.c ****   advertising or publicity pertaining to distribution of the
+  19:Lib/DHCPCommon.c ****   software without specific, written prior permission.
+  20:Lib/DHCPCommon.c **** 
+  21:Lib/DHCPCommon.c ****   The author disclaim all warranties with regard to this
+  22:Lib/DHCPCommon.c ****   software, including all implied warranties of merchantability
+  23:Lib/DHCPCommon.c ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/DHCPCommon.c ****   special, indirect or consequential damages or any damages
+  25:Lib/DHCPCommon.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/DHCPCommon.c ****   in an action of contract, negligence or other tortious action,
+  27:Lib/DHCPCommon.c ****   arising out of or in connection with the use or performance of
+  28:Lib/DHCPCommon.c ****   this software.
+  29:Lib/DHCPCommon.c **** */
+  30:Lib/DHCPCommon.c **** 
+  31:Lib/DHCPCommon.c **** #if defined(ENABLE_DHCP_CLIENT) || defined(ENABLE_DHCP_SERVER) || defined(__DOXYGEN__)
+  32:Lib/DHCPCommon.c **** 
+  33:Lib/DHCPCommon.c **** /** \file
+  34:Lib/DHCPCommon.c ****  *
+  35:Lib/DHCPCommon.c ****  *  Common DHCP routines to manage DHCP packet data.
+  36:Lib/DHCPCommon.c ****  */
+  37:Lib/DHCPCommon.c **** 
+  38:Lib/DHCPCommon.c **** #include "DHCPCommon.h"
+  39:Lib/DHCPCommon.c **** 
+  40:Lib/DHCPCommon.c **** /** Sets the given DHCP option in the DHCP packet's option list. This automatically moves the
+  41:Lib/DHCPCommon.c ****  *  end of options terminator past the new option in the options list.
+  42:Lib/DHCPCommon.c ****  *
+  43:Lib/DHCPCommon.c ****  *  \param[in,out] DHCPOptionList  Pointer to the start of the DHCP packet's options list
+  44:Lib/DHCPCommon.c ****  *  \param[in]     Option          DHCP option to add to the list
+  45:Lib/DHCPCommon.c ****  *  \param[in]     DataLen         Size in bytes of the option data to add
+  46:Lib/DHCPCommon.c ****  *  \param[in]     OptionData      Buffer where the option's data is to be sourced from
+  47:Lib/DHCPCommon.c ****  *
+  48:Lib/DHCPCommon.c ****  *  \return Number of bytes added to the DHCP packet
+  49:Lib/DHCPCommon.c ****  */
+  50:Lib/DHCPCommon.c **** uint8_t DHCPCommon_SetOption(uint8_t* DHCPOptionList,
+  51:Lib/DHCPCommon.c ****                              const uint8_t Option,
+  52:Lib/DHCPCommon.c ****                              const uint8_t DataLen,
+  53:Lib/DHCPCommon.c ****                              void* const OptionData)
+  54:Lib/DHCPCommon.c **** {
+  17               		.loc 1 54 0
+  18               		.cfi_startproc
+  19               	.LVL0:
+  20 0000 EF92      		push r14
+  21               	.LCFI0:
+  22               		.cfi_def_cfa_offset 3
+  23               		.cfi_offset 14, -2
+  24 0002 FF92      		push r15
+  25               	.LCFI1:
+  26               		.cfi_def_cfa_offset 4
+  27               		.cfi_offset 15, -3
+  28 0004 0F93      		push r16
+  29               	.LCFI2:
+  30               		.cfi_def_cfa_offset 5
+  31               		.cfi_offset 16, -4
+  32 0006 1F93      		push r17
+  33               	.LCFI3:
+  34               		.cfi_def_cfa_offset 6
+  35               		.cfi_offset 17, -5
+  36 0008 CF93      		push r28
+  37               	.LCFI4:
+  38               		.cfi_def_cfa_offset 7
+  39               		.cfi_offset 28, -6
+  40 000a DF93      		push r29
+  41               	.LCFI5:
+  42               		.cfi_def_cfa_offset 8
+  43               		.cfi_offset 29, -7
+  44               	/* prologue: function */
+  45               	/* frame size = 0 */
+  46               	/* stack size = 6 */
+  47               	.L__stack_usage = 6
+  48 000c EC01      		movw r28,r24
+  49 000e F42E      		mov r15,r20
+  50               	.LVL1:
+  51               	.L2:
+  55:Lib/DHCPCommon.c **** 	/* Skip through the DHCP options list until the terminator option is found */
+  56:Lib/DHCPCommon.c **** 	while (*DHCPOptionList != DHCP_OPTION_END)
+  52               		.loc 1 56 0
+  53 0010 E880      		ld r14,Y
+  54 0012 8FEF      		ldi r24,lo8(-1)
+  55 0014 E816      		cp r14,r24
+  56 0016 01F0      		breq .L5
+  57:Lib/DHCPCommon.c **** 	  DHCPOptionList += (DHCPOptionList[1] + 2);
+  57               		.loc 1 57 0
+  58 0018 8981      		ldd r24,Y+1
+  59 001a 90E0      		ldi r25,0
+  60 001c 0296      		adiw r24,2
+  61 001e C80F      		add r28,r24
+  62 0020 D91F      		adc r29,r25
+  63               	.LVL2:
+  64 0022 00C0      		rjmp .L2
+  65               	.L5:
+  58:Lib/DHCPCommon.c **** 
+  59:Lib/DHCPCommon.c **** 	/* Overwrite the existing terminator with the new option, add a new terminator at the end of the l
+  60:Lib/DHCPCommon.c **** 	DHCPOptionList[0] = Option;
+  66               		.loc 1 60 0
+  67 0024 6883      		st Y,r22
+  61:Lib/DHCPCommon.c **** 	DHCPOptionList[1] = DataLen;
+  68               		.loc 1 61 0
+  69 0026 F982      		std Y+1,r15
+  62:Lib/DHCPCommon.c **** 	memcpy(&DHCPOptionList[2], OptionData, DataLen);
+  70               		.loc 1 62 0
+  71 0028 0F2D      		mov r16,r15
+  72 002a 10E0      		ldi r17,0
+  73 002c A801      		movw r20,r16
+  74               	.LVL3:
+  75 002e B901      		movw r22,r18
+  76               	.LVL4:
+  77 0030 CE01      		movw r24,r28
+  78 0032 0296      		adiw r24,2
+  79 0034 0E94 0000 		call memcpy
+  80               	.LVL5:
+  63:Lib/DHCPCommon.c **** 	DHCPOptionList[2 + DataLen] = DHCP_OPTION_END;
+  81               		.loc 1 63 0
+  82 0038 C00F      		add r28,r16
+  83 003a D11F      		adc r29,r17
+  84               	.LVL6:
+  85 003c EA82      		std Y+2,r14
+  64:Lib/DHCPCommon.c **** 
+  65:Lib/DHCPCommon.c **** 	/* Calculate the total number of bytes added to the outgoing packet */
+  66:Lib/DHCPCommon.c **** 	return (2 + DataLen);
+  67:Lib/DHCPCommon.c **** }
+  86               		.loc 1 67 0
+  87 003e 82E0      		ldi r24,lo8(2)
+  88 0040 8F0D      		add r24,r15
+  89               	/* epilogue start */
+  90 0042 DF91      		pop r29
+  91 0044 CF91      		pop r28
+  92 0046 1F91      		pop r17
+  93 0048 0F91      		pop r16
+  94 004a FF90      		pop r15
+  95               	.LVL7:
+  96 004c EF90      		pop r14
+  97 004e 0895      		ret
+  98               		.cfi_endproc
+  99               	.LFE5:
+ 101               		.section	.text.DHCPCommon_GetOption,"ax",@progbits
+ 102               	.global	DHCPCommon_GetOption
+ 104               	DHCPCommon_GetOption:
+ 105               	.LFB6:
+  68:Lib/DHCPCommon.c **** 
+  69:Lib/DHCPCommon.c **** /** Retrieves the given option's data (if present) from the DHCP packet's options list.
+  70:Lib/DHCPCommon.c ****  *
+  71:Lib/DHCPCommon.c ****  *  \param[in,out] DHCPOptionList  Pointer to the start of the DHCP packet's options list
+  72:Lib/DHCPCommon.c ****  *  \param[in]     Option          DHCP option to retrieve to the list
+  73:Lib/DHCPCommon.c ****  *  \param[out]    Destination     Buffer where the option's data is to be written to if found
+  74:Lib/DHCPCommon.c ****  *
+  75:Lib/DHCPCommon.c ****  *  \return Boolean true if the option was found in the DHCP packet's options list, false otherwise
+  76:Lib/DHCPCommon.c ****  */
+  77:Lib/DHCPCommon.c **** bool DHCPCommon_GetOption(const uint8_t* DHCPOptionList,
+  78:Lib/DHCPCommon.c ****                           const uint8_t Option,
+  79:Lib/DHCPCommon.c ****                           void* const Destination)
+  80:Lib/DHCPCommon.c **** {
+ 106               		.loc 1 80 0
+ 107               		.cfi_startproc
+ 108               	.LVL8:
+ 109               	/* prologue: function */
+ 110               	/* frame size = 0 */
+ 111               	/* stack size = 0 */
+ 112               	.L__stack_usage = 0
+ 113 0000 FC01      		movw r30,r24
+ 114 0002 9A01      		movw r18,r20
+ 115               	.LVL9:
+ 116               	.L7:
+  81:Lib/DHCPCommon.c **** 	/* Look through the incoming DHCP packet's options list for the requested option */
+  82:Lib/DHCPCommon.c **** 	while (*DHCPOptionList != DHCP_OPTION_END)
+ 117               		.loc 1 82 0
+ 118 0004 9081      		ld r25,Z
+ 119 0006 9F3F      		cpi r25,lo8(-1)
+ 120 0008 01F0      		breq .L11
+ 121 000a 4181      		ldd r20,Z+1
+  83:Lib/DHCPCommon.c **** 	{
+  84:Lib/DHCPCommon.c **** 		/* Check if the current DHCP option in the packet is the one requested */
+  85:Lib/DHCPCommon.c **** 		if (DHCPOptionList[0] == Option)
+  86:Lib/DHCPCommon.c **** 		{
+  87:Lib/DHCPCommon.c **** 			/* Copy request option's data to the destination buffer */
+  88:Lib/DHCPCommon.c **** 			memcpy(Destination, &DHCPOptionList[2], DHCPOptionList[1]);
+ 122               		.loc 1 88 0
+ 123 000c 50E0      		ldi r21,0
+  85:Lib/DHCPCommon.c **** 		{
+ 124               		.loc 1 85 0
+ 125 000e 9613      		cpse r25,r22
+ 126 0010 00C0      		rjmp .L8
+ 127               		.loc 1 88 0
+ 128 0012 BF01      		movw r22,r30
+ 129               	.LVL10:
+ 130 0014 6E5F      		subi r22,-2
+ 131 0016 7F4F      		sbci r23,-1
+ 132 0018 C901      		movw r24,r18
+ 133 001a 0E94 0000 		call memcpy
+ 134               	.LVL11:
+  89:Lib/DHCPCommon.c **** 
+  90:Lib/DHCPCommon.c **** 			/* Indicate that the requested option data was successfully retrieved */
+  91:Lib/DHCPCommon.c **** 			return true;
+ 135               		.loc 1 91 0
+ 136 001e 81E0      		ldi r24,lo8(1)
+ 137 0020 0895      		ret
+ 138               	.LVL12:
+ 139               	.L8:
+  92:Lib/DHCPCommon.c **** 		}
+  93:Lib/DHCPCommon.c **** 
+  94:Lib/DHCPCommon.c **** 		/* Skip to next DHCP option in the options list */
+  95:Lib/DHCPCommon.c **** 		DHCPOptionList += (DHCPOptionList[1] + 2);
+ 140               		.loc 1 95 0
+ 141 0022 4E5F      		subi r20,-2
+ 142 0024 5F4F      		sbci r21,-1
+ 143 0026 E40F      		add r30,r20
+ 144 0028 F51F      		adc r31,r21
+ 145               	.LVL13:
+ 146 002a 00C0      		rjmp .L7
+ 147               	.L11:
+  96:Lib/DHCPCommon.c **** 	}
+  97:Lib/DHCPCommon.c **** 
+  98:Lib/DHCPCommon.c **** 	/* Requested option not found in the incoming packet's DHCP options list */
+  99:Lib/DHCPCommon.c **** 	return false;
+ 148               		.loc 1 99 0
+ 149 002c 80E0      		ldi r24,0
+ 100:Lib/DHCPCommon.c **** }
+ 150               		.loc 1 100 0
+ 151 002e 0895      		ret
+ 152               		.cfi_endproc
+ 153               	.LFE6:
+ 155               		.text
+ 156               	.Letext0:
+ 157               		.file 2 "/usr/lib/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 DHCPCommon.c
+     /tmp/ccfftx9y.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccfftx9y.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccfftx9y.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccfftx9y.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccfftx9y.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccfftx9y.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccfftx9y.s:14     .text.DHCPCommon_SetOption:0000000000000000 DHCPCommon_SetOption
+     /tmp/ccfftx9y.s:104    .text.DHCPCommon_GetOption:0000000000000000 DHCPCommon_GetOption
+
+UNDEFINED SYMBOLS
+memcpy

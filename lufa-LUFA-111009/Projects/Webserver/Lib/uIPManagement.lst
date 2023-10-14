@@ -1,0 +1,1015 @@
+   1               		.file	"uIPManagement.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.LEDs_SetAllLEDs,"ax",@progbits
+  13               	LEDs_SetAllLEDs:
+  14               	.LFB201:
+  15               		.file 1 "../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h"
+   1:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /*
+   2:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****              LUFA Library
+   3:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+   5:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****            www.lufa-lib.org
+   7:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** */
+   8:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+   9:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /*
+  10:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  12:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   software and its documentation for any purpose is hereby granted
+  14:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   without fee, provided that the above copyright notice appear in
+  15:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   all copies and that both that the copyright notice and this
+  16:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   documentation, and that the name of the author not be used in
+  18:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   advertising or publicity pertaining to distribution of the
+  19:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   software without specific, written prior permission.
+  20:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  21:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   The author disclaim all warranties with regard to this
+  22:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   software, including all implied warranties of merchantability
+  23:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   special, indirect or consequential damages or any damages
+  25:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   in an action of contract, negligence or other tortious action,
+  27:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   arising out of or in connection with the use or performance of
+  28:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   this software.
+  29:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** */
+  30:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  31:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /** \file
+  32:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \brief Board specific LED driver header for the Atmel USBKEY.
+  33:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \copydetails Group_LEDs_USBKEY
+  34:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *
+  35:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  36:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *        dispatch header located in LUFA/Drivers/Board/LEDs.h.
+  37:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  */
+  38:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  39:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /** \ingroup Group_LEDs
+  40:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \defgroup Group_LEDs_USBKEY USBKEY
+  41:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \brief Board specific LED driver header for the Atmel USBKEY.
+  42:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *
+  43:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  Board specific LED driver header for the Atmel USBKEY.
+  44:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *
+  45:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  @{
+  46:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  */
+  47:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  48:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** #ifndef __LEDS_USBKEY_H__
+  49:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** #define __LEDS_USBKEY_H__
+  50:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  51:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Includes: */
+  52:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#include "../../../../Common/Common.h"
+  53:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  54:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Enable C linkage for C++ Compilers: */
+  55:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#if defined(__cplusplus)
+  56:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			extern "C" {
+  57:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#endif
+  58:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  59:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Preprocessor Checks: */
+  60:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#if !defined(__INCLUDE_FROM_LEDS_H)
+  61:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#error Do not include this file directly. Include LUFA/Drivers/Board/LEDS.h instead.
+  62:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#endif
+  63:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  64:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Public Interface - May be used in end-application: */
+  65:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		/* Macros: */
+  66:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the first LED on the board. */
+  67:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED1        (1 << 4)
+  68:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  69:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the second LED on the board. */
+  70:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED2        (1 << 5)
+  71:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  72:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the third LED on the board. */
+  73:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED3        (1 << 7)
+  74:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  75:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the fourth LED on the board. */
+  76:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED4        (1 << 6)
+  77:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  78:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for all the LEDs on the board. */
+  79:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_ALL_LEDS    (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
+  80:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  81:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for none of the board LEDs. */
+  82:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_NO_LEDS     0
+  83:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  84:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		/* Inline Functions: */
+  85:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#if !defined(__DOXYGEN__)
+  86:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_Init(void)
+  87:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  88:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				DDRD  |=  LEDS_ALL_LEDS;
+  89:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD &= ~LEDS_ALL_LEDS;
+  90:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			}
+  91:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  92:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_TurnOnLEDs(const uint8_t LEDMask)
+  93:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  94:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD |= LEDMask;
+  95:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			}
+  96:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  97:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_TurnOffLEDs(const uint8_t LEDMask)
+  98:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  99:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD &= ~LEDMask;
+ 100:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			}
+ 101:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+ 102:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_SetAllLEDs(const uint8_t LEDMask)
+ 103:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  16               		.loc 1 103 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+ 104:../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD = ((PORTD & ~LEDS_ALL_LEDS) | LEDMask);
+  23               		.loc 1 104 0
+  24 0000 9BB1      		in r25,0xb
+  25 0002 9F70      		andi r25,lo8(15)
+  26 0004 892B      		or r24,r25
+  27               	.LVL1:
+  28 0006 8BB9      		out 0xb,r24
+  29 0008 0895      		ret
+  30               		.cfi_endproc
+  31               	.LFE201:
+  33               		.section	.text.uIPManagement_Init,"ax",@progbits
+  34               	.global	uIPManagement_Init
+  36               	uIPManagement_Init:
+  37               	.LFB222:
+  38               		.file 2 "Lib/uIPManagement.c"
+   1:Lib/uIPManagement.c **** /*
+   2:Lib/uIPManagement.c ****              LUFA Library
+   3:Lib/uIPManagement.c ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/uIPManagement.c **** 
+   5:Lib/uIPManagement.c ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/uIPManagement.c ****            www.lufa-lib.org
+   7:Lib/uIPManagement.c **** */
+   8:Lib/uIPManagement.c **** 
+   9:Lib/uIPManagement.c **** /*
+  10:Lib/uIPManagement.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/uIPManagement.c **** 
+  12:Lib/uIPManagement.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/uIPManagement.c ****   software and its documentation for any purpose is hereby granted
+  14:Lib/uIPManagement.c ****   without fee, provided that the above copyright notice appear in
+  15:Lib/uIPManagement.c ****   all copies and that both that the copyright notice and this
+  16:Lib/uIPManagement.c ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/uIPManagement.c ****   documentation, and that the name of the author not be used in
+  18:Lib/uIPManagement.c ****   advertising or publicity pertaining to distribution of the
+  19:Lib/uIPManagement.c ****   software without specific, written prior permission.
+  20:Lib/uIPManagement.c **** 
+  21:Lib/uIPManagement.c ****   The author disclaim all warranties with regard to this
+  22:Lib/uIPManagement.c ****   software, including all implied warranties of merchantability
+  23:Lib/uIPManagement.c ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/uIPManagement.c ****   special, indirect or consequential damages or any damages
+  25:Lib/uIPManagement.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/uIPManagement.c ****   in an action of contract, negligence or other tortious action,
+  27:Lib/uIPManagement.c ****   arising out of or in connection with the use or performance of
+  28:Lib/uIPManagement.c ****   this software.
+  29:Lib/uIPManagement.c **** */
+  30:Lib/uIPManagement.c **** 
+  31:Lib/uIPManagement.c **** /** \file
+  32:Lib/uIPManagement.c ****  *
+  33:Lib/uIPManagement.c ****  *  uIP Management functions. This file contains the functions and globals needed to maintain the u
+  34:Lib/uIPManagement.c ****  *  stack once an RNDIS device has been attached to the system.
+  35:Lib/uIPManagement.c ****  */
+  36:Lib/uIPManagement.c **** 
+  37:Lib/uIPManagement.c **** #define  INCLUDE_FROM_UIPMANAGEMENT_C
+  38:Lib/uIPManagement.c **** #include "uIPManagement.h"
+  39:Lib/uIPManagement.c **** 
+  40:Lib/uIPManagement.c **** /** Connection timer, to retain the time elapsed since the last time the uIP connections were manag
+  41:Lib/uIPManagement.c **** static struct timer ConnectionTimer;
+  42:Lib/uIPManagement.c **** 
+  43:Lib/uIPManagement.c **** /** ARP timer, to retain the time elapsed since the ARP cache was last updated. */
+  44:Lib/uIPManagement.c **** static struct timer ARPTimer;
+  45:Lib/uIPManagement.c **** 
+  46:Lib/uIPManagement.c **** /** MAC address of the RNDIS device, when enumerated. */
+  47:Lib/uIPManagement.c **** struct uip_eth_addr MACAddress;
+  48:Lib/uIPManagement.c **** 
+  49:Lib/uIPManagement.c **** 
+  50:Lib/uIPManagement.c **** /** Configures the uIP stack ready for network traffic processing. */
+  51:Lib/uIPManagement.c **** void uIPManagement_Init(void)
+  52:Lib/uIPManagement.c **** {
+  39               		.loc 2 52 0
+  40               		.cfi_startproc
+  41 0000 CF93      		push r28
+  42               	.LCFI0:
+  43               		.cfi_def_cfa_offset 3
+  44               		.cfi_offset 28, -2
+  45               	/* prologue: function */
+  46               	/* frame size = 0 */
+  47               	/* stack size = 1 */
+  48               	.L__stack_usage = 1
+  53:Lib/uIPManagement.c **** 	/* uIP Timing Initialization */
+  54:Lib/uIPManagement.c **** 	clock_init();
+  49               		.loc 2 54 0
+  50 0002 0E94 0000 		call clock_init
+  51               	.LVL2:
+  55:Lib/uIPManagement.c **** 	timer_set(&ConnectionTimer, CLOCK_SECOND / 2);
+  52               		.loc 2 55 0
+  53 0006 62E3      		ldi r22,lo8(50)
+  54 0008 70E0      		ldi r23,0
+  55 000a 80E0      		ldi r24,lo8(ConnectionTimer)
+  56 000c 90E0      		ldi r25,hi8(ConnectionTimer)
+  57 000e 0E94 0000 		call timer_set
+  58               	.LVL3:
+  56:Lib/uIPManagement.c **** 	timer_set(&ARPTimer, CLOCK_SECOND * 10);
+  59               		.loc 2 56 0
+  60 0012 68EE      		ldi r22,lo8(-24)
+  61 0014 73E0      		ldi r23,lo8(3)
+  62 0016 80E0      		ldi r24,lo8(ARPTimer)
+  63 0018 90E0      		ldi r25,hi8(ARPTimer)
+  64 001a 0E94 0000 		call timer_set
+  65               	.LVL4:
+  57:Lib/uIPManagement.c **** 
+  58:Lib/uIPManagement.c **** 	/* uIP Stack Initialization */
+  59:Lib/uIPManagement.c **** 	uip_init();
+  66               		.loc 2 59 0
+  67 001e 0E94 0000 		call uip_init
+  68               	.LVL5:
+  60:Lib/uIPManagement.c **** 	uip_arp_init();
+  69               		.loc 2 60 0
+  70 0022 0E94 0000 		call uip_arp_init
+  71               	.LVL6:
+  61:Lib/uIPManagement.c **** 
+  62:Lib/uIPManagement.c **** 	/* DHCP/Server IP Settings Initialization */
+  63:Lib/uIPManagement.c **** 	if (USB_CurrentMode == USB_MODE_Device)
+  72               		.loc 2 63 0
+  73 0026 C091 0000 		lds r28,USB_CurrentMode
+  74 002a C130      		cpi r28,lo8(1)
+  75 002c 01F4      		brne .L3
+  76               	.LVL7:
+  77               	.LBB2:
+  64:Lib/uIPManagement.c **** 	{
+  65:Lib/uIPManagement.c **** 		MACAddress.addr[0] = SERVER_MAC_ADDRESS[0];
+  78               		.loc 2 65 0
+  79 002e C093 0000 		sts MACAddress,r28
+  80               	.LVL8:
+  66:Lib/uIPManagement.c **** 		MACAddress.addr[1] = SERVER_MAC_ADDRESS[1];
+  81               		.loc 2 66 0
+  82 0032 1092 0000 		sts MACAddress+1,__zero_reg__
+  83               	.LVL9:
+  67:Lib/uIPManagement.c **** 		MACAddress.addr[2] = SERVER_MAC_ADDRESS[2];
+  84               		.loc 2 67 0
+  85 0036 C093 0000 		sts MACAddress+2,r28
+  86               	.LVL10:
+  68:Lib/uIPManagement.c **** 		MACAddress.addr[3] = SERVER_MAC_ADDRESS[3];
+  87               		.loc 2 68 0
+  88 003a 1092 0000 		sts MACAddress+3,__zero_reg__
+  89               	.LVL11:
+  69:Lib/uIPManagement.c **** 		MACAddress.addr[4] = SERVER_MAC_ADDRESS[4];
+  90               		.loc 2 69 0
+  91 003e C093 0000 		sts MACAddress+4,r28
+  92               	.LVL12:
+  70:Lib/uIPManagement.c **** 		MACAddress.addr[5] = SERVER_MAC_ADDRESS[5];
+  93               		.loc 2 70 0
+  94 0042 1092 0000 		sts MACAddress+5,__zero_reg__
+  71:Lib/uIPManagement.c **** 
+  72:Lib/uIPManagement.c **** 		#if defined(ENABLE_DHCP_SERVER)
+  73:Lib/uIPManagement.c **** 		DHCPServerApp_Init();	
+  95               		.loc 2 73 0
+  96 0046 0E94 0000 		call DHCPServerApp_Init
+  97               	.LVL13:
+  74:Lib/uIPManagement.c **** 		#endif
+  75:Lib/uIPManagement.c **** 
+  76:Lib/uIPManagement.c **** 		uip_ipaddr_t IPAddress, Netmask, GatewayIPAddress;
+  77:Lib/uIPManagement.c **** 		uip_ipaddr(&IPAddress,        DEVICE_IP_ADDRESS[0], DEVICE_IP_ADDRESS[1], DEVICE_IP_ADDRESS[2], D
+  78:Lib/uIPManagement.c **** 		uip_ipaddr(&Netmask,          DEVICE_NETMASK[0],    DEVICE_NETMASK[1],    DEVICE_NETMASK[2],    D
+  79:Lib/uIPManagement.c **** 		uip_ipaddr(&GatewayIPAddress, DEVICE_GATEWAY[0],    DEVICE_GATEWAY[1],    DEVICE_GATEWAY[2],    D
+  80:Lib/uIPManagement.c **** 		uip_sethostaddr(&IPAddress);
+  98               		.loc 2 80 0
+  99 004a 9AE0      		ldi r25,lo8(10)
+ 100 004c 9093 0000 		sts uip_hostaddr,r25
+ 101 0050 1092 0000 		sts uip_hostaddr+1,__zero_reg__
+ 102 0054 1092 0000 		sts uip_hostaddr+2,__zero_reg__
+ 103 0058 82E0      		ldi r24,lo8(2)
+ 104 005a 8093 0000 		sts uip_hostaddr+3,r24
+  81:Lib/uIPManagement.c **** 		uip_setnetmask(&Netmask);
+ 105               		.loc 2 81 0
+ 106 005e 8FEF      		ldi r24,lo8(-1)
+ 107 0060 8093 0000 		sts uip_netmask,r24
+ 108 0064 8093 0000 		sts uip_netmask+1,r24
+ 109 0068 8093 0000 		sts uip_netmask+2,r24
+ 110 006c 1092 0000 		sts uip_netmask+3,__zero_reg__
+  82:Lib/uIPManagement.c **** 		uip_setdraddr(&GatewayIPAddress);
+ 111               		.loc 2 82 0
+ 112 0070 9093 0000 		sts uip_draddr,r25
+ 113 0074 1092 0000 		sts uip_draddr+1,__zero_reg__
+ 114 0078 1092 0000 		sts uip_draddr+2,__zero_reg__
+ 115 007c C093 0000 		sts uip_draddr+3,r28
+ 116               	.LVL14:
+ 117               	.LBE2:
+ 118 0080 00C0      		rjmp .L4
+ 119               	.LVL15:
+ 120               	.L3:
+  83:Lib/uIPManagement.c **** 	}
+  84:Lib/uIPManagement.c **** 	else
+  85:Lib/uIPManagement.c **** 	{
+  86:Lib/uIPManagement.c **** 		#if defined(ENABLE_DHCP_CLIENT)
+  87:Lib/uIPManagement.c **** 		DHCPClientApp_Init();	
+ 121               		.loc 2 87 0
+ 122 0082 0E94 0000 		call DHCPClientApp_Init
+ 123               	.LVL16:
+ 124               	.L4:
+  88:Lib/uIPManagement.c **** 		#else
+  89:Lib/uIPManagement.c **** 		uip_ipaddr_t IPAddress, Netmask, GatewayIPAddress;
+  90:Lib/uIPManagement.c **** 		uip_ipaddr(&IPAddress,        DEVICE_IP_ADDRESS[0], DEVICE_IP_ADDRESS[1], DEVICE_IP_ADDRESS[2], D
+  91:Lib/uIPManagement.c **** 		uip_ipaddr(&Netmask,          DEVICE_NETMASK[0],    DEVICE_NETMASK[1],    DEVICE_NETMASK[2],    D
+  92:Lib/uIPManagement.c **** 		uip_ipaddr(&GatewayIPAddress, DEVICE_GATEWAY[0],    DEVICE_GATEWAY[1],    DEVICE_GATEWAY[2],    D
+  93:Lib/uIPManagement.c **** 		uip_sethostaddr(&IPAddress);
+  94:Lib/uIPManagement.c **** 		uip_setnetmask(&Netmask);
+  95:Lib/uIPManagement.c **** 		uip_setdraddr(&GatewayIPAddress);
+  96:Lib/uIPManagement.c **** 		#endif
+  97:Lib/uIPManagement.c **** 	}
+  98:Lib/uIPManagement.c **** 
+  99:Lib/uIPManagement.c **** 	/* Virtual Webserver Ethernet Address Configuration */
+ 100:Lib/uIPManagement.c **** 	uip_setethaddr(MACAddress);
+ 125               		.loc 2 100 0
+ 126 0086 8091 0000 		lds r24,MACAddress
+ 127 008a 8093 0000 		sts uip_ethaddr,r24
+ 128 008e 8091 0000 		lds r24,MACAddress+1
+ 129 0092 8093 0000 		sts uip_ethaddr+1,r24
+ 130 0096 8091 0000 		lds r24,MACAddress+2
+ 131 009a 8093 0000 		sts uip_ethaddr+2,r24
+ 132 009e 8091 0000 		lds r24,MACAddress+3
+ 133 00a2 8093 0000 		sts uip_ethaddr+3,r24
+ 134 00a6 8091 0000 		lds r24,MACAddress+4
+ 135 00aa 8093 0000 		sts uip_ethaddr+4,r24
+ 136 00ae 8091 0000 		lds r24,MACAddress+5
+ 137 00b2 8093 0000 		sts uip_ethaddr+5,r24
+ 101:Lib/uIPManagement.c **** 
+ 102:Lib/uIPManagement.c **** 	/* HTTP Webserver Initialization */
+ 103:Lib/uIPManagement.c **** 	HTTPServerApp_Init();
+ 138               		.loc 2 103 0
+ 139 00b6 0E94 0000 		call HTTPServerApp_Init
+ 140               	.LVL17:
+ 141               	/* epilogue start */
+ 104:Lib/uIPManagement.c **** 
+ 105:Lib/uIPManagement.c **** 	/* TELNET Server Initialization */
+ 106:Lib/uIPManagement.c **** 	#if defined(ENABLE_TELNET_SERVER)
+ 107:Lib/uIPManagement.c **** 	TELNETServerApp_Init();
+ 108:Lib/uIPManagement.c **** 	#endif
+ 109:Lib/uIPManagement.c **** }
+ 142               		.loc 2 109 0
+ 143 00ba CF91      		pop r28
+ 107:Lib/uIPManagement.c **** 	#endif
+ 144               		.loc 2 107 0
+ 145 00bc 0C94 0000 		jmp TELNETServerApp_Init
+ 146               	.LVL18:
+ 147               		.cfi_endproc
+ 148               	.LFE222:
+ 150               		.section	.text.uIPManagement_ManageNetwork,"ax",@progbits
+ 151               	.global	uIPManagement_ManageNetwork
+ 153               	uIPManagement_ManageNetwork:
+ 154               	.LFB223:
+ 110:Lib/uIPManagement.c **** 
+ 111:Lib/uIPManagement.c **** /** uIP Management function. This function manages the uIP stack when called while an RNDIS device 
+ 112:Lib/uIPManagement.c ****  *  attached to the system.
+ 113:Lib/uIPManagement.c ****  */
+ 114:Lib/uIPManagement.c **** void uIPManagement_ManageNetwork(void)
+ 115:Lib/uIPManagement.c **** {
+ 155               		.loc 2 115 0
+ 156               		.cfi_startproc
+ 157 0000 EF92      		push r14
+ 158               	.LCFI1:
+ 159               		.cfi_def_cfa_offset 3
+ 160               		.cfi_offset 14, -2
+ 161 0002 FF92      		push r15
+ 162               	.LCFI2:
+ 163               		.cfi_def_cfa_offset 4
+ 164               		.cfi_offset 15, -3
+ 165 0004 0F93      		push r16
+ 166               	.LCFI3:
+ 167               		.cfi_def_cfa_offset 5
+ 168               		.cfi_offset 16, -4
+ 169 0006 1F93      		push r17
+ 170               	.LCFI4:
+ 171               		.cfi_def_cfa_offset 6
+ 172               		.cfi_offset 17, -5
+ 173 0008 CF93      		push r28
+ 174               	.LCFI5:
+ 175               		.cfi_def_cfa_offset 7
+ 176               		.cfi_offset 28, -6
+ 177 000a DF93      		push r29
+ 178               	.LCFI6:
+ 179               		.cfi_def_cfa_offset 8
+ 180               		.cfi_offset 29, -7
+ 181               	/* prologue: function */
+ 182               	/* frame size = 0 */
+ 183               	/* stack size = 6 */
+ 184               	.L__stack_usage = 6
+ 116:Lib/uIPManagement.c **** 	if (((USB_CurrentMode == USB_MODE_Host)   && (USB_HostState   == HOST_STATE_Configured)) ||
+ 185               		.loc 2 116 0
+ 186 000c 8091 0000 		lds r24,USB_CurrentMode
+ 187 0010 8230      		cpi r24,lo8(2)
+ 188 0012 01F4      		brne .L7
+ 189               		.loc 2 116 0 is_stmt 0 discriminator 1
+ 190 0014 8091 0000 		lds r24,USB_HostState
+ 191 0018 8B30      		cpi r24,lo8(11)
+ 192 001a 01F0      		breq .L8
+ 193               	.L7:
+ 117:Lib/uIPManagement.c **** 	    ((USB_CurrentMode == USB_MODE_Device) && (USB_DeviceState == DEVICE_STATE_Configured)))
+ 194               		.loc 2 117 0 is_stmt 1 discriminator 3
+ 195 001c 8091 0000 		lds r24,USB_CurrentMode
+ 116:Lib/uIPManagement.c **** 	if (((USB_CurrentMode == USB_MODE_Host)   && (USB_HostState   == HOST_STATE_Configured)) ||
+ 196               		.loc 2 116 0 discriminator 3
+ 197 0020 8130      		cpi r24,lo8(1)
+ 198 0022 01F0      		breq .+2
+ 199 0024 00C0      		rjmp .L6
+ 200               		.loc 2 117 0
+ 201 0026 8EB3      		in r24,0x1e
+ 202 0028 8430      		cpi r24,lo8(4)
+ 203 002a 01F0      		breq .+2
+ 204 002c 00C0      		rjmp .L6
+ 205               	.L8:
+ 206               	.LBB10:
+ 207               	.LBB11:
+ 118:Lib/uIPManagement.c **** 	{
+ 119:Lib/uIPManagement.c **** 		uIPManagement_ProcessIncomingPacket();
+ 120:Lib/uIPManagement.c **** 		uIPManagement_ManageConnections();
+ 121:Lib/uIPManagement.c **** 	}
+ 122:Lib/uIPManagement.c **** }
+ 123:Lib/uIPManagement.c **** 
+ 124:Lib/uIPManagement.c **** /** uIP TCP/IP network stack callback function for the processing of a given TCP connection. This r
+ 125:Lib/uIPManagement.c ****  *  to the appropriate TCP protocol application based on the connection's listen port number.
+ 126:Lib/uIPManagement.c ****  */
+ 127:Lib/uIPManagement.c **** void uIPManagement_TCPCallback(void)
+ 128:Lib/uIPManagement.c **** {
+ 129:Lib/uIPManagement.c **** 	/* Call the correct TCP application based on the port number the connection is listening on */
+ 130:Lib/uIPManagement.c **** 	switch (uip_conn->lport)
+ 131:Lib/uIPManagement.c **** 	{
+ 132:Lib/uIPManagement.c **** 		case HTONS(HTTP_SERVER_PORT):
+ 133:Lib/uIPManagement.c **** 			HTTPServerApp_Callback();
+ 134:Lib/uIPManagement.c **** 			break;
+ 135:Lib/uIPManagement.c **** 		#if defined(ENABLE_TELNET_SERVER)
+ 136:Lib/uIPManagement.c **** 		case HTONS(TELNET_SERVER_PORT):
+ 137:Lib/uIPManagement.c **** 			TELNETServerApp_Callback();
+ 138:Lib/uIPManagement.c **** 			break;
+ 139:Lib/uIPManagement.c **** 		#endif
+ 140:Lib/uIPManagement.c **** 	}
+ 141:Lib/uIPManagement.c **** }
+ 142:Lib/uIPManagement.c **** 
+ 143:Lib/uIPManagement.c **** /** uIP TCP/IP network stack callback function for the processing of a given UDP connection. This r
+ 144:Lib/uIPManagement.c ****  *  to the appropriate UDP protocol application based on the connection's listen port number.
+ 145:Lib/uIPManagement.c ****  */
+ 146:Lib/uIPManagement.c **** void uIPManagement_UDPCallback(void)
+ 147:Lib/uIPManagement.c **** {
+ 148:Lib/uIPManagement.c **** 	/* Call the correct UDP application based on the port number the connection is listening on */
+ 149:Lib/uIPManagement.c **** 	switch (uip_udp_conn->lport)
+ 150:Lib/uIPManagement.c **** 	{
+ 151:Lib/uIPManagement.c **** 		#if defined(ENABLE_DHCP_CLIENT)
+ 152:Lib/uIPManagement.c **** 		case HTONS(DHCP_CLIENT_PORT):
+ 153:Lib/uIPManagement.c **** 			DHCPClientApp_Callback();
+ 154:Lib/uIPManagement.c **** 			break;
+ 155:Lib/uIPManagement.c **** 		#endif
+ 156:Lib/uIPManagement.c **** 		#if defined(ENABLE_DHCP_SERVER)
+ 157:Lib/uIPManagement.c **** 		case HTONS(DHCP_SERVER_PORT):
+ 158:Lib/uIPManagement.c **** 			DHCPServerApp_Callback();
+ 159:Lib/uIPManagement.c **** 			break;
+ 160:Lib/uIPManagement.c **** 		#endif
+ 161:Lib/uIPManagement.c **** 	}
+ 162:Lib/uIPManagement.c **** }
+ 163:Lib/uIPManagement.c **** 
+ 164:Lib/uIPManagement.c **** /** Processes Incoming packets to the server from the connected RNDIS device, creating responses as
+ 165:Lib/uIPManagement.c **** static void uIPManagement_ProcessIncomingPacket(void)
+ 166:Lib/uIPManagement.c **** {
+ 167:Lib/uIPManagement.c **** 	/* Determine which USB mode the system is currently initialized in */
+ 168:Lib/uIPManagement.c **** 	if (USB_CurrentMode == USB_MODE_Device)
+ 208               		.loc 2 168 0
+ 209 002e 8091 0000 		lds r24,USB_CurrentMode
+ 210 0032 8130      		cpi r24,lo8(1)
+ 211 0034 01F4      		brne .L12
+ 169:Lib/uIPManagement.c **** 	{
+ 170:Lib/uIPManagement.c **** 		/* If no packet received, exit processing routine */
+ 171:Lib/uIPManagement.c **** 		if (!(RNDIS_Device_IsPacketReceived(&Ethernet_RNDIS_Interface_Device)))
+ 212               		.loc 2 171 0
+ 213 0036 80E0      		ldi r24,lo8(Ethernet_RNDIS_Interface_Device)
+ 214 0038 90E0      		ldi r25,hi8(Ethernet_RNDIS_Interface_Device)
+ 215 003a 0E94 0000 		call RNDIS_Device_IsPacketReceived
+ 216               	.LVL19:
+ 217 003e 8823      		tst r24
+ 218 0040 01F4      		brne .+2
+ 219 0042 00C0      		rjmp .L14
+ 172:Lib/uIPManagement.c **** 		  return;
+ 173:Lib/uIPManagement.c **** 	
+ 174:Lib/uIPManagement.c **** 		LEDs_SetAllLEDs(LEDMASK_USB_BUSY);
+ 220               		.loc 2 174 0
+ 221 0044 80ED      		ldi r24,lo8(-48)
+ 222 0046 0E94 0000 		call LEDs_SetAllLEDs
+ 223               	.LVL20:
+ 175:Lib/uIPManagement.c **** 
+ 176:Lib/uIPManagement.c **** 		/* Read the Incoming packet straight into the UIP packet buffer */
+ 177:Lib/uIPManagement.c **** 		RNDIS_Device_ReadPacket(&Ethernet_RNDIS_Interface_Device, uip_buf, &uip_len);
+ 224               		.loc 2 177 0
+ 225 004a 40E0      		ldi r20,lo8(uip_len)
+ 226 004c 50E0      		ldi r21,hi8(uip_len)
+ 227 004e 60E0      		ldi r22,lo8(uip_buf)
+ 228 0050 70E0      		ldi r23,hi8(uip_buf)
+ 229 0052 80E0      		ldi r24,lo8(Ethernet_RNDIS_Interface_Device)
+ 230 0054 90E0      		ldi r25,hi8(Ethernet_RNDIS_Interface_Device)
+ 231 0056 0E94 0000 		call RNDIS_Device_ReadPacket
+ 232               	.LVL21:
+ 233 005a 00C0      		rjmp .L15
+ 234               	.L12:
+ 178:Lib/uIPManagement.c **** 	}
+ 179:Lib/uIPManagement.c **** 	else
+ 180:Lib/uIPManagement.c **** 	{
+ 181:Lib/uIPManagement.c **** 		/* If no packet received, exit processing routine */
+ 182:Lib/uIPManagement.c **** 		if (!(RNDIS_Host_IsPacketReceived(&Ethernet_RNDIS_Interface_Host)))
+ 235               		.loc 2 182 0
+ 236 005c 80E0      		ldi r24,lo8(Ethernet_RNDIS_Interface_Host)
+ 237 005e 90E0      		ldi r25,hi8(Ethernet_RNDIS_Interface_Host)
+ 238 0060 0E94 0000 		call RNDIS_Host_IsPacketReceived
+ 239               	.LVL22:
+ 240 0064 8823      		tst r24
+ 241 0066 01F0      		breq .L14
+ 183:Lib/uIPManagement.c **** 		  return;
+ 184:Lib/uIPManagement.c **** 	
+ 185:Lib/uIPManagement.c **** 		LEDs_SetAllLEDs(LEDMASK_USB_BUSY);
+ 242               		.loc 2 185 0
+ 243 0068 80ED      		ldi r24,lo8(-48)
+ 244 006a 0E94 0000 		call LEDs_SetAllLEDs
+ 245               	.LVL23:
+ 186:Lib/uIPManagement.c **** 
+ 187:Lib/uIPManagement.c **** 		/* Read the Incoming packet straight into the UIP packet buffer */
+ 188:Lib/uIPManagement.c **** 		RNDIS_Host_ReadPacket(&Ethernet_RNDIS_Interface_Host, uip_buf, &uip_len);
+ 246               		.loc 2 188 0
+ 247 006e 40E0      		ldi r20,lo8(uip_len)
+ 248 0070 50E0      		ldi r21,hi8(uip_len)
+ 249 0072 60E0      		ldi r22,lo8(uip_buf)
+ 250 0074 70E0      		ldi r23,hi8(uip_buf)
+ 251 0076 80E0      		ldi r24,lo8(Ethernet_RNDIS_Interface_Host)
+ 252 0078 90E0      		ldi r25,hi8(Ethernet_RNDIS_Interface_Host)
+ 253 007a 0E94 0000 		call RNDIS_Host_ReadPacket
+ 254               	.LVL24:
+ 255               	.L15:
+ 189:Lib/uIPManagement.c **** 	}
+ 190:Lib/uIPManagement.c **** 	
+ 191:Lib/uIPManagement.c **** 	/* If the packet contains an Ethernet frame, process it */
+ 192:Lib/uIPManagement.c **** 	if (uip_len > 0)
+ 256               		.loc 2 192 0
+ 257 007e 8091 0000 		lds r24,uip_len
+ 258 0082 9091 0000 		lds r25,uip_len+1
+ 259 0086 892B      		or r24,r25
+ 260 0088 01F0      		breq .L18
+ 193:Lib/uIPManagement.c **** 	{
+ 194:Lib/uIPManagement.c **** 		switch (((struct uip_eth_hdr*)uip_buf)->type)
+ 261               		.loc 2 194 0
+ 262 008a 8091 0000 		lds r24,uip_buf+12
+ 263 008e 9091 0000 		lds r25,uip_buf+12+1
+ 264 0092 8830      		cpi r24,8
+ 265 0094 9105      		cpc r25,__zero_reg__
+ 266 0096 01F0      		breq .L19
+ 267 0098 8830      		cpi r24,8
+ 268 009a 9640      		sbci r25,6
+ 269 009c 01F0      		breq .L20
+ 270 009e 00C0      		rjmp .L18
+ 271               	.L19:
+ 195:Lib/uIPManagement.c **** 		{
+ 196:Lib/uIPManagement.c **** 			case HTONS(UIP_ETHTYPE_IP):
+ 197:Lib/uIPManagement.c **** 				/* Filter packet by MAC destination */
+ 198:Lib/uIPManagement.c **** 				uip_arp_ipin();
+ 199:Lib/uIPManagement.c **** 
+ 200:Lib/uIPManagement.c **** 				/* Process Incoming packet */
+ 201:Lib/uIPManagement.c **** 				uip_input();
+ 272               		.loc 2 201 0
+ 273 00a0 81E0      		ldi r24,lo8(1)
+ 274 00a2 0E94 0000 		call uip_process
+ 275               	.LVL25:
+ 202:Lib/uIPManagement.c **** 
+ 203:Lib/uIPManagement.c **** 				/* If a response was generated, send it */
+ 204:Lib/uIPManagement.c **** 				if (uip_len > 0)
+ 276               		.loc 2 204 0
+ 277 00a6 8091 0000 		lds r24,uip_len
+ 278 00aa 9091 0000 		lds r25,uip_len+1
+ 279 00ae 892B      		or r24,r25
+ 280 00b0 01F0      		breq .L18
+ 205:Lib/uIPManagement.c **** 				{
+ 206:Lib/uIPManagement.c **** 					/* Add destination MAC to outgoing packet */
+ 207:Lib/uIPManagement.c **** 					uip_arp_out();
+ 281               		.loc 2 207 0
+ 282 00b2 0E94 0000 		call uip_arp_out
+ 283               	.LVL26:
+ 284 00b6 00C0      		rjmp .L57
+ 285               	.L20:
+ 208:Lib/uIPManagement.c **** 
+ 209:Lib/uIPManagement.c **** 					uip_split_output();
+ 210:Lib/uIPManagement.c **** 				}
+ 211:Lib/uIPManagement.c **** 
+ 212:Lib/uIPManagement.c **** 				break;
+ 213:Lib/uIPManagement.c **** 			case HTONS(UIP_ETHTYPE_ARP):
+ 214:Lib/uIPManagement.c **** 				/* Process ARP packet */
+ 215:Lib/uIPManagement.c **** 				uip_arp_arpin();
+ 286               		.loc 2 215 0
+ 287 00b8 0E94 0000 		call uip_arp_arpin
+ 288               	.LVL27:
+ 216:Lib/uIPManagement.c **** 
+ 217:Lib/uIPManagement.c **** 				/* If a response was generated, send it */
+ 218:Lib/uIPManagement.c **** 				if (uip_len > 0)
+ 289               		.loc 2 218 0
+ 290 00bc 8091 0000 		lds r24,uip_len
+ 291 00c0 9091 0000 		lds r25,uip_len+1
+ 292 00c4 892B      		or r24,r25
+ 293 00c6 01F0      		breq .L18
+ 294               	.L57:
+ 219:Lib/uIPManagement.c **** 				  uip_split_output();
+ 295               		.loc 2 219 0
+ 296 00c8 0E94 0000 		call uip_split_output
+ 297               	.LVL28:
+ 298               	.L18:
+ 220:Lib/uIPManagement.c **** 
+ 221:Lib/uIPManagement.c **** 				break;
+ 222:Lib/uIPManagement.c **** 		}
+ 223:Lib/uIPManagement.c **** 	}
+ 224:Lib/uIPManagement.c **** 
+ 225:Lib/uIPManagement.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_READY);
+ 299               		.loc 2 225 0
+ 300 00cc 80E2      		ldi r24,lo8(32)
+ 301 00ce 0E94 0000 		call LEDs_SetAllLEDs
+ 302               	.LVL29:
+ 303               	.L14:
+ 304 00d2 C0E0      		ldi r28,lo8(uip_conns)
+ 305 00d4 D0E0      		ldi r29,hi8(uip_conns)
+ 306 00d6 80E0      		ldi r24,lo8(uip_conns+339)
+ 307 00d8 E82E      		mov r14,r24
+ 308 00da 80E0      		ldi r24,hi8(uip_conns+339)
+ 309 00dc F82E      		mov r15,r24
+ 310               	.LBE11:
+ 311               	.LBE10:
+ 115:Lib/uIPManagement.c **** 	if (((USB_CurrentMode == USB_MODE_Host)   && (USB_HostState   == HOST_STATE_Configured)) ||
+ 312               		.loc 2 115 0
+ 313 00de 8E01      		movw r16,r28
+ 314               	.LVL30:
+ 315               	.L23:
+ 316               	.LBB12:
+ 317               	.LBB13:
+ 318               	.LBB14:
+ 226:Lib/uIPManagement.c **** }
+ 227:Lib/uIPManagement.c **** 
+ 228:Lib/uIPManagement.c **** /** Manages the currently open network connections, including TCP and (if enabled) UDP. */
+ 229:Lib/uIPManagement.c **** static void uIPManagement_ManageConnections(void)
+ 230:Lib/uIPManagement.c **** {
+ 231:Lib/uIPManagement.c **** 	/* Poll TCP connections for more data to send back to the host */
+ 232:Lib/uIPManagement.c **** 	for (uint8_t i = 0; i < UIP_CONNS; i++)
+ 233:Lib/uIPManagement.c **** 	{
+ 234:Lib/uIPManagement.c **** 		uip_poll_conn(&uip_conns[i]);
+ 319               		.loc 2 234 0
+ 320 00e0 1093 0000 		sts uip_conn+1,r17
+ 321 00e4 0093 0000 		sts uip_conn,r16
+ 322 00e8 83E0      		ldi r24,lo8(3)
+ 323 00ea 0E94 0000 		call uip_process
+ 324               	.LVL31:
+ 235:Lib/uIPManagement.c **** 
+ 236:Lib/uIPManagement.c **** 		/* If a response was generated, send it */
+ 237:Lib/uIPManagement.c **** 		if (uip_len > 0)
+ 325               		.loc 2 237 0
+ 326 00ee 8091 0000 		lds r24,uip_len
+ 327 00f2 9091 0000 		lds r25,uip_len+1
+ 328 00f6 892B      		or r24,r25
+ 329 00f8 01F0      		breq .L22
+ 238:Lib/uIPManagement.c **** 		{
+ 239:Lib/uIPManagement.c **** 			/* Add destination MAC to outgoing packet */
+ 240:Lib/uIPManagement.c **** 			uip_arp_out();
+ 330               		.loc 2 240 0
+ 331 00fa 0E94 0000 		call uip_arp_out
+ 332               	.LVL32:
+ 241:Lib/uIPManagement.c **** 
+ 242:Lib/uIPManagement.c **** 			/* Split and send the outgoing packet */
+ 243:Lib/uIPManagement.c **** 			uip_split_output();
+ 333               		.loc 2 243 0
+ 334 00fe 0E94 0000 		call uip_split_output
+ 335               	.LVL33:
+ 336               	.L22:
+ 337 0102 0F58      		subi r16,-113
+ 338 0104 1F4F      		sbci r17,-1
+ 232:Lib/uIPManagement.c **** 	{
+ 339               		.loc 2 232 0
+ 340 0106 E016      		cp r14,r16
+ 341 0108 F106      		cpc r15,r17
+ 342 010a 01F4      		brne .L23
+ 343               	.LBE14:
+ 244:Lib/uIPManagement.c **** 		}
+ 245:Lib/uIPManagement.c **** 	}
+ 246:Lib/uIPManagement.c **** 
+ 247:Lib/uIPManagement.c **** 	/* Manage open connections for timeouts */
+ 248:Lib/uIPManagement.c **** 	if (timer_expired(&ConnectionTimer))
+ 344               		.loc 2 248 0
+ 345 010c 80E0      		ldi r24,lo8(ConnectionTimer)
+ 346 010e 90E0      		ldi r25,hi8(ConnectionTimer)
+ 347 0110 0E94 0000 		call timer_expired
+ 348               	.LVL34:
+ 349 0114 892B      		or r24,r25
+ 350 0116 01F0      		breq .L24
+ 249:Lib/uIPManagement.c **** 	{
+ 250:Lib/uIPManagement.c **** 		timer_reset(&ConnectionTimer);
+ 351               		.loc 2 250 0
+ 352 0118 80E0      		ldi r24,lo8(ConnectionTimer)
+ 353 011a 90E0      		ldi r25,hi8(ConnectionTimer)
+ 354 011c 0E94 0000 		call timer_reset
+ 355               	.LVL35:
+ 251:Lib/uIPManagement.c **** 
+ 252:Lib/uIPManagement.c **** 		LEDs_SetAllLEDs(LEDMASK_USB_BUSY);
+ 356               		.loc 2 252 0
+ 357 0120 80ED      		ldi r24,lo8(-48)
+ 358 0122 0E94 0000 		call LEDs_SetAllLEDs
+ 359               	.LVL36:
+ 360               	.L26:
+ 361               	.LBB15:
+ 253:Lib/uIPManagement.c **** 
+ 254:Lib/uIPManagement.c **** 		for (uint8_t i = 0; i < UIP_CONNS; i++)
+ 255:Lib/uIPManagement.c **** 		{
+ 256:Lib/uIPManagement.c **** 			/* Run periodic connection management for each TCP connection */
+ 257:Lib/uIPManagement.c **** 			uip_periodic(i);
+ 362               		.loc 2 257 0
+ 363 0126 D093 0000 		sts uip_conn+1,r29
+ 364 012a C093 0000 		sts uip_conn,r28
+ 365 012e 82E0      		ldi r24,lo8(2)
+ 366 0130 0E94 0000 		call uip_process
+ 367               	.LVL37:
+ 258:Lib/uIPManagement.c **** 
+ 259:Lib/uIPManagement.c **** 			/* If a response was generated, send it */
+ 260:Lib/uIPManagement.c **** 			if (uip_len > 0)
+ 368               		.loc 2 260 0
+ 369 0134 8091 0000 		lds r24,uip_len
+ 370 0138 9091 0000 		lds r25,uip_len+1
+ 371 013c 892B      		or r24,r25
+ 372 013e 01F0      		breq .L25
+ 261:Lib/uIPManagement.c **** 			{
+ 262:Lib/uIPManagement.c **** 				/* Add destination MAC to outgoing packet */
+ 263:Lib/uIPManagement.c **** 				uip_arp_out();
+ 373               		.loc 2 263 0
+ 374 0140 0E94 0000 		call uip_arp_out
+ 375               	.LVL38:
+ 264:Lib/uIPManagement.c **** 
+ 265:Lib/uIPManagement.c **** 				/* Split and send the outgoing packet */
+ 266:Lib/uIPManagement.c **** 				uip_split_output();
+ 376               		.loc 2 266 0
+ 377 0144 0E94 0000 		call uip_split_output
+ 378               	.LVL39:
+ 379               	.L25:
+ 380 0148 CF58      		subi r28,-113
+ 381 014a DF4F      		sbci r29,-1
+ 254:Lib/uIPManagement.c **** 		{
+ 382               		.loc 2 254 0
+ 383 014c EC16      		cp r14,r28
+ 384 014e FD06      		cpc r15,r29
+ 385 0150 01F4      		brne .L26
+ 386               	.LVL40:
+ 387               	.LBE15:
+ 388               	.LBB16:
+ 267:Lib/uIPManagement.c **** 			}
+ 268:Lib/uIPManagement.c **** 		}
+ 269:Lib/uIPManagement.c **** 
+ 270:Lib/uIPManagement.c **** 		#if defined(ENABLE_DHCP_CLIENT)
+ 271:Lib/uIPManagement.c **** 		for (uint8_t i = 0; i < UIP_UDP_CONNS; i++)
+ 272:Lib/uIPManagement.c **** 		{
+ 273:Lib/uIPManagement.c **** 			/* Run periodic connection management for each UDP connection */
+ 274:Lib/uIPManagement.c **** 			uip_udp_periodic(i);
+ 389               		.loc 2 274 0
+ 390 0152 80E0      		ldi r24,lo8(uip_udp_conns)
+ 391 0154 90E0      		ldi r25,hi8(uip_udp_conns)
+ 392 0156 9093 0000 		sts uip_udp_conn+1,r25
+ 393 015a 8093 0000 		sts uip_udp_conn,r24
+ 394 015e 85E0      		ldi r24,lo8(5)
+ 395 0160 0E94 0000 		call uip_process
+ 396               	.LVL41:
+ 275:Lib/uIPManagement.c **** 
+ 276:Lib/uIPManagement.c **** 			/* If a response was generated, send it */
+ 277:Lib/uIPManagement.c **** 			if (uip_len > 0)
+ 397               		.loc 2 277 0
+ 398 0164 8091 0000 		lds r24,uip_len
+ 399 0168 9091 0000 		lds r25,uip_len+1
+ 400 016c 892B      		or r24,r25
+ 401 016e 01F0      		breq .L27
+ 278:Lib/uIPManagement.c **** 			{
+ 279:Lib/uIPManagement.c **** 				/* Add destination MAC to outgoing packet */
+ 280:Lib/uIPManagement.c **** 				uip_arp_out();
+ 402               		.loc 2 280 0
+ 403 0170 0E94 0000 		call uip_arp_out
+ 404               	.LVL42:
+ 281:Lib/uIPManagement.c **** 
+ 282:Lib/uIPManagement.c **** 				/* Split and send the outgoing packet */
+ 283:Lib/uIPManagement.c **** 				uip_split_output();
+ 405               		.loc 2 283 0
+ 406 0174 0E94 0000 		call uip_split_output
+ 407               	.LVL43:
+ 408               	.L27:
+ 409               	.LBE16:
+ 284:Lib/uIPManagement.c **** 			}
+ 285:Lib/uIPManagement.c **** 		}
+ 286:Lib/uIPManagement.c **** 		#endif
+ 287:Lib/uIPManagement.c **** 
+ 288:Lib/uIPManagement.c **** 		LEDs_SetAllLEDs(LEDMASK_USB_READY);
+ 410               		.loc 2 288 0
+ 411 0178 80E2      		ldi r24,lo8(32)
+ 412 017a 0E94 0000 		call LEDs_SetAllLEDs
+ 413               	.LVL44:
+ 414               	.L24:
+ 289:Lib/uIPManagement.c **** 	}
+ 290:Lib/uIPManagement.c **** 
+ 291:Lib/uIPManagement.c **** 	/* Manage ARP cache refreshing */
+ 292:Lib/uIPManagement.c **** 	if (timer_expired(&ARPTimer))
+ 415               		.loc 2 292 0
+ 416 017e 80E0      		ldi r24,lo8(ARPTimer)
+ 417 0180 90E0      		ldi r25,hi8(ARPTimer)
+ 418 0182 0E94 0000 		call timer_expired
+ 419               	.LVL45:
+ 420 0186 892B      		or r24,r25
+ 421 0188 01F0      		breq .L6
+ 293:Lib/uIPManagement.c **** 	{
+ 294:Lib/uIPManagement.c **** 		timer_reset(&ARPTimer);
+ 422               		.loc 2 294 0
+ 423 018a 80E0      		ldi r24,lo8(ARPTimer)
+ 424 018c 90E0      		ldi r25,hi8(ARPTimer)
+ 425 018e 0E94 0000 		call timer_reset
+ 426               	.LVL46:
+ 427               	/* epilogue start */
+ 428               	.LBE13:
+ 429               	.LBE12:
+ 122:Lib/uIPManagement.c **** 
+ 430               		.loc 2 122 0
+ 431 0192 DF91      		pop r29
+ 432 0194 CF91      		pop r28
+ 433 0196 1F91      		pop r17
+ 434 0198 0F91      		pop r16
+ 435 019a FF90      		pop r15
+ 436 019c EF90      		pop r14
+ 437               	.LBB18:
+ 438               	.LBB17:
+ 295:Lib/uIPManagement.c **** 		uip_arp_timer();
+ 439               		.loc 2 295 0
+ 440 019e 0C94 0000 		jmp uip_arp_timer
+ 441               	.LVL47:
+ 442               	.L6:
+ 443               	/* epilogue start */
+ 444               	.LBE17:
+ 445               	.LBE18:
+ 122:Lib/uIPManagement.c **** 
+ 446               		.loc 2 122 0
+ 447 01a2 DF91      		pop r29
+ 448 01a4 CF91      		pop r28
+ 449 01a6 1F91      		pop r17
+ 450 01a8 0F91      		pop r16
+ 451 01aa FF90      		pop r15
+ 452 01ac EF90      		pop r14
+ 453 01ae 0895      		ret
+ 454               		.cfi_endproc
+ 455               	.LFE223:
+ 457               		.section	.text.uIPManagement_TCPCallback,"ax",@progbits
+ 458               	.global	uIPManagement_TCPCallback
+ 460               	uIPManagement_TCPCallback:
+ 461               	.LFB224:
+ 128:Lib/uIPManagement.c **** 	/* Call the correct TCP application based on the port number the connection is listening on */
+ 462               		.loc 2 128 0
+ 463               		.cfi_startproc
+ 464               	/* prologue: function */
+ 465               	/* frame size = 0 */
+ 466               	/* stack size = 0 */
+ 467               	.L__stack_usage = 0
+ 130:Lib/uIPManagement.c **** 	{
+ 468               		.loc 2 130 0
+ 469 0000 E091 0000 		lds r30,uip_conn
+ 470 0004 F091 0000 		lds r31,uip_conn+1
+ 471 0008 8481      		ldd r24,Z+4
+ 472 000a 9581      		ldd r25,Z+5
+ 473 000c 8115      		cp r24,__zero_reg__
+ 474 000e 27E1      		ldi r18,23
+ 475 0010 9207      		cpc r25,r18
+ 476 0012 01F0      		breq .L60
+ 477 0014 8115      		cp r24,__zero_reg__
+ 478 0016 9045      		sbci r25,80
+ 479 0018 01F4      		brne .L62
+ 133:Lib/uIPManagement.c **** 			break;
+ 480               		.loc 2 133 0
+ 481 001a 0C94 0000 		jmp HTTPServerApp_Callback
+ 482               	.LVL48:
+ 483               	.L60:
+ 137:Lib/uIPManagement.c **** 			break;
+ 484               		.loc 2 137 0
+ 485 001e 0C94 0000 		jmp TELNETServerApp_Callback
+ 486               	.LVL49:
+ 487               	.L62:
+ 488 0022 0895      		ret
+ 489               		.cfi_endproc
+ 490               	.LFE224:
+ 492               		.section	.text.uIPManagement_UDPCallback,"ax",@progbits
+ 493               	.global	uIPManagement_UDPCallback
+ 495               	uIPManagement_UDPCallback:
+ 496               	.LFB225:
+ 147:Lib/uIPManagement.c **** 	/* Call the correct UDP application based on the port number the connection is listening on */
+ 497               		.loc 2 147 0
+ 498               		.cfi_startproc
+ 499               	/* prologue: function */
+ 500               	/* frame size = 0 */
+ 501               	/* stack size = 0 */
+ 502               	.L__stack_usage = 0
+ 149:Lib/uIPManagement.c **** 	{
+ 503               		.loc 2 149 0
+ 504 0000 E091 0000 		lds r30,uip_udp_conn
+ 505 0004 F091 0000 		lds r31,uip_udp_conn+1
+ 506 0008 8481      		ldd r24,Z+4
+ 507 000a 9581      		ldd r25,Z+5
+ 508 000c 8115      		cp r24,__zero_reg__
+ 509 000e 23E4      		ldi r18,67
+ 510 0010 9207      		cpc r25,r18
+ 511 0012 01F0      		breq .L65
+ 512 0014 8115      		cp r24,__zero_reg__
+ 513 0016 9444      		sbci r25,68
+ 514 0018 01F4      		brne .L67
+ 153:Lib/uIPManagement.c **** 			break;
+ 515               		.loc 2 153 0
+ 516 001a 0C94 0000 		jmp DHCPClientApp_Callback
+ 517               	.LVL50:
+ 518               	.L65:
+ 158:Lib/uIPManagement.c **** 			break;
+ 519               		.loc 2 158 0
+ 520 001e 0C94 0000 		jmp DHCPServerApp_Callback
+ 521               	.LVL51:
+ 522               	.L67:
+ 523 0022 0895      		ret
+ 524               		.cfi_endproc
+ 525               	.LFE225:
+ 527               		.comm	MACAddress,6,1
+ 528               		.local	ARPTimer
+ 529               		.comm	ARPTimer,4,1
+ 530               		.local	ConnectionTimer
+ 531               		.comm	ConnectionTimer,4,1
+ 532               		.text
+ 533               	.Letext0:
+ 534               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 535               		.file 4 "../../LUFA/Drivers/USB/Core/AVR8/../Host.h"
+ 536               		.file 5 "../../LUFA/Drivers/USB/Core/AVR8/../Device.h"
+ 537               		.file 6 "../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"
+ 538               		.file 7 "../../LUFA/Drivers/USB/Class/Device/../Common/RNDIS.h"
+ 539               		.file 8 "../../LUFA/Drivers/USB/Class/Device/RNDIS.h"
+ 540               		.file 9 "../../LUFA/Drivers/USB/Class/Host/RNDIS.h"
+ 541               		.file 10 "Lib/FATFs/integer.h"
+ 542               		.file 11 "Lib/FATFs/ff.h"
+ 543               		.file 12 "Lib/uip/clock.h"
+ 544               		.file 13 "Lib/uip/timer.h"
+ 545               		.file 14 "Lib/uip/uipopt.h"
+ 546               		.file 15 "Lib/uip/uip.h"
+ 547               		.file 16 "Lib/uip/uip_arp.h"
+ 548               		.file 17 "../../LUFA/Drivers/USB/Core/USBTask.h"
+ 549               		.file 18 "Lib/uip/../../USBDeviceMode.h"
+ 550               		.file 19 "Lib/uip/../../USBHostMode.h"
+ 551               		.file 20 "./Lib/DHCPServerApp.h"
+ 552               		.file 21 "./Lib/DHCPClientApp.h"
+ 553               		.file 22 "./Lib/HTTPServerApp.h"
+ 554               		.file 23 "./Lib/TELNETServerApp.h"
+ 555               		.file 24 "Lib/uip/uip-split.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 uIPManagement.c
+     /tmp/cctZflYX.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cctZflYX.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cctZflYX.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cctZflYX.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cctZflYX.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cctZflYX.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cctZflYX.s:13     .text.LEDs_SetAllLEDs:0000000000000000 LEDs_SetAllLEDs
+     /tmp/cctZflYX.s:36     .text.uIPManagement_Init:0000000000000000 uIPManagement_Init
+     /tmp/cctZflYX.s:529    .bss:0000000000000004 ConnectionTimer
+                             .bss:0000000000000000 ARPTimer
+                            *COM*:0000000000000006 MACAddress
+     /tmp/cctZflYX.s:153    .text.uIPManagement_ManageNetwork:0000000000000000 uIPManagement_ManageNetwork
+     /tmp/cctZflYX.s:460    .text.uIPManagement_TCPCallback:0000000000000000 uIPManagement_TCPCallback
+     /tmp/cctZflYX.s:495    .text.uIPManagement_UDPCallback:0000000000000000 uIPManagement_UDPCallback
+
+UNDEFINED SYMBOLS
+clock_init
+timer_set
+uip_init
+uip_arp_init
+USB_CurrentMode
+DHCPServerApp_Init
+uip_hostaddr
+uip_netmask
+uip_draddr
+DHCPClientApp_Init
+uip_ethaddr
+HTTPServerApp_Init
+TELNETServerApp_Init
+USB_HostState
+Ethernet_RNDIS_Interface_Device
+RNDIS_Device_IsPacketReceived
+uip_len
+uip_buf
+RNDIS_Device_ReadPacket
+Ethernet_RNDIS_Interface_Host
+RNDIS_Host_IsPacketReceived
+RNDIS_Host_ReadPacket
+uip_process
+uip_arp_out
+uip_arp_arpin
+uip_split_output
+uip_conns
+uip_conn
+timer_expired
+timer_reset
+uip_udp_conns
+uip_udp_conn
+uip_arp_timer
+HTTPServerApp_Callback
+TELNETServerApp_Callback
+DHCPClientApp_Callback
+DHCPServerApp_Callback
+__do_clear_bss

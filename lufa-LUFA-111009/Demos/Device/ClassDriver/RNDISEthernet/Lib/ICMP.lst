@@ -1,0 +1,246 @@
+   1               		.file	"ICMP.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.ICMP_ProcessICMPPacket,"ax",@progbits
+  12               	.global	ICMP_ProcessICMPPacket
+  14               	ICMP_ProcessICMPPacket:
+  15               	.LFB104:
+  16               		.file 1 "Lib/ICMP.c"
+   1:Lib/ICMP.c    **** /*
+   2:Lib/ICMP.c    ****              LUFA Library
+   3:Lib/ICMP.c    ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/ICMP.c    **** 
+   5:Lib/ICMP.c    ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/ICMP.c    ****            www.lufa-lib.org
+   7:Lib/ICMP.c    **** */
+   8:Lib/ICMP.c    **** 
+   9:Lib/ICMP.c    **** /*
+  10:Lib/ICMP.c    ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/ICMP.c    **** 
+  12:Lib/ICMP.c    ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/ICMP.c    ****   software and its documentation for any purpose is hereby granted
+  14:Lib/ICMP.c    ****   without fee, provided that the above copyright notice appear in
+  15:Lib/ICMP.c    ****   all copies and that both that the copyright notice and this
+  16:Lib/ICMP.c    ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/ICMP.c    ****   documentation, and that the name of the author not be used in
+  18:Lib/ICMP.c    ****   advertising or publicity pertaining to distribution of the
+  19:Lib/ICMP.c    ****   software without specific, written prior permission.
+  20:Lib/ICMP.c    **** 
+  21:Lib/ICMP.c    ****   The author disclaim all warranties with regard to this
+  22:Lib/ICMP.c    ****   software, including all implied warranties of merchantability
+  23:Lib/ICMP.c    ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/ICMP.c    ****   special, indirect or consequential damages or any damages
+  25:Lib/ICMP.c    ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/ICMP.c    ****   in an action of contract, negligence or other tortious action,
+  27:Lib/ICMP.c    ****   arising out of or in connection with the use or performance of
+  28:Lib/ICMP.c    ****   this software.
+  29:Lib/ICMP.c    **** */
+  30:Lib/ICMP.c    **** 
+  31:Lib/ICMP.c    **** /** \file
+  32:Lib/ICMP.c    ****  *
+  33:Lib/ICMP.c    ****  *  Internet Control Message Protocol (ICMP) packet handling routines. This protocol handles
+  34:Lib/ICMP.c    ****  *  Echo requests from the host, to indicate a successful network connection between the host
+  35:Lib/ICMP.c    ****  *  and the virtual server.
+  36:Lib/ICMP.c    ****  */
+  37:Lib/ICMP.c    **** 
+  38:Lib/ICMP.c    **** #include "ICMP.h"
+  39:Lib/ICMP.c    **** 
+  40:Lib/ICMP.c    **** /** Processes an ICMP packet inside an Ethernet frame, and writes the appropriate response
+  41:Lib/ICMP.c    ****  *  to the output Ethernet frame if the host is issuing a ICMP ECHO request.
+  42:Lib/ICMP.c    ****  *
+  43:Lib/ICMP.c    ****  *  \param[in] FrameIN        Pointer to the incoming Ethernet frame information structure
+  44:Lib/ICMP.c    ****  *  \param[in] InDataStart    Pointer to the start of the incoming packet's ICMP header
+  45:Lib/ICMP.c    ****  *  \param[out] OutDataStart  Pointer to the start of the outgoing packet's ICMP header
+  46:Lib/ICMP.c    ****  *
+  47:Lib/ICMP.c    ****  *  \return The number of bytes written to the out Ethernet frame if any, NO_RESPONSE otherwise
+  48:Lib/ICMP.c    ****  */
+  49:Lib/ICMP.c    **** int16_t ICMP_ProcessICMPPacket(Ethernet_Frame_Info_t* const FrameIN,
+  50:Lib/ICMP.c    ****                                void* InDataStart,
+  51:Lib/ICMP.c    ****                                void* OutDataStart)
+  52:Lib/ICMP.c    **** {
+  17               		.loc 1 52 0
+  18               		.cfi_startproc
+  19               	.LVL0:
+  20 0000 EF92      		push r14
+  21               	.LCFI0:
+  22               		.cfi_def_cfa_offset 3
+  23               		.cfi_offset 14, -2
+  24 0002 FF92      		push r15
+  25               	.LCFI1:
+  26               		.cfi_def_cfa_offset 4
+  27               		.cfi_offset 15, -3
+  28 0004 0F93      		push r16
+  29               	.LCFI2:
+  30               		.cfi_def_cfa_offset 5
+  31               		.cfi_offset 16, -4
+  32 0006 1F93      		push r17
+  33               	.LCFI3:
+  34               		.cfi_def_cfa_offset 6
+  35               		.cfi_offset 17, -5
+  36 0008 CF93      		push r28
+  37               	.LCFI4:
+  38               		.cfi_def_cfa_offset 7
+  39               		.cfi_offset 28, -6
+  40 000a DF93      		push r29
+  41               	.LCFI5:
+  42               		.cfi_def_cfa_offset 8
+  43               		.cfi_offset 29, -7
+  44               	/* prologue: function */
+  45               	/* frame size = 0 */
+  46               	/* stack size = 6 */
+  47               	.L__stack_usage = 6
+  48 000c EC01      		movw r28,r24
+  49 000e 7B01      		movw r14,r22
+  50 0010 8A01      		movw r16,r20
+  51               	.LVL1:
+  53:Lib/ICMP.c    **** 	ICMP_Header_t* ICMPHeaderIN  = (ICMP_Header_t*)InDataStart;
+  54:Lib/ICMP.c    **** 	ICMP_Header_t* ICMPHeaderOUT = (ICMP_Header_t*)OutDataStart;
+  55:Lib/ICMP.c    **** 
+  56:Lib/ICMP.c    **** 	DecodeICMPHeader(InDataStart);
+  52               		.loc 1 56 0
+  53 0012 CB01      		movw r24,r22
+  54               	.LVL2:
+  55 0014 0E94 0000 		call DecodeICMPHeader
+  56               	.LVL3:
+  57:Lib/ICMP.c    **** 
+  58:Lib/ICMP.c    **** 	/* Determine if the ICMP packet is an echo request (ping) */
+  59:Lib/ICMP.c    **** 	if (ICMPHeaderIN->Type == ICMP_TYPE_ECHOREQUEST)
+  57               		.loc 1 59 0
+  58 0018 F701      		movw r30,r14
+  59 001a 8081      		ld r24,Z
+  60 001c 8830      		cpi r24,lo8(8)
+  61 001e 01F4      		brne .L3
+  62               	.LBB2:
+  60:Lib/ICMP.c    **** 	{
+  61:Lib/ICMP.c    **** 		/* Fill out the ICMP response packet */
+  62:Lib/ICMP.c    **** 		ICMPHeaderOUT->Type     = ICMP_TYPE_ECHOREPLY;
+  63               		.loc 1 62 0
+  64 0020 F801      		movw r30,r16
+  65 0022 1082      		st Z,__zero_reg__
+  63:Lib/ICMP.c    **** 		ICMPHeaderOUT->Code     = 0;
+  66               		.loc 1 63 0
+  67 0024 1182      		std Z+1,__zero_reg__
+  64:Lib/ICMP.c    **** 		ICMPHeaderOUT->Checksum = 0;
+  68               		.loc 1 64 0
+  69 0026 1382      		std Z+3,__zero_reg__
+  70 0028 1282      		std Z+2,__zero_reg__
+  65:Lib/ICMP.c    **** 		ICMPHeaderOUT->Id       = ICMPHeaderIN->Id;
+  71               		.loc 1 65 0
+  72 002a F701      		movw r30,r14
+  73 002c 8481      		ldd r24,Z+4
+  74 002e 9581      		ldd r25,Z+5
+  75 0030 F801      		movw r30,r16
+  76 0032 9583      		std Z+5,r25
+  77 0034 8483      		std Z+4,r24
+  66:Lib/ICMP.c    **** 		ICMPHeaderOUT->Sequence = ICMPHeaderIN->Sequence;
+  78               		.loc 1 66 0
+  79 0036 F701      		movw r30,r14
+  80 0038 8681      		ldd r24,Z+6
+  81 003a 9781      		ldd r25,Z+7
+  82 003c F801      		movw r30,r16
+  83 003e 9783      		std Z+7,r25
+  84 0040 8683      		std Z+6,r24
+  67:Lib/ICMP.c    **** 
+  68:Lib/ICMP.c    **** 		intptr_t DataSize = FrameIN->FrameLength - ((((intptr_t)InDataStart + sizeof(ICMP_Header_t)) - (i
+  85               		.loc 1 68 0
+  86 0042 FE01      		movw r30,r28
+  87 0044 E452      		subi r30,36
+  88 0046 FA4F      		sbci r31,-6
+  89 0048 8081      		ld r24,Z
+  90 004a 9181      		ldd r25,Z+1
+  91 004c C80F      		add r28,r24
+  92 004e D91F      		adc r29,r25
+  93               	.LVL4:
+  94 0050 CE19      		sub r28,r14
+  95 0052 DF09      		sbc r29,r15
+  96               	.LVL5:
+  69:Lib/ICMP.c    **** 
+  70:Lib/ICMP.c    **** 		/* Copy the remaining payload to the response - echo requests should echo back any sent data */
+  71:Lib/ICMP.c    **** 		memmove(&((uint8_t*)OutDataStart)[sizeof(ICMP_Header_t)],
+  97               		.loc 1 71 0
+  98 0054 AE01      		movw r20,r28
+  99 0056 4850      		subi r20,8
+ 100 0058 5109      		sbc r21,__zero_reg__
+ 101               	.LVL6:
+ 102 005a B701      		movw r22,r14
+ 103 005c 685F      		subi r22,-8
+ 104 005e 7F4F      		sbci r23,-1
+ 105 0060 C801      		movw r24,r16
+ 106 0062 0896      		adiw r24,8
+ 107 0064 0E94 0000 		call memmove
+ 108               	.LVL7:
+  72:Lib/ICMP.c    **** 		        &((uint8_t*)InDataStart)[sizeof(ICMP_Header_t)],
+  73:Lib/ICMP.c    **** 			    DataSize);
+  74:Lib/ICMP.c    **** 
+  75:Lib/ICMP.c    **** 		ICMPHeaderOUT->Checksum = Ethernet_Checksum16(ICMPHeaderOUT, (DataSize + sizeof(ICMP_Header_t)));
+ 109               		.loc 1 75 0
+ 110 0068 BE01      		movw r22,r28
+ 111 006a C801      		movw r24,r16
+ 112 006c 0E94 0000 		call Ethernet_Checksum16
+ 113               	.LVL8:
+ 114 0070 F801      		movw r30,r16
+ 115 0072 9383      		std Z+3,r25
+ 116 0074 8283      		std Z+2,r24
+  76:Lib/ICMP.c    **** 
+  77:Lib/ICMP.c    **** 		/* Return the size of the response so far */
+  78:Lib/ICMP.c    **** 		return (DataSize + sizeof(ICMP_Header_t));
+ 117               		.loc 1 78 0
+ 118 0076 CE01      		movw r24,r28
+ 119 0078 00C0      		rjmp .L2
+ 120               	.LVL9:
+ 121               	.L3:
+ 122               	.LBE2:
+  79:Lib/ICMP.c    **** 	}
+  80:Lib/ICMP.c    **** 
+  81:Lib/ICMP.c    **** 	return NO_RESPONSE;
+ 123               		.loc 1 81 0
+ 124 007a 80E0      		ldi r24,0
+ 125 007c 90E0      		ldi r25,0
+ 126               	.LVL10:
+ 127               	.L2:
+ 128               	/* epilogue start */
+  82:Lib/ICMP.c    **** }
+ 129               		.loc 1 82 0
+ 130 007e DF91      		pop r29
+ 131 0080 CF91      		pop r28
+ 132 0082 1F91      		pop r17
+ 133 0084 0F91      		pop r16
+ 134               	.LVL11:
+ 135 0086 FF90      		pop r15
+ 136 0088 EF90      		pop r14
+ 137               	.LVL12:
+ 138 008a 0895      		ret
+ 139               		.cfi_endproc
+ 140               	.LFE104:
+ 142               		.text
+ 143               	.Letext0:
+ 144               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 145               		.file 3 "/usr/lib/avr/include/stdio.h"
+ 146               		.file 4 "Lib/EthernetProtocols.h"
+ 147               		.file 5 "Lib/ICMP.h"
+ 148               		.file 6 "../../../../LUFA/Drivers/USB/Class/Device/../../Core/USBTask.h"
+ 149               		.file 7 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 150               		.file 8 "/usr/lib/avr/include/string.h"
+ 151               		.file 9 "Lib/Ethernet.h"
+ 152               		.file 10 "Lib/ProtocolDecoders.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ICMP.c
+     /tmp/ccr1CY7k.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccr1CY7k.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccr1CY7k.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccr1CY7k.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccr1CY7k.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccr1CY7k.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccr1CY7k.s:14     .text.ICMP_ProcessICMPPacket:0000000000000000 ICMP_ProcessICMPPacket
+
+UNDEFINED SYMBOLS
+DecodeICMPHeader
+memmove
+Ethernet_Checksum16

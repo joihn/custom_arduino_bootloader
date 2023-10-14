@@ -1,0 +1,196 @@
+   1               		.file	"diskio.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.disk_initialize,"ax",@progbits
+  12               	.global	disk_initialize
+  14               	disk_initialize:
+  15               	.LFB210:
+  16               		.cfi_startproc
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  21 0000 80E0      		ldi r24,0
+  22 0002 0895      		ret
+  23               		.cfi_endproc
+  24               	.LFE210:
+  26               		.section	.text.disk_status,"ax",@progbits
+  27               	.global	disk_status
+  29               	disk_status:
+  30               	.LFB206:
+  31               		.file 1 "Lib/FATFs/diskio.c"
+   1:Lib/FATFs/diskio.c **** /*-----------------------------------------------------------------------*/
+   2:Lib/FATFs/diskio.c **** /* Low level disk I/O module skeleton for FatFs     (C)ChaN, 2007        */
+   3:Lib/FATFs/diskio.c **** /*-----------------------------------------------------------------------*/
+   4:Lib/FATFs/diskio.c **** /* This is a stub disk I/O module that acts as front end of the existing */
+   5:Lib/FATFs/diskio.c **** /* disk I/O modules and attach it to FatFs module with common interface. */
+   6:Lib/FATFs/diskio.c **** /*-----------------------------------------------------------------------*/
+   7:Lib/FATFs/diskio.c **** 
+   8:Lib/FATFs/diskio.c **** #include "diskio.h"
+   9:Lib/FATFs/diskio.c **** 
+  10:Lib/FATFs/diskio.c **** /*-----------------------------------------------------------------------*/
+  11:Lib/FATFs/diskio.c **** /* Initialize a Drive                                                    */
+  12:Lib/FATFs/diskio.c **** 
+  13:Lib/FATFs/diskio.c **** DSTATUS disk_initialize (
+  14:Lib/FATFs/diskio.c **** 	BYTE drv				/* Physical drive number (0..) */
+  15:Lib/FATFs/diskio.c **** )
+  16:Lib/FATFs/diskio.c **** {
+  17:Lib/FATFs/diskio.c **** 	return FR_OK;
+  18:Lib/FATFs/diskio.c **** }
+  19:Lib/FATFs/diskio.c **** 
+  20:Lib/FATFs/diskio.c **** 
+  21:Lib/FATFs/diskio.c **** 
+  22:Lib/FATFs/diskio.c **** /*-----------------------------------------------------------------------*/
+  23:Lib/FATFs/diskio.c **** /* Return Disk Status                                                    */
+  24:Lib/FATFs/diskio.c **** 
+  25:Lib/FATFs/diskio.c **** DSTATUS disk_status (
+  26:Lib/FATFs/diskio.c **** 	BYTE drv		/* Physical drive number (0..) */
+  27:Lib/FATFs/diskio.c **** )
+  28:Lib/FATFs/diskio.c **** {
+  32               		.loc 1 28 0
+  33               		.cfi_startproc
+  34               	.LVL0:
+  35               	/* prologue: function */
+  36               	/* frame size = 0 */
+  37               	/* stack size = 0 */
+  38               	.L__stack_usage = 0
+  29:Lib/FATFs/diskio.c **** 	return FR_OK;
+  30:Lib/FATFs/diskio.c **** }
+  39               		.loc 1 30 0
+  40 0000 80E0      		ldi r24,0
+  41               	.LVL1:
+  42 0002 0895      		ret
+  43               		.cfi_endproc
+  44               	.LFE206:
+  46               		.section	.text.disk_read,"ax",@progbits
+  47               	.global	disk_read
+  49               	disk_read:
+  50               	.LFB207:
+  31:Lib/FATFs/diskio.c **** 
+  32:Lib/FATFs/diskio.c **** 
+  33:Lib/FATFs/diskio.c **** 
+  34:Lib/FATFs/diskio.c **** /*-----------------------------------------------------------------------*/
+  35:Lib/FATFs/diskio.c **** /* Read Sector(s)                                                        */
+  36:Lib/FATFs/diskio.c **** 
+  37:Lib/FATFs/diskio.c **** DRESULT disk_read (
+  38:Lib/FATFs/diskio.c **** 	BYTE drv,		/* Physical drive number (0..) */
+  39:Lib/FATFs/diskio.c **** 	BYTE *buff,		/* Data buffer to store read data */
+  40:Lib/FATFs/diskio.c **** 	DWORD sector,	/* Sector address (LBA) */
+  41:Lib/FATFs/diskio.c **** 	BYTE count		/* Number of sectors to read (1..255) */
+  42:Lib/FATFs/diskio.c **** )
+  43:Lib/FATFs/diskio.c **** {
+  51               		.loc 1 43 0
+  52               		.cfi_startproc
+  53               	.LVL2:
+  54 0000 0F93      		push r16
+  55               	.LCFI0:
+  56               		.cfi_def_cfa_offset 3
+  57               		.cfi_offset 16, -2
+  58               	/* prologue: function */
+  59               	/* frame size = 0 */
+  60               	/* stack size = 1 */
+  61               	.L__stack_usage = 1
+  62 0002 FB01      		movw r30,r22
+  63 0004 CA01      		movw r24,r20
+  64 0006 B901      		movw r22,r18
+  65               	.LVL3:
+  44:Lib/FATFs/diskio.c **** 	DataflashManager_ReadBlocks_RAM(sector, count, buff);
+  66               		.loc 1 44 0
+  67 0008 402F      		mov r20,r16
+  68 000a 50E0      		ldi r21,0
+  69 000c 9F01      		movw r18,r30
+  70               	.LVL4:
+  71 000e 0E94 0000 		call DataflashManager_ReadBlocks_RAM
+  72               	.LVL5:
+  45:Lib/FATFs/diskio.c **** 	return RES_OK;
+  46:Lib/FATFs/diskio.c **** }
+  73               		.loc 1 46 0
+  74 0012 80E0      		ldi r24,0
+  75               	/* epilogue start */
+  76 0014 0F91      		pop r16
+  77               	.LVL6:
+  78 0016 0895      		ret
+  79               		.cfi_endproc
+  80               	.LFE207:
+  82               		.section	.text.disk_write,"ax",@progbits
+  83               	.global	disk_write
+  85               	disk_write:
+  86               	.LFB208:
+  47:Lib/FATFs/diskio.c **** 
+  48:Lib/FATFs/diskio.c **** 
+  49:Lib/FATFs/diskio.c **** 
+  50:Lib/FATFs/diskio.c **** /*-----------------------------------------------------------------------*/
+  51:Lib/FATFs/diskio.c **** /* Write Sector(s)                                                       */
+  52:Lib/FATFs/diskio.c **** 
+  53:Lib/FATFs/diskio.c **** #if _READONLY == 0
+  54:Lib/FATFs/diskio.c **** DRESULT disk_write (
+  55:Lib/FATFs/diskio.c **** 	BYTE drv,			/* Physical drive number (0..) */
+  56:Lib/FATFs/diskio.c **** 	const BYTE *buff,	/* Data to be written */
+  57:Lib/FATFs/diskio.c **** 	DWORD sector,		/* Sector address (LBA) */
+  58:Lib/FATFs/diskio.c **** 	BYTE count			/* Number of sectors to write (1..255) */
+  59:Lib/FATFs/diskio.c **** )
+  60:Lib/FATFs/diskio.c **** {
+  87               		.loc 1 60 0
+  88               		.cfi_startproc
+  89               	.LVL7:
+  90 0000 0F93      		push r16
+  91               	.LCFI1:
+  92               		.cfi_def_cfa_offset 3
+  93               		.cfi_offset 16, -2
+  94               	/* prologue: function */
+  95               	/* frame size = 0 */
+  96               	/* stack size = 1 */
+  97               	.L__stack_usage = 1
+  98 0002 FB01      		movw r30,r22
+  99 0004 CA01      		movw r24,r20
+ 100 0006 B901      		movw r22,r18
+ 101               	.LVL8:
+  61:Lib/FATFs/diskio.c **** 	DataflashManager_WriteBlocks_RAM(sector, count, buff);
+ 102               		.loc 1 61 0
+ 103 0008 402F      		mov r20,r16
+ 104 000a 50E0      		ldi r21,0
+ 105 000c 9F01      		movw r18,r30
+ 106               	.LVL9:
+ 107 000e 0E94 0000 		call DataflashManager_WriteBlocks_RAM
+ 108               	.LVL10:
+  62:Lib/FATFs/diskio.c **** 	return RES_OK;
+  63:Lib/FATFs/diskio.c **** }
+ 109               		.loc 1 63 0
+ 110 0012 80E0      		ldi r24,0
+ 111               	/* epilogue start */
+ 112 0014 0F91      		pop r16
+ 113               	.LVL11:
+ 114 0016 0895      		ret
+ 115               		.cfi_endproc
+ 116               	.LFE208:
+ 118               		.text
+ 119               	.Letext0:
+ 120               		.file 2 "Lib/FATFs/integer.h"
+ 121               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 122               		.file 4 "Lib/FATFs/diskio.h"
+ 123               		.file 5 "Lib/FATFs/ff.h"
+ 124               		.file 6 "Lib/FATFs/../DataflashManager.h"
+ 125               		.file 7 "../../LUFA/Drivers/USB/Core/USBTask.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 diskio.c
+     /tmp/cc4pi8Lj.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc4pi8Lj.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc4pi8Lj.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc4pi8Lj.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc4pi8Lj.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc4pi8Lj.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc4pi8Lj.s:14     .text.disk_initialize:0000000000000000 disk_initialize
+     /tmp/cc4pi8Lj.s:29     .text.disk_status:0000000000000000 disk_status
+     /tmp/cc4pi8Lj.s:49     .text.disk_read:0000000000000000 disk_read
+     /tmp/cc4pi8Lj.s:85     .text.disk_write:0000000000000000 disk_write
+
+UNDEFINED SYMBOLS
+DataflashManager_ReadBlocks_RAM
+DataflashManager_WriteBlocks_RAM

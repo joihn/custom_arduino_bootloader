@@ -1,0 +1,366 @@
+   1               		.file	"ProtocolDecoders.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.DecodeEthernetFrameHeader,"ax",@progbits
+  12               	.global	DecodeEthernetFrameHeader
+  14               	DecodeEthernetFrameHeader:
+  15               	.LFB122:
+  16               		.cfi_startproc
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  21 0000 0895      		ret
+  22               		.cfi_endproc
+  23               	.LFE122:
+  25               		.section	.text.DecodeARPHeader,"ax",@progbits
+  26               	.global	DecodeARPHeader
+  28               	DecodeARPHeader:
+  29               	.LFB120:
+  30               		.cfi_startproc
+  31               	/* prologue: function */
+  32               	/* frame size = 0 */
+  33               	/* stack size = 0 */
+  34               	.L__stack_usage = 0
+  35 0000 0895      		ret
+  36               		.cfi_endproc
+  37               	.LFE120:
+  39               		.section	.text.DecodeIPHeader,"ax",@progbits
+  40               	.global	DecodeIPHeader
+  42               	DecodeIPHeader:
+  43               	.LFB118:
+  44               		.cfi_startproc
+  45               	/* prologue: function */
+  46               	/* frame size = 0 */
+  47               	/* stack size = 0 */
+  48               	.L__stack_usage = 0
+  49 0000 0895      		ret
+  50               		.cfi_endproc
+  51               	.LFE118:
+  53               		.section	.text.DecodeICMPHeader,"ax",@progbits
+  54               	.global	DecodeICMPHeader
+  56               	DecodeICMPHeader:
+  57               	.LFB116:
+  58               		.cfi_startproc
+  59               	/* prologue: function */
+  60               	/* frame size = 0 */
+  61               	/* stack size = 0 */
+  62               	.L__stack_usage = 0
+  63 0000 0895      		ret
+  64               		.cfi_endproc
+  65               	.LFE116:
+  67               		.section	.text.DecodeTCPHeader,"ax",@progbits
+  68               	.global	DecodeTCPHeader
+  70               	DecodeTCPHeader:
+  71               	.LFB114:
+  72               		.cfi_startproc
+  73               	/* prologue: function */
+  74               	/* frame size = 0 */
+  75               	/* stack size = 0 */
+  76               	.L__stack_usage = 0
+  77 0000 0895      		ret
+  78               		.cfi_endproc
+  79               	.LFE114:
+  81               		.section	.text.DecodeUDPHeader,"ax",@progbits
+  82               	.global	DecodeUDPHeader
+  84               	DecodeUDPHeader:
+  85               	.LFB112:
+  86               		.cfi_startproc
+  87               	/* prologue: function */
+  88               	/* frame size = 0 */
+  89               	/* stack size = 0 */
+  90               	.L__stack_usage = 0
+  91 0000 0895      		ret
+  92               		.cfi_endproc
+  93               	.LFE112:
+  95               		.section	.text.DecodeDHCPHeader,"ax",@progbits
+  96               	.global	DecodeDHCPHeader
+  98               	DecodeDHCPHeader:
+  99               	.LFB110:
+ 100               		.file 1 "Lib/ProtocolDecoders.c"
+   1:Lib/ProtocolDecoders.c **** /*
+   2:Lib/ProtocolDecoders.c ****              LUFA Library
+   3:Lib/ProtocolDecoders.c ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/ProtocolDecoders.c **** 
+   5:Lib/ProtocolDecoders.c ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/ProtocolDecoders.c ****            www.lufa-lib.org
+   7:Lib/ProtocolDecoders.c **** */
+   8:Lib/ProtocolDecoders.c **** 
+   9:Lib/ProtocolDecoders.c **** /*
+  10:Lib/ProtocolDecoders.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/ProtocolDecoders.c **** 
+  12:Lib/ProtocolDecoders.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/ProtocolDecoders.c ****   software and its documentation for any purpose is hereby granted
+  14:Lib/ProtocolDecoders.c ****   without fee, provided that the above copyright notice appear in
+  15:Lib/ProtocolDecoders.c ****   all copies and that both that the copyright notice and this
+  16:Lib/ProtocolDecoders.c ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/ProtocolDecoders.c ****   documentation, and that the name of the author not be used in
+  18:Lib/ProtocolDecoders.c ****   advertising or publicity pertaining to distribution of the
+  19:Lib/ProtocolDecoders.c ****   software without specific, written prior permission.
+  20:Lib/ProtocolDecoders.c **** 
+  21:Lib/ProtocolDecoders.c ****   The author disclaim all warranties with regard to this
+  22:Lib/ProtocolDecoders.c ****   software, including all implied warranties of merchantability
+  23:Lib/ProtocolDecoders.c ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/ProtocolDecoders.c ****   special, indirect or consequential damages or any damages
+  25:Lib/ProtocolDecoders.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/ProtocolDecoders.c ****   in an action of contract, negligence or other tortious action,
+  27:Lib/ProtocolDecoders.c ****   arising out of or in connection with the use or performance of
+  28:Lib/ProtocolDecoders.c ****   this software.
+  29:Lib/ProtocolDecoders.c **** */
+  30:Lib/ProtocolDecoders.c **** 
+  31:Lib/ProtocolDecoders.c **** /* Protocol decoders for Ethernet, TCP, IP, ICMP and ARP. Each of these routines
+  32:Lib/ProtocolDecoders.c ****    accepts a header to the appropriate protocol and prints out pertinent information
+  33:Lib/ProtocolDecoders.c ****    on the packet through the serial port.
+  34:Lib/ProtocolDecoders.c **** 
+  35:Lib/ProtocolDecoders.c ****    To disable printing of a specific protocol, define the token NO_DECODE_{Protocol}
+  36:Lib/ProtocolDecoders.c ****    in the project makefile, and pass it to the compiler using the -D switch.
+  37:Lib/ProtocolDecoders.c **** */
+  38:Lib/ProtocolDecoders.c **** 
+  39:Lib/ProtocolDecoders.c **** /** \file
+  40:Lib/ProtocolDecoders.c ****  *
+  41:Lib/ProtocolDecoders.c ****  *  Protocol decoding routines, for the plain-text decoding of Ethernet frames for debugging purpos
+  42:Lib/ProtocolDecoders.c ****  *  Enabled protocol decoders will print incoming Ethernet frame contents through the USART in a hu
+  43:Lib/ProtocolDecoders.c ****  *  readable format.
+  44:Lib/ProtocolDecoders.c ****  *
+  45:Lib/ProtocolDecoders.c ****  *  Note that the USART is a slow transmission medium, and will slow down packet processing conside
+  46:Lib/ProtocolDecoders.c ****  *  Packet decoding routines can be disabled by defining NO_DECODE_{Protocol Name} in the project m
+  47:Lib/ProtocolDecoders.c ****  *  and passing it to the compiler via the -D switch.
+  48:Lib/ProtocolDecoders.c ****  */
+  49:Lib/ProtocolDecoders.c **** 
+  50:Lib/ProtocolDecoders.c **** #include "ProtocolDecoders.h"
+  51:Lib/ProtocolDecoders.c **** 
+  52:Lib/ProtocolDecoders.c **** /** Decodes an Ethernet frame header and prints its contents to through the USART in a human readab
+  53:Lib/ProtocolDecoders.c ****  *
+  54:Lib/ProtocolDecoders.c ****  *  \param[in] InDataStart  Pointer to the start of an Ethernet frame of data
+  55:Lib/ProtocolDecoders.c ****  */
+  56:Lib/ProtocolDecoders.c **** void DecodeEthernetFrameHeader(void* InDataStart)
+  57:Lib/ProtocolDecoders.c **** {
+  58:Lib/ProtocolDecoders.c **** 	#if !defined(NO_DECODE_ETHERNET)
+  59:Lib/ProtocolDecoders.c **** 	Ethernet_Frame_Header_t* FrameHeader = (Ethernet_Frame_Header_t*)InDataStart;
+  60:Lib/ProtocolDecoders.c **** 
+  61:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("\r\n"));
+  62:Lib/ProtocolDecoders.c **** 
+  63:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("  ETHERNET\r\n"));
+  64:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("  + Frame Size: %u\r\n"), FrameINData->FrameLength);
+  65:Lib/ProtocolDecoders.c **** 
+  66:Lib/ProtocolDecoders.c **** 	if (!(MAC_COMPARE(&FrameHeader->Destination, &ServerMACAddress)) &&
+  67:Lib/ProtocolDecoders.c **** 	    !(MAC_COMPARE(&FrameHeader->Destination, &BroadcastMACAddress)))
+  68:Lib/ProtocolDecoders.c **** 	{
+  69:Lib/ProtocolDecoders.c **** 		printf_P(PSTR("  + NOT ADDRESSED TO DEVICE\r\n"));
+  70:Lib/ProtocolDecoders.c **** 		return;
+  71:Lib/ProtocolDecoders.c **** 	}
+  72:Lib/ProtocolDecoders.c **** 
+  73:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("  + MAC Source : %02X:%02X:%02X:%02X:%02X:%02X\r\n"), FrameHeader->Source.Octets[0]
+  74:Lib/ProtocolDecoders.c **** 	                                                                     FrameHeader->Source.Octets[1]
+  75:Lib/ProtocolDecoders.c **** 	                                                                     FrameHeader->Source.Octets[2]
+  76:Lib/ProtocolDecoders.c **** 	                                                                     FrameHeader->Source.Octets[3]
+  77:Lib/ProtocolDecoders.c **** 	                                                                     FrameHeader->Source.Octets[4]
+  78:Lib/ProtocolDecoders.c **** 	                                                                     FrameHeader->Source.Octets[5]
+  79:Lib/ProtocolDecoders.c **** 
+  80:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("  + MAC Dest: %02X:%02X:%02X:%02X:%02X:%02X\r\n"),    FrameHeader->Destination.Octe
+  81:Lib/ProtocolDecoders.c **** 	                                                                     FrameHeader->Destination.Octe
+  82:Lib/ProtocolDecoders.c **** 	                                                                     FrameHeader->Destination.Octe
+  83:Lib/ProtocolDecoders.c **** 	                                                                     FrameHeader->Destination.Octe
+  84:Lib/ProtocolDecoders.c **** 	                                                                     FrameHeader->Destination.Octe
+  85:Lib/ProtocolDecoders.c **** 	                                                                     FrameHeader->Destination.Octe
+  86:Lib/ProtocolDecoders.c **** 
+  87:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("  + Protocol: 0x%04x\r\n"), SwapEndian_16(FrameHeader->EtherType));
+  88:Lib/ProtocolDecoders.c **** 	#endif
+  89:Lib/ProtocolDecoders.c **** }
+  90:Lib/ProtocolDecoders.c **** 
+  91:Lib/ProtocolDecoders.c **** /** Decodes an ARP header and prints its contents to through the USART in a human readable format.
+  92:Lib/ProtocolDecoders.c ****  *
+  93:Lib/ProtocolDecoders.c ****  *  \param[in] InDataStart  Pointer to the start of an ARP packet header
+  94:Lib/ProtocolDecoders.c ****  */
+  95:Lib/ProtocolDecoders.c **** void DecodeARPHeader(void* InDataStart)
+  96:Lib/ProtocolDecoders.c **** {
+  97:Lib/ProtocolDecoders.c **** 	#if !defined(NO_DECODE_ARP)
+  98:Lib/ProtocolDecoders.c **** 	ARP_Header_t* ARPHeader = (ARP_Header_t*)InDataStart;
+  99:Lib/ProtocolDecoders.c **** 
+ 100:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("   \\\r\n    ARP\r\n"));
+ 101:Lib/ProtocolDecoders.c **** 
+ 102:Lib/ProtocolDecoders.c **** 	if (!(IP_COMPARE(&ARPHeader->TPA, &ServerIPAddress)) &&
+ 103:Lib/ProtocolDecoders.c **** 	    !(MAC_COMPARE(&ARPHeader->THA, &ServerMACAddress)))
+ 104:Lib/ProtocolDecoders.c **** 	{
+ 105:Lib/ProtocolDecoders.c **** 		printf_P(PSTR("    + NOT ADDRESSED TO DEVICE\r\n"));
+ 106:Lib/ProtocolDecoders.c **** 		return;
+ 107:Lib/ProtocolDecoders.c **** 	}
+ 108:Lib/ProtocolDecoders.c **** 
+ 109:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("    + Protocol: %x\r\n"), SwapEndian_16(ARPHeader->ProtocolType));
+ 110:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("    + Operation: %u\r\n"), SwapEndian_16(ARPHeader->Operation));
+ 111:Lib/ProtocolDecoders.c **** 
+ 112:Lib/ProtocolDecoders.c **** 	if (SwapEndian_16(ARPHeader->ProtocolType) == ETHERTYPE_IPV4)
+ 113:Lib/ProtocolDecoders.c **** 	{
+ 114:Lib/ProtocolDecoders.c **** 		printf_P(PSTR("    + SHA MAC: %02X:%02X:%02X:%02X:%02X:%02X\r\n"), ARPHeader->SHA.Octets[0],
+ 115:Lib/ProtocolDecoders.c **** 		                                                                   ARPHeader->SHA.Octets[1],
+ 116:Lib/ProtocolDecoders.c **** 		                                                                   ARPHeader->SHA.Octets[2],
+ 117:Lib/ProtocolDecoders.c **** 		                                                                   ARPHeader->SHA.Octets[3],
+ 118:Lib/ProtocolDecoders.c **** 		                                                                   ARPHeader->SHA.Octets[4],
+ 119:Lib/ProtocolDecoders.c **** 		                                                                   ARPHeader->SHA.Octets[5]);
+ 120:Lib/ProtocolDecoders.c **** 
+ 121:Lib/ProtocolDecoders.c **** 		printf_P(PSTR("    + SPA IP: %u.%u.%u.%u\r\n"), ARPHeader->SPA.Octets[0],
+ 122:Lib/ProtocolDecoders.c **** 		                                                ARPHeader->SPA.Octets[1],
+ 123:Lib/ProtocolDecoders.c **** 		                                                ARPHeader->SPA.Octets[2],
+ 124:Lib/ProtocolDecoders.c **** 		                                                ARPHeader->SPA.Octets[3]);
+ 125:Lib/ProtocolDecoders.c **** 
+ 126:Lib/ProtocolDecoders.c **** 		printf_P(PSTR("    + THA MAC: %02X:%02X:%02X:%02X:%02X:%02X\r\n"), ARPHeader->THA.Octets[0],
+ 127:Lib/ProtocolDecoders.c **** 		                                                                   ARPHeader->THA.Octets[1],
+ 128:Lib/ProtocolDecoders.c **** 		                                                                   ARPHeader->THA.Octets[2],
+ 129:Lib/ProtocolDecoders.c **** 		                                                                   ARPHeader->THA.Octets[3],
+ 130:Lib/ProtocolDecoders.c **** 		                                                                   ARPHeader->THA.Octets[4],
+ 131:Lib/ProtocolDecoders.c **** 		                                                                   ARPHeader->THA.Octets[5]);
+ 132:Lib/ProtocolDecoders.c **** 
+ 133:Lib/ProtocolDecoders.c **** 		printf_P(PSTR("    + TPA IP: %u.%u.%u.%u\r\n"), ARPHeader->TPA.Octets[0],
+ 134:Lib/ProtocolDecoders.c **** 		                                                ARPHeader->TPA.Octets[1],
+ 135:Lib/ProtocolDecoders.c **** 		                                                ARPHeader->TPA.Octets[2],
+ 136:Lib/ProtocolDecoders.c **** 		                                                ARPHeader->TPA.Octets[3]);
+ 137:Lib/ProtocolDecoders.c **** 	}
+ 138:Lib/ProtocolDecoders.c **** 	#endif
+ 139:Lib/ProtocolDecoders.c **** }
+ 140:Lib/ProtocolDecoders.c **** 
+ 141:Lib/ProtocolDecoders.c **** /** Decodes an IP header and prints its contents to through the USART in a human readable format.
+ 142:Lib/ProtocolDecoders.c ****  *
+ 143:Lib/ProtocolDecoders.c ****  *  \param[in] InDataStart  Pointer to the start of an IP packet header
+ 144:Lib/ProtocolDecoders.c ****  */
+ 145:Lib/ProtocolDecoders.c **** void DecodeIPHeader(void* InDataStart)
+ 146:Lib/ProtocolDecoders.c **** {
+ 147:Lib/ProtocolDecoders.c **** 	#if !defined(NO_DECODE_IP)
+ 148:Lib/ProtocolDecoders.c **** 	IP_Header_t* IPHeader  = (IP_Header_t*)InDataStart;
+ 149:Lib/ProtocolDecoders.c **** 
+ 150:Lib/ProtocolDecoders.c **** 	uint16_t HeaderLengthBytes = (IPHeader->HeaderLength * sizeof(uint32_t));
+ 151:Lib/ProtocolDecoders.c **** 
+ 152:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("   \\\r\n    IP\r\n"));
+ 153:Lib/ProtocolDecoders.c **** 
+ 154:Lib/ProtocolDecoders.c **** 	if (!(IP_COMPARE(&IPHeader->DestinationAddress, &ServerIPAddress)))
+ 155:Lib/ProtocolDecoders.c **** 	{
+ 156:Lib/ProtocolDecoders.c **** 		printf_P(PSTR("    + NOT ADDRESSED TO DEVICE\r\n"));
+ 157:Lib/ProtocolDecoders.c **** 		return;
+ 158:Lib/ProtocolDecoders.c **** 	}
+ 159:Lib/ProtocolDecoders.c **** 
+ 160:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("    + Header Length: %u Bytes\r\n"), HeaderLengthBytes);
+ 161:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("    + Packet Version: %u\r\n"), IPHeader->Version);
+ 162:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("    + Total Length: %u\r\n"), SwapEndian_16(IPHeader->TotalLength));
+ 163:Lib/ProtocolDecoders.c **** 
+ 164:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("    + Protocol: %u\r\n"), IPHeader->Protocol);
+ 165:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("    + TTL: %u\r\n"), IPHeader->TTL);
+ 166:Lib/ProtocolDecoders.c **** 
+ 167:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("    + IP Src: %u.%u.%u.%u\r\n"), IPHeader->SourceAddress.Octets[0],
+ 168:Lib/ProtocolDecoders.c **** 	                                                IPHeader->SourceAddress.Octets[1],
+ 169:Lib/ProtocolDecoders.c **** 	                                                IPHeader->SourceAddress.Octets[2],
+ 170:Lib/ProtocolDecoders.c **** 	                                                IPHeader->SourceAddress.Octets[3]);
+ 171:Lib/ProtocolDecoders.c **** 
+ 172:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("    + IP Dst: %u.%u.%u.%u\r\n"), IPHeader->DestinationAddress.Octets[0],
+ 173:Lib/ProtocolDecoders.c **** 	                                                IPHeader->DestinationAddress.Octets[1],
+ 174:Lib/ProtocolDecoders.c **** 	                                                IPHeader->DestinationAddress.Octets[2],
+ 175:Lib/ProtocolDecoders.c **** 	                                                IPHeader->DestinationAddress.Octets[3]);
+ 176:Lib/ProtocolDecoders.c **** 	#endif
+ 177:Lib/ProtocolDecoders.c **** }
+ 178:Lib/ProtocolDecoders.c **** 
+ 179:Lib/ProtocolDecoders.c **** /** Decodes an ICMP header and prints its contents to through the USART in a human readable format.
+ 180:Lib/ProtocolDecoders.c ****  *
+ 181:Lib/ProtocolDecoders.c ****  *  \param[in] InDataStart  Pointer to the start of an ICMP packet header
+ 182:Lib/ProtocolDecoders.c ****  */
+ 183:Lib/ProtocolDecoders.c **** void DecodeICMPHeader(void* InDataStart)
+ 184:Lib/ProtocolDecoders.c **** {
+ 185:Lib/ProtocolDecoders.c **** 	#if !defined(NO_DECODE_ICMP)
+ 186:Lib/ProtocolDecoders.c **** 	ICMP_Header_t* ICMPHeader  = (ICMP_Header_t*)InDataStart;
+ 187:Lib/ProtocolDecoders.c **** 
+ 188:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("    \\\r\n     ICMP\r\n"));
+ 189:Lib/ProtocolDecoders.c **** 
+ 190:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("     + Type: %u\r\n"), ICMPHeader->Type);
+ 191:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("     + Code: %u\r\n"), ICMPHeader->Code);
+ 192:Lib/ProtocolDecoders.c **** 	#endif
+ 193:Lib/ProtocolDecoders.c **** }
+ 194:Lib/ProtocolDecoders.c **** 
+ 195:Lib/ProtocolDecoders.c **** /** Decodes a TCP header and prints its contents to through the USART in a human readable format.
+ 196:Lib/ProtocolDecoders.c ****  *
+ 197:Lib/ProtocolDecoders.c ****  *  \param[in] InDataStart  Pointer to the start of a TCP packet header
+ 198:Lib/ProtocolDecoders.c ****  */
+ 199:Lib/ProtocolDecoders.c **** void DecodeTCPHeader(void* InDataStart)
+ 200:Lib/ProtocolDecoders.c **** {
+ 201:Lib/ProtocolDecoders.c **** 	#if !defined(NO_DECODE_TCP)
+ 202:Lib/ProtocolDecoders.c **** 	TCP_Header_t* TCPHeader  = (TCP_Header_t*)InDataStart;
+ 203:Lib/ProtocolDecoders.c **** 
+ 204:Lib/ProtocolDecoders.c **** 	uint16_t               HeaderLengthBytes = (TCPHeader->DataOffset * sizeof(uint32_t));
+ 205:Lib/ProtocolDecoders.c **** 
+ 206:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("    \\\r\n     TCP\r\n"));
+ 207:Lib/ProtocolDecoders.c **** 
+ 208:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("     + Header Length: %u Bytes\r\n"), HeaderLengthBytes);
+ 209:Lib/ProtocolDecoders.c **** 
+ 210:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("     + Source Port: %u\r\n"), SwapEndian_16(TCPHeader->SourcePort));
+ 211:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("     + Destination Port: %u\r\n"), SwapEndian_16(TCPHeader->DestinationPort));
+ 212:Lib/ProtocolDecoders.c **** 
+ 213:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("     + Sequence Number: %lu\r\n"), SwapEndian_32(TCPHeader->SequenceNumber));
+ 214:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("     + Acknowledgment Number: %lu\r\n"), SwapEndian_32(TCPHeader->AcknowledgmentNum
+ 215:Lib/ProtocolDecoders.c **** 
+ 216:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("     + Flags: 0x%02X\r\n"), TCPHeader->Flags);
+ 217:Lib/ProtocolDecoders.c **** 
+ 218:Lib/ProtocolDecoders.c **** 	if (TCP_GetPortState(TCPHeader->DestinationPort) == TCP_Port_Closed)
+ 219:Lib/ProtocolDecoders.c **** 	  printf_P(PSTR("     + NOT LISTENING ON DESTINATION PORT\r\n"));
+ 220:Lib/ProtocolDecoders.c **** 	#endif
+ 221:Lib/ProtocolDecoders.c **** }
+ 222:Lib/ProtocolDecoders.c **** 
+ 223:Lib/ProtocolDecoders.c **** /** Decodes an UDP header and prints its contents to through the USART in a human readable format.
+ 224:Lib/ProtocolDecoders.c ****  *
+ 225:Lib/ProtocolDecoders.c ****  *  \param[in] InDataStart  Pointer to the start of a UDP packet header
+ 226:Lib/ProtocolDecoders.c ****  */
+ 227:Lib/ProtocolDecoders.c **** void DecodeUDPHeader(void* InDataStart)
+ 228:Lib/ProtocolDecoders.c **** {
+ 229:Lib/ProtocolDecoders.c **** 	#if !defined(NO_DECODE_UDP)
+ 230:Lib/ProtocolDecoders.c **** 	UDP_Header_t* UDPHeader = (UDP_Header_t*)InDataStart;
+ 231:Lib/ProtocolDecoders.c **** 
+ 232:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("    \\\r\n     UDP\r\n"));
+ 233:Lib/ProtocolDecoders.c **** 
+ 234:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("     + Source Port: %u\r\n"), SwapEndian_16(UDPHeader->SourcePort));
+ 235:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("     + Destination Port: %u\r\n"), SwapEndian_16(UDPHeader->DestinationPort));
+ 236:Lib/ProtocolDecoders.c **** 
+ 237:Lib/ProtocolDecoders.c **** 	printf_P(PSTR("     + Data Length: %d\r\n"), SwapEndian_16(UDPHeader->Length));
+ 238:Lib/ProtocolDecoders.c **** 	#endif
+ 239:Lib/ProtocolDecoders.c **** }
+ 240:Lib/ProtocolDecoders.c **** 
+ 241:Lib/ProtocolDecoders.c **** /** Decodes an DHCP header and prints its contents to through the USART in a human readable format.
+ 242:Lib/ProtocolDecoders.c ****  *
+ 243:Lib/ProtocolDecoders.c ****  *  \param[in] InDataStart  Pointer to the start of a DHCP packet header
+ 244:Lib/ProtocolDecoders.c ****  */
+ 245:Lib/ProtocolDecoders.c **** void DecodeDHCPHeader(void* InDataStart)
+ 246:Lib/ProtocolDecoders.c **** {
+ 101               		.loc 1 246 0
+ 102               		.cfi_startproc
+ 103               	.LVL0:
+ 104               	/* prologue: function */
+ 105               	/* frame size = 0 */
+ 106               	/* stack size = 0 */
+ 107               	.L__stack_usage = 0
+ 108 0000 0895      		ret
+ 109               		.cfi_endproc
+ 110               	.LFE110:
+ 112               		.text
+ 113               	.Letext0:
+ 114               		.file 2 "/usr/lib/avr/include/stdio.h"
+ 115               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 116               		.file 4 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 117               		.file 5 "../../../../LUFA/Drivers/USB/Class/Device/../../Core/USBTask.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ProtocolDecoders.c
+     /tmp/cckcYnoK.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cckcYnoK.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cckcYnoK.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cckcYnoK.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cckcYnoK.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cckcYnoK.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cckcYnoK.s:14     .text.DecodeEthernetFrameHeader:0000000000000000 DecodeEthernetFrameHeader
+     /tmp/cckcYnoK.s:28     .text.DecodeARPHeader:0000000000000000 DecodeARPHeader
+     /tmp/cckcYnoK.s:42     .text.DecodeIPHeader:0000000000000000 DecodeIPHeader
+     /tmp/cckcYnoK.s:56     .text.DecodeICMPHeader:0000000000000000 DecodeICMPHeader
+     /tmp/cckcYnoK.s:70     .text.DecodeTCPHeader:0000000000000000 DecodeTCPHeader
+     /tmp/cckcYnoK.s:84     .text.DecodeUDPHeader:0000000000000000 DecodeUDPHeader
+     /tmp/cckcYnoK.s:98     .text.DecodeDHCPHeader:0000000000000000 DecodeDHCPHeader
+
+NO UNDEFINED SYMBOLS

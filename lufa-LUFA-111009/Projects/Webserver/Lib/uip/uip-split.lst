@@ -1,0 +1,365 @@
+   1               		.file	"uip-split.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.uip_split_output,"ax",@progbits
+  12               	.global	uip_split_output
+  14               	uip_split_output:
+  15               	.LFB222:
+  16               		.file 1 "Lib/uip/uip-split.c"
+   1:Lib/uip/uip-split.c **** /*
+   2:Lib/uip/uip-split.c ****  * Copyright (c) 2004, Swedish Institute of Computer Science.
+   3:Lib/uip/uip-split.c ****  * All rights reserved.
+   4:Lib/uip/uip-split.c ****  *
+   5:Lib/uip/uip-split.c ****  * Redistribution and use in source and binary forms, with or without
+   6:Lib/uip/uip-split.c ****  * modification, are permitted provided that the following conditions
+   7:Lib/uip/uip-split.c ****  * are met:
+   8:Lib/uip/uip-split.c ****  * 1. Redistributions of source code must retain the above copyright
+   9:Lib/uip/uip-split.c ****  *    notice, this list of conditions and the following disclaimer.
+  10:Lib/uip/uip-split.c ****  * 2. Redistributions in binary form must reproduce the above copyright
+  11:Lib/uip/uip-split.c ****  *    notice, this list of conditions and the following disclaimer in the
+  12:Lib/uip/uip-split.c ****  *    documentation and/or other materials provided with the distribution.
+  13:Lib/uip/uip-split.c ****  * 3. Neither the name of the Institute nor the names of its contributors
+  14:Lib/uip/uip-split.c ****  *    may be used to endorse or promote products derived from this software
+  15:Lib/uip/uip-split.c ****  *    without specific prior written permission.
+  16:Lib/uip/uip-split.c ****  *
+  17:Lib/uip/uip-split.c ****  * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
+  18:Lib/uip/uip-split.c ****  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  19:Lib/uip/uip-split.c ****  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  20:Lib/uip/uip-split.c ****  * ARE DISCLAIMED.  IN NO EVENT SHALL THE INSTITUTE OR CONTRIBUTORS BE LIABLE
+  21:Lib/uip/uip-split.c ****  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  22:Lib/uip/uip-split.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  23:Lib/uip/uip-split.c ****  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  24:Lib/uip/uip-split.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  25:Lib/uip/uip-split.c ****  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+  26:Lib/uip/uip-split.c ****  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  27:Lib/uip/uip-split.c ****  * SUCH DAMAGE.
+  28:Lib/uip/uip-split.c ****  *
+  29:Lib/uip/uip-split.c ****  * This file is part of the Contiki operating system.
+  30:Lib/uip/uip-split.c ****  *
+  31:Lib/uip/uip-split.c ****  * Author: Adam Dunkels <adam@sics.se>
+  32:Lib/uip/uip-split.c ****  *
+  33:Lib/uip/uip-split.c ****  * $Id: uip-split.c,v 1.2 2008/10/14 13:39:12 julienabeille Exp $
+  34:Lib/uip/uip-split.c ****  */
+  35:Lib/uip/uip-split.c **** 
+  36:Lib/uip/uip-split.c **** #include "uip-split.h"
+  37:Lib/uip/uip-split.c **** 
+  38:Lib/uip/uip-split.c **** 
+  39:Lib/uip/uip-split.c **** #define BUF ((struct uip_tcpip_hdr *)&uip_buf[UIP_LLH_LEN])
+  40:Lib/uip/uip-split.c **** 
+  41:Lib/uip/uip-split.c **** /*-----------------------------------------------------------------------------*/
+  42:Lib/uip/uip-split.c **** void
+  43:Lib/uip/uip-split.c **** uip_split_output(void)
+  44:Lib/uip/uip-split.c **** {
+  17               		.loc 1 44 0
+  18               		.cfi_startproc
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+  45:Lib/uip/uip-split.c **** #if UIP_TCP
+  46:Lib/uip/uip-split.c ****   u16_t tcplen, len1, len2;
+  47:Lib/uip/uip-split.c **** 
+  48:Lib/uip/uip-split.c ****   /* We only try to split maximum sized TCP segments. */
+  49:Lib/uip/uip-split.c ****   if(BUF->proto == UIP_PROTO_TCP  && uip_len == UIP_BUFSIZE) {
+  23               		.loc 1 49 0
+  24 0000 8091 0000 		lds r24,uip_buf+23
+  25 0004 4091 0000 		lds r20,uip_len
+  26 0008 5091 0000 		lds r21,uip_len+1
+  27 000c 8630      		cpi r24,lo8(6)
+  28 000e 01F0      		breq .+2
+  29 0010 00C0      		rjmp .L2
+  30               		.loc 1 49 0 is_stmt 0 discriminator 1
+  31 0012 4A3E      		cpi r20,-22
+  32 0014 85E0      		ldi r24,5
+  33 0016 5807      		cpc r21,r24
+  34 0018 01F0      		breq .+2
+  35 001a 00C0      		rjmp .L2
+  36               	.LVL0:
+  50:Lib/uip/uip-split.c **** 
+  51:Lib/uip/uip-split.c ****     tcplen = uip_len - UIP_TCPIP_HLEN - UIP_LLH_LEN;
+  52:Lib/uip/uip-split.c ****     /* Split the segment in two. If the original packet length was
+  53:Lib/uip/uip-split.c ****        odd, we make the second packet one byte larger. */
+  54:Lib/uip/uip-split.c ****     len1 = len2 = tcplen / 2;
+  55:Lib/uip/uip-split.c ****     if(len1 + len2 < tcplen) {
+  56:Lib/uip/uip-split.c ****       ++len2;
+  57:Lib/uip/uip-split.c ****     }
+  58:Lib/uip/uip-split.c **** 
+  59:Lib/uip/uip-split.c ****     /* Create the first packet. This is done by altering the length
+  60:Lib/uip/uip-split.c ****        field of the IP header and updating the checksums. */
+  61:Lib/uip/uip-split.c ****     uip_len = len1 + UIP_TCPIP_HLEN + UIP_LLH_LEN;
+  37               		.loc 1 61 0 is_stmt 1
+  38 001c 80E1      		ldi r24,lo8(16)
+  39 001e 93E0      		ldi r25,lo8(3)
+  40 0020 9093 0000 		sts uip_len+1,r25
+  41 0024 8093 0000 		sts uip_len,r24
+  62:Lib/uip/uip-split.c **** #if UIP_CONF_IPV6
+  63:Lib/uip/uip-split.c ****     /* For IPv6, the IP length field does not include the IPv6 IP header
+  64:Lib/uip/uip-split.c ****        length. */
+  65:Lib/uip/uip-split.c ****     BUF->len[0] = ((uip_len - UIP_IPH_LEN) >> 8);
+  66:Lib/uip/uip-split.c ****     BUF->len[1] = ((uip_len - UIP_IPH_LEN) & 0xff);
+  67:Lib/uip/uip-split.c **** #else /* UIP_CONF_IPV6 */
+  68:Lib/uip/uip-split.c ****     BUF->len[0] = (uip_len - UIP_LLH_LEN) >> 8;
+  42               		.loc 1 68 0
+  43 0028 83E0      		ldi r24,lo8(3)
+  44 002a 8093 0000 		sts uip_buf+16,r24
+  69:Lib/uip/uip-split.c ****     BUF->len[1] = (uip_len - UIP_LLH_LEN) & 0xff;
+  45               		.loc 1 69 0
+  46 002e 82E0      		ldi r24,lo8(2)
+  47 0030 8093 0000 		sts uip_buf+17,r24
+  70:Lib/uip/uip-split.c **** #endif /* UIP_CONF_IPV6 */
+  71:Lib/uip/uip-split.c **** 
+  72:Lib/uip/uip-split.c ****     /* Recalculate the TCP checksum. */
+  73:Lib/uip/uip-split.c ****     BUF->tcpchksum = 0;
+  48               		.loc 1 73 0
+  49 0034 1092 0000 		sts uip_buf+50+1,__zero_reg__
+  50 0038 1092 0000 		sts uip_buf+50,__zero_reg__
+  74:Lib/uip/uip-split.c ****     BUF->tcpchksum = ~(uip_tcpchksum());
+  51               		.loc 1 74 0
+  52 003c 0E94 0000 		call uip_tcpchksum
+  53               	.LVL1:
+  54 0040 8095      		com r24
+  55 0042 9095      		com r25
+  56 0044 9093 0000 		sts uip_buf+50+1,r25
+  57 0048 8093 0000 		sts uip_buf+50,r24
+  75:Lib/uip/uip-split.c **** 
+  76:Lib/uip/uip-split.c **** #if !UIP_CONF_IPV6
+  77:Lib/uip/uip-split.c ****     /* Recalculate the IP checksum. */
+  78:Lib/uip/uip-split.c ****     BUF->ipchksum = 0;
+  58               		.loc 1 78 0
+  59 004c 1092 0000 		sts uip_buf+24+1,__zero_reg__
+  60 0050 1092 0000 		sts uip_buf+24,__zero_reg__
+  79:Lib/uip/uip-split.c ****     BUF->ipchksum = ~(uip_ipchksum());
+  61               		.loc 1 79 0
+  62 0054 0E94 0000 		call uip_ipchksum
+  63               	.LVL2:
+  64 0058 8095      		com r24
+  65 005a 9095      		com r25
+  66 005c 9093 0000 		sts uip_buf+24+1,r25
+  67 0060 8093 0000 		sts uip_buf+24,r24
+  80:Lib/uip/uip-split.c **** #endif /* UIP_CONF_IPV6 */
+  81:Lib/uip/uip-split.c **** 
+  82:Lib/uip/uip-split.c ****     /* Transmit the first packet. */
+  83:Lib/uip/uip-split.c **** #if UIP_CONF_IPV6
+  84:Lib/uip/uip-split.c ****     tcpip_ipv6_output();
+  85:Lib/uip/uip-split.c **** #else
+  86:Lib/uip/uip-split.c **** 	if (USB_CurrentMode == USB_MODE_Device)
+  68               		.loc 1 86 0
+  69 0064 8091 0000 		lds r24,USB_CurrentMode
+  70 0068 4091 0000 		lds r20,uip_len
+  71 006c 5091 0000 		lds r21,uip_len+1
+  87:Lib/uip/uip-split.c **** 	  RNDIS_Device_SendPacket(&Ethernet_RNDIS_Interface_Device, uip_buf, uip_len);
+  72               		.loc 1 87 0
+  73 0070 60E0      		ldi r22,lo8(uip_buf)
+  74 0072 70E0      		ldi r23,hi8(uip_buf)
+  86:Lib/uip/uip-split.c **** 	  RNDIS_Device_SendPacket(&Ethernet_RNDIS_Interface_Device, uip_buf, uip_len);
+  75               		.loc 1 86 0
+  76 0074 8130      		cpi r24,lo8(1)
+  77 0076 01F4      		brne .L3
+  78               		.loc 1 87 0
+  79 0078 80E0      		ldi r24,lo8(Ethernet_RNDIS_Interface_Device)
+  80 007a 90E0      		ldi r25,hi8(Ethernet_RNDIS_Interface_Device)
+  81 007c 0E94 0000 		call RNDIS_Device_SendPacket
+  82               	.LVL3:
+  83 0080 00C0      		rjmp .L4
+  84               	.L3:
+  88:Lib/uip/uip-split.c **** 	else
+  89:Lib/uip/uip-split.c **** 	  RNDIS_Host_SendPacket(&Ethernet_RNDIS_Interface_Host, uip_buf, uip_len);
+  85               		.loc 1 89 0
+  86 0082 80E0      		ldi r24,lo8(Ethernet_RNDIS_Interface_Host)
+  87 0084 90E0      		ldi r25,hi8(Ethernet_RNDIS_Interface_Host)
+  88 0086 0E94 0000 		call RNDIS_Host_SendPacket
+  89               	.LVL4:
+  90               	.L4:
+  90:Lib/uip/uip-split.c **** #endif /* UIP_CONF_IPV6 */
+  91:Lib/uip/uip-split.c **** 
+  92:Lib/uip/uip-split.c ****     /* Now, create the second packet. To do this, it is not enough to
+  93:Lib/uip/uip-split.c ****        just alter the length field, but we must also update the TCP
+  94:Lib/uip/uip-split.c ****        sequence number and point the uip_appdata to a new place in
+  95:Lib/uip/uip-split.c ****        memory. This place is determined by the length of the first
+  96:Lib/uip/uip-split.c ****        packet (len1). */
+  97:Lib/uip/uip-split.c ****     uip_len = len2 + UIP_TCPIP_HLEN + UIP_LLH_LEN;
+  91               		.loc 1 97 0
+  92 008a 80E1      		ldi r24,lo8(16)
+  93 008c 93E0      		ldi r25,lo8(3)
+  94 008e 9093 0000 		sts uip_len+1,r25
+  95 0092 8093 0000 		sts uip_len,r24
+  98:Lib/uip/uip-split.c **** #if UIP_CONF_IPV6
+  99:Lib/uip/uip-split.c ****     /* For IPv6, the IP length field does not include the IPv6 IP header
+ 100:Lib/uip/uip-split.c ****        length. */
+ 101:Lib/uip/uip-split.c ****     BUF->len[0] = ((uip_len - UIP_IPH_LEN) >> 8);
+ 102:Lib/uip/uip-split.c ****     BUF->len[1] = ((uip_len - UIP_IPH_LEN) & 0xff);
+ 103:Lib/uip/uip-split.c **** #else /* UIP_CONF_IPV6 */
+ 104:Lib/uip/uip-split.c ****     BUF->len[0] = (uip_len  - UIP_LLH_LEN) >> 8;
+  96               		.loc 1 104 0
+  97 0096 83E0      		ldi r24,lo8(3)
+  98 0098 8093 0000 		sts uip_buf+16,r24
+ 105:Lib/uip/uip-split.c ****     BUF->len[1] = (uip_len - UIP_LLH_LEN) & 0xff;
+  99               		.loc 1 105 0
+ 100 009c 82E0      		ldi r24,lo8(2)
+ 101 009e 8093 0000 		sts uip_buf+17,r24
+ 106:Lib/uip/uip-split.c **** #endif /* UIP_CONF_IPV6 */
+ 107:Lib/uip/uip-split.c **** 
+ 108:Lib/uip/uip-split.c ****     memcpy(uip_appdata, (u8_t *)uip_appdata + len1, len2);
+ 102               		.loc 1 108 0
+ 103 00a2 A091 0000 		lds r26,uip_appdata
+ 104 00a6 B091 0000 		lds r27,uip_appdata+1
+ 105 00aa FD01      		movw r30,r26
+ 106 00ac E652      		subi r30,38
+ 107 00ae FD4F      		sbci r31,-3
+ 108 00b0 8AED      		ldi r24,lo8(-38)
+ 109 00b2 92E0      		ldi r25,lo8(2)
+ 110               		0:
+ 111 00b4 0190      		ld r0,Z+
+ 112 00b6 0D92      		st X+,r0
+ 113 00b8 0197      		sbiw r24,1
+ 114 00ba 01F4      		brne 0b
+ 109:Lib/uip/uip-split.c **** 
+ 110:Lib/uip/uip-split.c ****     uip_add32(BUF->seqno, len1);
+ 115               		.loc 1 110 0
+ 116 00bc 6AED      		ldi r22,lo8(-38)
+ 117 00be 72E0      		ldi r23,lo8(2)
+ 118 00c0 80E0      		ldi r24,lo8(uip_buf+38)
+ 119 00c2 90E0      		ldi r25,hi8(uip_buf+38)
+ 120 00c4 0E94 0000 		call uip_add32
+ 121               	.LVL5:
+ 111:Lib/uip/uip-split.c ****     BUF->seqno[0] = uip_acc32[0];
+ 122               		.loc 1 111 0
+ 123 00c8 8091 0000 		lds r24,uip_acc32
+ 124 00cc 8093 0000 		sts uip_buf+38,r24
+ 112:Lib/uip/uip-split.c ****     BUF->seqno[1] = uip_acc32[1];
+ 125               		.loc 1 112 0
+ 126 00d0 8091 0000 		lds r24,uip_acc32+1
+ 127 00d4 8093 0000 		sts uip_buf+39,r24
+ 113:Lib/uip/uip-split.c ****     BUF->seqno[2] = uip_acc32[2];
+ 128               		.loc 1 113 0
+ 129 00d8 8091 0000 		lds r24,uip_acc32+2
+ 130 00dc 8093 0000 		sts uip_buf+40,r24
+ 114:Lib/uip/uip-split.c ****     BUF->seqno[3] = uip_acc32[3];
+ 131               		.loc 1 114 0
+ 132 00e0 8091 0000 		lds r24,uip_acc32+3
+ 133 00e4 8093 0000 		sts uip_buf+41,r24
+ 115:Lib/uip/uip-split.c **** 
+ 116:Lib/uip/uip-split.c ****     /* Recalculate the TCP checksum. */
+ 117:Lib/uip/uip-split.c ****     BUF->tcpchksum = 0;
+ 134               		.loc 1 117 0
+ 135 00e8 1092 0000 		sts uip_buf+50+1,__zero_reg__
+ 136 00ec 1092 0000 		sts uip_buf+50,__zero_reg__
+ 118:Lib/uip/uip-split.c ****     BUF->tcpchksum = ~(uip_tcpchksum());
+ 137               		.loc 1 118 0
+ 138 00f0 0E94 0000 		call uip_tcpchksum
+ 139               	.LVL6:
+ 140 00f4 8095      		com r24
+ 141 00f6 9095      		com r25
+ 142 00f8 9093 0000 		sts uip_buf+50+1,r25
+ 143 00fc 8093 0000 		sts uip_buf+50,r24
+ 119:Lib/uip/uip-split.c **** 
+ 120:Lib/uip/uip-split.c **** #if !UIP_CONF_IPV6
+ 121:Lib/uip/uip-split.c ****     /* Recalculate the IP checksum. */
+ 122:Lib/uip/uip-split.c ****     BUF->ipchksum = 0;
+ 144               		.loc 1 122 0
+ 145 0100 1092 0000 		sts uip_buf+24+1,__zero_reg__
+ 146 0104 1092 0000 		sts uip_buf+24,__zero_reg__
+ 123:Lib/uip/uip-split.c ****     BUF->ipchksum = ~(uip_ipchksum());
+ 147               		.loc 1 123 0
+ 148 0108 0E94 0000 		call uip_ipchksum
+ 149               	.LVL7:
+ 150 010c 8095      		com r24
+ 151 010e 9095      		com r25
+ 152 0110 9093 0000 		sts uip_buf+24+1,r25
+ 153 0114 8093 0000 		sts uip_buf+24,r24
+ 124:Lib/uip/uip-split.c **** #endif /* UIP_CONF_IPV6 */
+ 125:Lib/uip/uip-split.c **** 
+ 126:Lib/uip/uip-split.c ****     /* Transmit the second packet. */
+ 127:Lib/uip/uip-split.c **** #if UIP_CONF_IPV6
+ 128:Lib/uip/uip-split.c ****     tcpip_ipv6_output();
+ 129:Lib/uip/uip-split.c **** #else
+ 130:Lib/uip/uip-split.c **** 	if (USB_CurrentMode == USB_MODE_Device)
+ 154               		.loc 1 130 0
+ 155 0118 8091 0000 		lds r24,USB_CurrentMode
+ 156 011c 4091 0000 		lds r20,uip_len
+ 157 0120 5091 0000 		lds r21,uip_len+1
+ 158 0124 00C0      		rjmp .L9
+ 159               	.LVL8:
+ 160               	.L2:
+ 131:Lib/uip/uip-split.c **** 	  RNDIS_Device_SendPacket(&Ethernet_RNDIS_Interface_Device, uip_buf, uip_len);
+ 132:Lib/uip/uip-split.c **** 	else
+ 133:Lib/uip/uip-split.c **** 	  RNDIS_Host_SendPacket(&Ethernet_RNDIS_Interface_Host, uip_buf, uip_len);
+ 134:Lib/uip/uip-split.c **** #endif /* UIP_CONF_IPV6 */
+ 135:Lib/uip/uip-split.c ****     return;
+ 136:Lib/uip/uip-split.c ****   }
+ 137:Lib/uip/uip-split.c **** #endif /* UIP_TCP */
+ 138:Lib/uip/uip-split.c **** 
+ 139:Lib/uip/uip-split.c ****   /*    uip_fw_output();*/
+ 140:Lib/uip/uip-split.c **** #if UIP_CONF_IPV6
+ 141:Lib/uip/uip-split.c **** 	tcpip_ipv6_output();
+ 142:Lib/uip/uip-split.c **** #else
+ 143:Lib/uip/uip-split.c **** 	if (USB_CurrentMode == USB_MODE_Device)
+ 161               		.loc 1 143 0
+ 162 0126 8091 0000 		lds r24,USB_CurrentMode
+ 163               	.L9:
+ 144:Lib/uip/uip-split.c **** 	  RNDIS_Device_SendPacket(&Ethernet_RNDIS_Interface_Device, uip_buf, uip_len);
+ 164               		.loc 1 144 0
+ 165 012a 60E0      		ldi r22,lo8(uip_buf)
+ 166 012c 70E0      		ldi r23,hi8(uip_buf)
+ 143:Lib/uip/uip-split.c **** 	  RNDIS_Device_SendPacket(&Ethernet_RNDIS_Interface_Device, uip_buf, uip_len);
+ 167               		.loc 1 143 0
+ 168 012e 8130      		cpi r24,lo8(1)
+ 169 0130 01F4      		brne .L6
+ 170               		.loc 1 144 0
+ 171 0132 80E0      		ldi r24,lo8(Ethernet_RNDIS_Interface_Device)
+ 172 0134 90E0      		ldi r25,hi8(Ethernet_RNDIS_Interface_Device)
+ 173 0136 0C94 0000 		jmp RNDIS_Device_SendPacket
+ 174               	.LVL9:
+ 175               	.L6:
+ 145:Lib/uip/uip-split.c **** 	else
+ 146:Lib/uip/uip-split.c **** 	  RNDIS_Host_SendPacket(&Ethernet_RNDIS_Interface_Host, uip_buf, uip_len);
+ 176               		.loc 1 146 0
+ 177 013a 80E0      		ldi r24,lo8(Ethernet_RNDIS_Interface_Host)
+ 178 013c 90E0      		ldi r25,hi8(Ethernet_RNDIS_Interface_Host)
+ 179 013e 0C94 0000 		jmp RNDIS_Host_SendPacket
+ 180               	.LVL10:
+ 181               		.cfi_endproc
+ 182               	.LFE222:
+ 184               		.text
+ 185               	.Letext0:
+ 186               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 187               		.file 3 "Lib/uip/uipopt.h"
+ 188               		.file 4 "Lib/uip/uip.h"
+ 189               		.file 5 "../../LUFA/Drivers/USB/Class/Device/../Common/RNDIS.h"
+ 190               		.file 6 "../../LUFA/Drivers/USB/Class/Device/RNDIS.h"
+ 191               		.file 7 "../../LUFA/Drivers/USB/Class/Host/RNDIS.h"
+ 192               		.file 8 "../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"
+ 193               		.file 9 "../../LUFA/Drivers/USB/Core/USBTask.h"
+ 194               		.file 10 "Lib/uip/../../USBDeviceMode.h"
+ 195               		.file 11 "Lib/uip/../../USBHostMode.h"
+ 196               		.file 12 "Lib/uip/uip-split.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 uip-split.c
+     /tmp/cclow7O7.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cclow7O7.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cclow7O7.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cclow7O7.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cclow7O7.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cclow7O7.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cclow7O7.s:14     .text.uip_split_output:0000000000000000 uip_split_output
+
+UNDEFINED SYMBOLS
+uip_buf
+uip_len
+uip_tcpchksum
+uip_ipchksum
+USB_CurrentMode
+Ethernet_RNDIS_Interface_Device
+RNDIS_Device_SendPacket
+Ethernet_RNDIS_Interface_Host
+RNDIS_Host_SendPacket
+uip_appdata
+uip_add32
+uip_acc32

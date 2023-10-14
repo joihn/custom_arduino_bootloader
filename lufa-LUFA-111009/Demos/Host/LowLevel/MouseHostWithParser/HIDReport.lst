@@ -1,0 +1,573 @@
+   1               		.file	"HIDReport.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.GetHIDReportData,"ax",@progbits
+  12               	.global	GetHIDReportData
+  14               	GetHIDReportData:
+  15               	.LFB147:
+  16               		.file 1 "HIDReport.c"
+   1:HIDReport.c   **** /*
+   2:HIDReport.c   ****              LUFA Library
+   3:HIDReport.c   ****      Copyright (C) Dean Camera, 2011.
+   4:HIDReport.c   **** 
+   5:HIDReport.c   ****   dean [at] fourwalledcubicle [dot] com
+   6:HIDReport.c   ****            www.lufa-lib.org
+   7:HIDReport.c   **** */
+   8:HIDReport.c   **** 
+   9:HIDReport.c   **** /*
+  10:HIDReport.c   ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:HIDReport.c   **** 
+  12:HIDReport.c   ****   Permission to use, copy, modify, distribute, and sell this
+  13:HIDReport.c   ****   software and its documentation for any purpose is hereby granted
+  14:HIDReport.c   ****   without fee, provided that the above copyright notice appear in
+  15:HIDReport.c   ****   all copies and that both that the copyright notice and this
+  16:HIDReport.c   ****   permission notice and warranty disclaimer appear in supporting
+  17:HIDReport.c   ****   documentation, and that the name of the author not be used in
+  18:HIDReport.c   ****   advertising or publicity pertaining to distribution of the
+  19:HIDReport.c   ****   software without specific, written prior permission.
+  20:HIDReport.c   **** 
+  21:HIDReport.c   ****   The author disclaim all warranties with regard to this
+  22:HIDReport.c   ****   software, including all implied warranties of merchantability
+  23:HIDReport.c   ****   and fitness.  In no event shall the author be liable for any
+  24:HIDReport.c   ****   special, indirect or consequential damages or any damages
+  25:HIDReport.c   ****   whatsoever resulting from loss of use, data or profits, whether
+  26:HIDReport.c   ****   in an action of contract, negligence or other tortious action,
+  27:HIDReport.c   ****   arising out of or in connection with the use or performance of
+  28:HIDReport.c   ****   this software.
+  29:HIDReport.c   **** */
+  30:HIDReport.c   **** 
+  31:HIDReport.c   **** #include "HIDReport.h"
+  32:HIDReport.c   **** 
+  33:HIDReport.c   **** /** Size in bytes of the attached device's HID report descriptor */
+  34:HIDReport.c   **** uint16_t         HIDReportSize;
+  35:HIDReport.c   **** 
+  36:HIDReport.c   **** /** Processed HID report descriptor items structure, containing information on each HID report elem
+  37:HIDReport.c   **** HID_ReportInfo_t HIDReportInfo;
+  38:HIDReport.c   **** 
+  39:HIDReport.c   **** 
+  40:HIDReport.c   **** /** Function to read in the HID report descriptor from the attached device, and process it into eas
+  41:HIDReport.c   ****  *  structures via the HID parser routines in the LUFA library.
+  42:HIDReport.c   ****  *
+  43:HIDReport.c   ****  *  \return  A value from the \ref MouseHostWithParser_GetHIDReportDataCodes_t enum
+  44:HIDReport.c   ****  */
+  45:HIDReport.c   **** uint8_t GetHIDReportData(void)
+  46:HIDReport.c   **** {
+  17               		.loc 1 46 0
+  18               		.cfi_startproc
+  19 0000 EF92      		push r14
+  20               	.LCFI0:
+  21               		.cfi_def_cfa_offset 3
+  22               		.cfi_offset 14, -2
+  23 0002 FF92      		push r15
+  24               	.LCFI1:
+  25               		.cfi_def_cfa_offset 4
+  26               		.cfi_offset 15, -3
+  27 0004 0F93      		push r16
+  28               	.LCFI2:
+  29               		.cfi_def_cfa_offset 5
+  30               		.cfi_offset 16, -4
+  31 0006 1F93      		push r17
+  32               	.LCFI3:
+  33               		.cfi_def_cfa_offset 6
+  34               		.cfi_offset 17, -5
+  35 0008 CF93      		push r28
+  36               	.LCFI4:
+  37               		.cfi_def_cfa_offset 7
+  38               		.cfi_offset 28, -6
+  39 000a DF93      		push r29
+  40               	.LCFI5:
+  41               		.cfi_def_cfa_offset 8
+  42               		.cfi_offset 29, -7
+  43 000c CDB7      		in r28,__SP_L__
+  44 000e DEB7      		in r29,__SP_H__
+  45               	.LCFI6:
+  46               		.cfi_def_cfa_register 28
+  47               	/* prologue: function */
+  48               	/* frame size = 0 */
+  49               	/* stack size = 6 */
+  50               	.L__stack_usage = 6
+  47:HIDReport.c   **** 	/* Create a buffer big enough to hold the entire returned HID report */
+  48:HIDReport.c   **** 	uint8_t HIDReportData[HIDReportSize];
+  49:HIDReport.c   **** 
+  50:HIDReport.c   **** 	USB_ControlRequest = (USB_Request_Header_t)
+  51:HIDReport.c   **** 		{
+  52:HIDReport.c   **** 			.bmRequestType = (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_INTERFACE),
+  53:HIDReport.c   **** 			.bRequest      = REQ_GetDescriptor,
+  54:HIDReport.c   **** 			.wValue        = (HID_DTYPE_Report << 8),
+  55:HIDReport.c   **** 			.wIndex        = 0,
+  56:HIDReport.c   **** 			.wLength       = HIDReportSize,
+  57:HIDReport.c   **** 		};
+  58:HIDReport.c   **** 
+  59:HIDReport.c   **** 	/* Select the control pipe for the request transfer */
+  60:HIDReport.c   **** 	Pipe_SelectPipe(PIPE_CONTROLPIPE);
+  61:HIDReport.c   **** 
+  62:HIDReport.c   **** 	/* Send control request to retrieve the HID report from the attached device */
+  63:HIDReport.c   **** 	if (USB_Host_SendControlRequest(HIDReportData) != HOST_SENDCONTROL_Successful)
+  64:HIDReport.c   **** 	  return ParseControlError;
+  65:HIDReport.c   **** 
+  66:HIDReport.c   **** 	/* Send the HID report to the parser for processing */
+  67:HIDReport.c   **** 	if (USB_ProcessHIDReport(HIDReportData, HIDReportSize, &HIDReportInfo) != HID_PARSE_Successful)
+  68:HIDReport.c   **** 	  return ParseError;
+  69:HIDReport.c   **** 
+  70:HIDReport.c   **** 	return ParseSuccessful;
+  71:HIDReport.c   **** }
+  51               		.loc 1 71 0
+  52 0010 EDB6      		in r14,__SP_L__
+  53 0012 FEB6      		in r15,__SP_H__
+  48:HIDReport.c   **** 
+  54               		.loc 1 48 0
+  55 0014 8091 0000 		lds r24,HIDReportSize
+  56 0018 9091 0000 		lds r25,HIDReportSize+1
+  57               	.LVL0:
+  58 001c 2DB7      		in r18,__SP_L__
+  59 001e 3EB7      		in r19,__SP_H__
+  60 0020 281B      		sub r18,r24
+  61 0022 390B      		sbc r19,r25
+  62 0024 0FB6      		in __tmp_reg__,__SREG__
+  63 0026 F894      		cli
+  64 0028 3EBF      		out __SP_H__,r19
+  65 002a 0FBE      		out __SREG__,__tmp_reg__
+  66 002c 2DBF      		out __SP_L__,r18
+  67 002e 0DB7      		in r16,__SP_L__
+  68 0030 1EB7      		in r17,__SP_H__
+  69 0032 0F5F      		subi r16,-1
+  70 0034 1F4F      		sbci r17,-1
+  71               	.LVL1:
+  50:HIDReport.c   **** 		{
+  72               		.loc 1 50 0
+  73 0036 21E8      		ldi r18,lo8(-127)
+  74 0038 2093 0000 		sts USB_ControlRequest,r18
+  75 003c 26E0      		ldi r18,lo8(6)
+  76 003e 2093 0000 		sts USB_ControlRequest+1,r18
+  77 0042 20E0      		ldi r18,0
+  78 0044 32E2      		ldi r19,lo8(34)
+  79 0046 3093 0000 		sts USB_ControlRequest+2+1,r19
+  80 004a 2093 0000 		sts USB_ControlRequest+2,r18
+  81 004e 1092 0000 		sts USB_ControlRequest+4+1,__zero_reg__
+  82 0052 1092 0000 		sts USB_ControlRequest+4,__zero_reg__
+  83 0056 9093 0000 		sts USB_ControlRequest+6+1,r25
+  84 005a 8093 0000 		sts USB_ControlRequest+6,r24
+  85               	.LVL2:
+  86               	.LBB4:
+  87               	.LBB5:
+  88               		.file 2 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h"
+   1:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /*
+   2:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+   5:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** */
+   8:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+   9:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /*
+  10:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  12:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  21:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   this software.
+  29:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** */
+  30:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  31:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \file
+  32:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief USB Pipe definitions for the AVR8 microcontrollers.
+  33:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \copydetails Group_PipeManagement_AVR8
+  34:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  35:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  36:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *        dispatch header located in LUFA/Drivers/USB/USB.h.
+  37:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  38:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  39:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipeRW
+  40:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipeRW_AVR8 Pipe Data Reading and Writing (AVR8)
+  41:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe data read/write definitions for the Atmel AVR8 architecture.
+  42:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  43:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Functions, macros, variables, enums and types related to data reading and writing from and to p
+  44:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  45:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  46:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipePrimitiveRW
+  47:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipePrimitiveRW_AVR8 Read/Write of Primitive Data Types (AVR8)
+  48:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe primitive data read/write definitions for the Atmel AVR8 architecture.
+  49:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  50:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Functions, macros, variables, enums and types related to data reading and writing of primitive 
+  51:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  from and to pipes.
+  52:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  53:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  54:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipePacketManagement
+  55:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipePacketManagement_AVR8 Pipe Packet Management (AVR8)
+  56:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe packet management definitions for the Atmel AVR8 architecture.
+  57:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  58:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Functions, macros, variables, enums and types related to packet management of pipes.
+  59:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  60:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  61:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipeControlReq
+  62:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipeControlReq_AVR8 Pipe Control Request Management (AVR8)
+  63:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe control request management definitions for the Atmel AVR8 architecture.
+  64:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  65:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Module for host mode request processing. This module allows for the transmission of standard, c
+  66:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  vendor control requests to the default control endpoint of an attached device while in host mod
+  67:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  68:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \see Chapter 9 of the USB 2.0 specification.
+  69:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  70:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  71:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipeManagement
+  72:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipeManagement_AVR8 Pipe Management (AVR8)
+  73:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe management definitions for the Atmel AVR8 architecture.
+  74:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  75:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  This module contains functions, macros and enums related to pipe management when in USB Host mo
+  76:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  module contains the pipe management macros, as well as pipe interrupt and data send/receive fun
+  77:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  for various data types.
+  78:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  79:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  @{
+  80:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  81:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  82:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** #ifndef __PIPE_AVR8_H__
+  83:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** #define __PIPE_AVR8_H__
+  84:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  85:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Includes: */
+  86:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#include "../../../../Common/Common.h"
+  87:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#include "../USBTask.h"
+  88:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  89:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Enable C linkage for C++ Compilers: */
+  90:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#if defined(__cplusplus)
+  91:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			extern "C" {
+  92:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#endif
+  93:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  94:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Preprocessor Checks: */
+  95:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#if !defined(__INCLUDE_FROM_USB_DRIVER)
+  96:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
+  97:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#endif
+  98:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  99:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Public Interface - May be used in end-application: */
+ 100:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		/* Macros: */
+ 101:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** \name Pipe Error Flag Masks */
+ 102:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@{
+ 103:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that an overflow error occurred in the pipe o
+ 104:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_OVERFLOW         (1 << 6)
+ 105:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 106:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that an underflow error occurred in the pipe 
+ 107:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_UNDERFLOW        (1 << 5)
+ 108:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 109:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a CRC error occurred in the pipe on the 
+ 110:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_CRC16            (1 << 4)
+ 111:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 112:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware timeout error occurred in the
+ 113:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_TIMEOUT          (1 << 3)
+ 114:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 115:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware PID error occurred in the pip
+ 116:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_PID              (1 << 2)
+ 117:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 118:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware data PID error occurred in th
+ 119:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_DATAPID          (1 << 1)
+ 120:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 121:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware data toggle error occurred in
+ 122:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_DATATGL          (1 << 0)
+ 123:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@}
+ 124:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 125:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** \name Pipe Token Masks */
+ 126:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@{
+ 127:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Token mask for \ref Pipe_ConfigurePipe(). This sets the pipe as a SETUP token (for CONTROL t
+ 128:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  which will trigger a control request on the attached device when data is written to the pipe
+ 129:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 130:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOKEN_SETUP                (0 << PTOKEN0)
+ 131:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 132:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Token mask for \ref Pipe_ConfigurePipe(). This sets the pipe as a IN token (for non-CONTROL 
+ 133:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  indicating that the pipe data will flow from device to host.
+ 134:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 135:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOKEN_IN                   (1 << PTOKEN0)
+ 136:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 137:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Token mask for \ref Pipe_ConfigurePipe(). This sets the pipe as a OUT token (for non-CONTROL
+ 138:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  indicating that the pipe data will flow from host to device.
+ 139:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 140:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOKEN_OUT                  (2 << PTOKEN0)
+ 141:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@}
+ 142:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			
+ 143:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** \name Pipe Bank Mode Masks */
+ 144:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@{
+ 145:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for the bank mode selection for the \ref Pipe_ConfigurePipe() macro. This indicates tha
+ 146:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  should have one single bank, which requires less USB FIFO memory but results in slower trans
+ 147:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  only one USB device (the AVR or the attached device) can access the pipe's bank at the one t
+ 148:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 149:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_BANK_SINGLE                (0 << EPBK0)
+ 150:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 151:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for the bank mode selection for the \ref Pipe_ConfigurePipe() macro. This indicates tha
+ 152:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  should have two banks, which requires more USB FIFO memory but results in faster transfers a
+ 153:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  USB device (the AVR or the attached device) can access one bank while the other accesses the
+ 154:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  bank.
+ 155:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 156:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_BANK_DOUBLE                (1 << EPBK0)
+ 157:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@}
+ 158:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 159:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Default size of the default control pipe's bank, until altered by the Endpoint0Size value
+ 160:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  in the device descriptor of the attached device.
+ 161:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 162:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_CONTROLPIPE_DEFAULT_SIZE   64
+ 163:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 164:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Total number of pipes (including the default control pipe at address 0) which may be used in
+ 165:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  the device. Different USB AVR models support different amounts of pipes, this value reflects
+ 166:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  the maximum number of pipes for the currently selected AVR model.
+ 167:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 168:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOTAL_PIPES                7
+ 169:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 170:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Size in bytes of the largest pipe bank size possible in the device. Not all banks on each AV
+ 171:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  model supports the largest bank size possible on the device; different pipe numbers support
+ 172:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  different maximum bank sizes. This value reflects the largest possible bank of any pipe on t
+ 173:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  currently selected USB AVR model.
+ 174:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 175:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_MAX_SIZE                   256
+ 176:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 177:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		/* Enums: */
+ 178:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Enum for the possible error return codes of the \ref Pipe_WaitUntilReady() function.
+ 179:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 180:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipeRW_AVR8
+ 181:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 182:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			enum Pipe_WaitUntilReady_ErrorCodes_t
+ 183:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 184:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_NoError                 = 0, /**< Pipe ready for next packet, no error. */
+ 185:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_PipeStalled             = 1,	/**< The device stalled the pipe while waiting. */
+ 186:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_DeviceDisconnected      = 2,	/**< Device was disconnected from the host while wa
+ 187:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_Timeout                 = 3, /**< The device failed to accept or send the next p
+ 188:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                                             *   within the software timeout period set by the
+ 189:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                                             *   \ref USB_STREAM_TIMEOUT_MS macro.
+ 190:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                                             */
+ 191:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			};
+ 192:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 193:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		/* Inline Functions: */
+ 194:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Indicates the number of bytes currently stored in the current pipes's selected bank.
+ 195:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 196:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \note The return width of this function may differ, depending on the maximum pipe bank size
+ 197:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *        of the selected AVR model.
+ 198:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 199:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipeRW_AVR8
+ 200:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 201:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Total number of bytes in the currently selected pipe's FIFO buffer.
+ 202:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 203:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint16_t Pipe_BytesInPipe(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 204:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint16_t Pipe_BytesInPipe(void)
+ 205:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 206:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return UPBCX;
+ 207:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 208:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 209:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Returns the pipe address of the currently selected pipe. This is typically used to save the
+ 210:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  currently selected pipe number so that it can be restored after another pipe has been manipu
+ 211:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 212:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Index of the currently selected pipe.
+ 213:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 214:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetCurrentPipe(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 215:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetCurrentPipe(void)
+ 216:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 217:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return (UPNUM & PIPE_PIPENUM_MASK);
+ 218:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 219:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 220:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Selects the given pipe number. Any pipe operations which do not require the pipe number to b
+ 221:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  indicated will operate on the currently selected pipe.
+ 222:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 223:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] PipeNumber  Index of the pipe to select.
+ 224:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 225:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SelectPipe(const uint8_t PipeNumber) ATTR_ALWAYS_INLINE;
+ 226:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SelectPipe(const uint8_t PipeNumber)
+ 227:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPNUM = PipeNumber;
+  89               		.loc 2 228 0
+  90 005e 1092 A700 		sts 167,__zero_reg__
+  91               	.LVL3:
+  92               	.LBE5:
+  93               	.LBE4:
+  63:HIDReport.c   **** 	  return ParseControlError;
+  94               		.loc 1 63 0
+  95 0062 C801      		movw r24,r16
+  96               	.LVL4:
+  97 0064 0E94 0000 		call USB_Host_SendControlRequest
+  98               	.LVL5:
+  99 0068 8111      		cpse r24,__zero_reg__
+ 100 006a 00C0      		rjmp .L4
+  67:HIDReport.c   **** 	  return ParseError;
+ 101               		.loc 1 67 0
+ 102 006c 6091 0000 		lds r22,HIDReportSize
+ 103 0070 7091 0000 		lds r23,HIDReportSize+1
+ 104 0074 40E0      		ldi r20,lo8(HIDReportInfo)
+ 105 0076 50E0      		ldi r21,hi8(HIDReportInfo)
+ 106 0078 C801      		movw r24,r16
+ 107 007a 0E94 0000 		call USB_ProcessHIDReport
+ 108               	.LVL6:
+  64:HIDReport.c   **** 
+ 109               		.loc 1 64 0
+ 110 007e 91E0      		ldi r25,lo8(1)
+ 111 0080 8111      		cpse r24,__zero_reg__
+ 112 0082 00C0      		rjmp .L2
+ 113 0084 90E0      		ldi r25,0
+ 114 0086 00C0      		rjmp .L2
+ 115               	.L4:
+ 116 0088 92E0      		ldi r25,lo8(2)
+ 117               	.L2:
+ 118               		.loc 1 71 0
+ 119 008a 892F      		mov r24,r25
+ 120 008c 0FB6      		in __tmp_reg__,__SREG__
+ 121 008e F894      		cli
+ 122 0090 FEBE      		out __SP_H__,r15
+ 123 0092 0FBE      		out __SREG__,__tmp_reg__
+ 124 0094 EDBE      		out __SP_L__,r14
+ 125               	/* epilogue start */
+ 126 0096 DF91      		pop r29
+ 127 0098 CF91      		pop r28
+ 128 009a 1F91      		pop r17
+ 129 009c 0F91      		pop r16
+ 130               	.LVL7:
+ 131 009e FF90      		pop r15
+ 132 00a0 EF90      		pop r14
+ 133 00a2 0895      		ret
+ 134               		.cfi_endproc
+ 135               	.LFE147:
+ 137               		.section	.text.CALLBACK_HIDParser_FilterHIDReportItem,"ax",@progbits
+ 138               	.global	CALLBACK_HIDParser_FilterHIDReportItem
+ 140               	CALLBACK_HIDParser_FilterHIDReportItem:
+ 141               	.LFB148:
+  72:HIDReport.c   **** 
+  73:HIDReport.c   **** /** Callback for the HID Report Parser. This function is called each time the HID report parser is 
+  74:HIDReport.c   ****  *  an IN, OUT or FEATURE item into the HIDReportInfo structure. To save on RAM, we are able to fil
+  75:HIDReport.c   ****  *  we aren't interested in (preventing us from being able to extract them later on, but saving on 
+  76:HIDReport.c   ****  *  have occupied).
+  77:HIDReport.c   ****  *
+  78:HIDReport.c   ****  *  \param[in] CurrentItem  Pointer to the item the HID report parser is currently working with
+  79:HIDReport.c   ****  *
+  80:HIDReport.c   ****  *  \return Boolean true if the item should be stored into the HID report structure, false if it sh
+  81:HIDReport.c   ****  */
+  82:HIDReport.c   **** bool CALLBACK_HIDParser_FilterHIDReportItem(HID_ReportItem_t* const CurrentItem)
+  83:HIDReport.c   **** {
+ 142               		.loc 1 83 0
+ 143               		.cfi_startproc
+ 144               	.LVL8:
+ 145               	/* prologue: function */
+ 146               	/* frame size = 0 */
+ 147               	/* stack size = 0 */
+ 148               	.L__stack_usage = 0
+ 149               	.LBB6:
+  84:HIDReport.c   **** 	bool IsMouse = false;
+  85:HIDReport.c   **** 
+  86:HIDReport.c   **** 	/* Iterate through the item's collection path, until either the root collection node or a collecti
+  87:HIDReport.c   **** 	 * Mouse Usage is found - this prevents Joysticks, which use identical descriptors except for the 
+  88:HIDReport.c   **** 	 * parent node, from being erroneously treated as a mouse
+  89:HIDReport.c   **** 	 */
+  90:HIDReport.c   **** 	for (HID_CollectionPath_t* CurrPath = CurrentItem->CollectionPath; CurrPath != NULL; CurrPath = Cu
+ 150               		.loc 1 90 0
+ 151 0000 DC01      		movw r26,r24
+ 152 0002 1696      		adiw r26,6
+ 153 0004 ED91      		ld r30,X+
+ 154 0006 FC91      		ld r31,X
+ 155 0008 1797      		sbiw r26,6+1
+ 156               	.LVL9:
+ 157               	.L7:
+ 158               		.loc 1 90 0 is_stmt 0 discriminator 1
+ 159 000a 3097      		sbiw r30,0
+ 160 000c 01F0      		breq .L17
+  91:HIDReport.c   **** 	{
+  92:HIDReport.c   **** 		if ((CurrPath->Usage.Page  == USAGE_PAGE_GENERIC_DCTRL) &&
+ 161               		.loc 1 92 0 is_stmt 1
+ 162 000e 2181      		ldd r18,Z+1
+ 163 0010 3281      		ldd r19,Z+2
+ 164 0012 2130      		cpi r18,1
+ 165 0014 3105      		cpc r19,__zero_reg__
+ 166 0016 01F4      		brne .L8
+ 167               		.loc 1 92 0 is_stmt 0 discriminator 1
+ 168 0018 2381      		ldd r18,Z+3
+ 169 001a 3481      		ldd r19,Z+4
+ 170 001c 2230      		cpi r18,2
+ 171 001e 3105      		cpc r19,__zero_reg__
+ 172 0020 01F0      		breq .L9
+ 173               	.L8:
+  90:HIDReport.c   **** 	{
+ 174               		.loc 1 90 0 is_stmt 1 discriminator 2
+ 175 0022 0580      		ldd __tmp_reg__,Z+5
+ 176 0024 F681      		ldd r31,Z+6
+ 177 0026 E02D      		mov r30,__tmp_reg__
+ 178               	.LVL10:
+ 179 0028 00C0      		rjmp .L7
+ 180               	.L9:
+ 181               	.LVL11:
+ 182               	.LBE6:
+  93:HIDReport.c   **** 		    (CurrPath->Usage.Usage == USAGE_MOUSE))
+  94:HIDReport.c   **** 		{
+  95:HIDReport.c   **** 			IsMouse = true;
+  96:HIDReport.c   **** 			break;
+  97:HIDReport.c   **** 		}
+  98:HIDReport.c   **** 	}
+  99:HIDReport.c   **** 
+ 100:HIDReport.c   **** 	/* If a collection with the mouse usage was not found, indicate that we are not interested in this
+ 101:HIDReport.c   **** 	if (!IsMouse)
+ 102:HIDReport.c   **** 	  return false;
+ 103:HIDReport.c   **** 
+ 104:HIDReport.c   **** 	/* Check the attributes of the current mouse item - see if we are interested in it or not;
+ 105:HIDReport.c   **** 	 * only store BUTTON and GENERIC_DESKTOP_CONTROL items into the Processed HID Report
+ 106:HIDReport.c   **** 	 * structure to save RAM and ignore the rest
+ 107:HIDReport.c   **** 	 */
+ 108:HIDReport.c   **** 	return ((CurrentItem->Attributes.Usage.Page == USAGE_PAGE_BUTTON) ||
+ 183               		.loc 1 108 0
+ 184 002a FC01      		movw r30,r24
+ 185               	.LVL12:
+ 186 002c 2185      		ldd r18,Z+9
+ 187 002e 3285      		ldd r19,Z+10
+ 188 0030 277F      		andi r18,247
+ 189 0032 81E0      		ldi r24,lo8(1)
+ 190               	.LVL13:
+ 191 0034 2130      		cpi r18,1
+ 192 0036 3105      		cpc r19,__zero_reg__
+ 193 0038 01F0      		breq .L14
+ 194               	.LVL14:
+ 195               	.L17:
+ 196 003a 80E0      		ldi r24,0
+ 197               	.L14:
+ 109:HIDReport.c   **** 	        (CurrentItem->Attributes.Usage.Page == USAGE_PAGE_GENERIC_DCTRL));
+ 110:HIDReport.c   **** }
+ 198               		.loc 1 110 0
+ 199 003c 0895      		ret
+ 200               		.cfi_endproc
+ 201               	.LFE148:
+ 203               		.comm	HIDReportInfo,985,1
+ 204               		.comm	HIDReportSize,2,1
+ 205               		.text
+ 206               	.Letext0:
+ 207               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 208               		.file 4 "../../../../LUFA/Drivers/USB/Core/AVR8/../StdRequestType.h"
+ 209               		.file 5 "../../../../LUFA/Drivers/USB/Core/AVR8/../HostStandardReq.h"
+ 210               		.file 6 "/usr/lib/avr/include/stdio.h"
+ 211               		.file 7 "../../../../LUFA/Drivers/USB/Class/Host/../Common/HIDParser.h"
+ 212               		.file 8 "../../../../LUFA/Drivers/USB/Class/Host/../Common/HID.h"
+ 213               		.file 9 "HIDReport.h"
+ 214               		.file 10 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+ 215               		.file 11 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 HIDReport.c
+     /tmp/ccjsO8xU.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccjsO8xU.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccjsO8xU.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccjsO8xU.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccjsO8xU.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccjsO8xU.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccjsO8xU.s:14     .text.GetHIDReportData:0000000000000000 GetHIDReportData
+                            *COM*:0000000000000002 HIDReportSize
+                            *COM*:00000000000003d9 HIDReportInfo
+     /tmp/ccjsO8xU.s:140    .text.CALLBACK_HIDParser_FilterHIDReportItem:0000000000000000 CALLBACK_HIDParser_FilterHIDReportItem
+
+UNDEFINED SYMBOLS
+USB_ControlRequest
+USB_Host_SendControlRequest
+USB_ProcessHIDReport
+__do_clear_bss

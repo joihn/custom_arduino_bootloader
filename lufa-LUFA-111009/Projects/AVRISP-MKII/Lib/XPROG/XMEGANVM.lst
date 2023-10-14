@@ -1,0 +1,1672 @@
+   1               		.file	"XMEGANVM.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.XMEGANVM_SendAddress,"ax",@progbits
+  13               	XMEGANVM_SendAddress:
+  14               	.LFB117:
+  15               		.file 1 "../AVRISP-MKII/Lib/XPROG/XMEGANVM.c"
+   1:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /*
+   2:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****              LUFA Library
+   3:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****      Copyright (C) Dean Camera, 2011.
+   4:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+   5:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   dean [at] fourwalledcubicle [dot] com
+   6:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****            www.lufa-lib.org
+   7:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** */
+   8:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+   9:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /*
+  10:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+  12:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   software and its documentation for any purpose is hereby granted
+  14:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   without fee, provided that the above copyright notice appear in
+  15:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   all copies and that both that the copyright notice and this
+  16:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   permission notice and warranty disclaimer appear in supporting
+  17:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   documentation, and that the name of the author not be used in
+  18:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   advertising or publicity pertaining to distribution of the
+  19:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   software without specific, written prior permission.
+  20:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+  21:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   The author disclaim all warranties with regard to this
+  22:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   software, including all implied warranties of merchantability
+  23:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   and fitness.  In no event shall the author be liable for any
+  24:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   special, indirect or consequential damages or any damages
+  25:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   in an action of contract, negligence or other tortious action,
+  27:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   arising out of or in connection with the use or performance of
+  28:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****   this software.
+  29:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** */
+  30:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+  31:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /** \file
+  32:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+  33:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  Target-related functions for the XMEGA target's NVM module.
+  34:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  */
+  35:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+  36:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** #define  INCLUDE_FROM_XMEGA_NVM_C
+  37:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** #include "XMEGANVM.h"
+  38:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+  39:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** #if defined(ENABLE_XPROG_PROTOCOL) || defined(__DOXYGEN__)
+  40:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+  41:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /** Sends the given 32-bit absolute address to the target.
+  42:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+  43:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in] AbsoluteAddress  Absolute address to send to the target
+  44:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  */
+  45:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** static void XMEGANVM_SendAddress(const uint32_t AbsoluteAddress)
+  46:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** {
+  16               		.loc 1 46 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19 0000 CF92      		push r12
+  20               	.LCFI0:
+  21               		.cfi_def_cfa_offset 3
+  22               		.cfi_offset 12, -2
+  23 0002 DF92      		push r13
+  24               	.LCFI1:
+  25               		.cfi_def_cfa_offset 4
+  26               		.cfi_offset 13, -3
+  27 0004 EF92      		push r14
+  28               	.LCFI2:
+  29               		.cfi_def_cfa_offset 5
+  30               		.cfi_offset 14, -4
+  31 0006 FF92      		push r15
+  32               	.LCFI3:
+  33               		.cfi_def_cfa_offset 6
+  34               		.cfi_offset 15, -5
+  35               	/* prologue: function */
+  36               	/* frame size = 0 */
+  37               	/* stack size = 4 */
+  38               	.L__stack_usage = 4
+  39 0008 6B01      		movw r12,r22
+  40 000a 7C01      		movw r14,r24
+  47:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Send the given 32-bit address to the target, LSB first */
+  48:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(AbsoluteAddress &  0xFF);
+  41               		.loc 1 48 0
+  42 000c 862F      		mov r24,r22
+  43 000e 0E94 0000 		call XPROGTarget_SendByte
+  44               	.LVL1:
+  49:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(AbsoluteAddress >> 8);
+  45               		.loc 1 49 0
+  46 0012 8D2D      		mov r24,r13
+  47 0014 0E94 0000 		call XPROGTarget_SendByte
+  48               	.LVL2:
+  50:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(AbsoluteAddress >> 16);
+  49               		.loc 1 50 0
+  50 0018 8E2D      		mov r24,r14
+  51 001a 0E94 0000 		call XPROGTarget_SendByte
+  52               	.LVL3:
+  51:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(AbsoluteAddress >> 24);
+  53               		.loc 1 51 0
+  54 001e 8F2D      		mov r24,r15
+  55               	/* epilogue start */
+  52:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** }
+  56               		.loc 1 52 0
+  57 0020 FF90      		pop r15
+  58 0022 EF90      		pop r14
+  59 0024 DF90      		pop r13
+  60 0026 CF90      		pop r12
+  61               	.LVL4:
+  51:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(AbsoluteAddress >> 24);
+  62               		.loc 1 51 0
+  63 0028 0C94 0000 		jmp XPROGTarget_SendByte
+  64               	.LVL5:
+  65               		.cfi_endproc
+  66               	.LFE117:
+  68               		.section	.text.XMEGANVM_SendNVMRegAddress,"ax",@progbits
+  70               	XMEGANVM_SendNVMRegAddress:
+  71               	.LFB118:
+  53:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+  54:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /** Sends the given NVM register address to the target.
+  55:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+  56:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in] Register  NVM register whose absolute address is to be sent
+  57:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  */
+  58:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** static void XMEGANVM_SendNVMRegAddress(const uint8_t Register)
+  59:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** {
+  72               		.loc 1 59 0
+  73               		.cfi_startproc
+  74               	.LVL6:
+  75 0000 0F93      		push r16
+  76               	.LCFI4:
+  77               		.cfi_def_cfa_offset 3
+  78               		.cfi_offset 16, -2
+  79 0002 1F93      		push r17
+  80               	.LCFI5:
+  81               		.cfi_def_cfa_offset 4
+  82               		.cfi_offset 17, -3
+  83               	/* prologue: function */
+  84               	/* frame size = 0 */
+  85               	/* stack size = 2 */
+  86               	.L__stack_usage = 2
+  87               	.LVL7:
+  60:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Determine the absolute register address from the NVM base memory address and the NVM register a
+  61:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	uint32_t Address = XPROG_Param_NVMBase | Register;
+  62:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+  63:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Send the calculated 32-bit address to the target, LSB first */
+  64:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XMEGANVM_SendAddress(Address);
+  88               		.loc 1 64 0
+  89 0004 4091 0000 		lds r20,XPROG_Param_NVMBase
+  90 0008 5091 0000 		lds r21,XPROG_Param_NVMBase+1
+  91 000c 6091 0000 		lds r22,XPROG_Param_NVMBase+2
+  92 0010 7091 0000 		lds r23,XPROG_Param_NVMBase+3
+  93 0014 8A01      		movw r16,r20
+  94 0016 9B01      		movw r18,r22
+  95 0018 082B      		or r16,r24
+  96 001a C901      		movw r24,r18
+  97 001c B801      		movw r22,r16
+  98               	/* epilogue start */
+  65:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** }
+  99               		.loc 1 65 0
+ 100 001e 1F91      		pop r17
+ 101 0020 0F91      		pop r16
+  64:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** }
+ 102               		.loc 1 64 0
+ 103 0022 0C94 0000 		jmp XMEGANVM_SendAddress
+ 104               	.LVL8:
+ 105               		.cfi_endproc
+ 106               	.LFE118:
+ 108               		.section	.text.XMEGANVM_WaitWhileNVMBusBusy,"ax",@progbits
+ 109               	.global	XMEGANVM_WaitWhileNVMBusBusy
+ 111               	XMEGANVM_WaitWhileNVMBusBusy:
+ 112               	.LFB119:
+  66:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+  67:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /** Busy-waits while the NVM controller is busy performing a NVM operation, such as a FLASH page re
+  68:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  calculation.
+  69:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+  70:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \return Boolean true if the NVM controller became ready within the timeout period, false otherw
+  71:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  */
+  72:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** bool XMEGANVM_WaitWhileNVMBusBusy(void)
+  73:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** {
+ 113               		.loc 1 73 0
+ 114               		.cfi_startproc
+ 115               	/* prologue: function */
+ 116               	/* frame size = 0 */
+ 117               	/* stack size = 0 */
+ 118               	.L__stack_usage = 0
+ 119               	.L5:
+ 120               	.LBB2:
+  74:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Poll the STATUS register to check to see if NVM access has been enabled */
+  75:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	for (;;)
+  76:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	{
+  77:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send the LDCS command to read the PDI STATUS register to see the NVM bus is active */
+  78:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_LDCS | PDI_STATUS_REG);
+ 121               		.loc 1 78 0
+ 122 0000 80E8      		ldi r24,lo8(-128)
+ 123 0002 0E94 0000 		call XPROGTarget_SendByte
+ 124               	.LVL9:
+  79:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+  80:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		uint8_t StatusRegister = XPROGTarget_ReceiveByte();
+ 125               		.loc 1 80 0
+ 126 0006 0E94 0000 		call XPROGTarget_ReceiveByte
+ 127               	.LVL10:
+  81:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+  82:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* We might have timed out waiting for the status register read response, check here */
+  83:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		if (TimeoutExpired)
+ 128               		.loc 1 83 0
+ 129 000a 9AB5      		in r25,0x2a
+ 130 000c 9111      		cpse r25,__zero_reg__
+ 131 000e 00C0      		rjmp .L6
+  84:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  return false;
+  85:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+  86:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Check the status register read response to see if the NVM bus is enabled */
+  87:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		if (StatusRegister & PDI_STATUS_NVM)
+ 132               		.loc 1 87 0
+ 133 0010 81FF      		sbrs r24,1
+ 134 0012 00C0      		rjmp .L5
+  88:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  return true;
+ 135               		.loc 1 88 0
+ 136 0014 81E0      		ldi r24,lo8(1)
+ 137               	.LVL11:
+ 138 0016 0895      		ret
+ 139               	.LVL12:
+ 140               	.L6:
+  84:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  return false;
+ 141               		.loc 1 84 0
+ 142 0018 80E0      		ldi r24,0
+ 143               	.LVL13:
+ 144               	.LBE2:
+  89:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	}
+  90:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** }
+ 145               		.loc 1 90 0
+ 146 001a 0895      		ret
+ 147               		.cfi_endproc
+ 148               	.LFE119:
+ 150               		.section	.text.XMEGANVM_WaitWhileNVMControllerBusy,"ax",@progbits
+ 151               	.global	XMEGANVM_WaitWhileNVMControllerBusy
+ 153               	XMEGANVM_WaitWhileNVMControllerBusy:
+ 154               	.LFB120:
+  91:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+  92:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /** Waits while the target's NVM controller is busy performing an operation, exiting if the
+  93:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  timeout period expires.
+  94:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+  95:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \return Boolean true if the NVM controller became ready within the timeout period, false otherw
+  96:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  */
+  97:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** bool XMEGANVM_WaitWhileNVMControllerBusy(void)
+  98:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** {
+ 155               		.loc 1 98 0
+ 156               		.cfi_startproc
+ 157               	/* prologue: function */
+ 158               	/* frame size = 0 */
+ 159               	/* stack size = 0 */
+ 160               	.L__stack_usage = 0
+  99:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Preload the pointer register with the NVM STATUS register address to check the BUSY flag */
+ 100:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_ST | (PDI_POINTER_DIRECT << 2) | PDI_DATSIZE_4BYTES);
+ 161               		.loc 1 100 0
+ 162 0000 8BE6      		ldi r24,lo8(107)
+ 163 0002 0E94 0000 		call XPROGTarget_SendByte
+ 164               	.LVL14:
+ 101:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_STATUS);
+ 165               		.loc 1 101 0
+ 166 0006 8FE0      		ldi r24,lo8(15)
+ 167 0008 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 168               	.LVL15:
+ 169               	.L12:
+ 170               	.LBB3:
+ 102:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 103:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Poll the NVM STATUS register while the NVM controller is busy */
+ 104:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	for (;;)
+ 105:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	{
+ 106:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Fetch the current status value via the pointer register (without auto-increment afterwards) */
+ 107:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_LD | (PDI_POINTER_INDIRECT << 2) | PDI_DATSIZE_1BYTE);
+ 171               		.loc 1 107 0
+ 172 000c 80E2      		ldi r24,lo8(32)
+ 173 000e 0E94 0000 		call XPROGTarget_SendByte
+ 174               	.LVL16:
+ 108:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 109:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		uint8_t StatusRegister = XPROGTarget_ReceiveByte();
+ 175               		.loc 1 109 0
+ 176 0012 0E94 0000 		call XPROGTarget_ReceiveByte
+ 177               	.LVL17:
+ 110:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 111:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* We might have timed out waiting for the status register read response, check here */
+ 112:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		if (TimeoutExpired)
+ 178               		.loc 1 112 0
+ 179 0016 9AB5      		in r25,0x2a
+ 180 0018 9111      		cpse r25,__zero_reg__
+ 181 001a 00C0      		rjmp .L13
+ 113:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  return false;
+ 114:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 115:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Check to see if the BUSY flag is still set */
+ 116:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		if (!(StatusRegister & (1 << 7)))
+ 182               		.loc 1 116 0
+ 183 001c 87FD      		sbrc r24,7
+ 184 001e 00C0      		rjmp .L12
+ 117:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  return true;
+ 185               		.loc 1 117 0
+ 186 0020 81E0      		ldi r24,lo8(1)
+ 187               	.LVL18:
+ 188 0022 0895      		ret
+ 189               	.LVL19:
+ 190               	.L13:
+ 113:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  return false;
+ 191               		.loc 1 113 0
+ 192 0024 80E0      		ldi r24,0
+ 193               	.LVL20:
+ 194               	.LBE3:
+ 118:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	}
+ 119:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** }
+ 195               		.loc 1 119 0
+ 196 0026 0895      		ret
+ 197               		.cfi_endproc
+ 198               	.LFE120:
+ 200               		.section	.rodata
+ 201               	.LC0:
+ 202 0000 12        		.byte	18
+ 203 0001 89        		.byte	-119
+ 204 0002 AB        		.byte	-85
+ 205 0003 45        		.byte	69
+ 206 0004 CD        		.byte	-51
+ 207 0005 D8        		.byte	-40
+ 208 0006 88        		.byte	-120
+ 209 0007 FF        		.byte	-1
+ 210               		.section	.text.XMEGANVM_EnablePDI,"ax",@progbits
+ 211               	.global	XMEGANVM_EnablePDI
+ 213               	XMEGANVM_EnablePDI:
+ 214               	.LFB121:
+ 120:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 121:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /** Enables the physical PDI interface on the target and enables access to the internal NVM control
+ 122:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+ 123:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \return Boolean true if the PDI interface was enabled successfully, false otherwise
+ 124:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  */
+ 125:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** bool XMEGANVM_EnablePDI(void)
+ 126:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** {
+ 215               		.loc 1 126 0
+ 216               		.cfi_startproc
+ 217 0000 EF92      		push r14
+ 218               	.LCFI6:
+ 219               		.cfi_def_cfa_offset 3
+ 220               		.cfi_offset 14, -2
+ 221 0002 FF92      		push r15
+ 222               	.LCFI7:
+ 223               		.cfi_def_cfa_offset 4
+ 224               		.cfi_offset 15, -3
+ 225 0004 0F93      		push r16
+ 226               	.LCFI8:
+ 227               		.cfi_def_cfa_offset 5
+ 228               		.cfi_offset 16, -4
+ 229 0006 1F93      		push r17
+ 230               	.LCFI9:
+ 231               		.cfi_def_cfa_offset 6
+ 232               		.cfi_offset 17, -5
+ 233 0008 CF93      		push r28
+ 234               	.LCFI10:
+ 235               		.cfi_def_cfa_offset 7
+ 236               		.cfi_offset 28, -6
+ 237 000a DF93      		push r29
+ 238               	.LCFI11:
+ 239               		.cfi_def_cfa_offset 8
+ 240               		.cfi_offset 29, -7
+ 241 000c CDB7      		in r28,__SP_L__
+ 242 000e DEB7      		in r29,__SP_H__
+ 243               	.LCFI12:
+ 244               		.cfi_def_cfa_register 28
+ 245 0010 2897      		sbiw r28,8
+ 246               	.LCFI13:
+ 247               		.cfi_def_cfa_offset 16
+ 248 0012 0FB6      		in __tmp_reg__,__SREG__
+ 249 0014 F894      		cli
+ 250 0016 DEBF      		out __SP_H__,r29
+ 251 0018 0FBE      		out __SREG__,__tmp_reg__
+ 252 001a CDBF      		out __SP_L__,r28
+ 253               	/* prologue: function */
+ 254               	/* frame size = 8 */
+ 255               	/* stack size = 14 */
+ 256               	.L__stack_usage = 14
+ 127:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Enable PDI programming mode with the attached target */
+ 128:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_EnableTargetPDI();
+ 257               		.loc 1 128 0
+ 258 001c 0E94 0000 		call XPROGTarget_EnableTargetPDI
+ 259               	.LVL21:
+ 129:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 130:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Store the RESET key into the RESET PDI register to keep the XMEGA in reset */
+ 131:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_STCS | PDI_RESET_REG);
+ 260               		.loc 1 131 0
+ 261 0020 81EC      		ldi r24,lo8(-63)
+ 262 0022 0E94 0000 		call XPROGTarget_SendByte
+ 263               	.LVL22:
+ 132:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_RESET_KEY);
+ 264               		.loc 1 132 0
+ 265 0026 89E5      		ldi r24,lo8(89)
+ 266 0028 0E94 0000 		call XPROGTarget_SendByte
+ 267               	.LVL23:
+ 133:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 134:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Lower direction change guard time to 0 USART bits */
+ 135:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_STCS | PDI_CTRL_REG);
+ 268               		.loc 1 135 0
+ 269 002c 82EC      		ldi r24,lo8(-62)
+ 270 002e 0E94 0000 		call XPROGTarget_SendByte
+ 271               	.LVL24:
+ 136:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(0x07);
+ 272               		.loc 1 136 0
+ 273 0032 87E0      		ldi r24,lo8(7)
+ 274 0034 0E94 0000 		call XPROGTarget_SendByte
+ 275               	.LVL25:
+ 137:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 138:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Enable access to the XPROG NVM bus by sending the documented NVM access key to the device */
+ 139:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_KEY);
+ 276               		.loc 1 139 0
+ 277 0038 80EE      		ldi r24,lo8(-32)
+ 278 003a 0E94 0000 		call XPROGTarget_SendByte
+ 279               	.LVL26:
+ 280 003e 8E01      		movw r16,r28
+ 281 0040 075F      		subi r16,-9
+ 282 0042 1F4F      		sbci r17,-1
+ 283 0044 CE01      		movw r24,r28
+ 284 0046 0196      		adiw r24,1
+ 285 0048 7C01      		movw r14,r24
+ 286               	.LVL27:
+ 287               	.L16:
+ 288               	.LBB4:
+ 140:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	for (uint8_t i = sizeof(PDI_NVMENABLE_KEY); i > 0; i--)
+ 141:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	  XPROGTarget_SendByte(PDI_NVMENABLE_KEY[i - 1]);
+ 289               		.loc 1 141 0 discriminator 3
+ 290 004a 88E0      		ldi r24,lo8(8)
+ 291 004c E0E0      		ldi r30,lo8(.LC0)
+ 292 004e F0E0      		ldi r31,hi8(.LC0)
+ 293 0050 D701      		movw r26,r14
+ 294               		0:
+ 295 0052 0190      		ld r0,Z+
+ 296 0054 0D92      		st X+,r0
+ 297 0056 8A95      		dec r24
+ 298 0058 01F4      		brne 0b
+ 299 005a F801      		movw r30,r16
+ 300 005c 8291      		ld r24,-Z
+ 301 005e 8F01      		movw r16,r30
+ 302 0060 0E94 0000 		call XPROGTarget_SendByte
+ 303               	.LVL28:
+ 140:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	for (uint8_t i = sizeof(PDI_NVMENABLE_KEY); i > 0; i--)
+ 304               		.loc 1 140 0 discriminator 3
+ 305 0064 0E15      		cp r16,r14
+ 306 0066 1F05      		cpc r17,r15
+ 307 0068 01F4      		brne .L16
+ 308               	/* epilogue start */
+ 309               	.LBE4:
+ 142:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 143:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Wait until the NVM bus becomes active */
+ 144:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	return XMEGANVM_WaitWhileNVMBusBusy();
+ 145:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** }
+ 310               		.loc 1 145 0
+ 311 006a 2896      		adiw r28,8
+ 312 006c 0FB6      		in __tmp_reg__,__SREG__
+ 313 006e F894      		cli
+ 314 0070 DEBF      		out __SP_H__,r29
+ 315 0072 0FBE      		out __SREG__,__tmp_reg__
+ 316 0074 CDBF      		out __SP_L__,r28
+ 317 0076 DF91      		pop r29
+ 318 0078 CF91      		pop r28
+ 319 007a 1F91      		pop r17
+ 320 007c 0F91      		pop r16
+ 321 007e FF90      		pop r15
+ 322 0080 EF90      		pop r14
+ 144:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** }
+ 323               		.loc 1 144 0
+ 324 0082 0C94 0000 		jmp XMEGANVM_WaitWhileNVMBusBusy
+ 325               	.LVL29:
+ 326               		.cfi_endproc
+ 327               	.LFE121:
+ 329               		.section	.text.XMEGANVM_DisablePDI,"ax",@progbits
+ 330               	.global	XMEGANVM_DisablePDI
+ 332               	XMEGANVM_DisablePDI:
+ 333               	.LFB122:
+ 146:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 147:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /** Removes access to the target's NVM controller and physically disables the target's physical PDI
+ 148:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** void XMEGANVM_DisablePDI(void)
+ 149:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** {
+ 334               		.loc 1 149 0
+ 335               		.cfi_startproc
+ 336               	/* prologue: function */
+ 337               	/* frame size = 0 */
+ 338               	/* stack size = 0 */
+ 339               	.L__stack_usage = 0
+ 150:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XMEGANVM_WaitWhileNVMBusBusy();
+ 340               		.loc 1 150 0
+ 341 0000 0E94 0000 		call XMEGANVM_WaitWhileNVMBusBusy
+ 342               	.LVL30:
+ 151:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 152:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Clear the RESET key in the RESET PDI register to allow the XMEGA to run */
+ 153:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_STCS | PDI_RESET_REG);
+ 343               		.loc 1 153 0
+ 344 0004 81EC      		ldi r24,lo8(-63)
+ 345 0006 0E94 0000 		call XPROGTarget_SendByte
+ 346               	.LVL31:
+ 154:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(0x00);
+ 347               		.loc 1 154 0
+ 348 000a 80E0      		ldi r24,0
+ 349 000c 0E94 0000 		call XPROGTarget_SendByte
+ 350               	.LVL32:
+ 155:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 156:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Do it twice to make sure it takes effect (silicon bug?) */
+ 157:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_STCS | PDI_RESET_REG);
+ 351               		.loc 1 157 0
+ 352 0010 81EC      		ldi r24,lo8(-63)
+ 353 0012 0E94 0000 		call XPROGTarget_SendByte
+ 354               	.LVL33:
+ 158:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(0x00);
+ 355               		.loc 1 158 0
+ 356 0016 80E0      		ldi r24,0
+ 357 0018 0E94 0000 		call XPROGTarget_SendByte
+ 358               	.LVL34:
+ 159:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 160:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_DisableTargetPDI();
+ 359               		.loc 1 160 0
+ 360 001c 0C94 0000 		jmp XPROGTarget_DisableTargetPDI
+ 361               	.LVL35:
+ 362               		.cfi_endproc
+ 363               	.LFE122:
+ 365               		.section	.text.XMEGANVM_GetMemoryCRC,"ax",@progbits
+ 366               	.global	XMEGANVM_GetMemoryCRC
+ 368               	XMEGANVM_GetMemoryCRC:
+ 369               	.LFB123:
+ 161:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** }
+ 162:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 163:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /** Retrieves the CRC value of the given memory space.
+ 164:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+ 165:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in]  CRCCommand  NVM CRC command to issue to the target
+ 166:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[out] CRCDest     CRC Destination when read from the target
+ 167:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+ 168:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \return Boolean true if the command sequence complete successfully
+ 169:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  */
+ 170:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** bool XMEGANVM_GetMemoryCRC(const uint8_t CRCCommand, uint32_t* const CRCDest)
+ 171:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** {
+ 370               		.loc 1 171 0
+ 371               		.cfi_startproc
+ 372               	.LVL36:
+ 373 0000 0F93      		push r16
+ 374               	.LCFI14:
+ 375               		.cfi_def_cfa_offset 3
+ 376               		.cfi_offset 16, -2
+ 377 0002 1F93      		push r17
+ 378               	.LCFI15:
+ 379               		.cfi_def_cfa_offset 4
+ 380               		.cfi_offset 17, -3
+ 381 0004 CF93      		push r28
+ 382               	.LCFI16:
+ 383               		.cfi_def_cfa_offset 5
+ 384               		.cfi_offset 28, -4
+ 385 0006 DF93      		push r29
+ 386               	.LCFI17:
+ 387               		.cfi_def_cfa_offset 6
+ 388               		.cfi_offset 29, -5
+ 389               	/* prologue: function */
+ 390               	/* frame size = 0 */
+ 391               	/* stack size = 4 */
+ 392               	.L__stack_usage = 4
+ 393 0008 182F      		mov r17,r24
+ 394 000a EB01      		movw r28,r22
+ 172:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Wait until the NVM controller is no longer busy */
+ 173:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	if (!(XMEGANVM_WaitWhileNVMControllerBusy()))
+ 395               		.loc 1 173 0
+ 396 000c 0E94 0000 		call XMEGANVM_WaitWhileNVMControllerBusy
+ 397               	.LVL37:
+ 398 0010 8823      		tst r24
+ 399 0012 01F0      		breq .L35
+ 174:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	  return false;
+ 175:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 176:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Set the NVM command to the correct CRC read command */
+ 177:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 400               		.loc 1 177 0
+ 401 0014 8CE4      		ldi r24,lo8(76)
+ 402 0016 0E94 0000 		call XPROGTarget_SendByte
+ 403               	.LVL38:
+ 178:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CMD);
+ 404               		.loc 1 178 0
+ 405 001a 8AE0      		ldi r24,lo8(10)
+ 406 001c 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 407               	.LVL39:
+ 179:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(CRCCommand);
+ 408               		.loc 1 179 0
+ 409 0020 812F      		mov r24,r17
+ 410 0022 0E94 0000 		call XPROGTarget_SendByte
+ 411               	.LVL40:
+ 180:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 181:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Set CMDEX bit in NVM CTRLA register to start the CRC generation */
+ 182:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 412               		.loc 1 182 0
+ 413 0026 8CE4      		ldi r24,lo8(76)
+ 414 0028 0E94 0000 		call XPROGTarget_SendByte
+ 415               	.LVL41:
+ 183:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CTRLA);
+ 416               		.loc 1 183 0
+ 417 002c 8BE0      		ldi r24,lo8(11)
+ 418 002e 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 419               	.LVL42:
+ 184:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(1 << 0);
+ 420               		.loc 1 184 0
+ 421 0032 81E0      		ldi r24,lo8(1)
+ 422 0034 0E94 0000 		call XPROGTarget_SendByte
+ 423               	.LVL43:
+ 185:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 186:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Wait until the NVM bus is ready again */
+ 187:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	if (!(XMEGANVM_WaitWhileNVMBusBusy()))
+ 424               		.loc 1 187 0
+ 425 0038 0E94 0000 		call XMEGANVM_WaitWhileNVMBusBusy
+ 426               	.LVL44:
+ 427 003c 8823      		tst r24
+ 428 003e 01F0      		breq .L35
+ 188:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	  return false;
+ 189:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 190:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Wait until the NVM controller is no longer busy */
+ 191:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	if (!(XMEGANVM_WaitWhileNVMControllerBusy()))
+ 429               		.loc 1 191 0
+ 430 0040 0E94 0000 		call XMEGANVM_WaitWhileNVMControllerBusy
+ 431               	.LVL45:
+ 432 0044 8823      		tst r24
+ 433 0046 01F0      		breq .L35
+ 192:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	  return false;
+ 193:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 194:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Load the PDI pointer register with the DAT0 register start address */
+ 195:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_ST | (PDI_POINTER_DIRECT << 2) | PDI_DATSIZE_4BYTES);
+ 434               		.loc 1 195 0
+ 435 0048 8BE6      		ldi r24,lo8(107)
+ 436 004a 0E94 0000 		call XPROGTarget_SendByte
+ 437               	.LVL46:
+ 196:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_DAT0);
+ 438               		.loc 1 196 0
+ 439 004e 84E0      		ldi r24,lo8(4)
+ 440 0050 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 441               	.LVL47:
+ 197:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 198:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Send the REPEAT command to grab the CRC bytes */
+ 199:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_REPEAT | PDI_DATSIZE_1BYTE);
+ 442               		.loc 1 199 0
+ 443 0054 80EA      		ldi r24,lo8(-96)
+ 444 0056 0E94 0000 		call XPROGTarget_SendByte
+ 445               	.LVL48:
+ 200:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(XMEGA_CRC_LENGTH - 1);
+ 446               		.loc 1 200 0
+ 447 005a 82E0      		ldi r24,lo8(2)
+ 448 005c 0E94 0000 		call XPROGTarget_SendByte
+ 449               	.LVL49:
+ 201:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 202:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Read in the CRC bytes from the target */
+ 203:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_LD | (PDI_POINTER_INDIRECT_PI << 2) | PDI_DATSIZE_1BYTE);
+ 450               		.loc 1 203 0
+ 451 0060 84E2      		ldi r24,lo8(36)
+ 452 0062 0E94 0000 		call XPROGTarget_SendByte
+ 453               	.LVL50:
+ 454 0066 8E01      		movw r16,r28
+ 455 0068 0D5F      		subi r16,-3
+ 456 006a 1F4F      		sbci r17,-1
+ 457               	.LVL51:
+ 458               	.L23:
+ 459               	.LBB5:
+ 204:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	for (uint8_t i = 0; i < XMEGA_CRC_LENGTH; i++)
+ 205:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	  ((uint8_t*)CRCDest)[i] = XPROGTarget_ReceiveByte();
+ 460               		.loc 1 205 0 discriminator 3
+ 461 006c 0E94 0000 		call XPROGTarget_ReceiveByte
+ 462               	.LVL52:
+ 463 0070 8993      		st Y+,r24
+ 464               	.LVL53:
+ 204:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	for (uint8_t i = 0; i < XMEGA_CRC_LENGTH; i++)
+ 465               		.loc 1 204 0 discriminator 3
+ 466 0072 C017      		cp r28,r16
+ 467 0074 D107      		cpc r29,r17
+ 468 0076 01F4      		brne .L23
+ 469               	.LBE5:
+ 206:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 207:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	return (TimeoutExpired == false);
+ 470               		.loc 1 207 0
+ 471 0078 9AB5      		in r25,0x2a
+ 472 007a 81E0      		ldi r24,lo8(1)
+ 473 007c 9111      		cpse r25,__zero_reg__
+ 474               	.LVL54:
+ 475               	.L35:
+ 476 007e 80E0      		ldi r24,0
+ 477               	.L21:
+ 478               	/* epilogue start */
+ 208:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** }
+ 479               		.loc 1 208 0
+ 480 0080 DF91      		pop r29
+ 481 0082 CF91      		pop r28
+ 482 0084 1F91      		pop r17
+ 483               	.LVL55:
+ 484 0086 0F91      		pop r16
+ 485 0088 0895      		ret
+ 486               		.cfi_endproc
+ 487               	.LFE123:
+ 489               		.section	.text.XMEGANVM_ReadMemory,"ax",@progbits
+ 490               	.global	XMEGANVM_ReadMemory
+ 492               	XMEGANVM_ReadMemory:
+ 493               	.LFB124:
+ 209:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 210:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /** Reads memory from the target's memory spaces.
+ 211:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+ 212:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in]  ReadAddress  Start address to read from within the target's address space
+ 213:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[out] ReadBuffer   Buffer to store read data into
+ 214:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in]  ReadSize     Number of bytes to read
+ 215:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+ 216:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \return Boolean true if the command sequence complete successfully
+ 217:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  */
+ 218:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** bool XMEGANVM_ReadMemory(const uint32_t ReadAddress, uint8_t* ReadBuffer, uint16_t ReadSize)
+ 219:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** {
+ 494               		.loc 1 219 0
+ 495               		.cfi_startproc
+ 496               	.LVL56:
+ 497 0000 CF92      		push r12
+ 498               	.LCFI18:
+ 499               		.cfi_def_cfa_offset 3
+ 500               		.cfi_offset 12, -2
+ 501 0002 DF92      		push r13
+ 502               	.LCFI19:
+ 503               		.cfi_def_cfa_offset 4
+ 504               		.cfi_offset 13, -3
+ 505 0004 EF92      		push r14
+ 506               	.LCFI20:
+ 507               		.cfi_def_cfa_offset 5
+ 508               		.cfi_offset 14, -4
+ 509 0006 FF92      		push r15
+ 510               	.LCFI21:
+ 511               		.cfi_def_cfa_offset 6
+ 512               		.cfi_offset 15, -5
+ 513 0008 0F93      		push r16
+ 514               	.LCFI22:
+ 515               		.cfi_def_cfa_offset 7
+ 516               		.cfi_offset 16, -6
+ 517 000a 1F93      		push r17
+ 518               	.LCFI23:
+ 519               		.cfi_def_cfa_offset 8
+ 520               		.cfi_offset 17, -7
+ 521 000c CF93      		push r28
+ 522               	.LCFI24:
+ 523               		.cfi_def_cfa_offset 9
+ 524               		.cfi_offset 28, -8
+ 525 000e DF93      		push r29
+ 526               	.LCFI25:
+ 527               		.cfi_def_cfa_offset 10
+ 528               		.cfi_offset 29, -9
+ 529               	/* prologue: function */
+ 530               	/* frame size = 0 */
+ 531               	/* stack size = 8 */
+ 532               	.L__stack_usage = 8
+ 533 0010 6B01      		movw r12,r22
+ 534 0012 7C01      		movw r14,r24
+ 535 0014 EA01      		movw r28,r20
+ 536 0016 8901      		movw r16,r18
+ 220:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Wait until the NVM controller is no longer busy */
+ 221:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	if (!(XMEGANVM_WaitWhileNVMControllerBusy()))
+ 537               		.loc 1 221 0
+ 538 0018 0E94 0000 		call XMEGANVM_WaitWhileNVMControllerBusy
+ 539               	.LVL57:
+ 540 001c 8823      		tst r24
+ 541 001e 01F0      		breq .L37
+ 222:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	  return false;
+ 223:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 224:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Send the READNVM command to the NVM controller for reading of an arbitrary location */
+ 225:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 542               		.loc 1 225 0
+ 543 0020 8CE4      		ldi r24,lo8(76)
+ 544 0022 0E94 0000 		call XPROGTarget_SendByte
+ 545               	.LVL58:
+ 226:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CMD);
+ 546               		.loc 1 226 0
+ 547 0026 8AE0      		ldi r24,lo8(10)
+ 548 0028 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 549               	.LVL59:
+ 227:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(XMEGA_NVM_CMD_READNVM);
+ 550               		.loc 1 227 0
+ 551 002c 83E4      		ldi r24,lo8(67)
+ 552 002e 0E94 0000 		call XPROGTarget_SendByte
+ 553               	.LVL60:
+ 228:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 229:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Load the PDI pointer register with the start address we want to read from */
+ 230:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_ST | (PDI_POINTER_DIRECT << 2) | PDI_DATSIZE_4BYTES);
+ 554               		.loc 1 230 0
+ 555 0032 8BE6      		ldi r24,lo8(107)
+ 556 0034 0E94 0000 		call XPROGTarget_SendByte
+ 557               	.LVL61:
+ 231:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XMEGANVM_SendAddress(ReadAddress);
+ 558               		.loc 1 231 0
+ 559 0038 C701      		movw r24,r14
+ 560 003a B601      		movw r22,r12
+ 561 003c 0E94 0000 		call XMEGANVM_SendAddress
+ 562               	.LVL62:
+ 232:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 233:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Send the REPEAT command with the specified number of bytes to read */
+ 234:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_REPEAT | PDI_DATSIZE_1BYTE);
+ 563               		.loc 1 234 0
+ 564 0040 80EA      		ldi r24,lo8(-96)
+ 565 0042 0E94 0000 		call XPROGTarget_SendByte
+ 566               	.LVL63:
+ 235:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(ReadSize - 1);
+ 567               		.loc 1 235 0
+ 568 0046 8FEF      		ldi r24,lo8(-1)
+ 569 0048 800F      		add r24,r16
+ 570 004a 0E94 0000 		call XPROGTarget_SendByte
+ 571               	.LVL64:
+ 236:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 237:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Send a LD command with indirect access and post-increment to read out the bytes */
+ 238:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_LD | (PDI_POINTER_INDIRECT_PI << 2) | PDI_DATSIZE_1BYTE);
+ 572               		.loc 1 238 0
+ 573 004e 84E2      		ldi r24,lo8(36)
+ 574 0050 0E94 0000 		call XPROGTarget_SendByte
+ 575               	.LVL65:
+ 576 0054 0C0F      		add r16,r28
+ 577 0056 1D1F      		adc r17,r29
+ 578               	.LVL66:
+ 579               	.L38:
+ 239:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	while (ReadSize-- && !(TimeoutExpired))
+ 580               		.loc 1 239 0
+ 581 0058 C017      		cp r28,r16
+ 582 005a D107      		cpc r29,r17
+ 583 005c 01F0      		breq .L39
+ 584               		.loc 1 239 0 is_stmt 0 discriminator 1
+ 585 005e 8AB5      		in r24,0x2a
+ 586 0060 8111      		cpse r24,__zero_reg__
+ 587 0062 00C0      		rjmp .L39
+ 588               	.LVL67:
+ 240:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	  *(ReadBuffer++) = XPROGTarget_ReceiveByte();
+ 589               		.loc 1 240 0 is_stmt 1
+ 590 0064 0E94 0000 		call XPROGTarget_ReceiveByte
+ 591               	.LVL68:
+ 592 0068 8993      		st Y+,r24
+ 593               	.LVL69:
+ 594 006a 00C0      		rjmp .L38
+ 595               	.LVL70:
+ 596               	.L39:
+ 241:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 242:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	return (TimeoutExpired == false);
+ 597               		.loc 1 242 0
+ 598 006c 9AB5      		in r25,0x2a
+ 599 006e 81E0      		ldi r24,lo8(1)
+ 600 0070 9111      		cpse r25,__zero_reg__
+ 601 0072 80E0      		ldi r24,0
+ 602               	.LVL71:
+ 603               	.L37:
+ 604               	/* epilogue start */
+ 243:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** }
+ 605               		.loc 1 243 0
+ 606 0074 DF91      		pop r29
+ 607 0076 CF91      		pop r28
+ 608               	.LVL72:
+ 609 0078 1F91      		pop r17
+ 610 007a 0F91      		pop r16
+ 611 007c FF90      		pop r15
+ 612 007e EF90      		pop r14
+ 613 0080 DF90      		pop r13
+ 614 0082 CF90      		pop r12
+ 615               	.LVL73:
+ 616 0084 0895      		ret
+ 617               		.cfi_endproc
+ 618               	.LFE124:
+ 620               		.section	.text.XMEGANVM_WriteByteMemory,"ax",@progbits
+ 621               	.global	XMEGANVM_WriteByteMemory
+ 623               	XMEGANVM_WriteByteMemory:
+ 624               	.LFB125:
+ 244:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 245:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /** Writes byte addressed memory to the target's memory spaces.
+ 246:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+ 247:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in]  WriteCommand  Command to send to the device to write each memory byte
+ 248:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in]  WriteAddress  Address to write to within the target's address space
+ 249:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in]  Byte          Byte to write to the target
+ 250:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+ 251:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \return Boolean true if the command sequence complete successfully
+ 252:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  */
+ 253:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** bool XMEGANVM_WriteByteMemory(const uint8_t WriteCommand, const uint32_t WriteAddress, const uint8_
+ 254:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** {
+ 625               		.loc 1 254 0
+ 626               		.cfi_startproc
+ 627               	.LVL74:
+ 628 0000 CF92      		push r12
+ 629               	.LCFI26:
+ 630               		.cfi_def_cfa_offset 3
+ 631               		.cfi_offset 12, -2
+ 632 0002 DF92      		push r13
+ 633               	.LCFI27:
+ 634               		.cfi_def_cfa_offset 4
+ 635               		.cfi_offset 13, -3
+ 636 0004 EF92      		push r14
+ 637               	.LCFI28:
+ 638               		.cfi_def_cfa_offset 5
+ 639               		.cfi_offset 14, -4
+ 640 0006 FF92      		push r15
+ 641               	.LCFI29:
+ 642               		.cfi_def_cfa_offset 6
+ 643               		.cfi_offset 15, -5
+ 644 0008 1F93      		push r17
+ 645               	.LCFI30:
+ 646               		.cfi_def_cfa_offset 7
+ 647               		.cfi_offset 17, -6
+ 648 000a CF93      		push r28
+ 649               	.LCFI31:
+ 650               		.cfi_def_cfa_offset 8
+ 651               		.cfi_offset 28, -7
+ 652 000c DF93      		push r29
+ 653               	.LCFI32:
+ 654               		.cfi_def_cfa_offset 9
+ 655               		.cfi_offset 29, -8
+ 656               	/* prologue: function */
+ 657               	/* frame size = 0 */
+ 658               	/* stack size = 7 */
+ 659               	.L__stack_usage = 7
+ 660 000e 182F      		mov r17,r24
+ 661 0010 6A01      		movw r12,r20
+ 662 0012 7B01      		movw r14,r22
+ 663 0014 D22F      		mov r29,r18
+ 255:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Wait until the NVM controller is no longer busy */
+ 256:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	if (!(XMEGANVM_WaitWhileNVMControllerBusy()))
+ 664               		.loc 1 256 0
+ 665 0016 0E94 0000 		call XMEGANVM_WaitWhileNVMControllerBusy
+ 666               	.LVL75:
+ 667 001a C82F      		mov r28,r24
+ 668 001c 8823      		tst r24
+ 669 001e 01F0      		breq .L49
+ 257:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	  return false;
+ 258:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 259:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Send the memory write command to the target */
+ 260:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 670               		.loc 1 260 0
+ 671 0020 8CE4      		ldi r24,lo8(76)
+ 672 0022 0E94 0000 		call XPROGTarget_SendByte
+ 673               	.LVL76:
+ 261:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CMD);
+ 674               		.loc 1 261 0
+ 675 0026 8AE0      		ldi r24,lo8(10)
+ 676 0028 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 677               	.LVL77:
+ 262:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(WriteCommand);
+ 678               		.loc 1 262 0
+ 679 002c 812F      		mov r24,r17
+ 680 002e 0E94 0000 		call XPROGTarget_SendByte
+ 681               	.LVL78:
+ 263:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 264:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Send new memory byte to the memory of the target */
+ 265:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 682               		.loc 1 265 0
+ 683 0032 8CE4      		ldi r24,lo8(76)
+ 684 0034 0E94 0000 		call XPROGTarget_SendByte
+ 685               	.LVL79:
+ 266:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XMEGANVM_SendAddress(WriteAddress);
+ 686               		.loc 1 266 0
+ 687 0038 C701      		movw r24,r14
+ 688 003a B601      		movw r22,r12
+ 689 003c 0E94 0000 		call XMEGANVM_SendAddress
+ 690               	.LVL80:
+ 267:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	XPROGTarget_SendByte(Byte);
+ 691               		.loc 1 267 0
+ 692 0040 8D2F      		mov r24,r29
+ 693 0042 0E94 0000 		call XPROGTarget_SendByte
+ 694               	.LVL81:
+ 695               	.L49:
+ 268:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 269:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	return true;
+ 270:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** }
+ 696               		.loc 1 270 0
+ 697 0046 8C2F      		mov r24,r28
+ 698               	/* epilogue start */
+ 699 0048 DF91      		pop r29
+ 700               	.LVL82:
+ 701 004a CF91      		pop r28
+ 702 004c 1F91      		pop r17
+ 703               	.LVL83:
+ 704 004e FF90      		pop r15
+ 705 0050 EF90      		pop r14
+ 706 0052 DF90      		pop r13
+ 707 0054 CF90      		pop r12
+ 708               	.LVL84:
+ 709 0056 0895      		ret
+ 710               		.cfi_endproc
+ 711               	.LFE125:
+ 713               		.section	.text.XMEGANVM_WritePageMemory,"ax",@progbits
+ 714               	.global	XMEGANVM_WritePageMemory
+ 716               	XMEGANVM_WritePageMemory:
+ 717               	.LFB126:
+ 271:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 272:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /** Writes page addressed memory to the target's memory spaces.
+ 273:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+ 274:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in]  WriteBuffCommand  Command to send to the device to write a byte to the memory page 
+ 275:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in]  EraseBuffCommand  Command to send to the device to erase the memory page buffer
+ 276:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in]  WritePageCommand  Command to send to the device to write the page buffer to the des
+ 277:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in]  PageMode          Bitfield indicating what operations need to be executed on the sp
+ 278:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in]  WriteAddress      Start address to write the page data to within the target's addre
+ 279:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in]  WriteBuffer       Buffer to source data from
+ 280:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in]  WriteSize         Number of bytes to write
+ 281:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+ 282:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \return Boolean true if the command sequence complete successfully
+ 283:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  */
+ 284:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** bool XMEGANVM_WritePageMemory(const uint8_t WriteBuffCommand, const uint8_t EraseBuffCommand,
+ 285:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****                               const uint8_t WritePageCommand, const uint8_t PageMode, const uint32_
+ 286:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****                               const uint8_t* WriteBuffer, uint16_t WriteSize)
+ 287:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** {
+ 718               		.loc 1 287 0
+ 719               		.cfi_startproc
+ 720               	.LVL85:
+ 721 0000 4F92      		push r4
+ 722               	.LCFI33:
+ 723               		.cfi_def_cfa_offset 3
+ 724               		.cfi_offset 4, -2
+ 725 0002 5F92      		push r5
+ 726               	.LCFI34:
+ 727               		.cfi_def_cfa_offset 4
+ 728               		.cfi_offset 5, -3
+ 729 0004 6F92      		push r6
+ 730               	.LCFI35:
+ 731               		.cfi_def_cfa_offset 5
+ 732               		.cfi_offset 6, -4
+ 733 0006 7F92      		push r7
+ 734               	.LCFI36:
+ 735               		.cfi_def_cfa_offset 6
+ 736               		.cfi_offset 7, -5
+ 737 0008 8F92      		push r8
+ 738               	.LCFI37:
+ 739               		.cfi_def_cfa_offset 7
+ 740               		.cfi_offset 8, -6
+ 741 000a 9F92      		push r9
+ 742               	.LCFI38:
+ 743               		.cfi_def_cfa_offset 8
+ 744               		.cfi_offset 9, -7
+ 745 000c AF92      		push r10
+ 746               	.LCFI39:
+ 747               		.cfi_def_cfa_offset 9
+ 748               		.cfi_offset 10, -8
+ 749 000e BF92      		push r11
+ 750               	.LCFI40:
+ 751               		.cfi_def_cfa_offset 10
+ 752               		.cfi_offset 11, -9
+ 753 0010 CF92      		push r12
+ 754               	.LCFI41:
+ 755               		.cfi_def_cfa_offset 11
+ 756               		.cfi_offset 12, -10
+ 757 0012 DF92      		push r13
+ 758               	.LCFI42:
+ 759               		.cfi_def_cfa_offset 12
+ 760               		.cfi_offset 13, -11
+ 761 0014 EF92      		push r14
+ 762               	.LCFI43:
+ 763               		.cfi_def_cfa_offset 13
+ 764               		.cfi_offset 14, -12
+ 765 0016 FF92      		push r15
+ 766               	.LCFI44:
+ 767               		.cfi_def_cfa_offset 14
+ 768               		.cfi_offset 15, -13
+ 769 0018 0F93      		push r16
+ 770               	.LCFI45:
+ 771               		.cfi_def_cfa_offset 15
+ 772               		.cfi_offset 16, -14
+ 773 001a 1F93      		push r17
+ 774               	.LCFI46:
+ 775               		.cfi_def_cfa_offset 16
+ 776               		.cfi_offset 17, -15
+ 777 001c CF93      		push r28
+ 778               	.LCFI47:
+ 779               		.cfi_def_cfa_offset 17
+ 780               		.cfi_offset 28, -16
+ 781 001e DF93      		push r29
+ 782               	.LCFI48:
+ 783               		.cfi_def_cfa_offset 18
+ 784               		.cfi_offset 29, -17
+ 785               	/* prologue: function */
+ 786               	/* frame size = 0 */
+ 787               	/* stack size = 16 */
+ 788               	.L__stack_usage = 16
+ 789 0020 C82F      		mov r28,r24
+ 790 0022 D62F      		mov r29,r22
+ 791 0024 942E      		mov r9,r20
+ 792 0026 822E      		mov r8,r18
+ 793 0028 2701      		movw r4,r14
+ 794 002a 3801      		movw r6,r16
+ 288:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	if (PageMode & XPRG_PAGEMODE_ERASE)
+ 795               		.loc 1 288 0
+ 796 002c 20FF      		sbrs r18,0
+ 797 002e 00C0      		rjmp .L54
+ 289:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	{
+ 290:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Wait until the NVM controller is no longer busy */
+ 291:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		if (!(XMEGANVM_WaitWhileNVMControllerBusy()))
+ 798               		.loc 1 291 0
+ 799 0030 0E94 0000 		call XMEGANVM_WaitWhileNVMControllerBusy
+ 800               	.LVL86:
+ 801 0034 8111      		cpse r24,__zero_reg__
+ 802 0036 00C0      		rjmp .L55
+ 803               	.LVL87:
+ 804               	.L59:
+ 292:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  return false;
+ 805               		.loc 1 292 0
+ 806 0038 C0E0      		ldi r28,0
+ 807 003a 00C0      		rjmp .L56
+ 808               	.LVL88:
+ 809               	.L55:
+ 293:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 294:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send the memory buffer erase command to the target */
+ 295:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 810               		.loc 1 295 0
+ 811 003c 8CE4      		ldi r24,lo8(76)
+ 812 003e 0E94 0000 		call XPROGTarget_SendByte
+ 813               	.LVL89:
+ 296:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CMD);
+ 814               		.loc 1 296 0
+ 815 0042 8AE0      		ldi r24,lo8(10)
+ 816 0044 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 817               	.LVL90:
+ 297:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(EraseBuffCommand);
+ 818               		.loc 1 297 0
+ 819 0048 8D2F      		mov r24,r29
+ 820 004a 0E94 0000 		call XPROGTarget_SendByte
+ 821               	.LVL91:
+ 298:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 299:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Set CMDEX bit in NVM CTRLA register to start the buffer erase */
+ 300:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 822               		.loc 1 300 0
+ 823 004e 8CE4      		ldi r24,lo8(76)
+ 824 0050 0E94 0000 		call XPROGTarget_SendByte
+ 825               	.LVL92:
+ 301:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CTRLA);
+ 826               		.loc 1 301 0
+ 827 0054 8BE0      		ldi r24,lo8(11)
+ 828 0056 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 829               	.LVL93:
+ 302:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(1 << 0);
+ 830               		.loc 1 302 0
+ 831 005a 81E0      		ldi r24,lo8(1)
+ 832 005c 0E94 0000 		call XPROGTarget_SendByte
+ 833               	.LVL94:
+ 834               	.L54:
+ 303:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	}
+ 304:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 305:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	if (WriteSize)
+ 835               		.loc 1 305 0
+ 836 0060 A114      		cp r10,__zero_reg__
+ 837 0062 B104      		cpc r11,__zero_reg__
+ 838 0064 01F4      		brne .L57
+ 839               	.LVL95:
+ 840               	.L62:
+ 306:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	{
+ 307:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Wait until the NVM controller is no longer busy */
+ 308:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		if (!(XMEGANVM_WaitWhileNVMControllerBusy()))
+ 309:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  return false;
+ 310:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 311:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send the memory buffer write command to the target */
+ 312:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 313:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CMD);
+ 314:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(WriteBuffCommand);
+ 315:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 316:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Load the PDI pointer register with the start address we want to write to */
+ 317:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_ST | (PDI_POINTER_DIRECT << 2) | PDI_DATSIZE_4BYTES);
+ 318:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendAddress(WriteAddress);
+ 319:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 320:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send the REPEAT command with the specified number of bytes to write */
+ 321:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_REPEAT | PDI_DATSIZE_1BYTE);
+ 322:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(WriteSize - 1);
+ 323:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 324:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send a ST command with indirect access and post-increment to write the bytes */
+ 325:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_ST | (PDI_POINTER_INDIRECT_PI << 2) | PDI_DATSIZE_1BYTE);
+ 326:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		while (WriteSize--)
+ 327:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  XPROGTarget_SendByte(*(WriteBuffer++));
+ 328:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	}
+ 329:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 330:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	if (PageMode & XPRG_PAGEMODE_WRITE)
+ 841               		.loc 1 330 0
+ 842 0066 81FC      		sbrc r8,1
+ 843 0068 00C0      		rjmp .L58
+ 331:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	{
+ 332:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Wait until the NVM controller is no longer busy */
+ 333:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		if (!(XMEGANVM_WaitWhileNVMControllerBusy()))
+ 334:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  return false;
+ 335:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 336:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send the memory write command to the target */
+ 337:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 338:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CMD);
+ 339:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(WritePageCommand);
+ 340:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 341:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send the address of the first page location to write the memory page */
+ 342:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 343:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendAddress(WriteAddress);
+ 344:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(0x00);
+ 345:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	}
+ 346:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 347:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	return true;
+ 844               		.loc 1 347 0
+ 845 006a C1E0      		ldi r28,lo8(1)
+ 846 006c 00C0      		rjmp .L56
+ 847               	.LVL96:
+ 848               	.L57:
+ 308:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  return false;
+ 849               		.loc 1 308 0
+ 850 006e 0E94 0000 		call XMEGANVM_WaitWhileNVMControllerBusy
+ 851               	.LVL97:
+ 852 0072 8823      		tst r24
+ 853 0074 01F0      		breq .L59
+ 312:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CMD);
+ 854               		.loc 1 312 0
+ 855 0076 8CE4      		ldi r24,lo8(76)
+ 856 0078 0E94 0000 		call XPROGTarget_SendByte
+ 857               	.LVL98:
+ 313:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(WriteBuffCommand);
+ 858               		.loc 1 313 0
+ 859 007c 8AE0      		ldi r24,lo8(10)
+ 860 007e 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 861               	.LVL99:
+ 314:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 862               		.loc 1 314 0
+ 863 0082 8C2F      		mov r24,r28
+ 864 0084 0E94 0000 		call XPROGTarget_SendByte
+ 865               	.LVL100:
+ 317:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendAddress(WriteAddress);
+ 866               		.loc 1 317 0
+ 867 0088 8BE6      		ldi r24,lo8(107)
+ 868 008a 0E94 0000 		call XPROGTarget_SendByte
+ 869               	.LVL101:
+ 318:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 870               		.loc 1 318 0
+ 871 008e C301      		movw r24,r6
+ 872 0090 B201      		movw r22,r4
+ 873 0092 0E94 0000 		call XMEGANVM_SendAddress
+ 874               	.LVL102:
+ 321:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(WriteSize - 1);
+ 875               		.loc 1 321 0
+ 876 0096 80EA      		ldi r24,lo8(-96)
+ 877 0098 0E94 0000 		call XPROGTarget_SendByte
+ 878               	.LVL103:
+ 322:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 879               		.loc 1 322 0
+ 880 009c 8FEF      		ldi r24,lo8(-1)
+ 881 009e 8A0D      		add r24,r10
+ 882 00a0 0E94 0000 		call XPROGTarget_SendByte
+ 883               	.LVL104:
+ 325:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		while (WriteSize--)
+ 884               		.loc 1 325 0
+ 885 00a4 84E6      		ldi r24,lo8(100)
+ 886 00a6 0E94 0000 		call XPROGTarget_SendByte
+ 887               	.LVL105:
+ 888 00aa E601      		movw r28,r12
+ 889               	.LVL106:
+ 890 00ac AC0C      		add r10,r12
+ 891 00ae BD1C      		adc r11,r13
+ 892               	.LVL107:
+ 893               	.L60:
+ 326:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  XPROGTarget_SendByte(*(WriteBuffer++));
+ 894               		.loc 1 326 0
+ 895 00b0 CA15      		cp r28,r10
+ 896 00b2 DB05      		cpc r29,r11
+ 897 00b4 01F0      		breq .L62
+ 898               	.LVL108:
+ 327:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	}
+ 899               		.loc 1 327 0
+ 900 00b6 8991      		ld r24,Y+
+ 901               	.LVL109:
+ 902 00b8 0E94 0000 		call XPROGTarget_SendByte
+ 903               	.LVL110:
+ 904 00bc 00C0      		rjmp .L60
+ 905               	.LVL111:
+ 906               	.L58:
+ 333:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  return false;
+ 907               		.loc 1 333 0
+ 908 00be 0E94 0000 		call XMEGANVM_WaitWhileNVMControllerBusy
+ 909               	.LVL112:
+ 910 00c2 C82F      		mov r28,r24
+ 911 00c4 8823      		tst r24
+ 912 00c6 01F4      		brne .+2
+ 913 00c8 00C0      		rjmp .L59
+ 337:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CMD);
+ 914               		.loc 1 337 0
+ 915 00ca 8CE4      		ldi r24,lo8(76)
+ 916 00cc 0E94 0000 		call XPROGTarget_SendByte
+ 917               	.LVL113:
+ 338:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(WritePageCommand);
+ 918               		.loc 1 338 0
+ 919 00d0 8AE0      		ldi r24,lo8(10)
+ 920 00d2 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 921               	.LVL114:
+ 339:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 922               		.loc 1 339 0
+ 923 00d6 892D      		mov r24,r9
+ 924 00d8 0E94 0000 		call XPROGTarget_SendByte
+ 925               	.LVL115:
+ 342:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendAddress(WriteAddress);
+ 926               		.loc 1 342 0
+ 927 00dc 8CE4      		ldi r24,lo8(76)
+ 928 00de 0E94 0000 		call XPROGTarget_SendByte
+ 929               	.LVL116:
+ 343:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(0x00);
+ 930               		.loc 1 343 0
+ 931 00e2 C301      		movw r24,r6
+ 932 00e4 B201      		movw r22,r4
+ 933 00e6 0E94 0000 		call XMEGANVM_SendAddress
+ 934               	.LVL117:
+ 344:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	}
+ 935               		.loc 1 344 0
+ 936 00ea 80E0      		ldi r24,0
+ 937 00ec 0E94 0000 		call XPROGTarget_SendByte
+ 938               	.LVL118:
+ 939               	.L56:
+ 348:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** }
+ 940               		.loc 1 348 0
+ 941 00f0 8C2F      		mov r24,r28
+ 942               	/* epilogue start */
+ 943 00f2 DF91      		pop r29
+ 944               	.LVL119:
+ 945 00f4 CF91      		pop r28
+ 946 00f6 1F91      		pop r17
+ 947 00f8 0F91      		pop r16
+ 948 00fa FF90      		pop r15
+ 949 00fc EF90      		pop r14
+ 950 00fe DF90      		pop r13
+ 951 0100 CF90      		pop r12
+ 952 0102 BF90      		pop r11
+ 953 0104 AF90      		pop r10
+ 954 0106 9F90      		pop r9
+ 955               	.LVL120:
+ 956 0108 8F90      		pop r8
+ 957               	.LVL121:
+ 958 010a 7F90      		pop r7
+ 959 010c 6F90      		pop r6
+ 960 010e 5F90      		pop r5
+ 961 0110 4F90      		pop r4
+ 962               	.LVL122:
+ 963 0112 0895      		ret
+ 964               		.cfi_endproc
+ 965               	.LFE126:
+ 967               		.section	.text.XMEGANVM_EraseMemory,"ax",@progbits
+ 968               	.global	XMEGANVM_EraseMemory
+ 970               	XMEGANVM_EraseMemory:
+ 971               	.LFB127:
+ 349:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 350:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** /** Erases a specific memory space of the target.
+ 351:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+ 352:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in] EraseCommand  NVM erase command to send to the device
+ 353:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \param[in] Address       Address inside the memory space to erase
+ 354:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *
+ 355:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  *  \return Boolean true if the command sequence complete successfully
+ 356:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c ****  */
+ 357:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** bool XMEGANVM_EraseMemory(const uint8_t EraseCommand, const uint32_t Address)
+ 358:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** {
+ 972               		.loc 1 358 0
+ 973               		.cfi_startproc
+ 974               	.LVL123:
+ 975 0000 CF92      		push r12
+ 976               	.LCFI49:
+ 977               		.cfi_def_cfa_offset 3
+ 978               		.cfi_offset 12, -2
+ 979 0002 DF92      		push r13
+ 980               	.LCFI50:
+ 981               		.cfi_def_cfa_offset 4
+ 982               		.cfi_offset 13, -3
+ 983 0004 EF92      		push r14
+ 984               	.LCFI51:
+ 985               		.cfi_def_cfa_offset 5
+ 986               		.cfi_offset 14, -4
+ 987 0006 FF92      		push r15
+ 988               	.LCFI52:
+ 989               		.cfi_def_cfa_offset 6
+ 990               		.cfi_offset 15, -5
+ 991 0008 CF93      		push r28
+ 992               	.LCFI53:
+ 993               		.cfi_def_cfa_offset 7
+ 994               		.cfi_offset 28, -6
+ 995               	/* prologue: function */
+ 996               	/* frame size = 0 */
+ 997               	/* stack size = 5 */
+ 998               	.L__stack_usage = 5
+ 999 000a C82F      		mov r28,r24
+ 1000 000c 6A01      		movw r12,r20
+ 1001 000e 7B01      		movw r14,r22
+ 359:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Wait until the NVM controller is no longer busy */
+ 360:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	if (!(XMEGANVM_WaitWhileNVMControllerBusy()))
+ 1002               		.loc 1 360 0
+ 1003 0010 0E94 0000 		call XMEGANVM_WaitWhileNVMControllerBusy
+ 1004               	.LVL124:
+ 1005 0014 8823      		tst r24
+ 1006 0016 01F4      		brne .+2
+ 1007 0018 00C0      		rjmp .L74
+ 361:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	  return false;
+ 362:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 363:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* EEPROM and Chip erasures are triggered differently to FLASH section erasures */
+ 364:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	if (EraseCommand == XMEGA_NVM_CMD_CHIPERASE)
+ 365:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	{
+ 366:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send the memory erase command to the target */
+ 367:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 1008               		.loc 1 367 0
+ 1009 001a 8CE4      		ldi r24,lo8(76)
+ 364:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	{
+ 1010               		.loc 1 364 0
+ 1011 001c C034      		cpi r28,lo8(64)
+ 1012 001e 01F4      		brne .L75
+ 1013               		.loc 1 367 0
+ 1014 0020 0E94 0000 		call XPROGTarget_SendByte
+ 1015               	.LVL125:
+ 368:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CMD);
+ 1016               		.loc 1 368 0
+ 1017 0024 8AE0      		ldi r24,lo8(10)
+ 1018 0026 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 1019               	.LVL126:
+ 369:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(EraseCommand);
+ 1020               		.loc 1 369 0
+ 1021 002a 80E4      		ldi r24,lo8(64)
+ 1022 002c 00C0      		rjmp .L85
+ 1023               	.L75:
+ 370:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 371:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Set CMDEX bit in NVM CTRLA register to start the erase sequence */
+ 372:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 373:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CTRLA);
+ 374:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(1 << 0);
+ 375:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	}
+ 376:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	else if (EraseCommand == XMEGA_NVM_CMD_ERASEEEPROM)
+ 1024               		.loc 1 376 0
+ 1025 002e C033      		cpi r28,lo8(48)
+ 1026 0030 01F0      		breq .+2
+ 1027 0032 00C0      		rjmp .L77
+ 377:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	{
+ 378:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send the EEPROM page buffer erase command to the target */
+ 379:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 1028               		.loc 1 379 0
+ 1029 0034 0E94 0000 		call XPROGTarget_SendByte
+ 1030               	.LVL127:
+ 380:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CMD);
+ 1031               		.loc 1 380 0
+ 1032 0038 8AE0      		ldi r24,lo8(10)
+ 1033 003a 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 1034               	.LVL128:
+ 381:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(XMEGA_NVM_CMD_ERASEEEPROMPAGEBUFF);
+ 1035               		.loc 1 381 0
+ 1036 003e 86E3      		ldi r24,lo8(54)
+ 1037 0040 0E94 0000 		call XPROGTarget_SendByte
+ 1038               	.LVL129:
+ 382:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 383:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Set CMDEX bit in NVM CTRLA register to start the buffer erase */
+ 384:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 1039               		.loc 1 384 0
+ 1040 0044 8CE4      		ldi r24,lo8(76)
+ 1041 0046 0E94 0000 		call XPROGTarget_SendByte
+ 1042               	.LVL130:
+ 385:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CTRLA);
+ 1043               		.loc 1 385 0
+ 1044 004a 8BE0      		ldi r24,lo8(11)
+ 1045 004c 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 1046               	.LVL131:
+ 386:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(1 << 0);
+ 1047               		.loc 1 386 0
+ 1048 0050 81E0      		ldi r24,lo8(1)
+ 1049 0052 0E94 0000 		call XPROGTarget_SendByte
+ 1050               	.LVL132:
+ 387:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 388:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Wait until the NVM controller is no longer busy */
+ 389:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		if (!(XMEGANVM_WaitWhileNVMControllerBusy()))
+ 1051               		.loc 1 389 0
+ 1052 0056 0E94 0000 		call XMEGANVM_WaitWhileNVMControllerBusy
+ 1053               	.LVL133:
+ 1054 005a 8823      		tst r24
+ 1055 005c 01F4      		brne .+2
+ 1056 005e 00C0      		rjmp .L74
+ 390:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  return false;
+ 391:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 392:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send the EEPROM memory buffer write command to the target */
+ 393:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 1057               		.loc 1 393 0
+ 1058 0060 8CE4      		ldi r24,lo8(76)
+ 1059 0062 0E94 0000 		call XPROGTarget_SendByte
+ 1060               	.LVL134:
+ 394:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CMD);
+ 1061               		.loc 1 394 0
+ 1062 0066 8AE0      		ldi r24,lo8(10)
+ 1063 0068 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 1064               	.LVL135:
+ 395:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(XMEGA_NVM_CMD_LOADEEPROMPAGEBUFF);
+ 1065               		.loc 1 395 0
+ 1066 006c 83E3      		ldi r24,lo8(51)
+ 1067 006e 0E94 0000 		call XPROGTarget_SendByte
+ 1068               	.LVL136:
+ 396:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 397:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Load the PDI pointer register with the EEPROM page start address */
+ 398:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_ST | (PDI_POINTER_DIRECT << 2) | PDI_DATSIZE_4BYTES);
+ 1069               		.loc 1 398 0
+ 1070 0072 8BE6      		ldi r24,lo8(107)
+ 1071 0074 0E94 0000 		call XPROGTarget_SendByte
+ 1072               	.LVL137:
+ 399:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendAddress(Address);
+ 1073               		.loc 1 399 0
+ 1074 0078 C701      		movw r24,r14
+ 1075 007a B601      		movw r22,r12
+ 1076 007c 0E94 0000 		call XMEGANVM_SendAddress
+ 1077               	.LVL138:
+ 400:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 401:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send the REPEAT command with the specified number of bytes to write */
+ 402:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_REPEAT | PDI_DATSIZE_1BYTE);
+ 1078               		.loc 1 402 0
+ 1079 0080 80EA      		ldi r24,lo8(-96)
+ 1080 0082 0E94 0000 		call XPROGTarget_SendByte
+ 1081               	.LVL139:
+ 403:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(XPROG_Param_EEPageSize - 1);
+ 1082               		.loc 1 403 0
+ 1083 0086 8091 0000 		lds r24,XPROG_Param_EEPageSize
+ 1084 008a 8150      		subi r24,lo8(-(-1))
+ 1085 008c 0E94 0000 		call XPROGTarget_SendByte
+ 1086               	.LVL140:
+ 404:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 405:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send a ST command with indirect access and post-increment to tag each byte in the EEPROM page 
+ 406:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_ST | (PDI_POINTER_INDIRECT_PI << 2) | PDI_DATSIZE_1BYTE);
+ 1087               		.loc 1 406 0
+ 1088 0090 84E6      		ldi r24,lo8(100)
+ 1089 0092 0E94 0000 		call XPROGTarget_SendByte
+ 1090               	.LVL141:
+ 1091               	.LBB6:
+ 407:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		for (uint8_t PageByte = 0; PageByte < XPROG_Param_EEPageSize; PageByte++)
+ 1092               		.loc 1 407 0
+ 1093 0096 C0E0      		ldi r28,0
+ 1094               	.LVL142:
+ 1095               	.L79:
+ 1096               		.loc 1 407 0 is_stmt 0 discriminator 1
+ 1097 0098 8C2F      		mov r24,r28
+ 1098 009a 90E0      		ldi r25,0
+ 1099 009c 2091 0000 		lds r18,XPROG_Param_EEPageSize
+ 1100 00a0 3091 0000 		lds r19,XPROG_Param_EEPageSize+1
+ 1101 00a4 8217      		cp r24,r18
+ 1102 00a6 9307      		cpc r25,r19
+ 1103 00a8 00F4      		brsh .L86
+ 408:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		  XPROGTarget_SendByte(0x00);
+ 1104               		.loc 1 408 0 is_stmt 1 discriminator 3
+ 1105 00aa 80E0      		ldi r24,0
+ 1106 00ac 0E94 0000 		call XPROGTarget_SendByte
+ 1107               	.LVL143:
+ 407:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		for (uint8_t PageByte = 0; PageByte < XPROG_Param_EEPageSize; PageByte++)
+ 1108               		.loc 1 407 0 discriminator 3
+ 1109 00b0 CF5F      		subi r28,lo8(-(1))
+ 1110               	.LVL144:
+ 1111 00b2 00C0      		rjmp .L79
+ 1112               	.LVL145:
+ 1113               	.L86:
+ 1114               	.LBE6:
+ 409:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 410:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send the memory erase command to the target */
+ 411:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 1115               		.loc 1 411 0
+ 1116 00b4 8CE4      		ldi r24,lo8(76)
+ 1117               	.LVL146:
+ 1118 00b6 0E94 0000 		call XPROGTarget_SendByte
+ 1119               	.LVL147:
+ 412:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CMD);
+ 1120               		.loc 1 412 0
+ 1121 00ba 8AE0      		ldi r24,lo8(10)
+ 1122 00bc 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 1123               	.LVL148:
+ 413:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(EraseCommand);
+ 1124               		.loc 1 413 0
+ 1125 00c0 80E3      		ldi r24,lo8(48)
+ 1126               	.LVL149:
+ 1127               	.L85:
+ 1128 00c2 0E94 0000 		call XPROGTarget_SendByte
+ 1129               	.LVL150:
+ 414:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 415:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Set CMDEX bit in NVM CTRLA register to start the EEPROM erase sequence */
+ 416:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 1130               		.loc 1 416 0
+ 1131 00c6 8CE4      		ldi r24,lo8(76)
+ 1132 00c8 0E94 0000 		call XPROGTarget_SendByte
+ 1133               	.LVL151:
+ 417:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CTRLA);
+ 1134               		.loc 1 417 0
+ 1135 00cc 8BE0      		ldi r24,lo8(11)
+ 1136 00ce 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 1137               	.LVL152:
+ 418:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(1 << 0);
+ 1138               		.loc 1 418 0
+ 1139 00d2 81E0      		ldi r24,lo8(1)
+ 1140 00d4 00C0      		rjmp .L84
+ 1141               	.LVL153:
+ 1142               	.L77:
+ 419:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	}
+ 420:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	else
+ 421:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	{
+ 422:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Send the memory erase command to the target */
+ 423:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 1143               		.loc 1 423 0
+ 1144 00d6 0E94 0000 		call XPROGTarget_SendByte
+ 1145               	.LVL154:
+ 424:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendNVMRegAddress(XMEGA_NVM_REG_CMD);
+ 1146               		.loc 1 424 0
+ 1147 00da 8AE0      		ldi r24,lo8(10)
+ 1148 00dc 0E94 0000 		call XMEGANVM_SendNVMRegAddress
+ 1149               	.LVL155:
+ 425:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(EraseCommand);
+ 1150               		.loc 1 425 0
+ 1151 00e0 8C2F      		mov r24,r28
+ 1152 00e2 0E94 0000 		call XPROGTarget_SendByte
+ 1153               	.LVL156:
+ 426:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 427:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		/* Other erase modes just need us to address a byte within the target memory space */
+ 428:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(PDI_CMD_STS | (PDI_DATSIZE_4BYTES << 2));
+ 1154               		.loc 1 428 0
+ 1155 00e6 8CE4      		ldi r24,lo8(76)
+ 1156 00e8 0E94 0000 		call XPROGTarget_SendByte
+ 1157               	.LVL157:
+ 429:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XMEGANVM_SendAddress(Address);
+ 1158               		.loc 1 429 0
+ 1159 00ec C701      		movw r24,r14
+ 1160 00ee B601      		movw r22,r12
+ 1161 00f0 0E94 0000 		call XMEGANVM_SendAddress
+ 1162               	.LVL158:
+ 430:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 		XPROGTarget_SendByte(0x00);
+ 1163               		.loc 1 430 0
+ 1164 00f4 80E0      		ldi r24,0
+ 1165               	.LVL159:
+ 1166               	.L84:
+ 1167 00f6 0E94 0000 		call XPROGTarget_SendByte
+ 1168               	.LVL160:
+ 1169               	/* epilogue start */
+ 431:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	}
+ 432:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 433:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	/* Wait until the NVM bus is ready again */
+ 434:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	if (!(XMEGANVM_WaitWhileNVMBusBusy()))
+ 435:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	  return false;
+ 436:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 
+ 437:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	return true;
+ 438:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** }
+ 1170               		.loc 1 438 0
+ 1171 00fa CF91      		pop r28
+ 1172 00fc FF90      		pop r15
+ 1173 00fe EF90      		pop r14
+ 1174 0100 DF90      		pop r13
+ 1175 0102 CF90      		pop r12
+ 1176               	.LVL161:
+ 434:../AVRISP-MKII/Lib/XPROG/XMEGANVM.c **** 	  return false;
+ 1177               		.loc 1 434 0
+ 1178 0104 0C94 0000 		jmp XMEGANVM_WaitWhileNVMBusBusy
+ 1179               	.LVL162:
+ 1180               	.L74:
+ 1181               		.loc 1 438 0
+ 1182 0108 80E0      		ldi r24,0
+ 1183               	/* epilogue start */
+ 1184 010a CF91      		pop r28
+ 1185               	.LVL163:
+ 1186 010c FF90      		pop r15
+ 1187 010e EF90      		pop r14
+ 1188 0110 DF90      		pop r13
+ 1189 0112 CF90      		pop r12
+ 1190               	.LVL164:
+ 1191 0114 0895      		ret
+ 1192               		.cfi_endproc
+ 1193               	.LFE127:
+ 1195               		.text
+ 1196               	.Letext0:
+ 1197               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 1198               		.file 3 "../AVRISP-MKII/Lib/XPROG/../ISP/ISPTarget.h"
+ 1199               		.file 4 "../AVRISP-MKII/Lib/XPROG/XPROGProtocol.h"
+ 1200               		.file 5 "../AVRISP-MKII/Lib/XPROG/XPROGTarget.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 XMEGANVM.c
+     /tmp/ccLVA7Qn.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccLVA7Qn.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccLVA7Qn.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccLVA7Qn.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccLVA7Qn.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccLVA7Qn.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccLVA7Qn.s:13     .text.XMEGANVM_SendAddress:0000000000000000 XMEGANVM_SendAddress
+     /tmp/ccLVA7Qn.s:70     .text.XMEGANVM_SendNVMRegAddress:0000000000000000 XMEGANVM_SendNVMRegAddress
+     /tmp/ccLVA7Qn.s:111    .text.XMEGANVM_WaitWhileNVMBusBusy:0000000000000000 XMEGANVM_WaitWhileNVMBusBusy
+     /tmp/ccLVA7Qn.s:153    .text.XMEGANVM_WaitWhileNVMControllerBusy:0000000000000000 XMEGANVM_WaitWhileNVMControllerBusy
+     /tmp/ccLVA7Qn.s:213    .text.XMEGANVM_EnablePDI:0000000000000000 XMEGANVM_EnablePDI
+     /tmp/ccLVA7Qn.s:332    .text.XMEGANVM_DisablePDI:0000000000000000 XMEGANVM_DisablePDI
+     /tmp/ccLVA7Qn.s:368    .text.XMEGANVM_GetMemoryCRC:0000000000000000 XMEGANVM_GetMemoryCRC
+     /tmp/ccLVA7Qn.s:492    .text.XMEGANVM_ReadMemory:0000000000000000 XMEGANVM_ReadMemory
+     /tmp/ccLVA7Qn.s:623    .text.XMEGANVM_WriteByteMemory:0000000000000000 XMEGANVM_WriteByteMemory
+     /tmp/ccLVA7Qn.s:716    .text.XMEGANVM_WritePageMemory:0000000000000000 XMEGANVM_WritePageMemory
+     /tmp/ccLVA7Qn.s:970    .text.XMEGANVM_EraseMemory:0000000000000000 XMEGANVM_EraseMemory
+
+UNDEFINED SYMBOLS
+XPROGTarget_SendByte
+XPROG_Param_NVMBase
+XPROGTarget_ReceiveByte
+XPROGTarget_EnableTargetPDI
+XPROGTarget_DisableTargetPDI
+XPROG_Param_EEPageSize
+__do_copy_data

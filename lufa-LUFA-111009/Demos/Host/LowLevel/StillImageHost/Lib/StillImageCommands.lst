@@ -1,0 +1,1650 @@
+   1               		.file	"StillImageCommands.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.SImage_SendBlockHeader,"ax",@progbits
+  12               	.global	SImage_SendBlockHeader
+  14               	SImage_SendBlockHeader:
+  15               	.LFB147:
+  16               		.file 1 "Lib/StillImageCommands.c"
+   1:Lib/StillImageCommands.c **** /*
+   2:Lib/StillImageCommands.c ****              LUFA Library
+   3:Lib/StillImageCommands.c ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/StillImageCommands.c **** 
+   5:Lib/StillImageCommands.c ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/StillImageCommands.c ****            www.lufa-lib.org
+   7:Lib/StillImageCommands.c **** */
+   8:Lib/StillImageCommands.c **** 
+   9:Lib/StillImageCommands.c **** /*
+  10:Lib/StillImageCommands.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/StillImageCommands.c **** 
+  12:Lib/StillImageCommands.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/StillImageCommands.c ****   software and its documentation for any purpose is hereby granted
+  14:Lib/StillImageCommands.c ****   without fee, provided that the above copyright notice appear in
+  15:Lib/StillImageCommands.c ****   all copies and that both that the copyright notice and this
+  16:Lib/StillImageCommands.c ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/StillImageCommands.c ****   documentation, and that the name of the author not be used in
+  18:Lib/StillImageCommands.c ****   advertising or publicity pertaining to distribution of the
+  19:Lib/StillImageCommands.c ****   software without specific, written prior permission.
+  20:Lib/StillImageCommands.c **** 
+  21:Lib/StillImageCommands.c ****   The author disclaim all warranties with regard to this
+  22:Lib/StillImageCommands.c ****   software, including all implied warranties of merchantability
+  23:Lib/StillImageCommands.c ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/StillImageCommands.c ****   special, indirect or consequential damages or any damages
+  25:Lib/StillImageCommands.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/StillImageCommands.c ****   in an action of contract, negligence or other tortious action,
+  27:Lib/StillImageCommands.c ****   arising out of or in connection with the use or performance of
+  28:Lib/StillImageCommands.c ****   this software.
+  29:Lib/StillImageCommands.c **** */
+  30:Lib/StillImageCommands.c **** 
+  31:Lib/StillImageCommands.c **** /** \file
+  32:Lib/StillImageCommands.c ****  *
+  33:Lib/StillImageCommands.c ****  *  Still Image Device commands, to issue PIMA commands to the device for
+  34:Lib/StillImageCommands.c ****  *  reading device status, capacity, and other characteristics as well as
+  35:Lib/StillImageCommands.c ****  *  reading and writing of stored image data.
+  36:Lib/StillImageCommands.c ****  */
+  37:Lib/StillImageCommands.c **** 
+  38:Lib/StillImageCommands.c **** #include "StillImageCommands.h"
+  39:Lib/StillImageCommands.c **** 
+  40:Lib/StillImageCommands.c **** /** PIMA block container for the block to send to the device */
+  41:Lib/StillImageCommands.c **** PIMA_Container_t PIMA_SendBlock;
+  42:Lib/StillImageCommands.c **** 
+  43:Lib/StillImageCommands.c **** /** PIMA block container for the last received block from the device */
+  44:Lib/StillImageCommands.c **** PIMA_Container_t PIMA_ReceivedBlock;
+  45:Lib/StillImageCommands.c **** 
+  46:Lib/StillImageCommands.c **** /** PIMA block container for the last event block received from the device */
+  47:Lib/StillImageCommands.c **** PIMA_Container_t PIMA_EventBlock;
+  48:Lib/StillImageCommands.c **** 
+  49:Lib/StillImageCommands.c **** 
+  50:Lib/StillImageCommands.c **** /** Function to send the PIMA command container to the attached still image device. */
+  51:Lib/StillImageCommands.c **** void SImage_SendBlockHeader(void)
+  52:Lib/StillImageCommands.c **** {
+  17               		.loc 1 52 0
+  18               		.cfi_startproc
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+  23               	.LVL0:
+  24               	.LBB83:
+  25               	.LBB84:
+  26               		.file 2 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h"
+   1:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /*
+   2:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+   5:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** */
+   8:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+   9:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /*
+  10:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  12:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  21:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   this software.
+  29:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** */
+  30:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  31:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \file
+  32:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief USB Pipe definitions for the AVR8 microcontrollers.
+  33:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \copydetails Group_PipeManagement_AVR8
+  34:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  35:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  36:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *        dispatch header located in LUFA/Drivers/USB/USB.h.
+  37:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  38:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  39:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipeRW
+  40:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipeRW_AVR8 Pipe Data Reading and Writing (AVR8)
+  41:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe data read/write definitions for the Atmel AVR8 architecture.
+  42:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  43:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Functions, macros, variables, enums and types related to data reading and writing from and to p
+  44:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  45:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  46:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipePrimitiveRW
+  47:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipePrimitiveRW_AVR8 Read/Write of Primitive Data Types (AVR8)
+  48:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe primitive data read/write definitions for the Atmel AVR8 architecture.
+  49:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  50:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Functions, macros, variables, enums and types related to data reading and writing of primitive 
+  51:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  from and to pipes.
+  52:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  53:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  54:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipePacketManagement
+  55:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipePacketManagement_AVR8 Pipe Packet Management (AVR8)
+  56:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe packet management definitions for the Atmel AVR8 architecture.
+  57:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  58:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Functions, macros, variables, enums and types related to packet management of pipes.
+  59:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  60:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  61:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipeControlReq
+  62:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipeControlReq_AVR8 Pipe Control Request Management (AVR8)
+  63:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe control request management definitions for the Atmel AVR8 architecture.
+  64:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  65:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Module for host mode request processing. This module allows for the transmission of standard, c
+  66:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  vendor control requests to the default control endpoint of an attached device while in host mod
+  67:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  68:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \see Chapter 9 of the USB 2.0 specification.
+  69:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  70:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  71:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipeManagement
+  72:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipeManagement_AVR8 Pipe Management (AVR8)
+  73:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe management definitions for the Atmel AVR8 architecture.
+  74:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  75:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  This module contains functions, macros and enums related to pipe management when in USB Host mo
+  76:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  module contains the pipe management macros, as well as pipe interrupt and data send/receive fun
+  77:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  for various data types.
+  78:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  79:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  @{
+  80:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  81:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  82:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** #ifndef __PIPE_AVR8_H__
+  83:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** #define __PIPE_AVR8_H__
+  84:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  85:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Includes: */
+  86:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#include "../../../../Common/Common.h"
+  87:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#include "../USBTask.h"
+  88:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  89:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Enable C linkage for C++ Compilers: */
+  90:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#if defined(__cplusplus)
+  91:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			extern "C" {
+  92:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#endif
+  93:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  94:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Preprocessor Checks: */
+  95:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#if !defined(__INCLUDE_FROM_USB_DRIVER)
+  96:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
+  97:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#endif
+  98:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  99:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Public Interface - May be used in end-application: */
+ 100:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		/* Macros: */
+ 101:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** \name Pipe Error Flag Masks */
+ 102:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@{
+ 103:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that an overflow error occurred in the pipe o
+ 104:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_OVERFLOW         (1 << 6)
+ 105:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 106:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that an underflow error occurred in the pipe 
+ 107:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_UNDERFLOW        (1 << 5)
+ 108:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 109:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a CRC error occurred in the pipe on the 
+ 110:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_CRC16            (1 << 4)
+ 111:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 112:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware timeout error occurred in the
+ 113:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_TIMEOUT          (1 << 3)
+ 114:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 115:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware PID error occurred in the pip
+ 116:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_PID              (1 << 2)
+ 117:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 118:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware data PID error occurred in th
+ 119:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_DATAPID          (1 << 1)
+ 120:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 121:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware data toggle error occurred in
+ 122:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_DATATGL          (1 << 0)
+ 123:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@}
+ 124:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 125:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** \name Pipe Token Masks */
+ 126:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@{
+ 127:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Token mask for \ref Pipe_ConfigurePipe(). This sets the pipe as a SETUP token (for CONTROL t
+ 128:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  which will trigger a control request on the attached device when data is written to the pipe
+ 129:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 130:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOKEN_SETUP                (0 << PTOKEN0)
+ 131:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 132:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Token mask for \ref Pipe_ConfigurePipe(). This sets the pipe as a IN token (for non-CONTROL 
+ 133:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  indicating that the pipe data will flow from device to host.
+ 134:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 135:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOKEN_IN                   (1 << PTOKEN0)
+ 136:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 137:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Token mask for \ref Pipe_ConfigurePipe(). This sets the pipe as a OUT token (for non-CONTROL
+ 138:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  indicating that the pipe data will flow from host to device.
+ 139:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 140:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOKEN_OUT                  (2 << PTOKEN0)
+ 141:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@}
+ 142:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			
+ 143:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** \name Pipe Bank Mode Masks */
+ 144:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@{
+ 145:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for the bank mode selection for the \ref Pipe_ConfigurePipe() macro. This indicates tha
+ 146:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  should have one single bank, which requires less USB FIFO memory but results in slower trans
+ 147:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  only one USB device (the AVR or the attached device) can access the pipe's bank at the one t
+ 148:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 149:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_BANK_SINGLE                (0 << EPBK0)
+ 150:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 151:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for the bank mode selection for the \ref Pipe_ConfigurePipe() macro. This indicates tha
+ 152:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  should have two banks, which requires more USB FIFO memory but results in faster transfers a
+ 153:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  USB device (the AVR or the attached device) can access one bank while the other accesses the
+ 154:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  bank.
+ 155:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 156:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_BANK_DOUBLE                (1 << EPBK0)
+ 157:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@}
+ 158:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 159:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Default size of the default control pipe's bank, until altered by the Endpoint0Size value
+ 160:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  in the device descriptor of the attached device.
+ 161:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 162:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_CONTROLPIPE_DEFAULT_SIZE   64
+ 163:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 164:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Total number of pipes (including the default control pipe at address 0) which may be used in
+ 165:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  the device. Different USB AVR models support different amounts of pipes, this value reflects
+ 166:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  the maximum number of pipes for the currently selected AVR model.
+ 167:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 168:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOTAL_PIPES                7
+ 169:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 170:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Size in bytes of the largest pipe bank size possible in the device. Not all banks on each AV
+ 171:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  model supports the largest bank size possible on the device; different pipe numbers support
+ 172:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  different maximum bank sizes. This value reflects the largest possible bank of any pipe on t
+ 173:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  currently selected USB AVR model.
+ 174:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 175:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_MAX_SIZE                   256
+ 176:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 177:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		/* Enums: */
+ 178:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Enum for the possible error return codes of the \ref Pipe_WaitUntilReady() function.
+ 179:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 180:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipeRW_AVR8
+ 181:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 182:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			enum Pipe_WaitUntilReady_ErrorCodes_t
+ 183:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 184:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_NoError                 = 0, /**< Pipe ready for next packet, no error. */
+ 185:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_PipeStalled             = 1,	/**< The device stalled the pipe while waiting. */
+ 186:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_DeviceDisconnected      = 2,	/**< Device was disconnected from the host while wa
+ 187:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_Timeout                 = 3, /**< The device failed to accept or send the next p
+ 188:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                                             *   within the software timeout period set by the
+ 189:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                                             *   \ref USB_STREAM_TIMEOUT_MS macro.
+ 190:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                                             */
+ 191:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			};
+ 192:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 193:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		/* Inline Functions: */
+ 194:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Indicates the number of bytes currently stored in the current pipes's selected bank.
+ 195:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 196:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \note The return width of this function may differ, depending on the maximum pipe bank size
+ 197:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *        of the selected AVR model.
+ 198:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 199:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipeRW_AVR8
+ 200:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 201:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Total number of bytes in the currently selected pipe's FIFO buffer.
+ 202:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 203:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint16_t Pipe_BytesInPipe(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 204:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint16_t Pipe_BytesInPipe(void)
+ 205:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 206:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return UPBCX;
+ 207:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 208:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 209:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Returns the pipe address of the currently selected pipe. This is typically used to save the
+ 210:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  currently selected pipe number so that it can be restored after another pipe has been manipu
+ 211:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 212:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Index of the currently selected pipe.
+ 213:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 214:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetCurrentPipe(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 215:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetCurrentPipe(void)
+ 216:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 217:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return (UPNUM & PIPE_PIPENUM_MASK);
+ 218:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 219:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 220:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Selects the given pipe number. Any pipe operations which do not require the pipe number to b
+ 221:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  indicated will operate on the currently selected pipe.
+ 222:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 223:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] PipeNumber  Index of the pipe to select.
+ 224:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 225:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SelectPipe(const uint8_t PipeNumber) ATTR_ALWAYS_INLINE;
+ 226:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SelectPipe(const uint8_t PipeNumber)
+ 227:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPNUM = PipeNumber;
+  27               		.loc 2 228 0
+  28 0000 82E0      		ldi r24,lo8(2)
+  29 0002 8093 A700 		sts 167,r24
+  30               	.LVL1:
+  31               	.LBE84:
+  32               	.LBE83:
+  33               	.LBB85:
+  34               	.LBB86:
+ 229:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 230:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 231:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Resets the desired pipe, including the pipe banks and flags.
+ 232:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 233:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] PipeNumber  Index of the pipe to reset.
+ 234:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 235:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ResetPipe(const uint8_t PipeNumber) ATTR_ALWAYS_INLINE;
+ 236:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ResetPipe(const uint8_t PipeNumber)
+ 237:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 238:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPRST = (1 << PipeNumber);
+ 239:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPRST = 0;
+ 240:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 241:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 242:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Enables the currently selected pipe so that data can be sent and received through it to and 
+ 243:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  an attached device.
+ 244:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 245:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \pre The currently selected pipe must first be configured properly via \ref Pipe_ConfigurePi
+ 246:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 247:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_EnablePipe(void) ATTR_ALWAYS_INLINE;
+ 248:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_EnablePipe(void)
+ 249:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 250:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX |= (1 << PEN);
+ 251:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 252:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 253:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Disables the currently selected pipe so that data cannot be sent and received through it to 
+ 254:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  from an attached device.
+ 255:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 256:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_DisablePipe(void) ATTR_ALWAYS_INLINE;
+ 257:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_DisablePipe(void)
+ 258:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 259:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX &= ~(1 << PEN);
+ 260:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 261:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 262:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the currently selected pipe is enabled, but not necessarily configured.
+ 263:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 264:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 * \return Boolean \c true if the currently selected pipe is enabled, \c false otherwise.
+ 265:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 266:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsEnabled(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 267:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsEnabled(void)
+ 268:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 269:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPCONX & (1 << PEN)) ? true : false);
+ 270:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 271:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 272:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Gets the current pipe token, indicating the pipe's data direction and type.
+ 273:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 274:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return The current pipe token, as a \c PIPE_TOKEN_* mask.
+ 275:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 276:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetPipeToken(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 277:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetPipeToken(void)
+ 278:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 279:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return (UPCFG0X & (0x03 << PTOKEN0));
+ 280:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 281:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 282:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Sets the token for the currently selected pipe to one of the tokens specified by the \c PIPE
+ 283:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  masks. This can be used on CONTROL type pipes, to allow for bidirectional transfer of data d
+ 284:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  control requests, or on regular pipes to allow for half-duplex bidirectional data transfer t
+ 285:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  which have two endpoints of opposite direction sharing the same endpoint address within the 
+ 286:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 287:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] Token  New pipe token to set the selected pipe to, as a \c PIPE_TOKEN_* mask.
+ 288:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 289:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetPipeToken(const uint8_t Token) ATTR_ALWAYS_INLINE;
+ 290:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetPipeToken(const uint8_t Token)
+ 291:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 292:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCFG0X = ((UPCFG0X & ~(0x03 << PTOKEN0)) | Token);
+ 293:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 294:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 295:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Configures the currently selected pipe to allow for an unlimited number of IN requests. */
+ 296:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetInfiniteINRequests(void) ATTR_ALWAYS_INLINE;
+ 297:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetInfiniteINRequests(void)
+ 298:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 299:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX |= (1 << INMODE);
+ 300:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 301:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 302:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Configures the currently selected pipe to only allow the specified number of IN requests to 
+ 303:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  accepted by the pipe before it is automatically frozen.
+ 304:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 305:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] TotalINRequests  Total number of IN requests that the pipe may receive before fre
+ 306:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 307:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetFiniteINRequests(const uint8_t TotalINRequests) ATTR_ALWAYS_INLINE;
+ 308:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetFiniteINRequests(const uint8_t TotalINRequests)
+ 309:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 310:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX &= ~(1 << INMODE);
+ 311:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPINRQX = TotalINRequests;
+ 312:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 313:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 314:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the currently selected pipe is configured.
+ 315:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 316:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the selected pipe is configured, \c false otherwise.
+ 317:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 318:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsConfigured(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 319:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsConfigured(void)
+ 320:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 321:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPSTAX & (1 << CFGOK)) ? true : false);
+ 322:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 323:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 324:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Retrieves the endpoint address of the endpoint within the attached device that the currently
+ 325:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  pipe is bound to.
+ 326:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 327:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Endpoint address the currently selected pipe is bound to.
+ 328:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 329:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetBoundEndpointAddress(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INL
+ 330:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetBoundEndpointAddress(void)
+ 331:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 332:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return (((UPCFG0X >> PEPNUM0) & PIPE_EPNUM_MASK) |
+ 333:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				        ((Pipe_GetPipeToken() == PIPE_TOKEN_IN) ? PIPE_EPDIR_MASK : 0));
+ 334:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 335:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 336:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Sets the period between interrupts for an INTERRUPT type pipe to a specified number of milli
+ 337:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 338:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] Milliseconds  Number of milliseconds between each pipe poll.
+ 339:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 340:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetInterruptPeriod(const uint8_t Milliseconds) ATTR_ALWAYS_INLINE;
+ 341:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetInterruptPeriod(const uint8_t Milliseconds)
+ 342:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 343:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCFG2X = Milliseconds;
+ 344:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 345:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 346:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Returns a mask indicating which pipe's interrupt periods have elapsed, indicating that the p
+ 347:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  be serviced.
+ 348:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 349:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Mask whose bits indicate which pipes have interrupted.
+ 350:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 351:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetPipeInterrupts(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 352:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetPipeInterrupts(void)
+ 353:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 354:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return UPINT;
+ 355:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 356:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 357:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the specified pipe number has interrupted (valid only for INTERRUPT type
+ 358:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  pipes).
+ 359:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 360:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] PipeNumber  Index of the pipe whose interrupt flag should be tested.
+ 361:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 362:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the specified pipe has interrupted, \c false otherwise.
+ 363:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 364:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_HasPipeInterrupted(const uint8_t PipeNumber) ATTR_WARN_UNUSED_RESULT ATT
+ 365:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_HasPipeInterrupted(const uint8_t PipeNumber)
+ 366:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 367:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINT & (1 << PipeNumber)) ? true : false);
+ 368:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 369:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 370:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Unfreezes the selected pipe, allowing it to communicate with an attached device. */
+ 371:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_Unfreeze(void) ATTR_ALWAYS_INLINE;
+ 372:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_Unfreeze(void)
+ 373:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 374:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX &= ~(1 << PFREEZE);
+  35               		.loc 2 374 0
+  36 0006 8091 A900 		lds r24,169
+  37 000a 8F7B      		andi r24,lo8(-65)
+  38 000c 8093 A900 		sts 169,r24
+  39               	.LBE86:
+  40               	.LBE85:
+  53:Lib/StillImageCommands.c **** 	/* Unfreeze the data OUT pipe ready for data transmission */
+  54:Lib/StillImageCommands.c **** 	Pipe_SelectPipe(SIMAGE_DATA_OUT_PIPE);
+  55:Lib/StillImageCommands.c **** 	Pipe_Unfreeze();
+  56:Lib/StillImageCommands.c **** 
+  57:Lib/StillImageCommands.c **** 	/* Write the PIMA block to the data OUT pipe */
+  58:Lib/StillImageCommands.c **** 	Pipe_Write_Stream_LE(&PIMA_SendBlock, PIMA_COMMAND_SIZE(0), NULL);
+  41               		.loc 1 58 0
+  42 0010 40E0      		ldi r20,0
+  43 0012 50E0      		ldi r21,0
+  44 0014 6CE0      		ldi r22,lo8(12)
+  45 0016 70E0      		ldi r23,0
+  46 0018 80E0      		ldi r24,lo8(PIMA_SendBlock)
+  47 001a 90E0      		ldi r25,hi8(PIMA_SendBlock)
+  48 001c 0E94 0000 		call Pipe_Write_Stream_LE
+  49               	.LVL2:
+  59:Lib/StillImageCommands.c **** 
+  60:Lib/StillImageCommands.c **** 	/* If the block type is a command, send its parameters (if any) */
+  61:Lib/StillImageCommands.c **** 	if (PIMA_SendBlock.Type == PIMA_CONTAINER_CommandBlock)
+  50               		.loc 1 61 0
+  51 0020 8091 0000 		lds r24,PIMA_SendBlock+4
+  52 0024 9091 0000 		lds r25,PIMA_SendBlock+4+1
+  53 0028 0197      		sbiw r24,1
+  54 002a 01F4      		brne .L2
+  55               	.LBB87:
+  62:Lib/StillImageCommands.c **** 	{
+  63:Lib/StillImageCommands.c **** 		/* Determine the size of the parameters in the block via the data length attribute */
+  64:Lib/StillImageCommands.c **** 		uint8_t ParamBytes = (PIMA_SendBlock.DataLength - PIMA_COMMAND_SIZE(0));
+  56               		.loc 1 64 0
+  57 002c 6091 0000 		lds r22,PIMA_SendBlock
+  58 0030 6C50      		subi r22,lo8(-(-12))
+  59               	.LVL3:
+  65:Lib/StillImageCommands.c **** 
+  66:Lib/StillImageCommands.c **** 		/* Check if any parameters in the command block */
+  67:Lib/StillImageCommands.c **** 		if (ParamBytes)
+  60               		.loc 1 67 0
+  61 0032 01F0      		breq .L3
+  68:Lib/StillImageCommands.c **** 		{
+  69:Lib/StillImageCommands.c **** 			/* Write the PIMA parameters to the data OUT pipe */
+  70:Lib/StillImageCommands.c **** 			Pipe_Write_Stream_LE(&PIMA_SendBlock.Params, ParamBytes, NULL);
+  62               		.loc 1 70 0
+  63 0034 70E0      		ldi r23,0
+  64 0036 40E0      		ldi r20,0
+  65 0038 50E0      		ldi r21,0
+  66 003a 80E0      		ldi r24,lo8(PIMA_SendBlock+12)
+  67 003c 90E0      		ldi r25,hi8(PIMA_SendBlock+12)
+  68 003e 0E94 0000 		call Pipe_Write_Stream_LE
+  69               	.LVL4:
+  70               	.L3:
+  71               	.LBB88:
+  72               	.LBB89:
+ 375:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 376:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 377:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Freezes the selected pipe, preventing it from communicating with an attached device. */
+ 378:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_Freeze(void) ATTR_ALWAYS_INLINE;
+ 379:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_Freeze(void)
+ 380:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 381:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX |= (1 << PFREEZE);
+ 382:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 383:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 384:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the currently selected pipe is frozen, and not able to accept data.
+ 385:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 386:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the currently selected pipe is frozen, \c false otherwise.
+ 387:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 388:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsFrozen(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 389:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsFrozen(void)
+ 390:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 391:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPCONX & (1 << PFREEZE)) ? true : false);
+ 392:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 393:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 394:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Clears the error flags for the currently selected pipe. */
+ 395:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearError(void) ATTR_ALWAYS_INLINE;
+ 396:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearError(void)
+ 397:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 398:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPERRX = 0;
+ 399:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPINTX &= ~(1 << PERRI);
+ 400:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 401:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 402:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the master pipe error flag is set for the currently selected pipe, indicating 
+ 403:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  some sort of hardware error has occurred on the pipe.
+ 404:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 405:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \see \ref Pipe_GetErrorFlags() macro for information on retrieving the exact error flag.
+ 406:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 407:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if an error has occurred on the selected pipe, \c false otherwise.
+ 408:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 409:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsError(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 410:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsError(void)
+ 411:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 412:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINTX & (1 << PERRI)) ? true : false);
+ 413:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 414:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 415:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Gets a mask of the hardware error flags which have occurred on the currently selected pipe. 
+ 416:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  value can then be masked against the \c PIPE_ERRORFLAG_* masks to determine what error has o
+ 417:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 418:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return  Mask comprising of \c PIPE_ERRORFLAG_* bits indicating what error has occurred on t
+ 419:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 420:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetErrorFlags(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 421:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetErrorFlags(void)
+ 422:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 423:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPERRX & (PIPE_ERRORFLAG_CRC16 | PIPE_ERRORFLAG_TIMEOUT |
+ 424:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                   PIPE_ERRORFLAG_PID   | PIPE_ERRORFLAG_DATAPID |
+ 425:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                   PIPE_ERRORFLAG_DATATGL)) |
+ 426:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				        (UPSTAX & (PIPE_ERRORFLAG_OVERFLOW | PIPE_ERRORFLAG_UNDERFLOW)));
+ 427:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 428:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			
+ 429:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Retrieves the number of busy banks in the currently selected pipe, which have been queued fo
+ 430:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  transmission via the \ref Pipe_ClearOUT() command, or are awaiting acknowledgement via the
+ 431:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ref Pipe_ClearIN() command.
+ 432:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 433:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 434:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 435:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Total number of busy banks in the selected pipe.
+ 436:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 437:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetBusyBanks(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 438:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetBusyBanks(void)
+ 439:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 440:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return (UPSTAX & (0x03 << NBUSYBK0));
+ 441:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 442:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 443:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the currently selected pipe may be read from (if data is waiting in the pipe
+ 444:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  bank and the pipe is an IN direction, or if the bank is not yet full if the pipe is an OUT
+ 445:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  direction). This function will return false if an error has occurred in the pipe, or if the 
+ 446:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  is an IN direction and no packet (or an empty packet) has been received, or if the pipe is a
+ 447:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  direction and the pipe bank is full.
+ 448:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 449:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \note This function is not valid on CONTROL type pipes.
+ 450:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 451:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 452:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 453:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the currently selected pipe may be read from or written to, depen
+ 454:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *          on its direction.
+ 455:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 456:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsReadWriteAllowed(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 457:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsReadWriteAllowed(void)
+ 458:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 459:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINTX & (1 << RWAL)) ? true : false);
+ 460:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 461:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 462:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if a packet has been received on the currently selected IN pipe from the attached
+ 463:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 464:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 465:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 466:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the current pipe has received an IN packet, \c false otherwise.
+ 467:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 468:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsINReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 469:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsINReceived(void)
+ 470:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 471:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINTX & (1 << RXINI)) ? true : false);
+ 472:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 473:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 474:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the currently selected OUT pipe is ready to send an OUT packet to the attached
+ 475:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 476:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 477:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 478:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the current pipe is ready for an OUT packet, \c false otherwise.
+ 479:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 480:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsOUTReady(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 481:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsOUTReady(void)
+ 482:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 483:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINTX & (1 << TXOUTI)) ? true : false);
+ 484:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 485:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 486:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if no SETUP request is currently being sent to the attached device on the selecte
+ 487:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  CONTROL type pipe.
+ 488:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 489:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 490:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 491:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the current pipe is ready for a SETUP packet, \c false otherwise.
+ 492:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 493:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsSETUPSent(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 494:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsSETUPSent(void)
+ 495:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 496:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINTX & (1 << TXSTPI)) ? true : false);
+ 497:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 498:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 499:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Sends the currently selected CONTROL type pipe's contents to the device as a SETUP packet.
+ 500:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 501:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 502:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 503:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearSETUP(void) ATTR_ALWAYS_INLINE;
+ 504:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearSETUP(void)
+ 505:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 506:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPINTX &= ~((1 << TXSTPI) | (1 << FIFOCON));
+ 507:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 508:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 509:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Acknowledges the reception of a setup IN request from the attached device on the currently s
+ 510:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  pipe, freeing the bank ready for the next packet.
+ 511:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 512:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 513:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 514:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearIN(void) ATTR_ALWAYS_INLINE;
+ 515:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearIN(void)
+ 516:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 517:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPINTX &= ~((1 << RXINI) | (1 << FIFOCON));
+ 518:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 519:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 520:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Sends the currently selected pipe's contents to the device as an OUT packet on the selected 
+ 521:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  the bank ready for the next packet.
+ 522:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 523:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 524:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 525:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearOUT(void) ATTR_ALWAYS_INLINE;
+ 526:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearOUT(void)
+ 527:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 528:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPINTX &= ~((1 << TXOUTI) | (1 << FIFOCON));
+  73               		.loc 2 528 0
+  74 0042 8091 A600 		lds r24,166
+  75 0046 8B77      		andi r24,lo8(123)
+  76 0048 8093 A600 		sts 166,r24
+  77               	.L2:
+  78               	.LBE89:
+  79               	.LBE88:
+  80               	.LBE87:
+  81               	.LBB90:
+  82               	.LBB91:
+ 381:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+  83               		.loc 2 381 0
+  84 004c 8091 A900 		lds r24,169
+  85 0050 8064      		ori r24,lo8(64)
+  86 0052 8093 A900 		sts 169,r24
+  87 0056 0895      		ret
+  88               	.LBE91:
+  89               	.LBE90:
+  90               		.cfi_endproc
+  91               	.LFE147:
+  93               		.section	.text.SImage_ReceiveEventHeader,"ax",@progbits
+  94               	.global	SImage_ReceiveEventHeader
+  96               	SImage_ReceiveEventHeader:
+  97               	.LFB148:
+  71:Lib/StillImageCommands.c **** 		}
+  72:Lib/StillImageCommands.c **** 
+  73:Lib/StillImageCommands.c **** 		/* Send the PIMA command block to the attached device */
+  74:Lib/StillImageCommands.c **** 		Pipe_ClearOUT();
+  75:Lib/StillImageCommands.c **** 	}
+  76:Lib/StillImageCommands.c **** 
+  77:Lib/StillImageCommands.c **** 	/* Freeze pipe after use */
+  78:Lib/StillImageCommands.c **** 	Pipe_Freeze();
+  79:Lib/StillImageCommands.c **** }
+  80:Lib/StillImageCommands.c **** 
+  81:Lib/StillImageCommands.c **** /** Function to receive a PIMA event container from the attached still image device.
+  82:Lib/StillImageCommands.c ****  *
+  83:Lib/StillImageCommands.c ****  *  \return A value from the Pipe_Stream_RW_ErrorCodes_t enum
+  84:Lib/StillImageCommands.c ****  */
+  85:Lib/StillImageCommands.c **** uint8_t SImage_ReceiveEventHeader(void)
+  86:Lib/StillImageCommands.c **** {
+  98               		.loc 1 86 0
+  99               		.cfi_startproc
+ 100 0000 CF93      		push r28
+ 101               	.LCFI0:
+ 102               		.cfi_def_cfa_offset 3
+ 103               		.cfi_offset 28, -2
+ 104 0002 DF93      		push r29
+ 105               	.LCFI1:
+ 106               		.cfi_def_cfa_offset 4
+ 107               		.cfi_offset 29, -3
+ 108               	/* prologue: function */
+ 109               	/* frame size = 0 */
+ 110               	/* stack size = 2 */
+ 111               	.L__stack_usage = 2
+ 112               	.LVL5:
+ 113               	.LBB92:
+ 114               	.LBB93:
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 115               		.loc 2 228 0
+ 116 0004 83E0      		ldi r24,lo8(3)
+ 117 0006 8093 A700 		sts 167,r24
+ 118               	.LVL6:
+ 119               	.LBE93:
+ 120               	.LBE92:
+ 121               	.LBB94:
+ 122               	.LBB95:
+ 374:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 123               		.loc 2 374 0
+ 124 000a C9EA      		ldi r28,lo8(-87)
+ 125 000c D0E0      		ldi r29,0
+ 126 000e 8881      		ld r24,Y
+ 127 0010 8F7B      		andi r24,lo8(-65)
+ 128 0012 8883      		st Y,r24
+ 129               	.LBE95:
+ 130               	.LBE94:
+  87:Lib/StillImageCommands.c **** 	uint8_t ErrorCode;
+  88:Lib/StillImageCommands.c **** 
+  89:Lib/StillImageCommands.c **** 	/* Unfreeze the events pipe */
+  90:Lib/StillImageCommands.c **** 	Pipe_SelectPipe(SIMAGE_EVENTS_PIPE);
+  91:Lib/StillImageCommands.c **** 	Pipe_Unfreeze();
+  92:Lib/StillImageCommands.c **** 
+  93:Lib/StillImageCommands.c **** 	/* Read in the event data into the global structure */
+  94:Lib/StillImageCommands.c **** 	ErrorCode = Pipe_Read_Stream_LE(&PIMA_EventBlock, sizeof(PIMA_EventBlock), NULL);
+ 131               		.loc 1 94 0
+ 132 0014 40E0      		ldi r20,0
+ 133 0016 50E0      		ldi r21,0
+ 134 0018 68E1      		ldi r22,lo8(24)
+ 135 001a 70E0      		ldi r23,0
+ 136 001c 80E0      		ldi r24,lo8(PIMA_EventBlock)
+ 137 001e 90E0      		ldi r25,hi8(PIMA_EventBlock)
+ 138 0020 0E94 0000 		call Pipe_Read_Stream_LE
+ 139               	.LVL7:
+ 140               	.LBB96:
+ 141               	.LBB97:
+ 517:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 142               		.loc 2 517 0
+ 143 0024 E6EA      		ldi r30,lo8(-90)
+ 144 0026 F0E0      		ldi r31,0
+ 145 0028 9081      		ld r25,Z
+ 146 002a 9E77      		andi r25,lo8(126)
+ 147 002c 9083      		st Z,r25
+ 148               	.LBE97:
+ 149               	.LBE96:
+ 150               	.LBB98:
+ 151               	.LBB99:
+ 381:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 152               		.loc 2 381 0
+ 153 002e 9881      		ld r25,Y
+ 154 0030 9064      		ori r25,lo8(64)
+ 155 0032 9883      		st Y,r25
+ 156               	/* epilogue start */
+ 157               	.LBE99:
+ 158               	.LBE98:
+  95:Lib/StillImageCommands.c **** 
+  96:Lib/StillImageCommands.c **** 	/* Clear the pipe after read complete to prepare for next event */
+  97:Lib/StillImageCommands.c **** 	Pipe_ClearIN();
+  98:Lib/StillImageCommands.c **** 
+  99:Lib/StillImageCommands.c **** 	/* Freeze the event pipe again after use */
+ 100:Lib/StillImageCommands.c **** 	Pipe_Freeze();
+ 101:Lib/StillImageCommands.c **** 
+ 102:Lib/StillImageCommands.c **** 	return ErrorCode;
+ 103:Lib/StillImageCommands.c **** }
+ 159               		.loc 1 103 0
+ 160 0034 DF91      		pop r29
+ 161 0036 CF91      		pop r28
+ 162 0038 0895      		ret
+ 163               		.cfi_endproc
+ 164               	.LFE148:
+ 166               		.section	.text.SImage_ReceiveBlockHeader,"ax",@progbits
+ 167               	.global	SImage_ReceiveBlockHeader
+ 169               	SImage_ReceiveBlockHeader:
+ 170               	.LFB149:
+ 104:Lib/StillImageCommands.c **** 
+ 105:Lib/StillImageCommands.c **** /** Function to receive a PIMA response container from the attached still image device.
+ 106:Lib/StillImageCommands.c ****  *
+ 107:Lib/StillImageCommands.c ****  *  \return A value from the Pipe_Stream_RW_ErrorCodes_t enum
+ 108:Lib/StillImageCommands.c ****  */
+ 109:Lib/StillImageCommands.c **** uint8_t SImage_ReceiveBlockHeader(void)
+ 110:Lib/StillImageCommands.c **** {
+ 171               		.loc 1 110 0
+ 172               		.cfi_startproc
+ 173               	/* prologue: function */
+ 174               	/* frame size = 0 */
+ 175               	/* stack size = 0 */
+ 176               	.L__stack_usage = 0
+ 177               	.LVL8:
+ 178               	.LBB100:
+ 179               	.LBB101:
+ 180               		.file 3 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h"
+   1:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** /*
+   2:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+   5:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** */
+   8:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+   9:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** /*
+  10:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+  12:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+  21:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****   this software.
+  29:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** */
+  30:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+  31:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** /** \file
+  32:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****  *  \brief USB Host definitions for the AVR8 microcontrollers.
+  33:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****  *  \copydetails Group_Host_AVR8
+  34:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****  *
+  35:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  36:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****  *        dispatch header located in LUFA/Drivers/USB/USB.h.
+  37:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****  */
+  38:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+  39:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** /** \ingroup Group_Host
+  40:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****  *  \defgroup Group_Host_AVR8 Host Management (AVR8)
+  41:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****  *  \brief USB Host definitions for the AVR8 microcontrollers.
+  42:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****  *
+  43:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****  *  Architecture specific USB Host definitions for the Atmel 8-bit AVR microcontrollers.
+  44:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****  *
+  45:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****  *  @{
+  46:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h ****  */
+  47:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+  48:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** #ifndef __USBHOST_AVR8_H__
+  49:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** #define __USBHOST_AVR8_H__
+  50:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+  51:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 	/* Includes: */
+  52:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 		#include "../../../../Common/Common.h"
+  53:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 		#include "../StdDescriptors.h"
+  54:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 		#include "../Pipe.h"
+  55:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 		#include "../USBInterrupt.h"
+  56:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+  57:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 	/* Enable C linkage for C++ Compilers: */
+  58:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 		#if defined(__cplusplus)
+  59:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			extern "C" {
+  60:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 		#endif
+  61:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+  62:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 	/* Preprocessor Checks: */
+  63:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 		#if !defined(__INCLUDE_FROM_USB_DRIVER)
+  64:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
+  65:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 		#endif
+  66:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+  67:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 	/* Public Interface - May be used in end-application: */
+  68:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 		/* Macros: */
+  69:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			/** Indicates the fixed USB device address which any attached device is enumerated to when in
+  70:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 *  host mode. As only one USB device may be attached to the AVR in host mode at any one time
+  71:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 *  and that the address used is not important (other than the fact that it is non-zero), a
+  72:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 *  fixed value is specified by the library.
+  73:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 */
+  74:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			#define USB_HOST_DEVICEADDRESS                 1
+  75:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+  76:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			#if !defined(HOST_DEVICE_SETTLE_DELAY_MS) || defined(__DOXYGEN__)
+  77:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				/** Constant for the delay in milliseconds after a device is connected before the library
+  78:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				 *  will start the enumeration process. Some devices require a delay of up to 5 seconds
+  79:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				 *  after connection before the enumeration process can start or incorrect operation will
+  80:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				 *  occur.
+  81:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				 *
+  82:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				 *  The default delay value may be overridden in the user project makefile by defining the
+  83:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				 *  \c HOST_DEVICE_SETTLE_DELAY_MS token to the required delay in milliseconds, and passed to t
+  84:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				 *  compiler using the -D switch.
+  85:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				 */
+  86:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				#define HOST_DEVICE_SETTLE_DELAY_MS        1000
+  87:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			#endif
+  88:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+  89:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			/** Enum for the error codes for the \ref EVENT_USB_Host_HostError() event.
+  90:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 *
+  91:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 *  \see \ref Group_Events for more information on this event.
+  92:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 */
+  93:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			enum USB_Host_ErrorCodes_t
+  94:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			{
+  95:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				HOST_ERROR_VBusVoltageDip       = 0, /**< VBUS voltage dipped to an unacceptable level. This
+  96:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      *   error may be the result of an attached device drawing
+  97:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      *   too much current from the VBUS line, or due to the
+  98:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      *   AVR's power source being unable to supply sufficient
+  99:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      *   current.
+ 100:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      */
+ 101:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			};
+ 102:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+ 103:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			/** Enum for the error codes for the \ref EVENT_USB_Host_DeviceEnumerationFailed() event.
+ 104:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 *
+ 105:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 *  \see \ref Group_Events for more information on this event.
+ 106:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 */
+ 107:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			enum USB_Host_EnumerationErrorCodes_t
+ 108:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			{
+ 109:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				HOST_ENUMERROR_NoError          = 0, /**< No error occurred. Used internally, this is not a val
+ 110:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      *   ErrorCode parameter value for the \ref EVENT_USB_Host
+ 111:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      *   event.
+ 112:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      */
+ 113:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				HOST_ENUMERROR_WaitStage        = 1, /**< One of the delays between enumeration steps failed
+ 114:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      *   to complete successfully, due to a timeout or other
+ 115:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      *   error.
+ 116:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      */
+ 117:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				HOST_ENUMERROR_NoDeviceDetected = 2, /**< No device was detected, despite the USB data lines
+ 118:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      *   indicating the attachment of a device.
+ 119:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      */
+ 120:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				HOST_ENUMERROR_ControlError     = 3, /**< One of the enumeration control requests failed to
+ 121:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      *   complete successfully.
+ 122:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      */
+ 123:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				HOST_ENUMERROR_PipeConfigError  = 4, /**< The default control pipe (address 0) failed to
+ 124:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      *   configure correctly.
+ 125:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				                                      */
+ 126:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			};
+ 127:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 
+ 128:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 		/* Inline Functions: */
+ 129:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			/** Returns the current USB frame number, when in host mode. Every millisecond the USB bus is ac
+ 130:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 *  the frame number is incremented by one.
+ 131:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 *
+ 132:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 *  \return Current USB frame number from the USB controller.
+ 133:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			 */
+ 134:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			static inline uint16_t USB_Host_GetFrameNumber(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 135:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			static inline uint16_t USB_Host_GetFrameNumber(void)
+ 136:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 			{
+ 137:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Host_AVR8.h **** 				return UHFNUM;
+ 181               		.loc 3 137 0
+ 182 0000 2091 A200 		lds r18,162
+ 183 0004 3091 A300 		lds r19,162+1
+ 184               	.LVL9:
+ 185               	.LBE101:
+ 186               	.LBE100:
+ 187               	.LBB102:
+ 188               	.LBB103:
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 189               		.loc 2 228 0
+ 190 0008 81E0      		ldi r24,lo8(1)
+ 191 000a 8093 A700 		sts 167,r24
+ 192               	.LVL10:
+ 193               	.LBE103:
+ 194               	.LBE102:
+ 195               	.LBB104:
+ 196               	.LBB105:
+ 374:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 197               		.loc 2 374 0
+ 198 000e 8091 A900 		lds r24,169
+ 199 0012 8F7B      		andi r24,lo8(-65)
+ 200 0014 8093 A900 		sts 169,r24
+ 201               	.LBE105:
+ 202               	.LBE104:
+ 111:Lib/StillImageCommands.c **** 	uint16_t TimeoutMSRem        = COMMAND_DATA_TIMEOUT_MS;
+ 203               		.loc 1 111 0
+ 204 0018 80E1      		ldi r24,lo8(16)
+ 205 001a 97E2      		ldi r25,lo8(39)
+ 206               	.LBB106:
+ 207               	.LBB107:
+ 208               	.LBB108:
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 209               		.loc 2 228 0
+ 210 001c 62E0      		ldi r22,lo8(2)
+ 211               	.LBE108:
+ 212               	.LBE107:
+ 213               	.LBB110:
+ 214               	.LBB111:
+ 215 001e 71E0      		ldi r23,lo8(1)
+ 216               	.LVL11:
+ 217               	.L10:
+ 218               	.LBE111:
+ 219               	.LBE110:
+ 220               	.LBE106:
+ 221               	.LBB135:
+ 222               	.LBB136:
+ 471:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 223               		.loc 2 471 0
+ 224 0020 4091 A600 		lds r20,166
+ 225               	.LBE136:
+ 226               	.LBE135:
+ 112:Lib/StillImageCommands.c **** 	uint16_t PreviousFrameNumber = USB_Host_GetFrameNumber();
+ 113:Lib/StillImageCommands.c **** 
+ 114:Lib/StillImageCommands.c **** 	/* Unfreeze the data IN pipe */
+ 115:Lib/StillImageCommands.c **** 	Pipe_SelectPipe(SIMAGE_DATA_IN_PIPE);
+ 116:Lib/StillImageCommands.c **** 	Pipe_Unfreeze();
+ 117:Lib/StillImageCommands.c **** 
+ 118:Lib/StillImageCommands.c **** 	/* Wait until data received on the IN pipe */
+ 119:Lib/StillImageCommands.c **** 	while (!(Pipe_IsINReceived()))
+ 227               		.loc 1 119 0
+ 228 0024 40FD      		sbrc r20,0
+ 229 0026 00C0      		rjmp .L30
+ 230               	.LBB137:
+ 231               	.LBB113:
+ 232               	.LBB114:
+ 233               		.loc 3 137 0
+ 234 0028 4091 A200 		lds r20,162
+ 235 002c 5091 A300 		lds r21,162+1
+ 236               	.LVL12:
+ 237               	.LBE114:
+ 238               	.LBE113:
+ 120:Lib/StillImageCommands.c **** 	{
+ 121:Lib/StillImageCommands.c **** 		uint16_t CurrentFrameNumber = USB_Host_GetFrameNumber();
+ 122:Lib/StillImageCommands.c **** 
+ 123:Lib/StillImageCommands.c **** 		/* Check to see if a new frame has been issued (1ms elapsed) */
+ 124:Lib/StillImageCommands.c **** 		if (CurrentFrameNumber != PreviousFrameNumber)
+ 239               		.loc 1 124 0
+ 240 0030 2417      		cp r18,r20
+ 241 0032 3507      		cpc r19,r21
+ 242 0034 01F0      		breq .L11
+ 243               	.LVL13:
+ 125:Lib/StillImageCommands.c **** 		{
+ 126:Lib/StillImageCommands.c **** 			/* Save the new frame number and decrement the timeout period */
+ 127:Lib/StillImageCommands.c **** 			PreviousFrameNumber = CurrentFrameNumber;
+ 128:Lib/StillImageCommands.c **** 			TimeoutMSRem--;
+ 244               		.loc 1 128 0
+ 245 0036 0197      		sbiw r24,1
+ 246               	.LVL14:
+ 129:Lib/StillImageCommands.c **** 
+ 130:Lib/StillImageCommands.c **** 			/* Check to see if the timeout period for the command has elapsed */
+ 131:Lib/StillImageCommands.c **** 			if (!(TimeoutMSRem))
+ 247               		.loc 1 131 0
+ 248 0038 01F4      		brne .+2
+ 249 003a 00C0      		rjmp .L20
+ 250               	.LVL15:
+ 251               	.L11:
+ 252               	.LBB116:
+ 253               	.LBB117:
+ 381:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 254               		.loc 2 381 0
+ 255 003c 2091 A900 		lds r18,169
+ 256 0040 2064      		ori r18,lo8(64)
+ 257 0042 2093 A900 		sts 169,r18
+ 258               	.LVL16:
+ 259               	.LBE117:
+ 260               	.LBE116:
+ 261               	.LBB118:
+ 262               	.LBB109:
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 263               		.loc 2 228 0
+ 264 0046 6093 A700 		sts 167,r22
+ 265               	.LVL17:
+ 266               	.LBE109:
+ 267               	.LBE118:
+ 268               	.LBB119:
+ 269               	.LBB120:
+ 374:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 270               		.loc 2 374 0
+ 271 004a 2091 A900 		lds r18,169
+ 272 004e 2F7B      		andi r18,lo8(-65)
+ 273 0050 2093 A900 		sts 169,r18
+ 274               	.LBE120:
+ 275               	.LBE119:
+ 276               	.LBB121:
+ 277               	.LBB122:
+ 529:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 530:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 531:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the device sent a NAK (Negative Acknowledge) in response to the last sent pack
+ 532:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  the currently selected pipe. This occurs when the host sends a packet to the device, but the
+ 533:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  is not currently ready to handle the packet (i.e. its endpoint banks are full). Once a NAK h
+ 534:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  received, it must be cleared using \ref Pipe_ClearNAKReceived() before the previous (or any 
+ 535:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  can be re-sent.
+ 536:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 537:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 538:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 539:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if an NAK has been received on the current pipe, \c false otherwise.
+ 540:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 541:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsNAKReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 542:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsNAKReceived(void)
+ 543:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 544:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINTX & (1 << NAKEDI)) ? true : false);
+ 545:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 546:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 547:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Clears the NAK condition on the currently selected pipe.
+ 548:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 549:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 550:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 551:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \see \ref Pipe_IsNAKReceived() for more details.
+ 552:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 553:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearNAKReceived(void) ATTR_ALWAYS_INLINE;
+ 554:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearNAKReceived(void)
+ 555:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 556:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPINTX &= ~(1 << NAKEDI);
+ 557:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 558:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 559:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the currently selected pipe has had the STALL condition set by the attached de
+ 560:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 561:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 562:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 563:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the current pipe has been stalled by the attached device, \c fals
+ 564:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 565:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsStalled(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 566:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsStalled(void)
+ 567:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 568:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINTX & (1 << RXSTALLI)) ? true : false);
+ 278               		.loc 2 568 0
+ 279 0054 2091 A600 		lds r18,166
+ 280               	.LBE122:
+ 281               	.LBE121:
+ 132:Lib/StillImageCommands.c **** 			  return PIPE_RWSTREAM_Timeout;
+ 133:Lib/StillImageCommands.c **** 		}
+ 134:Lib/StillImageCommands.c **** 
+ 135:Lib/StillImageCommands.c **** 		Pipe_Freeze();
+ 136:Lib/StillImageCommands.c **** 		Pipe_SelectPipe(SIMAGE_DATA_OUT_PIPE);
+ 137:Lib/StillImageCommands.c **** 		Pipe_Unfreeze();
+ 138:Lib/StillImageCommands.c **** 
+ 139:Lib/StillImageCommands.c **** 		/* Check if pipe stalled (command failed by device) */
+ 140:Lib/StillImageCommands.c **** 		if (Pipe_IsStalled())
+ 282               		.loc 1 140 0
+ 283 0058 21FD      		sbrc r18,1
+ 284 005a 00C0      		rjmp .L29
+ 285               	.LBB123:
+ 286               	.LBB124:
+ 381:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 287               		.loc 2 381 0
+ 288 005c 2091 A900 		lds r18,169
+ 289 0060 2064      		ori r18,lo8(64)
+ 290 0062 2093 A900 		sts 169,r18
+ 291               	.LVL18:
+ 292               	.LBE124:
+ 293               	.LBE123:
+ 294               	.LBB125:
+ 295               	.LBB112:
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 296               		.loc 2 228 0
+ 297 0066 7093 A700 		sts 167,r23
+ 298               	.LVL19:
+ 299               	.LBE112:
+ 300               	.LBE125:
+ 301               	.LBB126:
+ 302               	.LBB127:
+ 374:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 303               		.loc 2 374 0
+ 304 006a 2091 A900 		lds r18,169
+ 305 006e 2F7B      		andi r18,lo8(-65)
+ 306 0070 2093 A900 		sts 169,r18
+ 307               	.LBE127:
+ 308               	.LBE126:
+ 309               	.LBB128:
+ 310               	.LBB129:
+ 311               		.loc 2 568 0
+ 312 0074 2091 A600 		lds r18,166
+ 313               	.LBE129:
+ 314               	.LBE128:
+ 141:Lib/StillImageCommands.c **** 		{
+ 142:Lib/StillImageCommands.c **** 			/* Clear the stall condition on the OUT pipe */
+ 143:Lib/StillImageCommands.c **** 			USB_Host_ClearEndpointStall(Pipe_GetBoundEndpointAddress());
+ 144:Lib/StillImageCommands.c **** 
+ 145:Lib/StillImageCommands.c **** 			/* Return error code and break out of the loop */
+ 146:Lib/StillImageCommands.c **** 			return PIPE_RWSTREAM_PipeStalled;
+ 147:Lib/StillImageCommands.c **** 		}
+ 148:Lib/StillImageCommands.c **** 
+ 149:Lib/StillImageCommands.c **** 		Pipe_Freeze();
+ 150:Lib/StillImageCommands.c **** 		Pipe_SelectPipe(SIMAGE_DATA_IN_PIPE);
+ 151:Lib/StillImageCommands.c **** 		Pipe_Unfreeze();
+ 152:Lib/StillImageCommands.c **** 
+ 153:Lib/StillImageCommands.c **** 		/* Check if pipe stalled (command failed by device) */
+ 154:Lib/StillImageCommands.c **** 		if (Pipe_IsStalled())
+ 315               		.loc 1 154 0
+ 316 0078 21FF      		sbrs r18,1
+ 317 007a 00C0      		rjmp .L15
+ 318               	.L29:
+ 319               	.LBB130:
+ 320               	.LBB131:
+ 332:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				        ((Pipe_GetPipeToken() == PIPE_TOKEN_IN) ? PIPE_EPDIR_MASK : 0));
+ 321               		.loc 2 332 0
+ 322 007c 8091 AA00 		lds r24,170
+ 323               	.LVL20:
+ 324 0080 8F70      		andi r24,lo8(15)
+ 325               	.LBB132:
+ 326               	.LBB133:
+ 279:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 327               		.loc 2 279 0
+ 328 0082 9091 AA00 		lds r25,170
+ 329               	.LBE133:
+ 330               	.LBE132:
+ 332:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				        ((Pipe_GetPipeToken() == PIPE_TOKEN_IN) ? PIPE_EPDIR_MASK : 0));
+ 331               		.loc 2 332 0
+ 332 0086 9073      		andi r25,lo8(48)
+ 333 0088 9031      		cpi r25,lo8(16)
+ 334 008a 01F0      		breq .L22
+ 335 008c 90E0      		ldi r25,0
+ 336 008e 00C0      		rjmp .L16
+ 337               	.L22:
+ 338 0090 90E8      		ldi r25,lo8(-128)
+ 339               	.L16:
+ 340               	.LBE131:
+ 341               	.LBE130:
+ 155:Lib/StillImageCommands.c **** 		{
+ 156:Lib/StillImageCommands.c **** 			/* Clear the stall condition on the IN pipe */
+ 157:Lib/StillImageCommands.c **** 			USB_Host_ClearEndpointStall(Pipe_GetBoundEndpointAddress());
+ 342               		.loc 1 157 0
+ 343 0092 892B      		or r24,r25
+ 344 0094 0E94 0000 		call USB_Host_ClearEndpointStall
+ 345               	.LVL21:
+ 158:Lib/StillImageCommands.c **** 
+ 159:Lib/StillImageCommands.c **** 			/* Return error code */
+ 160:Lib/StillImageCommands.c **** 			return PIPE_RWSTREAM_PipeStalled;
+ 346               		.loc 1 160 0
+ 347 0098 81E0      		ldi r24,lo8(1)
+ 348 009a 0895      		ret
+ 349               	.LVL22:
+ 350               	.L15:
+ 161:Lib/StillImageCommands.c **** 		}
+ 162:Lib/StillImageCommands.c **** 
+ 163:Lib/StillImageCommands.c **** 		/* Check to see if the device was disconnected, if so exit function */
+ 164:Lib/StillImageCommands.c **** 		if (USB_HostState == HOST_STATE_Unattached)
+ 351               		.loc 1 164 0
+ 352 009c 2091 0000 		lds r18,USB_HostState
+ 353 00a0 2130      		cpi r18,lo8(1)
+ 354 00a2 01F0      		breq .L23
+ 355               	.LBB134:
+ 356               	.LBB115:
+ 357               		.loc 3 137 0
+ 358 00a4 9A01      		movw r18,r20
+ 359 00a6 00C0      		rjmp .L10
+ 360               	.LVL23:
+ 361               	.L30:
+ 362               	.LBE115:
+ 363               	.LBE134:
+ 364               	.LBE137:
+ 165:Lib/StillImageCommands.c **** 		  return PIPE_RWSTREAM_DeviceDisconnected;
+ 166:Lib/StillImageCommands.c **** 	}
+ 167:Lib/StillImageCommands.c **** 
+ 168:Lib/StillImageCommands.c **** 	/* Load in the response from the attached device */
+ 169:Lib/StillImageCommands.c **** 	Pipe_Read_Stream_LE(&PIMA_ReceivedBlock, PIMA_COMMAND_SIZE(0), NULL);
+ 365               		.loc 1 169 0
+ 366 00a8 40E0      		ldi r20,0
+ 367 00aa 50E0      		ldi r21,0
+ 368 00ac 6CE0      		ldi r22,lo8(12)
+ 369 00ae 70E0      		ldi r23,0
+ 370 00b0 80E0      		ldi r24,lo8(PIMA_ReceivedBlock)
+ 371 00b2 90E0      		ldi r25,hi8(PIMA_ReceivedBlock)
+ 372               	.LVL24:
+ 373 00b4 0E94 0000 		call Pipe_Read_Stream_LE
+ 374               	.LVL25:
+ 170:Lib/StillImageCommands.c **** 
+ 171:Lib/StillImageCommands.c **** 	/* Check if the returned block type is a response block */
+ 172:Lib/StillImageCommands.c **** 	if (PIMA_ReceivedBlock.Type == PIMA_CONTAINER_ResponseBlock)
+ 375               		.loc 1 172 0
+ 376 00b8 8091 0000 		lds r24,PIMA_ReceivedBlock+4
+ 377 00bc 9091 0000 		lds r25,PIMA_ReceivedBlock+4+1
+ 378 00c0 0397      		sbiw r24,3
+ 379 00c2 01F4      		brne .L18
+ 380               	.LBB138:
+ 173:Lib/StillImageCommands.c **** 	{
+ 174:Lib/StillImageCommands.c **** 		/* Determine the size of the parameters in the block via the data length attribute */
+ 175:Lib/StillImageCommands.c **** 		uint8_t ParamBytes = (PIMA_ReceivedBlock.DataLength - PIMA_COMMAND_SIZE(0));
+ 381               		.loc 1 175 0
+ 382 00c4 6091 0000 		lds r22,PIMA_ReceivedBlock
+ 383 00c8 6C50      		subi r22,lo8(-(-12))
+ 384               	.LVL26:
+ 176:Lib/StillImageCommands.c **** 
+ 177:Lib/StillImageCommands.c **** 		/* Check if the device has returned any parameters */
+ 178:Lib/StillImageCommands.c **** 		if (ParamBytes)
+ 385               		.loc 1 178 0
+ 386 00ca 01F0      		breq .L19
+ 179:Lib/StillImageCommands.c **** 		{
+ 180:Lib/StillImageCommands.c **** 			/* Read the PIMA parameters from the data IN pipe */
+ 181:Lib/StillImageCommands.c **** 			Pipe_Read_Stream_LE(&PIMA_ReceivedBlock.Params, ParamBytes, NULL);
+ 387               		.loc 1 181 0
+ 388 00cc 70E0      		ldi r23,0
+ 389 00ce 40E0      		ldi r20,0
+ 390 00d0 50E0      		ldi r21,0
+ 391 00d2 80E0      		ldi r24,lo8(PIMA_ReceivedBlock+12)
+ 392 00d4 90E0      		ldi r25,hi8(PIMA_ReceivedBlock+12)
+ 393 00d6 0E94 0000 		call Pipe_Read_Stream_LE
+ 394               	.LVL27:
+ 395               	.L19:
+ 396               	.LBB139:
+ 397               	.LBB140:
+ 517:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 398               		.loc 2 517 0
+ 399 00da 8091 A600 		lds r24,166
+ 400 00de 8E77      		andi r24,lo8(126)
+ 401 00e0 8093 A600 		sts 166,r24
+ 402               	.L18:
+ 403               	.LBE140:
+ 404               	.LBE139:
+ 405               	.LBE138:
+ 406               	.LBB141:
+ 407               	.LBB142:
+ 381:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 408               		.loc 2 381 0
+ 409 00e4 8091 A900 		lds r24,169
+ 410 00e8 8064      		ori r24,lo8(64)
+ 411 00ea 8093 A900 		sts 169,r24
+ 412               	.LBE142:
+ 413               	.LBE141:
+ 182:Lib/StillImageCommands.c **** 		}
+ 183:Lib/StillImageCommands.c **** 
+ 184:Lib/StillImageCommands.c **** 		/* Clear pipe bank after use */
+ 185:Lib/StillImageCommands.c **** 		Pipe_ClearIN();
+ 186:Lib/StillImageCommands.c **** 	}
+ 187:Lib/StillImageCommands.c **** 
+ 188:Lib/StillImageCommands.c **** 	/* Freeze the IN pipe after use */
+ 189:Lib/StillImageCommands.c **** 	Pipe_Freeze();
+ 190:Lib/StillImageCommands.c **** 
+ 191:Lib/StillImageCommands.c **** 	return PIPE_RWSTREAM_NoError;
+ 414               		.loc 1 191 0
+ 415 00ee 80E0      		ldi r24,0
+ 416 00f0 0895      		ret
+ 417               	.LVL28:
+ 418               	.L20:
+ 419               	.LBB143:
+ 132:Lib/StillImageCommands.c **** 		}
+ 420               		.loc 1 132 0
+ 421 00f2 83E0      		ldi r24,lo8(3)
+ 422               	.LVL29:
+ 423 00f4 0895      		ret
+ 424               	.LVL30:
+ 425               	.L23:
+ 165:Lib/StillImageCommands.c **** 	}
+ 426               		.loc 1 165 0
+ 427 00f6 82E0      		ldi r24,lo8(2)
+ 428               	.LVL31:
+ 429               	.LBE143:
+ 192:Lib/StillImageCommands.c **** }
+ 430               		.loc 1 192 0
+ 431 00f8 0895      		ret
+ 432               		.cfi_endproc
+ 433               	.LFE149:
+ 435               		.section	.text.SImage_SendData,"ax",@progbits
+ 436               	.global	SImage_SendData
+ 438               	SImage_SendData:
+ 439               	.LFB150:
+ 193:Lib/StillImageCommands.c **** 
+ 194:Lib/StillImageCommands.c **** /** Function to send the given data to the device, after a command block has been issued.
+ 195:Lib/StillImageCommands.c ****  *
+ 196:Lib/StillImageCommands.c ****  *  \param[in] Buffer  Source data buffer to send to the device
+ 197:Lib/StillImageCommands.c ****  *  \param[in] Bytes   Number of bytes to send
+ 198:Lib/StillImageCommands.c ****  *
+ 199:Lib/StillImageCommands.c ****  *  \return A value from the Pipe_Stream_RW_ErrorCodes_t enum
+ 200:Lib/StillImageCommands.c ****  */
+ 201:Lib/StillImageCommands.c **** uint8_t SImage_SendData(void* const Buffer,
+ 202:Lib/StillImageCommands.c ****                         const uint16_t Bytes)
+ 203:Lib/StillImageCommands.c **** {
+ 440               		.loc 1 203 0
+ 441               		.cfi_startproc
+ 442               	.LVL32:
+ 443 0000 CF93      		push r28
+ 444               	.LCFI2:
+ 445               		.cfi_def_cfa_offset 3
+ 446               		.cfi_offset 28, -2
+ 447 0002 DF93      		push r29
+ 448               	.LCFI3:
+ 449               		.cfi_def_cfa_offset 4
+ 450               		.cfi_offset 29, -3
+ 451               	/* prologue: function */
+ 452               	/* frame size = 0 */
+ 453               	/* stack size = 2 */
+ 454               	.L__stack_usage = 2
+ 455               	.LVL33:
+ 456               	.LBB144:
+ 457               	.LBB145:
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 458               		.loc 2 228 0
+ 459 0004 22E0      		ldi r18,lo8(2)
+ 460 0006 2093 A700 		sts 167,r18
+ 461               	.LVL34:
+ 462               	.LBE145:
+ 463               	.LBE144:
+ 464               	.LBB146:
+ 465               	.LBB147:
+ 374:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 466               		.loc 2 374 0
+ 467 000a C9EA      		ldi r28,lo8(-87)
+ 468 000c D0E0      		ldi r29,0
+ 469 000e 2881      		ld r18,Y
+ 470 0010 2F7B      		andi r18,lo8(-65)
+ 471 0012 2883      		st Y,r18
+ 472               	.LBE147:
+ 473               	.LBE146:
+ 204:Lib/StillImageCommands.c **** 	uint8_t ErrorCode;
+ 205:Lib/StillImageCommands.c **** 
+ 206:Lib/StillImageCommands.c **** 	/* Unfreeze the data OUT pipe */
+ 207:Lib/StillImageCommands.c **** 	Pipe_SelectPipe(SIMAGE_DATA_OUT_PIPE);
+ 208:Lib/StillImageCommands.c **** 	Pipe_Unfreeze();
+ 209:Lib/StillImageCommands.c **** 
+ 210:Lib/StillImageCommands.c **** 	/* Write the data contents to the pipe */
+ 211:Lib/StillImageCommands.c **** 	ErrorCode = Pipe_Write_Stream_LE(Buffer, Bytes, NULL);
+ 474               		.loc 1 211 0
+ 475 0014 40E0      		ldi r20,0
+ 476 0016 50E0      		ldi r21,0
+ 477 0018 0E94 0000 		call Pipe_Write_Stream_LE
+ 478               	.LVL35:
+ 479               	.LBB148:
+ 480               	.LBB149:
+ 528:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 481               		.loc 2 528 0
+ 482 001c E6EA      		ldi r30,lo8(-90)
+ 483 001e F0E0      		ldi r31,0
+ 484 0020 9081      		ld r25,Z
+ 485 0022 9B77      		andi r25,lo8(123)
+ 486 0024 9083      		st Z,r25
+ 487               	.LBE149:
+ 488               	.LBE148:
+ 489               	.LBB150:
+ 490               	.LBB151:
+ 381:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 491               		.loc 2 381 0
+ 492 0026 9881      		ld r25,Y
+ 493 0028 9064      		ori r25,lo8(64)
+ 494 002a 9883      		st Y,r25
+ 495               	/* epilogue start */
+ 496               	.LBE151:
+ 497               	.LBE150:
+ 212:Lib/StillImageCommands.c **** 
+ 213:Lib/StillImageCommands.c **** 	/* Send the last packet to the attached device */
+ 214:Lib/StillImageCommands.c **** 	Pipe_ClearOUT();
+ 215:Lib/StillImageCommands.c **** 
+ 216:Lib/StillImageCommands.c **** 	/* Freeze the pipe again after use */
+ 217:Lib/StillImageCommands.c **** 	Pipe_Freeze();
+ 218:Lib/StillImageCommands.c **** 
+ 219:Lib/StillImageCommands.c **** 	return ErrorCode;
+ 220:Lib/StillImageCommands.c **** }
+ 498               		.loc 1 220 0
+ 499 002c DF91      		pop r29
+ 500 002e CF91      		pop r28
+ 501 0030 0895      		ret
+ 502               		.cfi_endproc
+ 503               	.LFE150:
+ 505               		.section	.text.SImage_ReadData,"ax",@progbits
+ 506               	.global	SImage_ReadData
+ 508               	SImage_ReadData:
+ 509               	.LFB151:
+ 221:Lib/StillImageCommands.c **** 
+ 222:Lib/StillImageCommands.c **** /** Function to receive the given data from the device, after a response block has been received.
+ 223:Lib/StillImageCommands.c ****  *
+ 224:Lib/StillImageCommands.c ****  *  \param[out] Buffer  Destination data buffer to put read bytes from the device
+ 225:Lib/StillImageCommands.c ****  *  \param[in] Bytes    Number of bytes to receive
+ 226:Lib/StillImageCommands.c ****  *
+ 227:Lib/StillImageCommands.c ****  *  \return A value from the Pipe_Stream_RW_ErrorCodes_t enum
+ 228:Lib/StillImageCommands.c ****  */
+ 229:Lib/StillImageCommands.c **** uint8_t SImage_ReadData(void* const Buffer,
+ 230:Lib/StillImageCommands.c ****                         const uint16_t Bytes)
+ 231:Lib/StillImageCommands.c **** {
+ 510               		.loc 1 231 0
+ 511               		.cfi_startproc
+ 512               	.LVL36:
+ 513 0000 CF93      		push r28
+ 514               	.LCFI4:
+ 515               		.cfi_def_cfa_offset 3
+ 516               		.cfi_offset 28, -2
+ 517 0002 DF93      		push r29
+ 518               	.LCFI5:
+ 519               		.cfi_def_cfa_offset 4
+ 520               		.cfi_offset 29, -3
+ 521               	/* prologue: function */
+ 522               	/* frame size = 0 */
+ 523               	/* stack size = 2 */
+ 524               	.L__stack_usage = 2
+ 525               	.LVL37:
+ 526               	.LBB152:
+ 527               	.LBB153:
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 528               		.loc 2 228 0
+ 529 0004 21E0      		ldi r18,lo8(1)
+ 530 0006 2093 A700 		sts 167,r18
+ 531               	.LVL38:
+ 532               	.LBE153:
+ 533               	.LBE152:
+ 534               	.LBB154:
+ 535               	.LBB155:
+ 374:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 536               		.loc 2 374 0
+ 537 000a C9EA      		ldi r28,lo8(-87)
+ 538 000c D0E0      		ldi r29,0
+ 539 000e 2881      		ld r18,Y
+ 540 0010 2F7B      		andi r18,lo8(-65)
+ 541 0012 2883      		st Y,r18
+ 542               	.LBE155:
+ 543               	.LBE154:
+ 232:Lib/StillImageCommands.c **** 	uint8_t ErrorCode;
+ 233:Lib/StillImageCommands.c **** 
+ 234:Lib/StillImageCommands.c **** 	/* Unfreeze the data IN pipe */
+ 235:Lib/StillImageCommands.c **** 	Pipe_SelectPipe(SIMAGE_DATA_IN_PIPE);
+ 236:Lib/StillImageCommands.c **** 	Pipe_Unfreeze();
+ 237:Lib/StillImageCommands.c **** 
+ 238:Lib/StillImageCommands.c **** 	/* Read in the data into the buffer */
+ 239:Lib/StillImageCommands.c **** 	ErrorCode = Pipe_Read_Stream_LE(Buffer, Bytes, NULL);
+ 544               		.loc 1 239 0
+ 545 0014 40E0      		ldi r20,0
+ 546 0016 50E0      		ldi r21,0
+ 547 0018 0E94 0000 		call Pipe_Read_Stream_LE
+ 548               	.LVL39:
+ 549               	.LBB156:
+ 550               	.LBB157:
+ 381:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 551               		.loc 2 381 0
+ 552 001c 9881      		ld r25,Y
+ 553 001e 9064      		ori r25,lo8(64)
+ 554 0020 9883      		st Y,r25
+ 555               	/* epilogue start */
+ 556               	.LBE157:
+ 557               	.LBE156:
+ 240:Lib/StillImageCommands.c **** 
+ 241:Lib/StillImageCommands.c **** 	/* Freeze the pipe again after use */
+ 242:Lib/StillImageCommands.c **** 	Pipe_Freeze();
+ 243:Lib/StillImageCommands.c **** 
+ 244:Lib/StillImageCommands.c **** 	return ErrorCode;
+ 245:Lib/StillImageCommands.c **** }
+ 558               		.loc 1 245 0
+ 559 0022 DF91      		pop r29
+ 560 0024 CF91      		pop r28
+ 561 0026 0895      		ret
+ 562               		.cfi_endproc
+ 563               	.LFE151:
+ 565               		.section	.text.SImage_IsEventReceived,"ax",@progbits
+ 566               	.global	SImage_IsEventReceived
+ 568               	SImage_IsEventReceived:
+ 569               	.LFB152:
+ 246:Lib/StillImageCommands.c **** 
+ 247:Lib/StillImageCommands.c **** /** Function to test if a PIMA event block is waiting to be read in from the attached device.
+ 248:Lib/StillImageCommands.c ****  *
+ 249:Lib/StillImageCommands.c ****  *  \return True if an event is waiting to be read in from the device, false otherwise
+ 250:Lib/StillImageCommands.c ****  */
+ 251:Lib/StillImageCommands.c **** bool SImage_IsEventReceived(void)
+ 252:Lib/StillImageCommands.c **** {
+ 570               		.loc 1 252 0
+ 571               		.cfi_startproc
+ 572               	/* prologue: function */
+ 573               	/* frame size = 0 */
+ 574               	/* stack size = 0 */
+ 575               	.L__stack_usage = 0
+ 576               	.LVL40:
+ 577               	.LBB158:
+ 578               	.LBB159:
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 579               		.loc 2 228 0
+ 580 0000 83E0      		ldi r24,lo8(3)
+ 581 0002 8093 A700 		sts 167,r24
+ 582               	.LVL41:
+ 583               	.LBE159:
+ 584               	.LBE158:
+ 585               	.LBB160:
+ 586               	.LBB161:
+ 374:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 587               		.loc 2 374 0
+ 588 0006 8091 A900 		lds r24,169
+ 589 000a 8F7B      		andi r24,lo8(-65)
+ 590 000c 8093 A900 		sts 169,r24
+ 591               	.LBE161:
+ 592               	.LBE160:
+ 593               	.LBB162:
+ 594               	.LBB163:
+ 206:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 595               		.loc 2 206 0
+ 596 0010 2091 F600 		lds r18,246
+ 597 0014 3091 F700 		lds r19,246+1
+ 598               	.LVL42:
+ 599               	.LBE163:
+ 600               	.LBE162:
+ 601               	.LBB164:
+ 602               	.LBB165:
+ 381:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 603               		.loc 2 381 0
+ 604 0018 8091 A900 		lds r24,169
+ 605 001c 8064      		ori r24,lo8(64)
+ 606 001e 8093 A900 		sts 169,r24
+ 607               	.LBE165:
+ 608               	.LBE164:
+ 253:Lib/StillImageCommands.c **** 	bool IsEventReceived = false;
+ 254:Lib/StillImageCommands.c **** 
+ 255:Lib/StillImageCommands.c **** 	/* Unfreeze the Event pipe */
+ 256:Lib/StillImageCommands.c **** 	Pipe_SelectPipe(SIMAGE_EVENTS_PIPE);
+ 257:Lib/StillImageCommands.c **** 	Pipe_Unfreeze();
+ 258:Lib/StillImageCommands.c **** 
+ 259:Lib/StillImageCommands.c **** 	/* If the pipe contains data, an event has been received */
+ 260:Lib/StillImageCommands.c **** 	if (Pipe_BytesInPipe())
+ 261:Lib/StillImageCommands.c **** 	  IsEventReceived = true;
+ 262:Lib/StillImageCommands.c **** 
+ 263:Lib/StillImageCommands.c **** 	/* Freeze the pipe after use */
+ 264:Lib/StillImageCommands.c **** 	Pipe_Freeze();
+ 265:Lib/StillImageCommands.c **** 
+ 266:Lib/StillImageCommands.c **** 	return IsEventReceived;
+ 609               		.loc 1 266 0
+ 610 0022 81E0      		ldi r24,lo8(1)
+ 611 0024 232B      		or r18,r19
+ 612 0026 01F4      		brne .L34
+ 613 0028 80E0      		ldi r24,0
+ 614               	.L34:
+ 267:Lib/StillImageCommands.c **** }
+ 615               		.loc 1 267 0
+ 616 002a 0895      		ret
+ 617               		.cfi_endproc
+ 618               	.LFE152:
+ 620               		.comm	PIMA_EventBlock,24,1
+ 621               		.comm	PIMA_ReceivedBlock,24,1
+ 622               		.comm	PIMA_SendBlock,24,1
+ 623               		.text
+ 624               	.Letext0:
+ 625               		.file 4 "/usr/lib/avr/include/stdint.h"
+ 626               		.file 5 "../../../../LUFA/Drivers/USB/Core/AVR8/../Host.h"
+ 627               		.file 6 "../../../../LUFA/Drivers/USB/Core/AVR8/../PipeStream.h"
+ 628               		.file 7 "/usr/lib/avr/include/stdio.h"
+ 629               		.file 8 "../../../../LUFA/Drivers/USB/Class/Host/../Common/StillImage.h"
+ 630               		.file 9 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+ 631               		.file 10 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 632               		.file 11 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/PipeStream_AVR8.h"
+ 633               		.file 12 "../../../../LUFA/Drivers/USB/Core/AVR8/../HostStandardReq.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 StillImageCommands.c
+     /tmp/ccIeJnxg.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccIeJnxg.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccIeJnxg.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccIeJnxg.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccIeJnxg.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccIeJnxg.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccIeJnxg.s:14     .text.SImage_SendBlockHeader:0000000000000000 SImage_SendBlockHeader
+                            *COM*:0000000000000018 PIMA_SendBlock
+     /tmp/ccIeJnxg.s:96     .text.SImage_ReceiveEventHeader:0000000000000000 SImage_ReceiveEventHeader
+                            *COM*:0000000000000018 PIMA_EventBlock
+     /tmp/ccIeJnxg.s:169    .text.SImage_ReceiveBlockHeader:0000000000000000 SImage_ReceiveBlockHeader
+                            *COM*:0000000000000018 PIMA_ReceivedBlock
+     /tmp/ccIeJnxg.s:438    .text.SImage_SendData:0000000000000000 SImage_SendData
+     /tmp/ccIeJnxg.s:508    .text.SImage_ReadData:0000000000000000 SImage_ReadData
+     /tmp/ccIeJnxg.s:568    .text.SImage_IsEventReceived:0000000000000000 SImage_IsEventReceived
+
+UNDEFINED SYMBOLS
+Pipe_Write_Stream_LE
+Pipe_Read_Stream_LE
+USB_Host_ClearEndpointStall
+USB_HostState
+__do_clear_bss

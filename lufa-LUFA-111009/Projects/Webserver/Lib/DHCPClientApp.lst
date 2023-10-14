@@ -1,0 +1,906 @@
+   1               		.file	"DHCPClientApp.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.DHCPClientApp_FillDHCPHeader,"ax",@progbits
+  13               	DHCPClientApp_FillDHCPHeader:
+  14               	.LFB224:
+  15               		.file 1 "Lib/DHCPClientApp.c"
+   1:Lib/DHCPClientApp.c **** /*
+   2:Lib/DHCPClientApp.c ****              LUFA Library
+   3:Lib/DHCPClientApp.c ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/DHCPClientApp.c **** 
+   5:Lib/DHCPClientApp.c ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/DHCPClientApp.c ****            www.lufa-lib.org
+   7:Lib/DHCPClientApp.c **** */
+   8:Lib/DHCPClientApp.c **** 
+   9:Lib/DHCPClientApp.c **** /*
+  10:Lib/DHCPClientApp.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/DHCPClientApp.c **** 
+  12:Lib/DHCPClientApp.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/DHCPClientApp.c ****   software and its documentation for any purpose is hereby granted
+  14:Lib/DHCPClientApp.c ****   without fee, provided that the above copyright notice appear in
+  15:Lib/DHCPClientApp.c ****   all copies and that both that the copyright notice and this
+  16:Lib/DHCPClientApp.c ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/DHCPClientApp.c ****   documentation, and that the name of the author not be used in
+  18:Lib/DHCPClientApp.c ****   advertising or publicity pertaining to distribution of the
+  19:Lib/DHCPClientApp.c ****   software without specific, written prior permission.
+  20:Lib/DHCPClientApp.c **** 
+  21:Lib/DHCPClientApp.c ****   The author disclaim all warranties with regard to this
+  22:Lib/DHCPClientApp.c ****   software, including all implied warranties of merchantability
+  23:Lib/DHCPClientApp.c ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/DHCPClientApp.c ****   special, indirect or consequential damages or any damages
+  25:Lib/DHCPClientApp.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/DHCPClientApp.c ****   in an action of contract, negligence or other tortious action,
+  27:Lib/DHCPClientApp.c ****   arising out of or in connection with the use or performance of
+  28:Lib/DHCPClientApp.c ****   this software.
+  29:Lib/DHCPClientApp.c **** */
+  30:Lib/DHCPClientApp.c **** 
+  31:Lib/DHCPClientApp.c **** #if defined(ENABLE_DHCP_CLIENT) || defined(__DOXYGEN__)
+  32:Lib/DHCPClientApp.c **** 
+  33:Lib/DHCPClientApp.c **** /** \file
+  34:Lib/DHCPClientApp.c ****  *
+  35:Lib/DHCPClientApp.c ****  *  DHCP Client Application. When connected to the uIP stack, this will retrieve IP configuration s
+  36:Lib/DHCPClientApp.c ****  *  DHCP server on the network.
+  37:Lib/DHCPClientApp.c ****  */
+  38:Lib/DHCPClientApp.c **** 
+  39:Lib/DHCPClientApp.c **** #define  INCLUDE_FROM_DHCPCLIENTAPP_C
+  40:Lib/DHCPClientApp.c **** #include "DHCPClientApp.h"
+  41:Lib/DHCPClientApp.c **** 
+  42:Lib/DHCPClientApp.c **** /** Initialization function for the DHCP client. */
+  43:Lib/DHCPClientApp.c **** void DHCPClientApp_Init(void)
+  44:Lib/DHCPClientApp.c **** {
+  45:Lib/DHCPClientApp.c **** 	/* Create a new UDP connection to the DHCP server port for the DHCP solicitation */
+  46:Lib/DHCPClientApp.c **** 	struct uip_udp_conn* Connection = uip_udp_new(&uip_broadcast_addr, HTONS(DHCP_SERVER_PORT));
+  47:Lib/DHCPClientApp.c **** 
+  48:Lib/DHCPClientApp.c **** 	/* If the connection was successfully created, bind it to the local DHCP client port */
+  49:Lib/DHCPClientApp.c **** 	if (Connection != NULL)
+  50:Lib/DHCPClientApp.c **** 	{
+  51:Lib/DHCPClientApp.c **** 		uip_udp_appstate_t* const AppState = &Connection->appstate;
+  52:Lib/DHCPClientApp.c **** 		uip_udp_bind(Connection, HTONS(DHCP_CLIENT_PORT));
+  53:Lib/DHCPClientApp.c **** 
+  54:Lib/DHCPClientApp.c **** 		/* Set the initial client state */
+  55:Lib/DHCPClientApp.c **** 		AppState->DHCPClient.CurrentState = DHCP_STATE_SendDiscover;
+  56:Lib/DHCPClientApp.c **** 
+  57:Lib/DHCPClientApp.c **** 		/* Set timeout period to half a second for a DHCP server to respond */
+  58:Lib/DHCPClientApp.c **** 		timer_set(&AppState->DHCPClient.Timeout, CLOCK_SECOND / 2);
+  59:Lib/DHCPClientApp.c **** 	}
+  60:Lib/DHCPClientApp.c **** }
+  61:Lib/DHCPClientApp.c **** 
+  62:Lib/DHCPClientApp.c **** /** uIP stack application callback for the DHCP client. This function must be called each time the 
+  63:Lib/DHCPClientApp.c ****  *  needs a UDP packet to be processed.
+  64:Lib/DHCPClientApp.c ****  */
+  65:Lib/DHCPClientApp.c **** void DHCPClientApp_Callback(void)
+  66:Lib/DHCPClientApp.c **** {
+  67:Lib/DHCPClientApp.c **** 	uip_udp_appstate_t* const AppState    = &uip_udp_conn->appstate;
+  68:Lib/DHCPClientApp.c **** 	DHCP_Header_t*      const AppData     = (DHCP_Header_t*)uip_appdata;
+  69:Lib/DHCPClientApp.c **** 	uint16_t                  AppDataSize = 0;
+  70:Lib/DHCPClientApp.c **** 
+  71:Lib/DHCPClientApp.c **** 	switch (AppState->DHCPClient.CurrentState)
+  72:Lib/DHCPClientApp.c **** 	{
+  73:Lib/DHCPClientApp.c **** 		case DHCP_STATE_SendDiscover:
+  74:Lib/DHCPClientApp.c **** 			/* Clear all DHCP settings, reset client IP address */
+  75:Lib/DHCPClientApp.c **** 			memset(&AppState->DHCPClient.DHCPOffer_Data, 0x00, sizeof(AppState->DHCPClient.DHCPOffer_Data));
+  76:Lib/DHCPClientApp.c **** 			uip_sethostaddr((uip_ipaddr_t*)&AppState->DHCPClient.DHCPOffer_Data.AllocatedIP);
+  77:Lib/DHCPClientApp.c **** 
+  78:Lib/DHCPClientApp.c **** 			/* Fill out the DHCP response header */
+  79:Lib/DHCPClientApp.c **** 			AppDataSize += DHCPClientApp_FillDHCPHeader(AppData, DHCP_DISCOVER, AppState);
+  80:Lib/DHCPClientApp.c **** 
+  81:Lib/DHCPClientApp.c **** 			/* Add the required DHCP options list to the packet */
+  82:Lib/DHCPClientApp.c **** 			uint8_t RequiredOptionList[] = {DHCP_OPTION_SUBNET_MASK, DHCP_OPTION_ROUTER, DHCP_OPTION_DNS_SER
+  83:Lib/DHCPClientApp.c **** 			AppDataSize += DHCPCommon_SetOption(AppData->Options, DHCP_OPTION_REQ_LIST, sizeof(RequiredOptio
+  84:Lib/DHCPClientApp.c **** 			                                    RequiredOptionList);
+  85:Lib/DHCPClientApp.c **** 
+  86:Lib/DHCPClientApp.c **** 			/* Send the DHCP DISCOVER packet */
+  87:Lib/DHCPClientApp.c **** 			uip_udp_send(AppDataSize);
+  88:Lib/DHCPClientApp.c **** 
+  89:Lib/DHCPClientApp.c **** 			/* Reset the timeout timer, progress to next state */
+  90:Lib/DHCPClientApp.c **** 			timer_reset(&AppState->DHCPClient.Timeout);
+  91:Lib/DHCPClientApp.c **** 			AppState->DHCPClient.CurrentState = DHCP_STATE_WaitForOffer;
+  92:Lib/DHCPClientApp.c **** 
+  93:Lib/DHCPClientApp.c **** 			break;
+  94:Lib/DHCPClientApp.c **** 		case DHCP_STATE_WaitForOffer:
+  95:Lib/DHCPClientApp.c **** 			if (!(uip_newdata()))
+  96:Lib/DHCPClientApp.c **** 			{
+  97:Lib/DHCPClientApp.c **** 				/* Check if the DHCP timeout period has expired while waiting for a response */
+  98:Lib/DHCPClientApp.c **** 				if (timer_expired(&AppState->DHCPClient.Timeout))
+  99:Lib/DHCPClientApp.c **** 				  AppState->DHCPClient.CurrentState = DHCP_STATE_SendDiscover;
+ 100:Lib/DHCPClientApp.c **** 
+ 101:Lib/DHCPClientApp.c **** 				break;
+ 102:Lib/DHCPClientApp.c **** 			}
+ 103:Lib/DHCPClientApp.c **** 
+ 104:Lib/DHCPClientApp.c **** 			uint8_t OfferResponse_MessageType;
+ 105:Lib/DHCPClientApp.c **** 			if ((AppData->TransactionID == DHCP_TRANSACTION_ID) &&
+ 106:Lib/DHCPClientApp.c **** 			    DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_MSG_TYPE, &OfferResponse_MessageType) &&
+ 107:Lib/DHCPClientApp.c **** 			    (OfferResponse_MessageType == DHCP_OFFER))
+ 108:Lib/DHCPClientApp.c **** 			{
+ 109:Lib/DHCPClientApp.c **** 				/* Received a DHCP offer for an IP address, copy over values for later request */
+ 110:Lib/DHCPClientApp.c **** 				memcpy(&AppState->DHCPClient.DHCPOffer_Data.AllocatedIP, &AppData->YourIP, sizeof(uip_ipaddr_t)
+ 111:Lib/DHCPClientApp.c **** 				DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_SUBNET_MASK, &AppState->DHCPClient.DHCPOffer
+ 112:Lib/DHCPClientApp.c **** 				DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_ROUTER,      &AppState->DHCPClient.DHCPOffer
+ 113:Lib/DHCPClientApp.c **** 				DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_SERVER_ID,   &AppState->DHCPClient.DHCPOffer
+ 114:Lib/DHCPClientApp.c **** 
+ 115:Lib/DHCPClientApp.c **** 				timer_reset(&AppState->DHCPClient.Timeout);
+ 116:Lib/DHCPClientApp.c **** 				AppState->DHCPClient.CurrentState = DHCP_STATE_SendRequest;
+ 117:Lib/DHCPClientApp.c **** 			}
+ 118:Lib/DHCPClientApp.c **** 
+ 119:Lib/DHCPClientApp.c **** 			break;
+ 120:Lib/DHCPClientApp.c **** 		case DHCP_STATE_SendRequest:
+ 121:Lib/DHCPClientApp.c **** 			/* Fill out the DHCP response header */
+ 122:Lib/DHCPClientApp.c **** 			AppDataSize += DHCPClientApp_FillDHCPHeader(AppData, DHCP_REQUEST, AppState);
+ 123:Lib/DHCPClientApp.c **** 
+ 124:Lib/DHCPClientApp.c **** 			/* Add the DHCP REQUESTED IP ADDRESS option to the packet */
+ 125:Lib/DHCPClientApp.c **** 			AppDataSize += DHCPCommon_SetOption(AppData->Options, DHCP_OPTION_REQ_IPADDR, sizeof(uip_ipaddr_
+ 126:Lib/DHCPClientApp.c **** 			                                    &AppState->DHCPClient.DHCPOffer_Data.AllocatedIP);
+ 127:Lib/DHCPClientApp.c **** 
+ 128:Lib/DHCPClientApp.c **** 			/* Add the DHCP SERVER IP ADDRESS option to the packet */
+ 129:Lib/DHCPClientApp.c **** 			AppDataSize += DHCPCommon_SetOption(AppData->Options, DHCP_OPTION_SERVER_ID, sizeof(uip_ipaddr_t
+ 130:Lib/DHCPClientApp.c **** 			                                    &AppState->DHCPClient.DHCPOffer_Data.ServerIP);
+ 131:Lib/DHCPClientApp.c **** 
+ 132:Lib/DHCPClientApp.c **** 			/* Send the DHCP REQUEST packet */
+ 133:Lib/DHCPClientApp.c **** 			uip_udp_send(AppDataSize);
+ 134:Lib/DHCPClientApp.c **** 
+ 135:Lib/DHCPClientApp.c **** 			/* Reset the timeout timer, progress to next state */
+ 136:Lib/DHCPClientApp.c **** 			timer_reset(&AppState->DHCPClient.Timeout);
+ 137:Lib/DHCPClientApp.c **** 			AppState->DHCPClient.CurrentState = DHCP_STATE_WaitForACK;
+ 138:Lib/DHCPClientApp.c **** 
+ 139:Lib/DHCPClientApp.c **** 			break;
+ 140:Lib/DHCPClientApp.c **** 		case DHCP_STATE_WaitForACK:
+ 141:Lib/DHCPClientApp.c **** 			if (!(uip_newdata()))
+ 142:Lib/DHCPClientApp.c **** 			{
+ 143:Lib/DHCPClientApp.c **** 				/* Check if the DHCP timeout period has expired while waiting for a response */
+ 144:Lib/DHCPClientApp.c **** 				if (timer_expired(&AppState->DHCPClient.Timeout))
+ 145:Lib/DHCPClientApp.c **** 				  AppState->DHCPClient.CurrentState = DHCP_STATE_SendDiscover;
+ 146:Lib/DHCPClientApp.c **** 
+ 147:Lib/DHCPClientApp.c **** 				break;
+ 148:Lib/DHCPClientApp.c **** 			}
+ 149:Lib/DHCPClientApp.c **** 
+ 150:Lib/DHCPClientApp.c **** 			uint8_t RequestResponse_MessageType;
+ 151:Lib/DHCPClientApp.c **** 			if ((AppData->TransactionID == DHCP_TRANSACTION_ID) &&
+ 152:Lib/DHCPClientApp.c **** 			    DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_MSG_TYPE, &RequestResponse_MessageType) &
+ 153:Lib/DHCPClientApp.c **** 			    (RequestResponse_MessageType == DHCP_ACK))
+ 154:Lib/DHCPClientApp.c **** 			{
+ 155:Lib/DHCPClientApp.c **** 				/* Set the new network parameters from the DHCP server */
+ 156:Lib/DHCPClientApp.c **** 				uip_sethostaddr((uip_ipaddr_t*)&AppState->DHCPClient.DHCPOffer_Data.AllocatedIP);
+ 157:Lib/DHCPClientApp.c **** 				uip_setnetmask((uip_ipaddr_t*)&AppState->DHCPClient.DHCPOffer_Data.Netmask);
+ 158:Lib/DHCPClientApp.c **** 				uip_setdraddr((uip_ipaddr_t*)&AppState->DHCPClient.DHCPOffer_Data.GatewayIP);
+ 159:Lib/DHCPClientApp.c **** 
+ 160:Lib/DHCPClientApp.c **** 				AppState->DHCPClient.CurrentState = DHCP_STATE_AddressLeased;
+ 161:Lib/DHCPClientApp.c **** 			}
+ 162:Lib/DHCPClientApp.c **** 
+ 163:Lib/DHCPClientApp.c **** 			break;
+ 164:Lib/DHCPClientApp.c **** 	}
+ 165:Lib/DHCPClientApp.c **** }
+ 166:Lib/DHCPClientApp.c **** 
+ 167:Lib/DHCPClientApp.c **** /** Fills the DHCP packet response with the appropriate BOOTP header for DHCP. This fills out all t
+ 168:Lib/DHCPClientApp.c ****  *  fields, leaving only the additional DHCP options to be added to the packet before it is sent to
+ 169:Lib/DHCPClientApp.c ****  *
+ 170:Lib/DHCPClientApp.c ****  *  \param[out] DHCPHeader       Location in the packet buffer where the BOOTP header should be wri
+ 171:Lib/DHCPClientApp.c ****  *  \param[in]  DHCPMessageType  DHCP Message type, such as DHCP_DISCOVER
+ 172:Lib/DHCPClientApp.c ****  *  \param[in]  AppState         Application state of the current UDP connection
+ 173:Lib/DHCPClientApp.c ****  *
+ 174:Lib/DHCPClientApp.c ****  *  \return Size in bytes of the created DHCP packet
+ 175:Lib/DHCPClientApp.c ****  */
+ 176:Lib/DHCPClientApp.c **** static uint16_t DHCPClientApp_FillDHCPHeader(DHCP_Header_t* const DHCPHeader,
+ 177:Lib/DHCPClientApp.c ****                                              const uint8_t DHCPMessageType,
+ 178:Lib/DHCPClientApp.c ****                                              uip_udp_appstate_t* const AppState)
+ 179:Lib/DHCPClientApp.c **** {
+  16               		.loc 1 179 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19 0000 0F93      		push r16
+  20               	.LCFI0:
+  21               		.cfi_def_cfa_offset 3
+  22               		.cfi_offset 16, -2
+  23 0002 1F93      		push r17
+  24               	.LCFI1:
+  25               		.cfi_def_cfa_offset 4
+  26               		.cfi_offset 17, -3
+  27 0004 CF93      		push r28
+  28               	.LCFI2:
+  29               		.cfi_def_cfa_offset 5
+  30               		.cfi_offset 28, -4
+  31 0006 DF93      		push r29
+  32               	.LCFI3:
+  33               		.cfi_def_cfa_offset 6
+  34               		.cfi_offset 29, -5
+  35               	/* prologue: function */
+  36               	/* frame size = 0 */
+  37               	/* stack size = 4 */
+  38               	.L__stack_usage = 4
+  39 0008 EC01      		movw r28,r24
+ 180:Lib/DHCPClientApp.c **** 	/* Erase existing packet data so that we start will all 0x00 DHCP header data */
+ 181:Lib/DHCPClientApp.c ****  	memset(DHCPHeader, 0, sizeof(DHCP_Header_t));
+  40               		.loc 1 181 0
+  41 000a 80EF      		ldi r24,lo8(-16)
+  42               	.LVL1:
+  43 000c FE01      		movw r30,r28
+  44               		0:
+  45 000e 1192      		st Z+,__zero_reg__
+  46 0010 8A95      		dec r24
+  47 0012 01F4      		brne 0b
+ 182:Lib/DHCPClientApp.c **** 
+ 183:Lib/DHCPClientApp.c **** 	/* Fill out the DHCP packet header */
+ 184:Lib/DHCPClientApp.c **** 	DHCPHeader->Operation             = DHCP_OP_BOOTREQUEST;
+  48               		.loc 1 184 0
+  49 0014 81E0      		ldi r24,lo8(1)
+  50 0016 8883      		st Y,r24
+ 185:Lib/DHCPClientApp.c **** 	DHCPHeader->HardwareType          = DHCP_HTYPE_ETHERNET;
+  51               		.loc 1 185 0
+  52 0018 8983      		std Y+1,r24
+ 186:Lib/DHCPClientApp.c **** 	DHCPHeader->HardwareAddressLength = sizeof(MACAddress);
+  53               		.loc 1 186 0
+  54 001a 96E0      		ldi r25,lo8(6)
+  55 001c 9A83      		std Y+2,r25
+ 187:Lib/DHCPClientApp.c **** 	DHCPHeader->Hops                  = 0;
+  56               		.loc 1 187 0
+  57 001e 1B82      		std Y+3,__zero_reg__
+ 188:Lib/DHCPClientApp.c **** 	DHCPHeader->TransactionID         = DHCP_TRANSACTION_ID;
+  58               		.loc 1 188 0
+  59 0020 06E6      		ldi r16,lo8(102)
+  60 0022 14E5      		ldi r17,lo8(84)
+  61 0024 24E2      		ldi r18,lo8(36)
+  62 0026 33E1      		ldi r19,lo8(19)
+  63 0028 0C83      		std Y+4,r16
+  64 002a 1D83      		std Y+5,r17
+  65 002c 2E83      		std Y+6,r18
+  66 002e 3F83      		std Y+7,r19
+ 189:Lib/DHCPClientApp.c **** 	DHCPHeader->ElapsedSeconds        = 0;
+  67               		.loc 1 189 0
+  68 0030 1986      		std Y+9,__zero_reg__
+  69 0032 1886      		std Y+8,__zero_reg__
+ 190:Lib/DHCPClientApp.c **** 	DHCPHeader->Flags                 = HTONS(BOOTP_BROADCAST);
+  70               		.loc 1 190 0
+  71 0034 20E8      		ldi r18,lo8(-128)
+  72 0036 30E0      		ldi r19,0
+  73 0038 3B87      		std Y+11,r19
+  74 003a 2A87      		std Y+10,r18
+ 191:Lib/DHCPClientApp.c **** 	memcpy(&DHCPHeader->ClientIP,     &uip_hostaddr,        sizeof(uip_ipaddr_t));
+  75               		.loc 1 191 0
+  76 003c 0091 0000 		lds r16,uip_hostaddr
+  77 0040 1091 0000 		lds r17,uip_hostaddr+1
+  78 0044 2091 0000 		lds r18,uip_hostaddr+2
+  79 0048 3091 0000 		lds r19,uip_hostaddr+3
+  80 004c 0C87      		std Y+12,r16
+  81 004e 1D87      		std Y+13,r17
+  82 0050 2E87      		std Y+14,r18
+  83 0052 3F87      		std Y+15,r19
+ 192:Lib/DHCPClientApp.c **** 	memcpy(&DHCPHeader->YourIP,       &AppState->DHCPClient.DHCPOffer_Data.AllocatedIP, sizeof(uip_ipa
+  84               		.loc 1 192 0
+  85 0054 DE01      		movw r26,r28
+  86 0056 5096      		adiw r26,16
+  87 0058 FA01      		movw r30,r20
+  88 005a 3596      		adiw r30,5
+  89 005c 94E0      		ldi r25,lo8(4)
+  90               		0:
+  91 005e 0190      		ld r0,Z+
+  92 0060 0D92      		st X+,r0
+  93 0062 9A95      		dec r25
+  94 0064 01F4      		brne 0b
+ 193:Lib/DHCPClientApp.c **** 	memcpy(&DHCPHeader->NextServerIP, &AppState->DHCPClient.DHCPOffer_Data.ServerIP,    sizeof(uip_ipa
+  95               		.loc 1 193 0
+  96 0066 DE01      		movw r26,r28
+  97 0068 5496      		adiw r26,20
+  98 006a FA01      		movw r30,r20
+  99 006c 7196      		adiw r30,17
+ 100 006e 94E0      		ldi r25,lo8(4)
+ 101               		0:
+ 102 0070 0190      		ld r0,Z+
+ 103 0072 0D92      		st X+,r0
+ 104 0074 9A95      		dec r25
+ 105 0076 01F4      		brne 0b
+ 194:Lib/DHCPClientApp.c **** 	memcpy(&DHCPHeader->ClientHardwareAddress, &MACAddress, sizeof(struct uip_eth_addr));
+ 106               		.loc 1 194 0
+ 107 0078 96E0      		ldi r25,lo8(6)
+ 108 007a E0E0      		ldi r30,lo8(MACAddress)
+ 109 007c F0E0      		ldi r31,hi8(MACAddress)
+ 110 007e DE01      		movw r26,r28
+ 111 0080 5C96      		adiw r26,28
+ 112               		0:
+ 113 0082 0190      		ld r0,Z+
+ 114 0084 0D92      		st X+,r0
+ 115 0086 9A95      		dec r25
+ 116 0088 01F4      		brne 0b
+ 195:Lib/DHCPClientApp.c **** 	DHCPHeader->Cookie                = DHCP_MAGIC_COOKIE;
+ 117               		.loc 1 195 0
+ 118 008a FE01      		movw r30,r28
+ 119 008c E451      		subi r30,20
+ 120 008e FF4F      		sbci r31,-1
+ 121 0090 03E6      		ldi r16,lo8(99)
+ 122 0092 12E8      		ldi r17,lo8(-126)
+ 123 0094 23E5      		ldi r18,lo8(83)
+ 124 0096 33E6      		ldi r19,lo8(99)
+ 125 0098 0083      		st Z,r16
+ 126 009a 1183      		std Z+1,r17
+ 127 009c 2283      		std Z+2,r18
+ 128 009e 3383      		std Z+3,r19
+ 196:Lib/DHCPClientApp.c **** 
+ 197:Lib/DHCPClientApp.c **** 	/* Add a DHCP message type and terminator options to the start of the DHCP options field */
+ 198:Lib/DHCPClientApp.c **** 	DHCPHeader->Options[0]            = DHCP_OPTION_MSG_TYPE;
+ 129               		.loc 1 198 0
+ 130 00a0 3496      		adiw r30,4
+ 131 00a2 95E3      		ldi r25,lo8(53)
+ 132 00a4 9083      		st Z,r25
+ 199:Lib/DHCPClientApp.c **** 	DHCPHeader->Options[1]            = 1;
+ 133               		.loc 1 199 0
+ 134 00a6 3196      		adiw r30,1
+ 135 00a8 8083      		st Z,r24
+ 200:Lib/DHCPClientApp.c **** 	DHCPHeader->Options[2]            = DHCPMessageType;
+ 136               		.loc 1 200 0
+ 137 00aa 3196      		adiw r30,1
+ 138 00ac 6083      		st Z,r22
+ 201:Lib/DHCPClientApp.c **** 	DHCPHeader->Options[3]            = DHCP_OPTION_END;
+ 139               		.loc 1 201 0
+ 140 00ae CD50      		subi r28,13
+ 141 00b0 DF4F      		sbci r29,-1
+ 142               	.LVL2:
+ 143 00b2 8FEF      		ldi r24,lo8(-1)
+ 144 00b4 8883      		st Y,r24
+ 202:Lib/DHCPClientApp.c **** 
+ 203:Lib/DHCPClientApp.c **** 	/* Calculate the total number of bytes added to the outgoing packet */
+ 204:Lib/DHCPClientApp.c **** 	return (sizeof(DHCP_Header_t) + 4);
+ 205:Lib/DHCPClientApp.c **** }
+ 145               		.loc 1 205 0
+ 146 00b6 84EF      		ldi r24,lo8(-12)
+ 147 00b8 90E0      		ldi r25,0
+ 148               	/* epilogue start */
+ 149 00ba DF91      		pop r29
+ 150 00bc CF91      		pop r28
+ 151               	.LVL3:
+ 152 00be 1F91      		pop r17
+ 153 00c0 0F91      		pop r16
+ 154 00c2 0895      		ret
+ 155               		.cfi_endproc
+ 156               	.LFE224:
+ 158               		.section	.text.DHCPClientApp_Init,"ax",@progbits
+ 159               	.global	DHCPClientApp_Init
+ 161               	DHCPClientApp_Init:
+ 162               	.LFB222:
+  44:Lib/DHCPClientApp.c **** 	/* Create a new UDP connection to the DHCP server port for the DHCP solicitation */
+ 163               		.loc 1 44 0
+ 164               		.cfi_startproc
+ 165               	/* prologue: function */
+ 166               	/* frame size = 0 */
+ 167               	/* stack size = 0 */
+ 168               	.L__stack_usage = 0
+  46:Lib/DHCPClientApp.c **** 
+ 169               		.loc 1 46 0
+ 170 0000 60E0      		ldi r22,0
+ 171 0002 73E4      		ldi r23,lo8(67)
+ 172 0004 80E0      		ldi r24,lo8(uip_broadcast_addr)
+ 173 0006 90E0      		ldi r25,hi8(uip_broadcast_addr)
+ 174 0008 0E94 0000 		call uip_udp_new
+ 175               	.LVL4:
+  49:Lib/DHCPClientApp.c **** 	{
+ 176               		.loc 1 49 0
+ 177 000c 0097      		sbiw r24,0
+ 178 000e 01F0      		breq .L2
+ 179               	.LVL5:
+ 180               	.LBB2:
+  52:Lib/DHCPClientApp.c **** 
+ 181               		.loc 1 52 0
+ 182 0010 20E0      		ldi r18,0
+ 183 0012 34E4      		ldi r19,lo8(68)
+ 184 0014 FC01      		movw r30,r24
+ 185 0016 3583      		std Z+5,r19
+ 186 0018 2483      		std Z+4,r18
+  55:Lib/DHCPClientApp.c **** 
+ 187               		.loc 1 55 0
+ 188 001a 1186      		std Z+9,__zero_reg__
+  58:Lib/DHCPClientApp.c **** 	}
+ 189               		.loc 1 58 0
+ 190 001c 62E3      		ldi r22,lo8(50)
+ 191 001e 70E0      		ldi r23,0
+ 192 0020 0A96      		adiw r24,10
+ 193               	.LVL6:
+ 194 0022 0C94 0000 		jmp timer_set
+ 195               	.LVL7:
+ 196               	.L2:
+ 197 0026 0895      		ret
+ 198               	.LBE2:
+ 199               		.cfi_endproc
+ 200               	.LFE222:
+ 202               		.section	.rodata
+ 203               	.LC0:
+ 204 0000 01        		.byte	1
+ 205 0001 03        		.byte	3
+ 206 0002 06        		.byte	6
+ 207               		.section	.text.DHCPClientApp_Callback,"ax",@progbits
+ 208               	.global	DHCPClientApp_Callback
+ 210               	DHCPClientApp_Callback:
+ 211               	.LFB223:
+  66:Lib/DHCPClientApp.c **** 	uip_udp_appstate_t* const AppState    = &uip_udp_conn->appstate;
+ 212               		.loc 1 66 0
+ 213               		.cfi_startproc
+ 214 0000 BF92      		push r11
+ 215               	.LCFI4:
+ 216               		.cfi_def_cfa_offset 3
+ 217               		.cfi_offset 11, -2
+ 218 0002 CF92      		push r12
+ 219               	.LCFI5:
+ 220               		.cfi_def_cfa_offset 4
+ 221               		.cfi_offset 12, -3
+ 222 0004 DF92      		push r13
+ 223               	.LCFI6:
+ 224               		.cfi_def_cfa_offset 5
+ 225               		.cfi_offset 13, -4
+ 226 0006 EF92      		push r14
+ 227               	.LCFI7:
+ 228               		.cfi_def_cfa_offset 6
+ 229               		.cfi_offset 14, -5
+ 230 0008 FF92      		push r15
+ 231               	.LCFI8:
+ 232               		.cfi_def_cfa_offset 7
+ 233               		.cfi_offset 15, -6
+ 234 000a 0F93      		push r16
+ 235               	.LCFI9:
+ 236               		.cfi_def_cfa_offset 8
+ 237               		.cfi_offset 16, -7
+ 238 000c 1F93      		push r17
+ 239               	.LCFI10:
+ 240               		.cfi_def_cfa_offset 9
+ 241               		.cfi_offset 17, -8
+ 242 000e CF93      		push r28
+ 243               	.LCFI11:
+ 244               		.cfi_def_cfa_offset 10
+ 245               		.cfi_offset 28, -9
+ 246 0010 DF93      		push r29
+ 247               	.LCFI12:
+ 248               		.cfi_def_cfa_offset 11
+ 249               		.cfi_offset 29, -10
+ 250 0012 00D0      		rcall .
+ 251 0014 1F92      		push __zero_reg__
+ 252               	.LCFI13:
+ 253               		.cfi_def_cfa_offset 14
+ 254 0016 CDB7      		in r28,__SP_L__
+ 255 0018 DEB7      		in r29,__SP_H__
+ 256               	.LCFI14:
+ 257               		.cfi_def_cfa_register 28
+ 258               	/* prologue: function */
+ 259               	/* frame size = 3 */
+ 260               	/* stack size = 12 */
+ 261               	.L__stack_usage = 12
+  67:Lib/DHCPClientApp.c **** 	DHCP_Header_t*      const AppData     = (DHCP_Header_t*)uip_appdata;
+ 262               		.loc 1 67 0
+ 263 001a 0091 0000 		lds r16,uip_udp_conn
+ 264 001e 1091 0000 		lds r17,uip_udp_conn+1
+ 265 0022 A801      		movw r20,r16
+ 266 0024 475F      		subi r20,-9
+ 267 0026 5F4F      		sbci r21,-1
+ 268               	.LVL8:
+  68:Lib/DHCPClientApp.c **** 	uint16_t                  AppDataSize = 0;
+ 269               		.loc 1 68 0
+ 270 0028 E090 0000 		lds r14,uip_appdata
+ 271 002c F090 0000 		lds r15,uip_appdata+1
+ 272               	.LVL9:
+  71:Lib/DHCPClientApp.c **** 	{
+ 273               		.loc 1 71 0
+ 274 0030 D801      		movw r26,r16
+ 275 0032 1996      		adiw r26,9
+ 276 0034 8C91      		ld r24,X
+ 277 0036 8130      		cpi r24,lo8(1)
+ 278 0038 01F4      		brne .+2
+ 279 003a 00C0      		rjmp .L7
+ 280 003c 00F0      		brlo .L8
+ 281 003e 8230      		cpi r24,lo8(2)
+ 282 0040 01F4      		brne .+2
+ 283 0042 00C0      		rjmp .L9
+ 284 0044 8330      		cpi r24,lo8(3)
+ 285 0046 01F4      		brne .+2
+ 286 0048 00C0      		rjmp .L10
+ 287 004a 00C0      		rjmp .L5
+ 288               	.L8:
+ 289               	.LBB3:
+  75:Lib/DHCPClientApp.c **** 			uip_sethostaddr((uip_ipaddr_t*)&AppState->DHCPClient.DHCPOffer_Data.AllocatedIP);
+ 290               		.loc 1 75 0
+ 291 004c F801      		movw r30,r16
+ 292 004e 3E96      		adiw r30,14
+ 293 0050 80E1      		ldi r24,lo8(16)
+ 294 0052 DF01      		movw r26,r30
+ 295               		0:
+ 296 0054 1D92      		st X+,__zero_reg__
+ 297 0056 8A95      		dec r24
+ 298 0058 01F4      		brne 0b
+  76:Lib/DHCPClientApp.c **** 
+ 299               		.loc 1 76 0
+ 300 005a F801      		movw r30,r16
+ 301 005c 8685      		ldd r24,Z+14
+ 302 005e 9785      		ldd r25,Z+15
+ 303 0060 A089      		ldd r26,Z+16
+ 304 0062 B189      		ldd r27,Z+17
+ 305 0064 8093 0000 		sts uip_hostaddr,r24
+ 306 0068 9093 0000 		sts uip_hostaddr+1,r25
+ 307 006c A093 0000 		sts uip_hostaddr+2,r26
+ 308 0070 B093 0000 		sts uip_hostaddr+3,r27
+  79:Lib/DHCPClientApp.c **** 
+ 309               		.loc 1 79 0
+ 310 0074 61E0      		ldi r22,lo8(1)
+ 311 0076 C701      		movw r24,r14
+ 312 0078 0E94 0000 		call DHCPClientApp_FillDHCPHeader
+ 313               	.LVL10:
+ 314 007c 6C01      		movw r12,r24
+ 315               	.LVL11:
+  82:Lib/DHCPClientApp.c **** 			AppDataSize += DHCPCommon_SetOption(AppData->Options, DHCP_OPTION_REQ_LIST, sizeof(RequiredOptio
+ 316               		.loc 1 82 0
+ 317 007e 8091 0000 		lds r24,.LC0
+ 318 0082 9091 0000 		lds r25,.LC0+1
+ 319 0086 A091 0000 		lds r26,.LC0+2
+ 320 008a 8983      		std Y+1,r24
+ 321 008c 9A83      		std Y+2,r25
+ 322 008e AB83      		std Y+3,r26
+  83:Lib/DHCPClientApp.c **** 			                                    RequiredOptionList);
+ 323               		.loc 1 83 0
+ 324 0090 9E01      		movw r18,r28
+ 325 0092 2F5F      		subi r18,-1
+ 326 0094 3F4F      		sbci r19,-1
+ 327 0096 43E0      		ldi r20,lo8(3)
+ 328 0098 67E3      		ldi r22,lo8(55)
+ 329 009a C701      		movw r24,r14
+ 330 009c 8051      		subi r24,16
+ 331 009e 9F4F      		sbci r25,-1
+ 332 00a0 0E94 0000 		call DHCPCommon_SetOption
+ 333               	.LVL12:
+  87:Lib/DHCPClientApp.c **** 
+ 334               		.loc 1 87 0
+ 335 00a4 B601      		movw r22,r12
+ 336 00a6 680F      		add r22,r24
+ 337 00a8 711D      		adc r23,__zero_reg__
+ 338               	.LVL13:
+ 339 00aa 8091 0000 		lds r24,uip_appdata
+ 340 00ae 9091 0000 		lds r25,uip_appdata+1
+ 341 00b2 0E94 0000 		call uip_send
+ 342               	.LVL14:
+  90:Lib/DHCPClientApp.c **** 			AppState->DHCPClient.CurrentState = DHCP_STATE_WaitForOffer;
+ 343               		.loc 1 90 0
+ 344 00b6 C801      		movw r24,r16
+ 345 00b8 0A96      		adiw r24,10
+ 346 00ba 0E94 0000 		call timer_reset
+ 347               	.LVL15:
+  91:Lib/DHCPClientApp.c **** 
+ 348               		.loc 1 91 0
+ 349 00be 81E0      		ldi r24,lo8(1)
+ 350 00c0 D801      		movw r26,r16
+ 351 00c2 1996      		adiw r26,9
+ 352 00c4 8C93      		st X,r24
+  93:Lib/DHCPClientApp.c **** 		case DHCP_STATE_WaitForOffer:
+ 353               		.loc 1 93 0
+ 354 00c6 00C0      		rjmp .L5
+ 355               	.LVL16:
+ 356               	.L7:
+  95:Lib/DHCPClientApp.c **** 			{
+ 357               		.loc 1 95 0
+ 358 00c8 8091 0000 		lds r24,uip_flags
+ 359 00cc 81FD      		sbrc r24,1
+ 360 00ce 00C0      		rjmp .L12
+  98:Lib/DHCPClientApp.c **** 				  AppState->DHCPClient.CurrentState = DHCP_STATE_SendDiscover;
+ 361               		.loc 1 98 0
+ 362 00d0 C801      		movw r24,r16
+ 363 00d2 0A96      		adiw r24,10
+ 364 00d4 0E94 0000 		call timer_expired
+ 365               	.LVL17:
+ 366 00d8 892B      		or r24,r25
+ 367 00da 01F4      		brne .+2
+ 368 00dc 00C0      		rjmp .L5
+  99:Lib/DHCPClientApp.c **** 
+ 369               		.loc 1 99 0
+ 370 00de F801      		movw r30,r16
+ 371 00e0 1186      		std Z+9,__zero_reg__
+ 372 00e2 00C0      		rjmp .L5
+ 373               	.LVL18:
+ 374               	.L12:
+ 105:Lib/DHCPClientApp.c **** 			    DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_MSG_TYPE, &OfferResponse_MessageType) &&
+ 375               		.loc 1 105 0
+ 376 00e4 F701      		movw r30,r14
+ 377 00e6 8481      		ldd r24,Z+4
+ 378 00e8 9581      		ldd r25,Z+5
+ 379 00ea A681      		ldd r26,Z+6
+ 380 00ec B781      		ldd r27,Z+7
+ 381 00ee 8636      		cpi r24,102
+ 382 00f0 9445      		sbci r25,84
+ 383 00f2 A442      		sbci r26,36
+ 384 00f4 B341      		sbci r27,19
+ 385 00f6 01F0      		breq .+2
+ 386 00f8 00C0      		rjmp .L5
+ 106:Lib/DHCPClientApp.c **** 			    (OfferResponse_MessageType == DHCP_OFFER))
+ 387               		.loc 1 106 0 discriminator 1
+ 388 00fa 6701      		movw r12,r14
+ 389 00fc 20EF      		ldi r18,-16
+ 390 00fe C20E      		add r12,r18
+ 391 0100 D11C      		adc r13,__zero_reg__
+ 392 0102 AE01      		movw r20,r28
+ 393               	.LVL19:
+ 394 0104 4F5F      		subi r20,-1
+ 395 0106 5F4F      		sbci r21,-1
+ 396 0108 65E3      		ldi r22,lo8(53)
+ 397 010a C601      		movw r24,r12
+ 398 010c 0E94 0000 		call DHCPCommon_GetOption
+ 399               	.LVL20:
+ 105:Lib/DHCPClientApp.c **** 			    DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_MSG_TYPE, &OfferResponse_MessageType) &&
+ 400               		.loc 1 105 0 discriminator 1
+ 401 0110 8823      		tst r24
+ 402 0112 01F4      		brne .+2
+ 403 0114 00C0      		rjmp .L5
+ 106:Lib/DHCPClientApp.c **** 			    (OfferResponse_MessageType == DHCP_OFFER))
+ 404               		.loc 1 106 0
+ 405 0116 B980      		ldd r11,Y+1
+ 406 0118 82E0      		ldi r24,lo8(2)
+ 407 011a B812      		cpse r11,r24
+ 408 011c 00C0      		rjmp .L5
+ 110:Lib/DHCPClientApp.c **** 				DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_SUBNET_MASK, &AppState->DHCPClient.DHCPOffer
+ 409               		.loc 1 110 0
+ 410 011e D801      		movw r26,r16
+ 411 0120 1E96      		adiw r26,14
+ 412 0122 F701      		movw r30,r14
+ 413 0124 7096      		adiw r30,16
+ 414 0126 84E0      		ldi r24,lo8(4)
+ 415               		0:
+ 416 0128 0190      		ld r0,Z+
+ 417 012a 0D92      		st X+,r0
+ 418 012c 8A95      		dec r24
+ 419 012e 01F4      		brne 0b
+ 111:Lib/DHCPClientApp.c **** 				DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_ROUTER,      &AppState->DHCPClient.DHCPOffer
+ 420               		.loc 1 111 0
+ 421 0130 A801      		movw r20,r16
+ 422 0132 4E5E      		subi r20,-18
+ 423 0134 5F4F      		sbci r21,-1
+ 424 0136 61E0      		ldi r22,lo8(1)
+ 425 0138 C601      		movw r24,r12
+ 426 013a 0E94 0000 		call DHCPCommon_GetOption
+ 427               	.LVL21:
+ 112:Lib/DHCPClientApp.c **** 				DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_SERVER_ID,   &AppState->DHCPClient.DHCPOffer
+ 428               		.loc 1 112 0
+ 429 013e A801      		movw r20,r16
+ 430 0140 4A5E      		subi r20,-22
+ 431 0142 5F4F      		sbci r21,-1
+ 432 0144 63E0      		ldi r22,lo8(3)
+ 433 0146 C601      		movw r24,r12
+ 434 0148 0E94 0000 		call DHCPCommon_GetOption
+ 435               	.LVL22:
+ 113:Lib/DHCPClientApp.c **** 
+ 436               		.loc 1 113 0
+ 437 014c A801      		movw r20,r16
+ 438 014e 465E      		subi r20,-26
+ 439 0150 5F4F      		sbci r21,-1
+ 440 0152 66E3      		ldi r22,lo8(54)
+ 441 0154 C601      		movw r24,r12
+ 442 0156 0E94 0000 		call DHCPCommon_GetOption
+ 443               	.LVL23:
+ 115:Lib/DHCPClientApp.c **** 				AppState->DHCPClient.CurrentState = DHCP_STATE_SendRequest;
+ 444               		.loc 1 115 0
+ 445 015a C801      		movw r24,r16
+ 446 015c 0A96      		adiw r24,10
+ 447 015e 0E94 0000 		call timer_reset
+ 448               	.LVL24:
+ 116:Lib/DHCPClientApp.c **** 			}
+ 449               		.loc 1 116 0
+ 450 0162 D801      		movw r26,r16
+ 451 0164 1996      		adiw r26,9
+ 452 0166 BC92      		st X,r11
+ 453 0168 00C0      		rjmp .L5
+ 454               	.LVL25:
+ 455               	.L9:
+ 122:Lib/DHCPClientApp.c **** 
+ 456               		.loc 1 122 0
+ 457 016a 63E0      		ldi r22,lo8(3)
+ 458 016c C701      		movw r24,r14
+ 459 016e 0E94 0000 		call DHCPClientApp_FillDHCPHeader
+ 460               	.LVL26:
+ 461 0172 6C01      		movw r12,r24
+ 462               	.LVL27:
+ 125:Lib/DHCPClientApp.c **** 			                                    &AppState->DHCPClient.DHCPOffer_Data.AllocatedIP);
+ 463               		.loc 1 125 0
+ 464 0174 B0EF      		ldi r27,-16
+ 465 0176 EB0E      		add r14,r27
+ 466 0178 F11C      		adc r15,__zero_reg__
+ 467               	.LVL28:
+ 126:Lib/DHCPClientApp.c **** 
+ 468               		.loc 1 126 0
+ 469 017a 9801      		movw r18,r16
+ 470 017c 225F      		subi r18,-14
+ 471 017e 3F4F      		sbci r19,-1
+ 125:Lib/DHCPClientApp.c **** 			                                    &AppState->DHCPClient.DHCPOffer_Data.AllocatedIP);
+ 472               		.loc 1 125 0
+ 473 0180 44E0      		ldi r20,lo8(4)
+ 474 0182 62E3      		ldi r22,lo8(50)
+ 475 0184 C701      		movw r24,r14
+ 476 0186 0E94 0000 		call DHCPCommon_SetOption
+ 477               	.LVL29:
+ 478 018a B82E      		mov r11,r24
+ 479               	.LVL30:
+ 130:Lib/DHCPClientApp.c **** 
+ 480               		.loc 1 130 0
+ 481 018c 9801      		movw r18,r16
+ 482 018e 265E      		subi r18,-26
+ 483 0190 3F4F      		sbci r19,-1
+ 129:Lib/DHCPClientApp.c **** 			                                    &AppState->DHCPClient.DHCPOffer_Data.ServerIP);
+ 484               		.loc 1 129 0
+ 485 0192 44E0      		ldi r20,lo8(4)
+ 486 0194 66E3      		ldi r22,lo8(54)
+ 487 0196 C701      		movw r24,r14
+ 488 0198 0E94 0000 		call DHCPCommon_SetOption
+ 489               	.LVL31:
+ 133:Lib/DHCPClientApp.c **** 
+ 490               		.loc 1 133 0
+ 491 019c 682F      		mov r22,r24
+ 492 019e 70E0      		ldi r23,0
+ 493 01a0 6B0D      		add r22,r11
+ 494 01a2 711D      		adc r23,__zero_reg__
+ 495 01a4 6C0D      		add r22,r12
+ 496 01a6 7D1D      		adc r23,r13
+ 497 01a8 8091 0000 		lds r24,uip_appdata
+ 498 01ac 9091 0000 		lds r25,uip_appdata+1
+ 499               	.LVL32:
+ 500 01b0 0E94 0000 		call uip_send
+ 501               	.LVL33:
+ 136:Lib/DHCPClientApp.c **** 			AppState->DHCPClient.CurrentState = DHCP_STATE_WaitForACK;
+ 502               		.loc 1 136 0
+ 503 01b4 C801      		movw r24,r16
+ 504 01b6 0A96      		adiw r24,10
+ 505 01b8 0E94 0000 		call timer_reset
+ 506               	.LVL34:
+ 137:Lib/DHCPClientApp.c **** 
+ 507               		.loc 1 137 0
+ 508 01bc 83E0      		ldi r24,lo8(3)
+ 509 01be F801      		movw r30,r16
+ 510 01c0 00C0      		rjmp .L25
+ 511               	.LVL35:
+ 512               	.L10:
+ 141:Lib/DHCPClientApp.c **** 			{
+ 513               		.loc 1 141 0
+ 514 01c2 8091 0000 		lds r24,uip_flags
+ 515 01c6 81FD      		sbrc r24,1
+ 516 01c8 00C0      		rjmp .L15
+ 144:Lib/DHCPClientApp.c **** 				  AppState->DHCPClient.CurrentState = DHCP_STATE_SendDiscover;
+ 517               		.loc 1 144 0
+ 518 01ca C801      		movw r24,r16
+ 519 01cc 0A96      		adiw r24,10
+ 520 01ce 0E94 0000 		call timer_expired
+ 521               	.LVL36:
+ 522 01d2 892B      		or r24,r25
+ 523 01d4 01F4      		brne .+2
+ 524 01d6 00C0      		rjmp .L5
+ 145:Lib/DHCPClientApp.c **** 
+ 525               		.loc 1 145 0
+ 526 01d8 D801      		movw r26,r16
+ 527 01da 1996      		adiw r26,9
+ 528 01dc 1C92      		st X,__zero_reg__
+ 529 01de 00C0      		rjmp .L5
+ 530               	.LVL37:
+ 531               	.L15:
+ 151:Lib/DHCPClientApp.c **** 			    DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_MSG_TYPE, &RequestResponse_MessageType) &
+ 532               		.loc 1 151 0
+ 533 01e0 F701      		movw r30,r14
+ 534 01e2 8481      		ldd r24,Z+4
+ 535 01e4 9581      		ldd r25,Z+5
+ 536 01e6 A681      		ldd r26,Z+6
+ 537 01e8 B781      		ldd r27,Z+7
+ 538 01ea 8636      		cpi r24,102
+ 539 01ec 9445      		sbci r25,84
+ 540 01ee A442      		sbci r26,36
+ 541 01f0 B341      		sbci r27,19
+ 542 01f2 01F4      		brne .L5
+ 152:Lib/DHCPClientApp.c **** 			    (RequestResponse_MessageType == DHCP_ACK))
+ 543               		.loc 1 152 0 discriminator 1
+ 544 01f4 AE01      		movw r20,r28
+ 545               	.LVL38:
+ 546 01f6 4F5F      		subi r20,-1
+ 547 01f8 5F4F      		sbci r21,-1
+ 548 01fa 65E3      		ldi r22,lo8(53)
+ 549 01fc C701      		movw r24,r14
+ 550 01fe 8051      		subi r24,16
+ 551 0200 9F4F      		sbci r25,-1
+ 552 0202 0E94 0000 		call DHCPCommon_GetOption
+ 553               	.LVL39:
+ 151:Lib/DHCPClientApp.c **** 			    DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_MSG_TYPE, &RequestResponse_MessageType) &
+ 554               		.loc 1 151 0 discriminator 1
+ 555 0206 8823      		tst r24
+ 556 0208 01F0      		breq .L5
+ 152:Lib/DHCPClientApp.c **** 			    (RequestResponse_MessageType == DHCP_ACK))
+ 557               		.loc 1 152 0
+ 558 020a 8981      		ldd r24,Y+1
+ 559 020c 8530      		cpi r24,lo8(5)
+ 560 020e 01F4      		brne .L5
+ 156:Lib/DHCPClientApp.c **** 				uip_setnetmask((uip_ipaddr_t*)&AppState->DHCPClient.DHCPOffer_Data.Netmask);
+ 561               		.loc 1 156 0
+ 562 0210 F801      		movw r30,r16
+ 563 0212 8685      		ldd r24,Z+14
+ 564 0214 9785      		ldd r25,Z+15
+ 565 0216 A089      		ldd r26,Z+16
+ 566 0218 B189      		ldd r27,Z+17
+ 567 021a 8093 0000 		sts uip_hostaddr,r24
+ 568 021e 9093 0000 		sts uip_hostaddr+1,r25
+ 569 0222 A093 0000 		sts uip_hostaddr+2,r26
+ 570 0226 B093 0000 		sts uip_hostaddr+3,r27
+ 157:Lib/DHCPClientApp.c **** 				uip_setdraddr((uip_ipaddr_t*)&AppState->DHCPClient.DHCPOffer_Data.GatewayIP);
+ 571               		.loc 1 157 0
+ 572 022a 8289      		ldd r24,Z+18
+ 573 022c 9389      		ldd r25,Z+19
+ 574 022e A489      		ldd r26,Z+20
+ 575 0230 B589      		ldd r27,Z+21
+ 576 0232 8093 0000 		sts uip_netmask,r24
+ 577 0236 9093 0000 		sts uip_netmask+1,r25
+ 578 023a A093 0000 		sts uip_netmask+2,r26
+ 579 023e B093 0000 		sts uip_netmask+3,r27
+ 158:Lib/DHCPClientApp.c **** 
+ 580               		.loc 1 158 0
+ 581 0242 8689      		ldd r24,Z+22
+ 582 0244 9789      		ldd r25,Z+23
+ 583 0246 A08D      		ldd r26,Z+24
+ 584 0248 B18D      		ldd r27,Z+25
+ 585 024a 8093 0000 		sts uip_draddr,r24
+ 586 024e 9093 0000 		sts uip_draddr+1,r25
+ 587 0252 A093 0000 		sts uip_draddr+2,r26
+ 588 0256 B093 0000 		sts uip_draddr+3,r27
+ 160:Lib/DHCPClientApp.c **** 			}
+ 589               		.loc 1 160 0
+ 590 025a 84E0      		ldi r24,lo8(4)
+ 591               	.LVL40:
+ 592               	.L25:
+ 593 025c 8187      		std Z+9,r24
+ 594               	.L5:
+ 595               	/* epilogue start */
+ 596               	.LBE3:
+ 165:Lib/DHCPClientApp.c **** 
+ 597               		.loc 1 165 0
+ 598 025e 0F90      		pop __tmp_reg__
+ 599 0260 0F90      		pop __tmp_reg__
+ 600 0262 0F90      		pop __tmp_reg__
+ 601 0264 DF91      		pop r29
+ 602 0266 CF91      		pop r28
+ 603 0268 1F91      		pop r17
+ 604 026a 0F91      		pop r16
+ 605               	.LVL41:
+ 606 026c FF90      		pop r15
+ 607 026e EF90      		pop r14
+ 608 0270 DF90      		pop r13
+ 609 0272 CF90      		pop r12
+ 610 0274 BF90      		pop r11
+ 611 0276 0895      		ret
+ 612               		.cfi_endproc
+ 613               	.LFE223:
+ 615               		.text
+ 616               	.Letext0:
+ 617               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 618               		.file 3 "Lib/uip/clock.h"
+ 619               		.file 4 "Lib/uip/timer.h"
+ 620               		.file 5 "Lib/uip/uipopt.h"
+ 621               		.file 6 "Lib/uip/uip.h"
+ 622               		.file 7 "./Lib/DHCPCommon.h"
+ 623               		.file 8 "../../LUFA/Drivers/USB/Core/USBTask.h"
+ 624               		.file 9 "Lib/../Lib/uIPManagement.h"
+ 625               		.file 10 "Lib/DHCPClientApp.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 DHCPClientApp.c
+     /tmp/ccICE5Wh.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccICE5Wh.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccICE5Wh.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccICE5Wh.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccICE5Wh.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccICE5Wh.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccICE5Wh.s:13     .text.DHCPClientApp_FillDHCPHeader:0000000000000000 DHCPClientApp_FillDHCPHeader
+     /tmp/ccICE5Wh.s:161    .text.DHCPClientApp_Init:0000000000000000 DHCPClientApp_Init
+     /tmp/ccICE5Wh.s:210    .text.DHCPClientApp_Callback:0000000000000000 DHCPClientApp_Callback
+
+UNDEFINED SYMBOLS
+uip_hostaddr
+MACAddress
+uip_broadcast_addr
+uip_udp_new
+timer_set
+uip_udp_conn
+uip_appdata
+DHCPCommon_SetOption
+uip_send
+timer_reset
+uip_flags
+timer_expired
+DHCPCommon_GetOption
+uip_netmask
+uip_draddr
+__do_copy_data

@@ -1,0 +1,928 @@
+   1               		.file	"V2ProtocolParams.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.V2Params_GetParamFromTable,"ax",@progbits
+  13               	V2Params_GetParamFromTable:
+  14               	.LFB122:
+  15               		.file 1 "../AVRISP-MKII/Lib/V2ProtocolParams.c"
+   1:../AVRISP-MKII/Lib/V2ProtocolParams.c **** /*
+   2:../AVRISP-MKII/Lib/V2ProtocolParams.c ****              LUFA Library
+   3:../AVRISP-MKII/Lib/V2ProtocolParams.c ****      Copyright (C) Dean Camera, 2011.
+   4:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+   5:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   dean [at] fourwalledcubicle [dot] com
+   6:../AVRISP-MKII/Lib/V2ProtocolParams.c ****            www.lufa-lib.org
+   7:../AVRISP-MKII/Lib/V2ProtocolParams.c **** */
+   8:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+   9:../AVRISP-MKII/Lib/V2ProtocolParams.c **** /*
+  10:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  12:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   software and its documentation for any purpose is hereby granted
+  14:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   without fee, provided that the above copyright notice appear in
+  15:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   all copies and that both that the copyright notice and this
+  16:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   permission notice and warranty disclaimer appear in supporting
+  17:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   documentation, and that the name of the author not be used in
+  18:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   advertising or publicity pertaining to distribution of the
+  19:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   software without specific, written prior permission.
+  20:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  21:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   The author disclaim all warranties with regard to this
+  22:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   software, including all implied warranties of merchantability
+  23:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   and fitness.  In no event shall the author be liable for any
+  24:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   special, indirect or consequential damages or any damages
+  25:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   in an action of contract, negligence or other tortious action,
+  27:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   arising out of or in connection with the use or performance of
+  28:../AVRISP-MKII/Lib/V2ProtocolParams.c ****   this software.
+  29:../AVRISP-MKII/Lib/V2ProtocolParams.c **** */
+  30:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  31:../AVRISP-MKII/Lib/V2ProtocolParams.c **** /** \file
+  32:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *
+  33:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  V2Protocol parameter handler, to process V2 Protocol device parameters.
+  34:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  */
+  35:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  36:../AVRISP-MKII/Lib/V2ProtocolParams.c **** #define  INCLUDE_FROM_V2PROTOCOL_PARAMS_C
+  37:../AVRISP-MKII/Lib/V2ProtocolParams.c **** #include "V2ProtocolParams.h"
+  38:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  39:../AVRISP-MKII/Lib/V2ProtocolParams.c **** /* Non-Volatile Parameter Values for EEPROM storage */
+  40:../AVRISP-MKII/Lib/V2ProtocolParams.c **** static uint8_t EEMEM EEPROM_Rest_Polarity = 0x00;
+  41:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  42:../AVRISP-MKII/Lib/V2ProtocolParams.c **** /* Volatile Parameter Values for RAM storage */
+  43:../AVRISP-MKII/Lib/V2ProtocolParams.c **** static ParameterItem_t ParameterTable[] =
+  44:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	{
+  45:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		{ .ParamID          = PARAM_BUILD_NUMBER_LOW,
+  46:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamPrivileges  = PARAM_PRIV_READ,
+  47:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamValue       = 0                                  },
+  48:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  49:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		{ .ParamID          = PARAM_BUILD_NUMBER_HIGH,
+  50:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamPrivileges  = PARAM_PRIV_READ,
+  51:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamValue       = 0                                  },
+  52:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  53:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		{ .ParamID          = PARAM_HW_VER,
+  54:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamPrivileges  = PARAM_PRIV_READ,
+  55:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamValue       = 0x00                               },
+  56:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  57:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		{ .ParamID          = PARAM_SW_MAJOR,
+  58:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamPrivileges  = PARAM_PRIV_READ,
+  59:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamValue       = 0x01                               },
+  60:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  61:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		{ .ParamID          = PARAM_SW_MINOR,
+  62:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamPrivileges  = PARAM_PRIV_READ,
+  63:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamValue       = 0x0D                               },
+  64:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  65:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		{ .ParamID          = PARAM_VTARGET,
+  66:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamPrivileges  = PARAM_PRIV_READ,
+  67:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamValue       = 0x32                               },
+  68:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  69:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		{ .ParamID          = PARAM_SCK_DURATION,
+  70:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamPrivileges  = PARAM_PRIV_READ | PARAM_PRIV_WRITE,
+  71:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamValue       = 6                                  },
+  72:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  73:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		{ .ParamID          = PARAM_RESET_POLARITY,
+  74:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamPrivileges  = PARAM_PRIV_WRITE,
+  75:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamValue       = 0x01                               },
+  76:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  77:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		{ .ParamID          = PARAM_STATUS_TGT_CONN,
+  78:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamPrivileges  = PARAM_PRIV_READ,
+  79:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamValue       = STATUS_ISP_READY                   },
+  80:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  81:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		{ .ParamID          = PARAM_DISCHARGEDELAY,
+  82:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamPrivileges  = PARAM_PRIV_WRITE,
+  83:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  .ParamValue       = 0x00                               },
+  84:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	};
+  85:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  86:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  87:../AVRISP-MKII/Lib/V2ProtocolParams.c **** /** Loads saved non-volatile parameter values from the EEPROM into the parameter table, as needed. 
+  88:../AVRISP-MKII/Lib/V2ProtocolParams.c **** void V2Params_LoadNonVolatileParamValues(void)
+  89:../AVRISP-MKII/Lib/V2ProtocolParams.c **** {
+  90:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	/* Target RESET line polarity is a non-volatile value, retrieve current parameter value from EEPRO
+  91:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	V2Params_GetParamFromTable(PARAM_RESET_POLARITY)->ParamValue = eeprom_read_byte(&EEPROM_Rest_Polar
+  92:../AVRISP-MKII/Lib/V2ProtocolParams.c **** }
+  93:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  94:../AVRISP-MKII/Lib/V2ProtocolParams.c **** /** Updates any parameter values that are sourced from hardware rather than explicitly set by the h
+  95:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  VTARGET levels from the ADC on supported AVR models.
+  96:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  */
+  97:../AVRISP-MKII/Lib/V2ProtocolParams.c **** void V2Params_UpdateParamValues(void)
+  98:../AVRISP-MKII/Lib/V2ProtocolParams.c **** {
+  99:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	#if (defined(ADC) && !defined(NO_VTARGET_DETECT))
+ 100:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	/* Update VTARGET parameter with the latest ADC conversion of VTARGET on supported AVR models */
+ 101:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	V2Params_GetParamFromTable(PARAM_VTARGET)->ParamValue = (((uint16_t)(VTARGET_REF_VOLTS * 10 * VTAR
+ 102:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	#endif
+ 103:../AVRISP-MKII/Lib/V2ProtocolParams.c **** }
+ 104:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 105:../AVRISP-MKII/Lib/V2ProtocolParams.c **** /** Retrieves the host PC read/write privileges for a given parameter in the parameter table. This 
+ 106:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  be called before calls to \ref V2Params_GetParameterValue() or \ref V2Params_SetParameterValue(
+ 107:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  getting or setting parameter values in response to requests from the host.
+ 108:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *
+ 109:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  \param[in] ParamID  Parameter ID whose privileges are to be retrieved from the table
+ 110:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *
+ 111:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  \return Privileges for the requested parameter, as a mask of PARAM_PRIV_* masks
+ 112:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  */
+ 113:../AVRISP-MKII/Lib/V2ProtocolParams.c **** uint8_t V2Params_GetParameterPrivileges(const uint8_t ParamID)
+ 114:../AVRISP-MKII/Lib/V2ProtocolParams.c **** {
+ 115:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	ParameterItem_t* ParamInfo = V2Params_GetParamFromTable(ParamID);
+ 116:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 117:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	if (ParamInfo == NULL)
+ 118:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	  return 0;
+ 119:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 120:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	return ParamInfo->ParamPrivileges;
+ 121:../AVRISP-MKII/Lib/V2ProtocolParams.c **** }
+ 122:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 123:../AVRISP-MKII/Lib/V2ProtocolParams.c **** /** Retrieves the current value for a given parameter in the parameter table.
+ 124:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *
+ 125:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  \note This function does not first check for read privileges - if the value is being sent to th
+ 126:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *        GET PARAM command, \ref V2Params_GetParameterPrivileges() should be called first to ensur
+ 127:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *        parameter is host-readable.
+ 128:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *
+ 129:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  \param[in] ParamID  Parameter ID whose value is to be retrieved from the table
+ 130:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *
+ 131:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  \return Current value of the parameter in the table, or 0 if not found
+ 132:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  */
+ 133:../AVRISP-MKII/Lib/V2ProtocolParams.c **** uint8_t V2Params_GetParameterValue(const uint8_t ParamID)
+ 134:../AVRISP-MKII/Lib/V2ProtocolParams.c **** {
+ 135:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	ParameterItem_t* ParamInfo = V2Params_GetParamFromTable(ParamID);
+ 136:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 137:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	if (ParamInfo == NULL)
+ 138:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	  return 0;
+ 139:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 140:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	return ParamInfo->ParamValue;
+ 141:../AVRISP-MKII/Lib/V2ProtocolParams.c **** }
+ 142:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 143:../AVRISP-MKII/Lib/V2ProtocolParams.c **** /** Sets the value for a given parameter in the parameter table.
+ 144:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *
+ 145:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  \note This function does not first check for write privileges - if the value is being sourced f
+ 146:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *        via a SET PARAM command, \ref V2Params_GetParameterPrivileges() should be called first to
+ 147:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *        parameter is host-writable.
+ 148:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *
+ 149:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  \param[in] ParamID  Parameter ID whose value is to be set in the table
+ 150:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  \param[in] Value    New value to set the parameter to
+ 151:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *
+ 152:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  \return Pointer to the associated parameter information from the parameter table if found, NULL
+ 153:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  */
+ 154:../AVRISP-MKII/Lib/V2ProtocolParams.c **** void V2Params_SetParameterValue(const uint8_t ParamID,
+ 155:../AVRISP-MKII/Lib/V2ProtocolParams.c ****                                 const uint8_t Value)
+ 156:../AVRISP-MKII/Lib/V2ProtocolParams.c **** {
+ 157:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	ParameterItem_t* ParamInfo = V2Params_GetParamFromTable(ParamID);
+ 158:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 159:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	if (ParamInfo == NULL)
+ 160:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	  return;
+ 161:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 162:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	ParamInfo->ParamValue = Value;
+ 163:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 164:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	/* The target RESET line polarity is a non-volatile parameter, save to EEPROM when changed */
+ 165:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	if (ParamID == PARAM_RESET_POLARITY)
+ 166:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	  eeprom_update_byte(&EEPROM_Rest_Polarity, Value);
+ 167:../AVRISP-MKII/Lib/V2ProtocolParams.c **** }
+ 168:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 169:../AVRISP-MKII/Lib/V2ProtocolParams.c **** /** Retrieves a parameter entry (including ID, value and privileges) from the parameter table that 
+ 170:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  parameter ID.
+ 171:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *
+ 172:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  \param[in] ParamID  Parameter ID to find in the table
+ 173:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *
+ 174:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  *  \return Pointer to the associated parameter information from the parameter table if found, NULL
+ 175:../AVRISP-MKII/Lib/V2ProtocolParams.c ****  */
+ 176:../AVRISP-MKII/Lib/V2ProtocolParams.c **** static ParameterItem_t* V2Params_GetParamFromTable(const uint8_t ParamID)
+ 177:../AVRISP-MKII/Lib/V2ProtocolParams.c **** {
+  16               		.loc 1 177 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+ 178:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	ParameterItem_t* CurrTableItem = ParameterTable;
+  23               		.loc 1 178 0
+  24 0000 E0E0      		ldi r30,lo8(ParameterTable)
+  25 0002 F0E0      		ldi r31,hi8(ParameterTable)
+  26               	.LVL1:
+  27               	.L3:
+  28               	.LBB4:
+ 179:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 180:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	/* Find the parameter in the parameter table if present */
+ 181:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	for (uint8_t TableIndex = 0; TableIndex < TABLE_PARAM_COUNT; TableIndex++)
+ 182:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	{
+ 183:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		if (ParamID == CurrTableItem->ParamID)
+  29               		.loc 1 183 0
+  30 0004 9081      		ld r25,Z
+  31 0006 9817      		cp r25,r24
+  32 0008 01F0      		breq .L4
+ 184:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		  return CurrTableItem;
+ 185:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 186:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 		CurrTableItem++;
+  33               		.loc 1 186 0 discriminator 2
+  34 000a 3396      		adiw r30,3
+  35               	.LVL2:
+ 181:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	{
+  36               		.loc 1 181 0 discriminator 2
+  37 000c 90E0      		ldi r25,hi8(ParameterTable+30)
+  38 000e E030      		cpi r30,lo8(ParameterTable+30)
+  39 0010 F907      		cpc r31,r25
+  40 0012 01F4      		brne .L3
+  41               	.LBE4:
+ 187:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	}
+ 188:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 189:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	return NULL;
+  42               		.loc 1 189 0
+  43 0014 80E0      		ldi r24,0
+  44 0016 90E0      		ldi r25,0
+  45               	.LVL3:
+  46               	.LBB5:
+  47 0018 0895      		ret
+  48               	.LVL4:
+  49               	.L4:
+  50 001a CF01      		movw r24,r30
+  51               	.LVL5:
+  52               	.LBE5:
+ 190:../AVRISP-MKII/Lib/V2ProtocolParams.c **** }
+  53               		.loc 1 190 0
+  54 001c 0895      		ret
+  55               		.cfi_endproc
+  56               	.LFE122:
+  58               		.section	.text.V2Params_LoadNonVolatileParamValues,"ax",@progbits
+  59               	.global	V2Params_LoadNonVolatileParamValues
+  61               	V2Params_LoadNonVolatileParamValues:
+  62               	.LFB117:
+  89:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	/* Target RESET line polarity is a non-volatile value, retrieve current parameter value from EEPRO
+  63               		.loc 1 89 0
+  64               		.cfi_startproc
+  65 0000 CF93      		push r28
+  66               	.LCFI0:
+  67               		.cfi_def_cfa_offset 3
+  68               		.cfi_offset 28, -2
+  69 0002 DF93      		push r29
+  70               	.LCFI1:
+  71               		.cfi_def_cfa_offset 4
+  72               		.cfi_offset 29, -3
+  73               	/* prologue: function */
+  74               	/* frame size = 0 */
+  75               	/* stack size = 2 */
+  76               	.L__stack_usage = 2
+  91:../AVRISP-MKII/Lib/V2ProtocolParams.c **** }
+  77               		.loc 1 91 0
+  78 0004 8EE9      		ldi r24,lo8(-98)
+  79 0006 0E94 0000 		call V2Params_GetParamFromTable
+  80               	.LVL6:
+  81 000a EC01      		movw r28,r24
+  82 000c 80E0      		ldi r24,lo8(EEPROM_Rest_Polarity)
+  83 000e 90E0      		ldi r25,hi8(EEPROM_Rest_Polarity)
+  84 0010 0E94 0000 		call eeprom_read_byte
+  85               	.LVL7:
+  86 0014 8A83      		std Y+2,r24
+  87               	/* epilogue start */
+  92:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+  88               		.loc 1 92 0
+  89 0016 DF91      		pop r29
+  90 0018 CF91      		pop r28
+  91 001a 0895      		ret
+  92               		.cfi_endproc
+  93               	.LFE117:
+  95               		.section	.text.V2Params_UpdateParamValues,"ax",@progbits
+  96               	.global	V2Params_UpdateParamValues
+  98               	V2Params_UpdateParamValues:
+  99               	.LFB118:
+  98:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	#if (defined(ADC) && !defined(NO_VTARGET_DETECT))
+ 100               		.loc 1 98 0
+ 101               		.cfi_startproc
+ 102               	/* prologue: function */
+ 103               	/* frame size = 0 */
+ 104               	/* stack size = 0 */
+ 105               	.L__stack_usage = 0
+ 101:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	#endif
+ 106               		.loc 1 101 0
+ 107 0000 84E9      		ldi r24,lo8(-108)
+ 108 0002 0E94 0000 		call V2Params_GetParamFromTable
+ 109               	.LVL8:
+ 110               	.LBB6:
+ 111               	.LBB7:
+ 112               		.file 2 "../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h"
+   1:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** /*
+   2:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****              LUFA Library
+   3:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+   5:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****            www.lufa-lib.org
+   7:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** */
+   8:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+   9:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** /*
+  10:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+  12:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   software and its documentation for any purpose is hereby granted
+  14:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   without fee, provided that the above copyright notice appear in
+  15:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   all copies and that both that the copyright notice and this
+  16:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   documentation, and that the name of the author not be used in
+  18:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   advertising or publicity pertaining to distribution of the
+  19:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   software without specific, written prior permission.
+  20:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+  21:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   The author disclaim all warranties with regard to this
+  22:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   software, including all implied warranties of merchantability
+  23:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   special, indirect or consequential damages or any damages
+  25:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   in an action of contract, negligence or other tortious action,
+  27:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   arising out of or in connection with the use or performance of
+  28:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****   this software.
+  29:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** */
+  30:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+  31:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** /** \file
+  32:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  \brief ADC Peripheral Driver (AVR8)
+  33:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *
+  34:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  On-chip Analogue-to-Digital converter (ADC) driver for supported U4, U6 and U7 model AVRs that 
+  35:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  peripheral internally.
+  36:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *
+  37:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  38:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *        dispatch header located in LUFA/Drivers/Peripheral/ADC.h.
+  39:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  */
+  40:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+  41:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** /** \ingroup Group_ADC
+  42:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  \defgroup Group_ADC_AVR8 ADC Peripheral Driver (AVR8)
+  43:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *
+  44:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  \section Sec_ModDescription Module Description
+  45:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  On-chip Analogue-to-Digital converter (ADC) driver for supported U4, U6 and U7 model AVRs that 
+  46:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  peripheral internally.
+  47:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *
+  48:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  49:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *        dispatch header located in LUFA/Drivers/Peripheral/ADC.h.
+  50:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *
+  51:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  \section Sec_ExampleUsage Example Usage
+  52:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  The following snippet is an example of how this module may be used within a typical
+  53:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  application.
+  54:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *
+  55:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  \code
+  56:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *      // Initialize the ADC driver before first use
+  57:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *      ADC_Init(ADC_FREE_RUNNING | ADC_PRESCALE_32);
+  58:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *
+  59:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *      // Must setup the ADC channel to read beforehand
+  60:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *      ADC_SetupChannel(1);
+  61:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *
+  62:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *      // Perform a single conversion of the ADC channel 1
+  63:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *      ADC_GetChannelReading(ADC_REFERENCE_AVCC | ADC_RIGHT_ADJUSTED | ADC_CHANNEL1);
+  64:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *      printf("Conversion Result: %d\r\n", ADC_GetResult());
+  65:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *
+  66:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *      // Start reading ADC channel 1 in free running (continuous conversion) mode
+  67:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *      ADC_StartReading(ADC_REFERENCE_AVCC | ADC_RIGHT_ADJUSTED | ADC_CHANNEL1);
+  68:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *      for (;;)
+  69:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *      {
+  70:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *           while (!(ADC_IsReadingComplete())) {};
+  71:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *           printf("Conversion Result: %d\r\n", ADC_GetResult());
+  72:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *      }
+  73:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  \endcode
+  74:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *
+  75:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  *  @{
+  76:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h ****  */
+  77:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+  78:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** #ifndef __ADC_AVR8_H__
+  79:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** #define __ADC_AVR8_H__
+  80:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+  81:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 	/* Includes: */
+  82:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 		#include "../../../Common/Common.h"
+  83:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+  84:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 	/* Enable C linkage for C++ Compilers: */
+  85:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 		#if defined(__cplusplus)
+  86:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			extern "C" {
+  87:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 		#endif
+  88:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+  89:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 	/* Preprocessor Checks: */
+  90:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 		#if !defined(__INCLUDE_FROM_ADC_H)
+  91:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#error Do not include this file directly. Include LUFA/Drivers/Peripheral/ADC.h instead.
+  92:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 		#endif
+  93:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+  94:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 		#if !(defined(__AVR_AT90USB1286__) || defined(__AVR_AT90USB646__) || \
+  95:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 		      defined(__AVR_AT90USB1287__) || defined(__AVR_AT90USB647__) || \
+  96:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			  defined(__AVR_ATmega16U4__)  || defined(__AVR_ATmega32U4__) || \
+  97:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			  defined(__AVR_ATmega32U6__))
+  98:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#error The ADC peripheral driver is not currently available for your selected microcontroller mo
+  99:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 		#endif
+ 100:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 101:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 	/* Private Interface - For use in library only: */
+ 102:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 	#if !defined(__DOXYGEN__)
+ 103:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 		/* Macros: */
+ 104:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define _ADC_GET_MUX_MASK2(y)           ADC_CHANNEL ## y
+ 105:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define _ADC_GET_MUX_MASK(y)            _ADC_GET_MUX_MASK2(y)
+ 106:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 	#endif
+ 107:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 	
+ 108:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 	/* Public Interface - May be used in end-application: */
+ 109:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 		/* Macros: */
+ 110:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** \name ADC Reference Configuration Masks */
+ 111:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			//@{
+ 112:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Reference mask, for using the voltage present at the AVR's AREF pin for the ADC reference. *
+ 113:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_REFERENCE_AREF              0
+ 114:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 115:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Reference mask, for using the voltage present at the AVR's AVCC pin for the ADC reference. *
+ 116:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_REFERENCE_AVCC              (1 << REFS0)
+ 117:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 118:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Reference mask, for using the internally generated 2.56V reference voltage as the ADC refere
+ 119:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_REFERENCE_INT2560MV         ((1 << REFS1) | (1 << REFS0))
+ 120:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			//@}
+ 121:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			
+ 122:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** \name ADC Result Adjustment Configuration Masks */
+ 123:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			//@{
+ 124:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Left-adjusts the 10-bit ADC result, so that the upper 8 bits of the value returned by the
+ 125:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  \ref ADC_GetResult() macro contain the 8 most significant bits of the result.
+ 126:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 */
+ 127:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_LEFT_ADJUSTED               (1 << ADLAR)
+ 128:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 129:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Right-adjusts the 10-bit ADC result, so that the lower 8 bits of the value returned by the
+ 130:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  \ref ADC_GetResult() macro contain the 8 least significant bits of the result.
+ 131:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 */
+ 132:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_RIGHT_ADJUSTED              (0 << ADLAR)
+ 133:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			//@}
+ 134:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 135:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** \name ADC Mode Configuration Masks */
+ 136:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			//@{
+ 137:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Sets the ADC mode to free running, so that conversions take place continuously as fast as th
+ 138:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  is capable of at the given input clock speed.
+ 139:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 */
+ 140:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_FREE_RUNNING                (1 << ADATE)
+ 141:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 142:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Sets the ADC mode to single conversion, so that only a single conversion will take place bef
+ 143:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  the ADC returns to idle.
+ 144:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 */
+ 145:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_SINGLE_CONVERSION           (0 << ADATE)
+ 146:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			//@}
+ 147:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			
+ 148:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** \name ADC Prescaler Configuration Masks */
+ 149:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			//@{
+ 150:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Sets the ADC input clock to prescale by a factor of 2 the AVR's system clock. */
+ 151:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_PRESCALE_2                  (1 << ADPS0)
+ 152:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 153:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Sets the ADC input clock to prescale by a factor of 4 the AVR's system clock. */
+ 154:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_PRESCALE_4                  (1 << ADPS1)
+ 155:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 156:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Sets the ADC input clock to prescale by a factor of 8 the AVR's system clock. */
+ 157:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_PRESCALE_8                  ((1 << ADPS0) | (1 << ADPS1))
+ 158:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 159:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Sets the ADC input clock to prescale by a factor of 16 the AVR's system clock. */
+ 160:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_PRESCALE_16                 (1 << ADPS2)
+ 161:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 162:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Sets the ADC input clock to prescale by a factor of 32 the AVR's system clock. */
+ 163:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_PRESCALE_32                 ((1 << ADPS2) | (1 << ADPS0))
+ 164:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 165:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Sets the ADC input clock to prescale by a factor of 64 the AVR's system clock. */
+ 166:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_PRESCALE_64                 ((1 << ADPS2) | (1 << ADPS1))
+ 167:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 168:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Sets the ADC input clock to prescale by a factor of 128 the AVR's system clock. */
+ 169:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_PRESCALE_128                ((1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0))
+ 170:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			//@}
+ 171:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 172:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** \name ADC MUX Masks */
+ 173:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			//@{
+ 174:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** MUX mask define for the ADC0 channel of the ADC. See \ref ADC_StartReading() and \ref ADC_Ge
+ 175:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_CHANNEL0                    (0x00 << MUX0)
+ 176:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 177:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** MUX mask define for the ADC1 channel of the ADC. See \ref ADC_StartReading() and \ref ADC_Ge
+ 178:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_CHANNEL1                    (0x01 << MUX0)
+ 179:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 180:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#if !(defined(__AVR_ATmega16U4__)  || defined(__AVR_ATmega32U4__) || defined(__DOXYGEN__))
+ 181:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				/** MUX mask define for the ADC2 channel of the ADC. See \ref ADC_StartReading() and \ref ADC_G
+ 182:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *
+ 183:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *  \note Not available on all AVR models.
+ 184:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 */
+ 185:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#define ADC_CHANNEL2                (0x02 << MUX0)
+ 186:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 187:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				/** MUX mask define for the ADC3 channel of the ADC. See \ref ADC_StartReading() and \ref ADC_G
+ 188:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *
+ 189:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *  \note Not available on all AVR models.
+ 190:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 */
+ 191:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#define ADC_CHANNEL3                (0x03 << MUX0)
+ 192:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#endif
+ 193:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 194:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** MUX mask define for the ADC4 channel of the ADC. See \ref ADC_StartReading() and \ref ADC_Ge
+ 195:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_CHANNEL4                    (0x04 << MUX0)
+ 196:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 197:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** MUX mask define for the ADC5 channel of the ADC. See \ref ADC_StartReading() and \ref ADC_Ge
+ 198:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_CHANNEL5                    (0x05 << MUX0)
+ 199:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 200:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** MUX mask define for the ADC6 channel of the ADC. See \ref ADC_StartReading() and \ref ADC_Ge
+ 201:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_CHANNEL6                    (0x06 << MUX0)
+ 202:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 203:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** MUX mask define for the ADC7 channel of the ADC. See \ref ADC_StartReading and \ref ADC_GetC
+ 204:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_CHANNEL7                    (0x07 << MUX0)
+ 205:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 206:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** MUX mask define for the internal 1.1V bandgap channel of the ADC. See \ref ADC_StartReading(
+ 207:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_1100MV_BANDGAP              (0x1E << MUX0)
+ 208:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 209:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#if (defined(__AVR_ATmega16U4__)  || defined(__AVR_ATmega32U4__) || defined(__DOXYGEN__))
+ 210:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				/** MUX mask define for the ADC8 channel of the ADC. See \ref ADC_StartReading() and \ref ADC_G
+ 211:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *
+ 212:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *  \note Not available on all AVR models.
+ 213:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 */
+ 214:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#define ADC_CHANNEL8                ((1 << 8) | (0x00 << MUX0))
+ 215:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 216:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				/** MUX mask define for the ADC9 channel of the ADC. See \ref ADC_StartReading() and \ref ADC_G
+ 217:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *
+ 218:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *  \note Not available on all AVR models.
+ 219:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 */
+ 220:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#define ADC_CHANNEL9                ((1 << 8) | (0x01 << MUX0))
+ 221:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 222:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				/** MUX mask define for the ADC10 channel of the ADC. See \ref ADC_StartReading() and \ref ADC_
+ 223:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *
+ 224:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *  \note Not available on all AVR models.
+ 225:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 */
+ 226:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#define ADC_CHANNEL10               ((1 << 8) | (0x02 << MUX0))
+ 227:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 228:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				/** MUX mask define for the ADC11 channel of the ADC. See \ref ADC_StartReading() and \ref ADC_
+ 229:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *
+ 230:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *  \note Not available on all AVR models.
+ 231:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 */
+ 232:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#define ADC_CHANNEL11               ((1 << 8) | (0x03 << MUX0))
+ 233:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 234:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				/** MUX mask define for the ADC12 channel of the ADC. See \ref ADC_StartReading() and \ref ADC_
+ 235:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *
+ 236:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *  \note Not available on all AVR models.
+ 237:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 */
+ 238:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#define ADC_CHANNEL12               ((1 << 8) | (0x04 << MUX0))
+ 239:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 240:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				/** MUX mask define for the ADC13 channel of the ADC. See \ref ADC_StartReading() and \ref ADC_
+ 241:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *
+ 242:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *  \note Not available on all AVR models.
+ 243:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 */
+ 244:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#define ADC_CHANNEL13               ((1 << 8) | (0x05 << MUX0))
+ 245:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 246:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				/** MUX mask define for the internal temperature sensor channel of the ADC. See \ref ADC_StartR
+ 247:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *  \ref ADC_GetChannelReading().
+ 248:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *
+ 249:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 *  \note Not available on all AVR models.
+ 250:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				 */
+ 251:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#define ADC_INT_TEMP_SENS           ((1 << 8) | (0x07 << MUX0))
+ 252:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#endif
+ 253:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 254:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Retrieves the ADC MUX mask for the given ADC channel number.
+ 255:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *
+ 256:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  \note This macro will only work correctly on channel numbers that are compile-time
+ 257:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *        constants defined by the preprocessor.
+ 258:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *
+ 259:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  \param[in] Channel  Index of the ADC channel whose MUX mask is to be retrieved.
+ 260:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 */
+ 261:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			#define ADC_GET_CHANNEL_MASK(Channel)   _ADC_GET_MUX_MASK(Channel)
+ 262:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			//@}
+ 263:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 264:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 		/* Inline Functions: */
+ 265:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Configures the given ADC channel, ready for ADC conversions. This function sets the
+ 266:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  associated port pin as an input and disables the digital portion of the I/O to reduce
+ 267:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  power consumption.
+ 268:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *
+ 269:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  \note This must only be called for ADC channels with are connected to a physical port
+ 270:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *        pin of the AVR, denoted by its special alternative function ADCx.
+ 271:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *        \n\n
+ 272:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *
+ 273:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  \note The channel number must be specified as an integer, and <b>not</b> a \c ADC_CHANNEL* m
+ 274:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *
+ 275:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  \param[in] ChannelIndex  ADC channel number to set up for conversions.
+ 276:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 */
+ 277:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			static inline void ADC_SetupChannel(const uint8_t ChannelIndex)
+ 278:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			{
+ 279:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#if (defined(__AVR_AT90USB1286__) || defined(__AVR_AT90USB646__) || \
+ 280:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					 defined(__AVR_AT90USB1287__) || defined(__AVR_AT90USB647__) || \
+ 281:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					 defined(__AVR_ATmega32U6__))
+ 282:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				DDRF  &= ~(1 << ChannelIndex);
+ 283:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				DIDR0 |=  (1 << ChannelIndex);
+ 284:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#elif (defined(__AVR_ATmega16U4__) || defined(__AVR_ATmega32U4__))
+ 285:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				if (ChannelIndex < 8)
+ 286:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				{
+ 287:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DDRF  &= ~(1 << ChannelIndex);
+ 288:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DIDR0 |=  (1 << ChannelIndex);
+ 289:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				}
+ 290:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				else if (ChannelIndex == 8)
+ 291:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				{
+ 292:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DDRD  &= ~(1 << 4);
+ 293:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DIDR2 |=  (1 << 0);
+ 294:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				}
+ 295:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				else if (ChannelIndex < 11)
+ 296:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				{
+ 297:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DDRD  &= ~(1 << (ChannelIndex - 3));
+ 298:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DIDR2 |=  (1 << (ChannelIndex - 8));
+ 299:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				}
+ 300:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				else
+ 301:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				{
+ 302:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DDRB  &= ~(1 << (ChannelIndex - 7));
+ 303:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DIDR2 |=  (1 << (ChannelIndex - 8));
+ 304:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				}
+ 305:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#endif
+ 306:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			}
+ 307:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 308:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** De-configures the given ADC channel, re-enabling digital I/O mode instead of analog. This
+ 309:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  function sets the associated port pin as an input and re-enabled the digital portion of
+ 310:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  the I/O.
+ 311:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *
+ 312:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  \note This must only be called for ADC channels with are connected to a physical port
+ 313:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *        pin of the AVR, denoted by its special alternative function ADCx.
+ 314:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *        \n\n
+ 315:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *
+ 316:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  \note The channel number must be specified as an integer, and <b>not</b> a \c ADC_CHANNEL* m
+ 317:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *
+ 318:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  \param[in] ChannelIndex  ADC channel number to set up for conversions.
+ 319:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 */
+ 320:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			static inline void ADC_DisableChannel(const uint8_t ChannelIndex)
+ 321:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			{
+ 322:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#if (defined(__AVR_AT90USB1286__) || defined(__AVR_AT90USB646__) || \
+ 323:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					 defined(__AVR_AT90USB1287__) || defined(__AVR_AT90USB647__) || \
+ 324:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					 defined(__AVR_ATmega32U6__))
+ 325:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				DDRF  &= ~(1 << ChannelIndex);
+ 326:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				DIDR0 &= ~(1 << ChannelIndex);
+ 327:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#elif (defined(__AVR_ATmega16U4__) || defined(__AVR_ATmega32U4__))
+ 328:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				if (ChannelIndex < 8)
+ 329:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				{
+ 330:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DDRF  &= ~(1 << ChannelIndex);
+ 331:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DIDR0 &= ~(1 << ChannelIndex);
+ 332:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				}
+ 333:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				else if (ChannelIndex == 8)
+ 334:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				{
+ 335:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DDRD  &= ~(1 << 4);
+ 336:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DIDR2 &= ~(1 << 0);
+ 337:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				}
+ 338:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				else if (ChannelIndex < 11)
+ 339:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				{
+ 340:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DDRD  &= ~(1 << (ChannelIndex - 3));
+ 341:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DIDR2 &= ~(1 << (ChannelIndex - 8));
+ 342:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				}
+ 343:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				else
+ 344:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				{
+ 345:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DDRB  &= ~(1 << (ChannelIndex - 7));
+ 346:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 					DIDR2 &= ~(1 << (ChannelIndex - 8));
+ 347:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				}
+ 348:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#endif
+ 349:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			}
+ 350:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 351:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Starts the reading of the given channel, but does not wait until the conversion has complete
+ 352:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  Once executed, the conversion status can be determined via the \ref ADC_IsReadingComplete() 
+ 353:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  the result read via the \ref ADC_GetResult() macro.
+ 354:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *
+ 355:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  If the ADC has been initialized in free running mode, calling this function once will begin 
+ 356:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  conversions. If the ADC is in single conversion mode (or the channel to convert from is to b
+ 357:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  this function must be called each time a conversion is to take place.
+ 358:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *
+ 359:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  \param[in] MUXMask  ADC channel mask, reference mask and adjustment mask.
+ 360:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 */
+ 361:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			static inline void ADC_StartReading(const uint16_t MUXMask)
+ 362:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			{
+ 363:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				ADMUX = MUXMask;
+ 364:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 365:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#if (defined(__AVR_ATmega16U4__)  || defined(__AVR_ATmega32U4__) || defined(__DOXYGEN__))
+ 366:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				if (MUXMask & (1 << 8))
+ 367:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				  ADCSRB |=  (1 << MUX5);
+ 368:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				else
+ 369:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				  ADCSRB &= ~(1 << MUX5);
+ 370:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				#endif
+ 371:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 372:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				ADCSRA |= (1 << ADSC);
+ 373:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			}
+ 374:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 375:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Indicates if the current ADC conversion is completed, or still in progress.
+ 376:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *
+ 377:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  \return Boolean false if the reading is still taking place, or true if the conversion is
+ 378:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *          complete and ready to be read out with \ref ADC_GetResult().
+ 379:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 */
+ 380:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			static inline bool ADC_IsReadingComplete(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 381:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			static inline bool ADC_IsReadingComplete(void)
+ 382:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			{
+ 383:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				return ((ADCSRA & (1 << ADIF)) ? true : false);
+ 384:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			}
+ 385:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 
+ 386:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			/** Retrieves the conversion value of the last completed ADC conversion and clears the reading
+ 387:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  completion flag.
+ 388:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *
+ 389:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 *  \return The result of the last ADC conversion as an unsigned value.
+ 390:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			 */
+ 391:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			static inline uint16_t ADC_GetResult(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 392:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			static inline uint16_t ADC_GetResult(void)
+ 393:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 			{
+ 394:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				ADCSRA |= (1 << ADIF);
+ 113               		.loc 2 394 0
+ 114 0006 EAE7      		ldi r30,lo8(122)
+ 115 0008 F0E0      		ldi r31,0
+ 116 000a 2081      		ld r18,Z
+ 117 000c 2061      		ori r18,lo8(16)
+ 118 000e 2083      		st Z,r18
+ 395:../../LUFA/Drivers/Peripheral/AVR8/ADC_AVR8.h **** 				return ADC;
+ 119               		.loc 2 395 0
+ 120 0010 4091 7800 		lds r20,120
+ 121 0014 5091 7900 		lds r21,120+1
+ 122               	.LBE7:
+ 123               	.LBE6:
+ 101:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	#endif
+ 124               		.loc 1 101 0
+ 125 0018 62E4      		ldi r22,lo8(66)
+ 126 001a 649F      		mul r22,r20
+ 127 001c 9001      		movw r18,r0
+ 128 001e 659F      		mul r22,r21
+ 129 0020 300D      		add r19,r0
+ 130 0022 1124      		clr __zero_reg__
+ 131 0024 232F      		mov r18,r19
+ 132 0026 3327      		clr r19
+ 133 0028 2695      		lsr r18
+ 134 002a 2695      		lsr r18
+ 135 002c FC01      		movw r30,r24
+ 136 002e 2283      		std Z+2,r18
+ 137 0030 0895      		ret
+ 138               		.cfi_endproc
+ 139               	.LFE118:
+ 141               		.section	.text.V2Params_GetParameterPrivileges,"ax",@progbits
+ 142               	.global	V2Params_GetParameterPrivileges
+ 144               	V2Params_GetParameterPrivileges:
+ 145               	.LFB119:
+ 114:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	ParameterItem_t* ParamInfo = V2Params_GetParamFromTable(ParamID);
+ 146               		.loc 1 114 0
+ 147               		.cfi_startproc
+ 148               	.LVL9:
+ 149               	/* prologue: function */
+ 150               	/* frame size = 0 */
+ 151               	/* stack size = 0 */
+ 152               	.L__stack_usage = 0
+ 115:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 153               		.loc 1 115 0
+ 154 0000 0E94 0000 		call V2Params_GetParamFromTable
+ 155               	.LVL10:
+ 117:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	  return 0;
+ 156               		.loc 1 117 0
+ 157 0004 0097      		sbiw r24,0
+ 158 0006 01F0      		breq .L11
+ 120:../AVRISP-MKII/Lib/V2ProtocolParams.c **** }
+ 159               		.loc 1 120 0
+ 160 0008 FC01      		movw r30,r24
+ 161 000a 8181      		ldd r24,Z+1
+ 162               	.LVL11:
+ 163 000c 0895      		ret
+ 164               	.LVL12:
+ 165               	.L11:
+ 118:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 166               		.loc 1 118 0
+ 167 000e 80E0      		ldi r24,0
+ 168               	.LVL13:
+ 121:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 169               		.loc 1 121 0
+ 170 0010 0895      		ret
+ 171               		.cfi_endproc
+ 172               	.LFE119:
+ 174               		.section	.text.V2Params_GetParameterValue,"ax",@progbits
+ 175               	.global	V2Params_GetParameterValue
+ 177               	V2Params_GetParameterValue:
+ 178               	.LFB120:
+ 134:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	ParameterItem_t* ParamInfo = V2Params_GetParamFromTable(ParamID);
+ 179               		.loc 1 134 0
+ 180               		.cfi_startproc
+ 181               	.LVL14:
+ 182               	/* prologue: function */
+ 183               	/* frame size = 0 */
+ 184               	/* stack size = 0 */
+ 185               	.L__stack_usage = 0
+ 135:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 186               		.loc 1 135 0
+ 187 0000 0E94 0000 		call V2Params_GetParamFromTable
+ 188               	.LVL15:
+ 137:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	  return 0;
+ 189               		.loc 1 137 0
+ 190 0004 0097      		sbiw r24,0
+ 191 0006 01F0      		breq .L14
+ 140:../AVRISP-MKII/Lib/V2ProtocolParams.c **** }
+ 192               		.loc 1 140 0
+ 193 0008 FC01      		movw r30,r24
+ 194 000a 8281      		ldd r24,Z+2
+ 195               	.LVL16:
+ 196 000c 0895      		ret
+ 197               	.LVL17:
+ 198               	.L14:
+ 138:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 199               		.loc 1 138 0
+ 200 000e 80E0      		ldi r24,0
+ 201               	.LVL18:
+ 141:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 202               		.loc 1 141 0
+ 203 0010 0895      		ret
+ 204               		.cfi_endproc
+ 205               	.LFE120:
+ 207               		.section	.text.V2Params_SetParameterValue,"ax",@progbits
+ 208               	.global	V2Params_SetParameterValue
+ 210               	V2Params_SetParameterValue:
+ 211               	.LFB121:
+ 156:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	ParameterItem_t* ParamInfo = V2Params_GetParamFromTable(ParamID);
+ 212               		.loc 1 156 0
+ 213               		.cfi_startproc
+ 214               	.LVL19:
+ 215 0000 CF93      		push r28
+ 216               	.LCFI2:
+ 217               		.cfi_def_cfa_offset 3
+ 218               		.cfi_offset 28, -2
+ 219 0002 DF93      		push r29
+ 220               	.LCFI3:
+ 221               		.cfi_def_cfa_offset 4
+ 222               		.cfi_offset 29, -3
+ 223               	/* prologue: function */
+ 224               	/* frame size = 0 */
+ 225               	/* stack size = 2 */
+ 226               	.L__stack_usage = 2
+ 227 0004 D82F      		mov r29,r24
+ 228 0006 C62F      		mov r28,r22
+ 157:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 229               		.loc 1 157 0
+ 230 0008 0E94 0000 		call V2Params_GetParamFromTable
+ 231               	.LVL20:
+ 159:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	  return;
+ 232               		.loc 1 159 0
+ 233 000c 0097      		sbiw r24,0
+ 234 000e 01F0      		breq .L15
+ 162:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 235               		.loc 1 162 0
+ 236 0010 FC01      		movw r30,r24
+ 237 0012 C283      		std Z+2,r28
+ 165:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 	  eeprom_update_byte(&EEPROM_Rest_Polarity, Value);
+ 238               		.loc 1 165 0
+ 239 0014 DE39      		cpi r29,lo8(-98)
+ 240 0016 01F4      		brne .L15
+ 166:../AVRISP-MKII/Lib/V2ProtocolParams.c **** }
+ 241               		.loc 1 166 0
+ 242 0018 6C2F      		mov r22,r28
+ 243 001a 80E0      		ldi r24,lo8(EEPROM_Rest_Polarity)
+ 244 001c 90E0      		ldi r25,hi8(EEPROM_Rest_Polarity)
+ 245               	.LVL21:
+ 246               	/* epilogue start */
+ 167:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 247               		.loc 1 167 0
+ 248 001e DF91      		pop r29
+ 249               	.LVL22:
+ 250 0020 CF91      		pop r28
+ 251               	.LVL23:
+ 166:../AVRISP-MKII/Lib/V2ProtocolParams.c **** }
+ 252               		.loc 1 166 0
+ 253 0022 0C94 0000 		jmp eeprom_update_byte
+ 254               	.LVL24:
+ 255               	.L15:
+ 256               	/* epilogue start */
+ 167:../AVRISP-MKII/Lib/V2ProtocolParams.c **** 
+ 257               		.loc 1 167 0
+ 258 0026 DF91      		pop r29
+ 259               	.LVL25:
+ 260 0028 CF91      		pop r28
+ 261               	.LVL26:
+ 262 002a 0895      		ret
+ 263               		.cfi_endproc
+ 264               	.LFE121:
+ 266               		.data
+ 269               	ParameterTable:
+ 270 0000 80        		.byte	-128
+ 271 0001 01        		.byte	1
+ 272 0002 00        		.byte	0
+ 273 0003 81        		.byte	-127
+ 274 0004 01        		.byte	1
+ 275 0005 00        		.byte	0
+ 276 0006 90        		.byte	-112
+ 277 0007 01        		.byte	1
+ 278 0008 00        		.byte	0
+ 279 0009 91        		.byte	-111
+ 280 000a 01        		.byte	1
+ 281 000b 01        		.byte	1
+ 282 000c 92        		.byte	-110
+ 283 000d 01        		.byte	1
+ 284 000e 0D        		.byte	13
+ 285 000f 94        		.byte	-108
+ 286 0010 01        		.byte	1
+ 287 0011 32        		.byte	50
+ 288 0012 98        		.byte	-104
+ 289 0013 03        		.byte	3
+ 290 0014 06        		.byte	6
+ 291 0015 9E        		.byte	-98
+ 292 0016 02        		.byte	2
+ 293 0017 01        		.byte	1
+ 294 0018 A1        		.byte	-95
+ 295 0019 01        		.byte	1
+ 296 001a 00        		.byte	0
+ 297 001b A4        		.byte	-92
+ 298 001c 02        		.byte	2
+ 299 001d 00        		.byte	0
+ 300               		.section	.eeprom,"aw",@progbits
+ 303               	EEPROM_Rest_Polarity:
+ 304 0000 00        		.zero	1
+ 305               		.text
+ 306               	.Letext0:
+ 307               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 308               		.file 4 "../AVRISP-MKII/Lib/V2ProtocolParams.h"
+ 309               		.file 5 "/usr/lib/avr/include/avr/eeprom.h"
+ 310               		.file 6 "../AVRISP-MKII/Lib/ISP/ISPTarget.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 V2ProtocolParams.c
+     /tmp/ccJ9Mt4K.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccJ9Mt4K.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccJ9Mt4K.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccJ9Mt4K.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccJ9Mt4K.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccJ9Mt4K.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccJ9Mt4K.s:13     .text.V2Params_GetParamFromTable:0000000000000000 V2Params_GetParamFromTable
+     /tmp/ccJ9Mt4K.s:269    .data:0000000000000000 ParameterTable
+     /tmp/ccJ9Mt4K.s:61     .text.V2Params_LoadNonVolatileParamValues:0000000000000000 V2Params_LoadNonVolatileParamValues
+     /tmp/ccJ9Mt4K.s:303    .eeprom:0000000000000000 EEPROM_Rest_Polarity
+     /tmp/ccJ9Mt4K.s:98     .text.V2Params_UpdateParamValues:0000000000000000 V2Params_UpdateParamValues
+     /tmp/ccJ9Mt4K.s:144    .text.V2Params_GetParameterPrivileges:0000000000000000 V2Params_GetParameterPrivileges
+     /tmp/ccJ9Mt4K.s:177    .text.V2Params_GetParameterValue:0000000000000000 V2Params_GetParameterValue
+     /tmp/ccJ9Mt4K.s:210    .text.V2Params_SetParameterValue:0000000000000000 V2Params_SetParameterValue
+
+UNDEFINED SYMBOLS
+eeprom_read_byte
+eeprom_update_byte
+__do_copy_data

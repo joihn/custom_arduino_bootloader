@@ -1,0 +1,570 @@
+   1               		.file	"ConfigDescriptor.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.DComp_NextMSInterface,"ax",@progbits
+  12               	.global	DComp_NextMSInterface
+  14               	DComp_NextMSInterface:
+  15               	.LFB150:
+  16               		.file 1 "ConfigDescriptor.c"
+   1:ConfigDescriptor.c **** /*
+   2:ConfigDescriptor.c ****              LUFA Library
+   3:ConfigDescriptor.c ****      Copyright (C) Dean Camera, 2011.
+   4:ConfigDescriptor.c **** 
+   5:ConfigDescriptor.c ****   dean [at] fourwalledcubicle [dot] com
+   6:ConfigDescriptor.c ****            www.lufa-lib.org
+   7:ConfigDescriptor.c **** */
+   8:ConfigDescriptor.c **** 
+   9:ConfigDescriptor.c **** /*
+  10:ConfigDescriptor.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:ConfigDescriptor.c **** 
+  12:ConfigDescriptor.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:ConfigDescriptor.c ****   software and its documentation for any purpose is hereby granted
+  14:ConfigDescriptor.c ****   without fee, provided that the above copyright notice appear in
+  15:ConfigDescriptor.c ****   all copies and that both that the copyright notice and this
+  16:ConfigDescriptor.c ****   permission notice and warranty disclaimer appear in supporting
+  17:ConfigDescriptor.c ****   documentation, and that the name of the author not be used in
+  18:ConfigDescriptor.c ****   advertising or publicity pertaining to distribution of the
+  19:ConfigDescriptor.c ****   software without specific, written prior permission.
+  20:ConfigDescriptor.c **** 
+  21:ConfigDescriptor.c ****   The author disclaim all warranties with regard to this
+  22:ConfigDescriptor.c ****   software, including all implied warranties of merchantability
+  23:ConfigDescriptor.c ****   and fitness.  In no event shall the author be liable for any
+  24:ConfigDescriptor.c ****   special, indirect or consequential damages or any damages
+  25:ConfigDescriptor.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:ConfigDescriptor.c ****   in an action of contract, negligence or other tortious action,
+  27:ConfigDescriptor.c ****   arising out of or in connection with the use or performance of
+  28:ConfigDescriptor.c ****   this software.
+  29:ConfigDescriptor.c **** */
+  30:ConfigDescriptor.c **** 
+  31:ConfigDescriptor.c **** /** \file
+  32:ConfigDescriptor.c ****  *
+  33:ConfigDescriptor.c ****  *  USB Device Configuration Descriptor processing routines, to determine the correct pipe configur
+  34:ConfigDescriptor.c ****  *  needed to communication with an attached USB device. Descriptors are special  computer-readable
+  35:ConfigDescriptor.c ****  *  which the host requests upon device enumeration, to determine the device's capabilities and fun
+  36:ConfigDescriptor.c ****  */
+  37:ConfigDescriptor.c **** 
+  38:ConfigDescriptor.c **** #include "ConfigDescriptor.h"
+  39:ConfigDescriptor.c **** 
+  40:ConfigDescriptor.c **** /** Reads and processes an attached device's descriptors, to determine compatibility and pipe confi
+  41:ConfigDescriptor.c ****  *  routine will read in the entire configuration descriptor, and configure the hosts pipes to corr
+  42:ConfigDescriptor.c ****  *  with compatible devices.
+  43:ConfigDescriptor.c ****  *
+  44:ConfigDescriptor.c ****  *  This routine searches for a MSD interface descriptor containing bulk IN and OUT data endpoints.
+  45:ConfigDescriptor.c ****  *
+  46:ConfigDescriptor.c ****  *  \return An error code from the \ref MassStorageHost_GetConfigDescriptorDataCodes_t enum.
+  47:ConfigDescriptor.c ****  */
+  48:ConfigDescriptor.c **** uint8_t ProcessConfigurationDescriptor(void)
+  49:ConfigDescriptor.c **** {
+  50:ConfigDescriptor.c **** 	uint8_t  ConfigDescriptorData[512];
+  51:ConfigDescriptor.c **** 	void*    CurrConfigLocation = ConfigDescriptorData;
+  52:ConfigDescriptor.c **** 	uint16_t CurrConfigBytesRem;
+  53:ConfigDescriptor.c **** 
+  54:ConfigDescriptor.c **** 	USB_Descriptor_Interface_t* MSInterface     = NULL;
+  55:ConfigDescriptor.c **** 	USB_Descriptor_Endpoint_t*  DataINEndpoint  = NULL;
+  56:ConfigDescriptor.c **** 	USB_Descriptor_Endpoint_t*  DataOUTEndpoint = NULL;
+  57:ConfigDescriptor.c **** 
+  58:ConfigDescriptor.c **** 	/* Retrieve the entire configuration descriptor into the allocated buffer */
+  59:ConfigDescriptor.c **** 	switch (USB_Host_GetDeviceConfigDescriptor(1, &CurrConfigBytesRem, ConfigDescriptorData, sizeof(Co
+  60:ConfigDescriptor.c **** 	{
+  61:ConfigDescriptor.c **** 		case HOST_GETCONFIG_Successful:
+  62:ConfigDescriptor.c **** 			break;
+  63:ConfigDescriptor.c **** 		case HOST_GETCONFIG_InvalidData:
+  64:ConfigDescriptor.c **** 			return InvalidConfigDataReturned;
+  65:ConfigDescriptor.c **** 		case HOST_GETCONFIG_BuffOverflow:
+  66:ConfigDescriptor.c **** 			return DescriptorTooLarge;
+  67:ConfigDescriptor.c **** 		default:
+  68:ConfigDescriptor.c **** 			return ControlError;
+  69:ConfigDescriptor.c **** 	}
+  70:ConfigDescriptor.c **** 
+  71:ConfigDescriptor.c **** 	while (!(DataINEndpoint) || !(DataOUTEndpoint))
+  72:ConfigDescriptor.c **** 	{
+  73:ConfigDescriptor.c **** 		/* See if we've found a likely compatible interface, and if there is an endpoint within that inte
+  74:ConfigDescriptor.c **** 		if (!(MSInterface) ||
+  75:ConfigDescriptor.c **** 		    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+  76:ConfigDescriptor.c **** 		                              DComp_NextMSInterfaceBulkDataEndpoint) != DESCRIPTOR_SEARCH_COMP_Fo
+  77:ConfigDescriptor.c **** 		{
+  78:ConfigDescriptor.c **** 			/* Get the next Mass Storage interface from the configuration descriptor */
+  79:ConfigDescriptor.c **** 			if (USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+  80:ConfigDescriptor.c **** 										  DComp_NextMSInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+  81:ConfigDescriptor.c **** 			{
+  82:ConfigDescriptor.c **** 				/* Descriptor not found, error out */
+  83:ConfigDescriptor.c **** 				return NoCompatibleInterfaceFound;
+  84:ConfigDescriptor.c **** 			}
+  85:ConfigDescriptor.c **** 
+  86:ConfigDescriptor.c **** 			/* Save the interface in case we need to refer back to it later */
+  87:ConfigDescriptor.c **** 			MSInterface = DESCRIPTOR_PCAST(CurrConfigLocation, USB_Descriptor_Interface_t);
+  88:ConfigDescriptor.c **** 
+  89:ConfigDescriptor.c **** 			/* Clear any found endpoints */
+  90:ConfigDescriptor.c **** 			DataINEndpoint  = NULL;
+  91:ConfigDescriptor.c **** 			DataOUTEndpoint = NULL;
+  92:ConfigDescriptor.c **** 
+  93:ConfigDescriptor.c **** 			/* Skip the remainder of the loop as we have not found an endpoint yet */
+  94:ConfigDescriptor.c **** 			continue;
+  95:ConfigDescriptor.c **** 		}
+  96:ConfigDescriptor.c **** 
+  97:ConfigDescriptor.c **** 		/* Retrieve the endpoint address from the endpoint descriptor */
+  98:ConfigDescriptor.c **** 		USB_Descriptor_Endpoint_t* EndpointData = DESCRIPTOR_PCAST(CurrConfigLocation, USB_Descriptor_End
+  99:ConfigDescriptor.c **** 
+ 100:ConfigDescriptor.c **** 		/* If the endpoint is a IN type endpoint */
+ 101:ConfigDescriptor.c **** 		if ((EndpointData->EndpointAddress & ENDPOINT_DIR_MASK) == ENDPOINT_DIR_IN)
+ 102:ConfigDescriptor.c **** 		  DataINEndpoint  = EndpointData;
+ 103:ConfigDescriptor.c **** 		else
+ 104:ConfigDescriptor.c **** 		  DataOUTEndpoint = EndpointData;
+ 105:ConfigDescriptor.c **** 	}
+ 106:ConfigDescriptor.c **** 
+ 107:ConfigDescriptor.c **** 	/* Configure the Mass Storage data IN pipe */
+ 108:ConfigDescriptor.c **** 	Pipe_ConfigurePipe(MASS_STORE_DATA_IN_PIPE, EP_TYPE_BULK, PIPE_TOKEN_IN,
+ 109:ConfigDescriptor.c **** 	                   DataINEndpoint->EndpointAddress, DataINEndpoint->EndpointSize, PIPE_BANK_SINGLE
+ 110:ConfigDescriptor.c **** 
+ 111:ConfigDescriptor.c **** 	/* Configure the Mass Storage data OUT pipe */
+ 112:ConfigDescriptor.c **** 	Pipe_ConfigurePipe(MASS_STORE_DATA_OUT_PIPE, EP_TYPE_BULK, PIPE_TOKEN_OUT,
+ 113:ConfigDescriptor.c **** 					   DataOUTEndpoint->EndpointAddress, DataOUTEndpoint->EndpointSize, PIPE_BANK_SINGLE);
+ 114:ConfigDescriptor.c **** 
+ 115:ConfigDescriptor.c **** 	/* Valid data found, return success */
+ 116:ConfigDescriptor.c **** 	return SuccessfulConfigRead;
+ 117:ConfigDescriptor.c **** }
+ 118:ConfigDescriptor.c **** 
+ 119:ConfigDescriptor.c **** /** Descriptor comparator function. This comparator function is can be called while processing an a
+ 120:ConfigDescriptor.c ****  *  configuration descriptor, to search for a specific sub descriptor. It can also be used to abort
+ 121:ConfigDescriptor.c ****  *  descriptor processing if an incompatible descriptor configuration is found.
+ 122:ConfigDescriptor.c ****  *
+ 123:ConfigDescriptor.c ****  *  This comparator searches for the next Interface descriptor of the correct Mass Storage Class, S
+ 124:ConfigDescriptor.c ****  *
+ 125:ConfigDescriptor.c ****  *  \return A value from the DSEARCH_Return_ErrorCodes_t enum
+ 126:ConfigDescriptor.c ****  */
+ 127:ConfigDescriptor.c **** uint8_t DComp_NextMSInterface(void* CurrentDescriptor)
+ 128:ConfigDescriptor.c **** {
+  17               		.loc 1 128 0
+  18               		.cfi_startproc
+  19               	.LVL0:
+  20               	/* prologue: function */
+  21               	/* frame size = 0 */
+  22               	/* stack size = 0 */
+  23               	.L__stack_usage = 0
+  24 0000 FC01      		movw r30,r24
+  25               	.LVL1:
+ 129:ConfigDescriptor.c **** 	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+ 130:ConfigDescriptor.c **** 
+ 131:ConfigDescriptor.c **** 	if (Header->Type == DTYPE_Interface)
+  26               		.loc 1 131 0
+  27 0002 8181      		ldd r24,Z+1
+  28               	.LVL2:
+  29 0004 8430      		cpi r24,lo8(4)
+  30 0006 01F4      		brne .L6
+  31               	.LVL3:
+  32               	.LBB2:
+ 132:ConfigDescriptor.c **** 	{
+ 133:ConfigDescriptor.c **** 		USB_Descriptor_Interface_t* Interface = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Interf
+ 134:ConfigDescriptor.c **** 
+ 135:ConfigDescriptor.c **** 		/* Check the descriptor class and protocol, break out if correct class/protocol interface found *
+ 136:ConfigDescriptor.c **** 		if ((Interface->Class    == MASS_STORE_CLASS)    &&
+  33               		.loc 1 136 0
+  34 0008 8581      		ldd r24,Z+5
+  35 000a 8830      		cpi r24,lo8(8)
+  36 000c 01F4      		brne .L6
+  37               		.loc 1 136 0 is_stmt 0 discriminator 1
+  38 000e 8681      		ldd r24,Z+6
+  39 0010 8630      		cpi r24,lo8(6)
+  40 0012 01F4      		brne .L6
+ 137:ConfigDescriptor.c **** 		    (Interface->SubClass == MASS_STORE_SUBCLASS) &&
+  41               		.loc 1 137 0 is_stmt 1
+  42 0014 8781      		ldd r24,Z+7
+  43 0016 8035      		cpi r24,lo8(80)
+  44 0018 01F4      		brne .L6
+ 138:ConfigDescriptor.c **** 		    (Interface->Protocol == MASS_STORE_PROTOCOL))
+ 139:ConfigDescriptor.c **** 		{
+ 140:ConfigDescriptor.c **** 			return DESCRIPTOR_SEARCH_Found;
+  45               		.loc 1 140 0
+  46 001a 80E0      		ldi r24,0
+  47 001c 0895      		ret
+  48               	.LVL4:
+  49               	.L6:
+  50               	.LBE2:
+ 141:ConfigDescriptor.c **** 		}
+ 142:ConfigDescriptor.c **** 	}
+ 143:ConfigDescriptor.c **** 
+ 144:ConfigDescriptor.c **** 	return DESCRIPTOR_SEARCH_NotFound;
+  51               		.loc 1 144 0
+  52 001e 82E0      		ldi r24,lo8(2)
+ 145:ConfigDescriptor.c **** }
+  53               		.loc 1 145 0
+  54 0020 0895      		ret
+  55               		.cfi_endproc
+  56               	.LFE150:
+  58               		.section	.text.DComp_NextMSInterfaceBulkDataEndpoint,"ax",@progbits
+  59               	.global	DComp_NextMSInterfaceBulkDataEndpoint
+  61               	DComp_NextMSInterfaceBulkDataEndpoint:
+  62               	.LFB151:
+ 146:ConfigDescriptor.c **** 
+ 147:ConfigDescriptor.c **** /** Descriptor comparator function. This comparator function is can be called while processing an a
+ 148:ConfigDescriptor.c ****  *  configuration descriptor, to search for a specific sub descriptor. It can also be used to abort
+ 149:ConfigDescriptor.c ****  *  descriptor processing if an incompatible descriptor configuration is found.
+ 150:ConfigDescriptor.c ****  *
+ 151:ConfigDescriptor.c ****  *  This comparator searches for the next Bulk Endpoint descriptor of the correct MSD interface, ab
+ 152:ConfigDescriptor.c ****  *  another interface descriptor is found before the next endpoint.
+ 153:ConfigDescriptor.c ****  *
+ 154:ConfigDescriptor.c ****  *  \return A value from the DSEARCH_Return_ErrorCodes_t enum
+ 155:ConfigDescriptor.c ****  */
+ 156:ConfigDescriptor.c **** uint8_t DComp_NextMSInterfaceBulkDataEndpoint(void* CurrentDescriptor)
+ 157:ConfigDescriptor.c **** {
+  63               		.loc 1 157 0
+  64               		.cfi_startproc
+  65               	.LVL5:
+  66               	/* prologue: function */
+  67               	/* frame size = 0 */
+  68               	/* stack size = 0 */
+  69               	.L__stack_usage = 0
+  70 0000 FC01      		movw r30,r24
+  71               	.LVL6:
+ 158:ConfigDescriptor.c **** 	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+ 159:ConfigDescriptor.c **** 
+ 160:ConfigDescriptor.c **** 	if (Header->Type == DTYPE_Endpoint)
+  72               		.loc 1 160 0
+  73 0002 9181      		ldd r25,Z+1
+  74 0004 9530      		cpi r25,lo8(5)
+  75 0006 01F4      		brne .L9
+  76               	.LVL7:
+  77               	.LBB3:
+ 161:ConfigDescriptor.c **** 	{
+ 162:ConfigDescriptor.c **** 		USB_Descriptor_Endpoint_t* Endpoint = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Endpoint
+ 163:ConfigDescriptor.c **** 
+ 164:ConfigDescriptor.c **** 		/* Check the endpoint type, break out if correct BULK type endpoint found */
+ 165:ConfigDescriptor.c **** 		if ((Endpoint->Attributes & EP_TYPE_MASK) == EP_TYPE_BULK)
+  78               		.loc 1 165 0
+  79 0008 8381      		ldd r24,Z+3
+  80               	.LVL8:
+  81 000a 8370      		andi r24,lo8(3)
+  82 000c 8230      		cpi r24,lo8(2)
+  83 000e 01F4      		brne .L12
+ 166:ConfigDescriptor.c **** 		  return DESCRIPTOR_SEARCH_Found;
+  84               		.loc 1 166 0
+  85 0010 80E0      		ldi r24,0
+  86 0012 0895      		ret
+  87               	.LVL9:
+  88               	.L9:
+  89               	.LBE3:
+ 167:ConfigDescriptor.c **** 	}
+ 168:ConfigDescriptor.c **** 	else if (Header->Type == DTYPE_Interface)
+  90               		.loc 1 168 0
+  91 0014 9430      		cpi r25,lo8(4)
+  92 0016 01F4      		brne .L12
+ 169:ConfigDescriptor.c **** 	{
+ 170:ConfigDescriptor.c **** 		return DESCRIPTOR_SEARCH_Fail;
+  93               		.loc 1 170 0
+  94 0018 81E0      		ldi r24,lo8(1)
+  95               	.LVL10:
+  96 001a 0895      		ret
+  97               	.L12:
+ 171:ConfigDescriptor.c **** 	}
+ 172:ConfigDescriptor.c **** 
+ 173:ConfigDescriptor.c **** 	return DESCRIPTOR_SEARCH_NotFound;
+  98               		.loc 1 173 0
+  99 001c 82E0      		ldi r24,lo8(2)
+ 174:ConfigDescriptor.c **** }
+ 100               		.loc 1 174 0
+ 101 001e 0895      		ret
+ 102               		.cfi_endproc
+ 103               	.LFE151:
+ 105               		.section	.text.ProcessConfigurationDescriptor,"ax",@progbits
+ 106               	.global	ProcessConfigurationDescriptor
+ 108               	ProcessConfigurationDescriptor:
+ 109               	.LFB149:
+  49:ConfigDescriptor.c **** 	uint8_t  ConfigDescriptorData[512];
+ 110               		.loc 1 49 0
+ 111               		.cfi_startproc
+ 112 0000 AF92      		push r10
+ 113               	.LCFI0:
+ 114               		.cfi_def_cfa_offset 3
+ 115               		.cfi_offset 10, -2
+ 116 0002 BF92      		push r11
+ 117               	.LCFI1:
+ 118               		.cfi_def_cfa_offset 4
+ 119               		.cfi_offset 11, -3
+ 120 0004 CF92      		push r12
+ 121               	.LCFI2:
+ 122               		.cfi_def_cfa_offset 5
+ 123               		.cfi_offset 12, -4
+ 124 0006 DF92      		push r13
+ 125               	.LCFI3:
+ 126               		.cfi_def_cfa_offset 6
+ 127               		.cfi_offset 13, -5
+ 128 0008 EF92      		push r14
+ 129               	.LCFI4:
+ 130               		.cfi_def_cfa_offset 7
+ 131               		.cfi_offset 14, -6
+ 132 000a FF92      		push r15
+ 133               	.LCFI5:
+ 134               		.cfi_def_cfa_offset 8
+ 135               		.cfi_offset 15, -7
+ 136 000c 0F93      		push r16
+ 137               	.LCFI6:
+ 138               		.cfi_def_cfa_offset 9
+ 139               		.cfi_offset 16, -8
+ 140 000e 1F93      		push r17
+ 141               	.LCFI7:
+ 142               		.cfi_def_cfa_offset 10
+ 143               		.cfi_offset 17, -9
+ 144 0010 CF93      		push r28
+ 145               	.LCFI8:
+ 146               		.cfi_def_cfa_offset 11
+ 147               		.cfi_offset 28, -10
+ 148 0012 DF93      		push r29
+ 149               	.LCFI9:
+ 150               		.cfi_def_cfa_offset 12
+ 151               		.cfi_offset 29, -11
+ 152 0014 CDB7      		in r28,__SP_L__
+ 153 0016 DEB7      		in r29,__SP_H__
+ 154               	.LCFI10:
+ 155               		.cfi_def_cfa_register 28
+ 156 0018 C450      		subi r28,4
+ 157 001a D240      		sbci r29,2
+ 158               	.LCFI11:
+ 159               		.cfi_def_cfa_offset 528
+ 160 001c 0FB6      		in __tmp_reg__,__SREG__
+ 161 001e F894      		cli
+ 162 0020 DEBF      		out __SP_H__,r29
+ 163 0022 0FBE      		out __SREG__,__tmp_reg__
+ 164 0024 CDBF      		out __SP_L__,r28
+ 165               	/* prologue: function */
+ 166               	/* frame size = 516 */
+ 167               	/* stack size = 526 */
+ 168               	.L__stack_usage = 526
+  51:ConfigDescriptor.c **** 	uint16_t CurrConfigBytesRem;
+ 169               		.loc 1 51 0
+ 170 0026 AE01      		movw r20,r28
+ 171 0028 4F5F      		subi r20,-1
+ 172 002a 5F4F      		sbci r21,-1
+ 173 002c CD5F      		subi r28,lo8(-515)
+ 174 002e DD4F      		sbci r29,hi8(-515)
+ 175 0030 5983      		std Y+1,r21
+ 176 0032 4883      		st Y,r20
+ 177 0034 C350      		subi r28,lo8(515)
+ 178 0036 D240      		sbci r29,hi8(515)
+ 179               	.LVL11:
+  59:ConfigDescriptor.c **** 	{
+ 180               		.loc 1 59 0
+ 181 0038 20E0      		ldi r18,0
+ 182 003a 32E0      		ldi r19,lo8(2)
+ 183 003c BE01      		movw r22,r28
+ 184 003e 6F5F      		subi r22,-1
+ 185 0040 7D4F      		sbci r23,-3
+ 186 0042 81E0      		ldi r24,lo8(1)
+ 187 0044 0E94 0000 		call USB_Host_GetDeviceConfigDescriptor
+ 188               	.LVL12:
+ 189 0048 8530      		cpi r24,lo8(5)
+ 190 004a 01F0      		breq .L15
+ 191 004c 8630      		cpi r24,lo8(6)
+ 192 004e 01F4      		brne .+2
+ 193 0050 00C0      		rjmp .L24
+ 194 0052 8823      		tst r24
+ 195 0054 01F0      		breq .L17
+  68:ConfigDescriptor.c **** 	}
+ 196               		.loc 1 68 0
+ 197 0056 FF24      		clr r15
+ 198 0058 F394      		inc r15
+ 199 005a 00C0      		rjmp .L16
+ 200               	.L15:
+  66:ConfigDescriptor.c **** 		default:
+ 201               		.loc 1 66 0
+ 202 005c 22E0      		ldi r18,lo8(2)
+ 203 005e F22E      		mov r15,r18
+ 204 0060 00C0      		rjmp .L16
+ 205               	.LVL13:
+ 206               	.L36:
+ 207               	.LBB4:
+  75:ConfigDescriptor.c **** 		                              DComp_NextMSInterfaceBulkDataEndpoint) != DESCRIPTOR_SEARCH_COMP_Fo
+ 208               		.loc 1 75 0 discriminator 1
+ 209 0062 40E0      		ldi r20,lo8(gs(DComp_NextMSInterfaceBulkDataEndpoint))
+ 210 0064 50E0      		ldi r21,hi8(gs(DComp_NextMSInterfaceBulkDataEndpoint))
+ 211 0066 BE01      		movw r22,r28
+ 212 0068 6D5F      		subi r22,-3
+ 213 006a 7D4F      		sbci r23,-3
+ 214 006c CE01      		movw r24,r28
+ 215 006e 8F5F      		subi r24,-1
+ 216 0070 9D4F      		sbci r25,-3
+ 217 0072 0E94 0000 		call USB_GetNextDescriptorComp
+ 218               	.LVL14:
+ 219 0076 F82E      		mov r15,r24
+  74:ConfigDescriptor.c **** 		    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+ 220               		.loc 1 74 0 discriminator 1
+ 221 0078 8111      		cpse r24,__zero_reg__
+ 222 007a 00C0      		rjmp .L17
+  98:ConfigDescriptor.c **** 
+ 223               		.loc 1 98 0
+ 224 007c CD5F      		subi r28,lo8(-515)
+ 225 007e DD4F      		sbci r29,hi8(-515)
+ 226 0080 E881      		ld r30,Y
+ 227 0082 F981      		ldd r31,Y+1
+ 228 0084 C350      		subi r28,lo8(515)
+ 229 0086 D240      		sbci r29,hi8(515)
+ 230               	.LVL15:
+ 101:ConfigDescriptor.c **** 		  DataINEndpoint  = EndpointData;
+ 231               		.loc 1 101 0
+ 232 0088 8281      		ldd r24,Z+2
+ 233 008a 87FD      		sbrc r24,7
+ 234 008c 00C0      		rjmp .L22
+ 104:ConfigDescriptor.c **** 	}
+ 235               		.loc 1 104 0
+ 236 008e 6F01      		movw r12,r30
+ 101:ConfigDescriptor.c **** 		  DataINEndpoint  = EndpointData;
+ 237               		.loc 1 101 0
+ 238 0090 F801      		movw r30,r16
+ 239               	.LVL16:
+ 240               	.L22:
+ 241               	.LBE4:
+  71:ConfigDescriptor.c **** 	{
+ 242               		.loc 1 71 0
+ 243 0092 3097      		sbiw r30,0
+ 244 0094 01F4      		brne .L35
+ 245               	.L23:
+  49:ConfigDescriptor.c **** 	uint8_t  ConfigDescriptorData[512];
+ 246               		.loc 1 49 0
+ 247 0096 8F01      		movw r16,r30
+ 248               	.LVL17:
+ 249               	.L21:
+ 250               	.LBB5:
+  74:ConfigDescriptor.c **** 		    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+ 251               		.loc 1 74 0
+ 252 0098 A114      		cp r10,__zero_reg__
+ 253 009a B104      		cpc r11,__zero_reg__
+ 254 009c 01F4      		brne .L36
+ 255               	.LVL18:
+ 256               	.L17:
+  79:ConfigDescriptor.c **** 										  DComp_NextMSInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+ 257               		.loc 1 79 0
+ 258 009e 40E0      		ldi r20,lo8(gs(DComp_NextMSInterface))
+ 259 00a0 50E0      		ldi r21,hi8(gs(DComp_NextMSInterface))
+ 260 00a2 BE01      		movw r22,r28
+ 261 00a4 6D5F      		subi r22,-3
+ 262 00a6 7D4F      		sbci r23,-3
+ 263 00a8 CE01      		movw r24,r28
+ 264 00aa 8F5F      		subi r24,-1
+ 265 00ac 9D4F      		sbci r25,-3
+ 266 00ae 0E94 0000 		call USB_GetNextDescriptorComp
+ 267               	.LVL19:
+ 268 00b2 8111      		cpse r24,__zero_reg__
+ 269 00b4 00C0      		rjmp .L25
+  87:ConfigDescriptor.c **** 
+ 270               		.loc 1 87 0
+ 271 00b6 CD5F      		subi r28,lo8(-515)
+ 272 00b8 DD4F      		sbci r29,hi8(-515)
+ 273 00ba A880      		ld r10,Y
+ 274 00bc B980      		ldd r11,Y+1
+ 275 00be C350      		subi r28,lo8(515)
+ 276 00c0 D240      		sbci r29,hi8(515)
+ 277               	.LVL20:
+  90:ConfigDescriptor.c **** 			DataOUTEndpoint = NULL;
+ 278               		.loc 1 90 0
+ 279 00c2 00E0      		ldi r16,0
+ 280 00c4 10E0      		ldi r17,0
+  91:ConfigDescriptor.c **** 
+ 281               		.loc 1 91 0
+ 282 00c6 C12C      		mov r12,__zero_reg__
+ 283 00c8 D12C      		mov r13,__zero_reg__
+ 284 00ca 00C0      		rjmp .L21
+ 285               	.LVL21:
+ 286               	.L35:
+ 287               	.LBE5:
+  71:ConfigDescriptor.c **** 	{
+ 288               		.loc 1 71 0 discriminator 1
+ 289 00cc C114      		cp r12,__zero_reg__
+ 290 00ce D104      		cpc r13,__zero_reg__
+ 291 00d0 01F0      		breq .L23
+ 108:ConfigDescriptor.c **** 	                   DataINEndpoint->EndpointAddress, DataINEndpoint->EndpointSize, PIPE_BANK_SINGLE
+ 292               		.loc 1 108 0
+ 293 00d2 0481      		ldd r16,Z+4
+ 294 00d4 1581      		ldd r17,Z+5
+ 295 00d6 E12C      		mov r14,__zero_reg__
+ 296 00d8 2281      		ldd r18,Z+2
+ 297 00da 40E1      		ldi r20,lo8(16)
+ 298 00dc 62E0      		ldi r22,lo8(2)
+ 299 00de 81E0      		ldi r24,lo8(1)
+ 300 00e0 0E94 0000 		call Pipe_ConfigurePipe
+ 301               	.LVL22:
+ 112:ConfigDescriptor.c **** 					   DataOUTEndpoint->EndpointAddress, DataOUTEndpoint->EndpointSize, PIPE_BANK_SINGLE);
+ 302               		.loc 1 112 0
+ 303 00e4 F601      		movw r30,r12
+ 304 00e6 0481      		ldd r16,Z+4
+ 305 00e8 1581      		ldd r17,Z+5
+ 306 00ea 2281      		ldd r18,Z+2
+ 307 00ec 40E2      		ldi r20,lo8(32)
+ 308 00ee 62E0      		ldi r22,lo8(2)
+ 309 00f0 82E0      		ldi r24,lo8(2)
+ 310 00f2 0E94 0000 		call Pipe_ConfigurePipe
+ 311               	.LVL23:
+ 116:ConfigDescriptor.c **** }
+ 312               		.loc 1 116 0
+ 313 00f6 00C0      		rjmp .L16
+ 314               	.LVL24:
+ 315               	.L24:
+  64:ConfigDescriptor.c **** 		case HOST_GETCONFIG_BuffOverflow:
+ 316               		.loc 1 64 0
+ 317 00f8 93E0      		ldi r25,lo8(3)
+ 318 00fa F92E      		mov r15,r25
+ 319 00fc 00C0      		rjmp .L16
+ 320               	.LVL25:
+ 321               	.L25:
+ 322               	.LBB6:
+  83:ConfigDescriptor.c **** 			}
+ 323               		.loc 1 83 0
+ 324 00fe 84E0      		ldi r24,lo8(4)
+ 325 0100 F82E      		mov r15,r24
+ 326               	.L16:
+ 327               	.LBE6:
+ 117:ConfigDescriptor.c **** 
+ 328               		.loc 1 117 0
+ 329 0102 8F2D      		mov r24,r15
+ 330               	/* epilogue start */
+ 331 0104 CC5F      		subi r28,-4
+ 332 0106 DD4F      		sbci r29,-3
+ 333 0108 0FB6      		in __tmp_reg__,__SREG__
+ 334 010a F894      		cli
+ 335 010c DEBF      		out __SP_H__,r29
+ 336 010e 0FBE      		out __SREG__,__tmp_reg__
+ 337 0110 CDBF      		out __SP_L__,r28
+ 338 0112 DF91      		pop r29
+ 339 0114 CF91      		pop r28
+ 340 0116 1F91      		pop r17
+ 341 0118 0F91      		pop r16
+ 342 011a FF90      		pop r15
+ 343 011c EF90      		pop r14
+ 344 011e DF90      		pop r13
+ 345 0120 CF90      		pop r12
+ 346 0122 BF90      		pop r11
+ 347 0124 AF90      		pop r10
+ 348 0126 0895      		ret
+ 349               		.cfi_endproc
+ 350               	.LFE149:
+ 352               		.text
+ 353               	.Letext0:
+ 354               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 355               		.file 3 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../StdDescriptors.h"
+ 356               		.file 4 "../../../../LUFA/Drivers/USB/Core/ConfigDescriptor.h"
+ 357               		.file 5 "/usr/lib/avr/include/stdio.h"
+ 358               		.file 6 "ConfigDescriptor.h"
+ 359               		.file 7 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+ 360               		.file 8 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 361               		.file 9 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ConfigDescriptor.c
+     /tmp/cccag9vD.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cccag9vD.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cccag9vD.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cccag9vD.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cccag9vD.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cccag9vD.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cccag9vD.s:14     .text.DComp_NextMSInterface:0000000000000000 DComp_NextMSInterface
+     /tmp/cccag9vD.s:61     .text.DComp_NextMSInterfaceBulkDataEndpoint:0000000000000000 DComp_NextMSInterfaceBulkDataEndpoint
+     /tmp/cccag9vD.s:108    .text.ProcessConfigurationDescriptor:0000000000000000 ProcessConfigurationDescriptor
+
+UNDEFINED SYMBOLS
+USB_Host_GetDeviceConfigDescriptor
+USB_GetNextDescriptorComp
+Pipe_ConfigurePipe

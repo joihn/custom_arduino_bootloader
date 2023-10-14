@@ -1,0 +1,582 @@
+   1               		.file	"TELNETServerApp.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.TELNETServerApp_Init,"ax",@progbits
+  12               	.global	TELNETServerApp_Init
+  14               	TELNETServerApp_Init:
+  15               	.LFB7:
+  16               		.file 1 "Lib/TELNETServerApp.c"
+   1:Lib/TELNETServerApp.c **** /*
+   2:Lib/TELNETServerApp.c ****              LUFA Library
+   3:Lib/TELNETServerApp.c ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/TELNETServerApp.c **** 
+   5:Lib/TELNETServerApp.c ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/TELNETServerApp.c ****            www.lufa-lib.org
+   7:Lib/TELNETServerApp.c **** */
+   8:Lib/TELNETServerApp.c **** 
+   9:Lib/TELNETServerApp.c **** /*
+  10:Lib/TELNETServerApp.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/TELNETServerApp.c **** 
+  12:Lib/TELNETServerApp.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/TELNETServerApp.c ****   software and its documentation for any purpose is hereby granted
+  14:Lib/TELNETServerApp.c ****   without fee, provided that the above copyright notice appear in
+  15:Lib/TELNETServerApp.c ****   all copies and that both that the copyright notice and this
+  16:Lib/TELNETServerApp.c ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/TELNETServerApp.c ****   documentation, and that the name of the author not be used in
+  18:Lib/TELNETServerApp.c ****   advertising or publicity pertaining to distribution of the
+  19:Lib/TELNETServerApp.c ****   software without specific, written prior permission.
+  20:Lib/TELNETServerApp.c **** 
+  21:Lib/TELNETServerApp.c ****   The author disclaim all warranties with regard to this
+  22:Lib/TELNETServerApp.c ****   software, including all implied warranties of merchantability
+  23:Lib/TELNETServerApp.c ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/TELNETServerApp.c ****   special, indirect or consequential damages or any damages
+  25:Lib/TELNETServerApp.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/TELNETServerApp.c ****   in an action of contract, negligence or other tortious action,
+  27:Lib/TELNETServerApp.c ****   arising out of or in connection with the use or performance of
+  28:Lib/TELNETServerApp.c ****   this software.
+  29:Lib/TELNETServerApp.c **** */
+  30:Lib/TELNETServerApp.c **** 
+  31:Lib/TELNETServerApp.c **** #if defined(ENABLE_TELNET_SERVER) || defined(__DOXYGEN__)
+  32:Lib/TELNETServerApp.c **** 
+  33:Lib/TELNETServerApp.c **** /** \file
+  34:Lib/TELNETServerApp.c ****  *
+  35:Lib/TELNETServerApp.c ****  *  TELNET Webserver Application. When connected to the uIP stack,
+  36:Lib/TELNETServerApp.c ****  *  this will serve out raw TELNET to the client on port 23.
+  37:Lib/TELNETServerApp.c ****  */
+  38:Lib/TELNETServerApp.c **** 
+  39:Lib/TELNETServerApp.c **** #define  INCLUDE_FROM_TELNETSERVERAPP_C
+  40:Lib/TELNETServerApp.c **** #include "TELNETServerApp.h"
+  41:Lib/TELNETServerApp.c **** 
+  42:Lib/TELNETServerApp.c **** /** Welcome message to send to a TELNET client when a connection is first made. */
+  43:Lib/TELNETServerApp.c **** const char PROGMEM WelcomeHeader[] = "********************************************\r\n"
+  44:Lib/TELNETServerApp.c ****                                      "*       LUFA uIP Webserver (TELNET)        *\r\n"
+  45:Lib/TELNETServerApp.c ****                                      "********************************************\r\n";
+  46:Lib/TELNETServerApp.c **** 
+  47:Lib/TELNETServerApp.c **** /** Main TELNET menu, giving the user the list of available commands they may issue */
+  48:Lib/TELNETServerApp.c **** const char PROGMEM TELNETMenu[] = "\r\n"
+  49:Lib/TELNETServerApp.c ****                                   "  == Available Commands: ==\r\n"
+  50:Lib/TELNETServerApp.c ****                                   "     c) List Active TCP Connections\r\n"
+  51:Lib/TELNETServerApp.c ****                                   "  =========================\r\n"
+  52:Lib/TELNETServerApp.c ****                                   "\r\n>";
+  53:Lib/TELNETServerApp.c **** 
+  54:Lib/TELNETServerApp.c **** /** Header to print before the current connections are printed to the client */
+  55:Lib/TELNETServerApp.c **** const char PROGMEM CurrentConnectionsHeader[] = "\r\n* Current TCP Connections: *\r\n";
+  56:Lib/TELNETServerApp.c **** 
+  57:Lib/TELNETServerApp.c **** /** Initialization function for the simple TELNET webserver. */
+  58:Lib/TELNETServerApp.c **** void TELNETServerApp_Init(void)
+  59:Lib/TELNETServerApp.c **** {
+  17               		.loc 1 59 0
+  18               		.cfi_startproc
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+  60:Lib/TELNETServerApp.c **** 	/* Listen on port 23 for TELNET connections from hosts */
+  61:Lib/TELNETServerApp.c **** 	uip_listen(HTONS(TELNET_SERVER_PORT));
+  23               		.loc 1 61 0
+  24 0000 80E0      		ldi r24,0
+  25 0002 97E1      		ldi r25,lo8(23)
+  26 0004 0C94 0000 		jmp uip_listen
+  27               	.LVL0:
+  28               		.cfi_endproc
+  29               	.LFE7:
+  31               		.section	.text.TELNETServerApp_Callback,"ax",@progbits
+  32               	.global	TELNETServerApp_Callback
+  34               	TELNETServerApp_Callback:
+  35               	.LFB8:
+  62:Lib/TELNETServerApp.c **** }
+  63:Lib/TELNETServerApp.c **** 
+  64:Lib/TELNETServerApp.c **** /** uIP stack application callback for the TELNET server. This function must be called each time th
+  65:Lib/TELNETServerApp.c ****  *  TCP/IP stack needs a TCP packet to be processed.
+  66:Lib/TELNETServerApp.c ****  */
+  67:Lib/TELNETServerApp.c **** void TELNETServerApp_Callback(void)
+  68:Lib/TELNETServerApp.c **** {
+  36               		.loc 1 68 0
+  37               		.cfi_startproc
+  38 0000 9F92      		push r9
+  39               	.LCFI0:
+  40               		.cfi_def_cfa_offset 3
+  41               		.cfi_offset 9, -2
+  42 0002 AF92      		push r10
+  43               	.LCFI1:
+  44               		.cfi_def_cfa_offset 4
+  45               		.cfi_offset 10, -3
+  46 0004 BF92      		push r11
+  47               	.LCFI2:
+  48               		.cfi_def_cfa_offset 5
+  49               		.cfi_offset 11, -4
+  50 0006 CF92      		push r12
+  51               	.LCFI3:
+  52               		.cfi_def_cfa_offset 6
+  53               		.cfi_offset 12, -5
+  54 0008 DF92      		push r13
+  55               	.LCFI4:
+  56               		.cfi_def_cfa_offset 7
+  57               		.cfi_offset 13, -6
+  58 000a EF92      		push r14
+  59               	.LCFI5:
+  60               		.cfi_def_cfa_offset 8
+  61               		.cfi_offset 14, -7
+  62 000c FF92      		push r15
+  63               	.LCFI6:
+  64               		.cfi_def_cfa_offset 9
+  65               		.cfi_offset 15, -8
+  66 000e 0F93      		push r16
+  67               	.LCFI7:
+  68               		.cfi_def_cfa_offset 10
+  69               		.cfi_offset 16, -9
+  70 0010 1F93      		push r17
+  71               	.LCFI8:
+  72               		.cfi_def_cfa_offset 11
+  73               		.cfi_offset 17, -10
+  74 0012 CF93      		push r28
+  75               	.LCFI9:
+  76               		.cfi_def_cfa_offset 12
+  77               		.cfi_offset 28, -11
+  78 0014 DF93      		push r29
+  79               	.LCFI10:
+  80               		.cfi_def_cfa_offset 13
+  81               		.cfi_offset 29, -12
+  82               	/* prologue: function */
+  83               	/* frame size = 0 */
+  84               	/* stack size = 11 */
+  85               	.L__stack_usage = 11
+  69:Lib/TELNETServerApp.c **** 	uip_tcp_appstate_t* const AppState   = &uip_conn->appstate;
+  86               		.loc 1 69 0
+  87 0016 0091 0000 		lds r16,uip_conn
+  88 001a 1091 0000 		lds r17,uip_conn+1
+  70:Lib/TELNETServerApp.c **** 	char*               const AppData    = (char*)uip_appdata;
+  89               		.loc 1 70 0
+  90 001e C091 0000 		lds r28,uip_appdata
+  91 0022 D091 0000 		lds r29,uip_appdata+1
+  71:Lib/TELNETServerApp.c **** 
+  72:Lib/TELNETServerApp.c **** 	if (uip_connected())
+  92               		.loc 1 72 0
+  93 0026 8091 0000 		lds r24,uip_flags
+  94 002a 86FF      		sbrs r24,6
+  95 002c 00C0      		rjmp .L3
+  73:Lib/TELNETServerApp.c **** 	{
+  74:Lib/TELNETServerApp.c **** 		/* New connection - initialize connection state values */
+  75:Lib/TELNETServerApp.c **** 		AppState->TELNETServer.CurrentState = TELNET_STATE_SendHeader;
+  96               		.loc 1 75 0
+  97 002e F801      		movw r30,r16
+  98 0030 148E      		std Z+28,__zero_reg__
+  99               	.L3:
+  76:Lib/TELNETServerApp.c **** 	}
+  77:Lib/TELNETServerApp.c **** 
+  78:Lib/TELNETServerApp.c **** 	if (uip_acked())
+ 100               		.loc 1 78 0
+ 101 0032 80FF      		sbrs r24,0
+ 102 0034 00C0      		rjmp .L4
+  79:Lib/TELNETServerApp.c **** 	{
+  80:Lib/TELNETServerApp.c **** 		/* Progress to the next state once the current state's data has been ACKed */
+  81:Lib/TELNETServerApp.c **** 		AppState->TELNETServer.CurrentState = AppState->TELNETServer.NextState;
+ 103               		.loc 1 81 0
+ 104 0036 F801      		movw r30,r16
+ 105 0038 958D      		ldd r25,Z+29
+ 106 003a 948F      		std Z+28,r25
+ 107               	.L4:
+  82:Lib/TELNETServerApp.c **** 	}
+  83:Lib/TELNETServerApp.c **** 
+  84:Lib/TELNETServerApp.c **** 	if (uip_rexmit() || uip_acked() || uip_newdata() || uip_connected() || uip_poll())
+ 108               		.loc 1 84 0
+ 109 003c 8F74      		andi r24,lo8(79)
+ 110 003e 01F4      		brne .+2
+ 111 0040 00C0      		rjmp .L2
+  85:Lib/TELNETServerApp.c **** 	{
+  86:Lib/TELNETServerApp.c **** 		switch (AppState->TELNETServer.CurrentState)
+ 112               		.loc 1 86 0
+ 113 0042 F801      		movw r30,r16
+ 114 0044 848D      		ldd r24,Z+28
+ 115 0046 8130      		cpi r24,lo8(1)
+ 116 0048 01F0      		breq .L6
+ 117 004a 00F0      		brlo .L7
+ 118 004c 8230      		cpi r24,lo8(2)
+ 119 004e 01F0      		breq .L8
+ 120 0050 8330      		cpi r24,lo8(3)
+ 121 0052 01F0      		breq .L9
+ 122 0054 00C0      		rjmp .L2
+ 123               	.L7:
+  87:Lib/TELNETServerApp.c **** 		{
+  88:Lib/TELNETServerApp.c **** 			case TELNET_STATE_SendHeader:
+  89:Lib/TELNETServerApp.c **** 				/* Copy over and send the TELNET welcome message upon first connection */
+  90:Lib/TELNETServerApp.c **** 				strcpy_P(AppData, WelcomeHeader);
+ 124               		.loc 1 90 0
+ 125 0056 60E0      		ldi r22,lo8(WelcomeHeader)
+ 126 0058 70E0      		ldi r23,hi8(WelcomeHeader)
+ 127 005a 00C0      		rjmp .L34
+ 128               	.L6:
+  91:Lib/TELNETServerApp.c **** 				uip_send(AppData, strlen(AppData));
+  92:Lib/TELNETServerApp.c **** 
+  93:Lib/TELNETServerApp.c **** 				AppState->TELNETServer.NextState = TELNET_STATE_SendMenu;
+  94:Lib/TELNETServerApp.c **** 				break;
+  95:Lib/TELNETServerApp.c **** 			case TELNET_STATE_SendMenu:
+  96:Lib/TELNETServerApp.c **** 				/* Copy over and send the TELNET menu to the client */
+  97:Lib/TELNETServerApp.c **** 				strcpy_P(AppData, TELNETMenu);
+ 129               		.loc 1 97 0
+ 130 005c 60E0      		ldi r22,lo8(TELNETMenu)
+ 131 005e 70E0      		ldi r23,hi8(TELNETMenu)
+ 132 0060 CE01      		movw r24,r28
+ 133 0062 0E94 0000 		call strcpy_P
+  98:Lib/TELNETServerApp.c **** 				uip_send(AppData, strlen(AppData));
+ 134               		.loc 1 98 0
+ 135 0066 FE01      		movw r30,r28
+ 136               		0:
+ 137 0068 0190      		ld __tmp_reg__,Z+
+ 138 006a 0020      		tst __tmp_reg__
+ 139 006c 01F4      		brne 0b
+ 140 006e 3197      		sbiw r30,1
+ 141 0070 BF01      		movw r22,r30
+ 142 0072 6C1B      		sub r22,r28
+ 143 0074 7D0B      		sbc r23,r29
+ 144 0076 CE01      		movw r24,r28
+ 145 0078 0E94 0000 		call uip_send
+  99:Lib/TELNETServerApp.c **** 
+ 100:Lib/TELNETServerApp.c **** 				AppState->TELNETServer.NextState = TELNET_STATE_GetCommand;
+ 146               		.loc 1 100 0
+ 147 007c 82E0      		ldi r24,lo8(2)
+ 148 007e 00C0      		rjmp .L33
+ 149               	.L8:
+ 101:Lib/TELNETServerApp.c **** 				break;
+ 102:Lib/TELNETServerApp.c **** 			case TELNET_STATE_GetCommand:
+ 103:Lib/TELNETServerApp.c **** 				if (!(uip_datalen()))
+ 150               		.loc 1 103 0
+ 151 0080 8091 0000 		lds r24,uip_len
+ 152 0084 9091 0000 		lds r25,uip_len+1
+ 153 0088 892B      		or r24,r25
+ 154 008a 01F4      		brne .+2
+ 155 008c 00C0      		rjmp .L2
+ 104:Lib/TELNETServerApp.c **** 				  break;
+ 105:Lib/TELNETServerApp.c **** 
+ 106:Lib/TELNETServerApp.c **** 				/* Save the issued command for later processing */
+ 107:Lib/TELNETServerApp.c **** 				AppState->TELNETServer.IssuedCommand = AppData[0];
+ 156               		.loc 1 107 0
+ 157 008e 8881      		ld r24,Y
+ 158 0090 F801      		movw r30,r16
+ 159 0092 868F      		std Z+30,r24
+ 108:Lib/TELNETServerApp.c **** 
+ 109:Lib/TELNETServerApp.c **** 				AppState->TELNETServer.CurrentState  = TELNET_STATE_SendResponse;
+ 160               		.loc 1 109 0
+ 161 0094 83E0      		ldi r24,lo8(3)
+ 162 0096 848F      		std Z+28,r24
+ 110:Lib/TELNETServerApp.c **** 				break;
+ 163               		.loc 1 110 0
+ 164 0098 00C0      		rjmp .L2
+ 165               	.L9:
+ 111:Lib/TELNETServerApp.c **** 			case TELNET_STATE_SendResponse:
+ 112:Lib/TELNETServerApp.c **** 				/* Determine which command was issued, perform command processing */
+ 113:Lib/TELNETServerApp.c **** 				switch (AppState->TELNETServer.IssuedCommand)
+ 166               		.loc 1 113 0
+ 167 009a F801      		movw r30,r16
+ 168 009c 868D      		ldd r24,Z+30
+ 169 009e 8336      		cpi r24,lo8(99)
+ 170 00a0 01F0      		breq .+2
+ 171 00a2 00C0      		rjmp .L31
+ 172               	.LBB8:
+ 173               	.LBB9:
+ 114:Lib/TELNETServerApp.c **** 				{
+ 115:Lib/TELNETServerApp.c **** 					case 'c':
+ 116:Lib/TELNETServerApp.c **** 						TELNETServerApp_DisplayTCPConnections();
+ 117:Lib/TELNETServerApp.c **** 						break;
+ 118:Lib/TELNETServerApp.c **** 					default:
+ 119:Lib/TELNETServerApp.c **** 						strcpy_P(AppData, PSTR("Invalid Command.\r\n"));
+ 120:Lib/TELNETServerApp.c **** 						uip_send(AppData, strlen(AppData));
+ 121:Lib/TELNETServerApp.c **** 						break;
+ 122:Lib/TELNETServerApp.c **** 				}
+ 123:Lib/TELNETServerApp.c **** 
+ 124:Lib/TELNETServerApp.c **** 				AppState->TELNETServer.NextState = TELNET_STATE_SendMenu;
+ 125:Lib/TELNETServerApp.c **** 				break;
+ 126:Lib/TELNETServerApp.c **** 		}
+ 127:Lib/TELNETServerApp.c **** 	}
+ 128:Lib/TELNETServerApp.c **** }
+ 129:Lib/TELNETServerApp.c **** 
+ 130:Lib/TELNETServerApp.c **** /** Sends a list of active TCP connections to the TELNET client. */
+ 131:Lib/TELNETServerApp.c **** static void TELNETServerApp_DisplayTCPConnections(void)
+ 132:Lib/TELNETServerApp.c **** {
+ 133:Lib/TELNETServerApp.c **** 	char* const AppData    = (char*)uip_appdata;
+ 134:Lib/TELNETServerApp.c **** 
+ 135:Lib/TELNETServerApp.c **** 	strcpy_P(AppData, CurrentConnectionsHeader);
+ 174               		.loc 1 135 0
+ 175 00a4 60E0      		ldi r22,lo8(CurrentConnectionsHeader)
+ 176 00a6 70E0      		ldi r23,hi8(CurrentConnectionsHeader)
+ 177 00a8 CE01      		movw r24,r28
+ 178 00aa 0E94 0000 		call strcpy_P
+ 136:Lib/TELNETServerApp.c **** 
+ 137:Lib/TELNETServerApp.c **** 	uint16_t ResponseLen     = strlen(AppData);
+ 179               		.loc 1 137 0
+ 180 00ae FE01      		movw r30,r28
+ 181               		0:
+ 182 00b0 0190      		ld __tmp_reg__,Z+
+ 183 00b2 0020      		tst __tmp_reg__
+ 184 00b4 01F4      		brne 0b
+ 185 00b6 3197      		sbiw r30,1
+ 186 00b8 6F01      		movw r12,r30
+ 187 00ba CC1A      		sub r12,r28
+ 188 00bc DD0A      		sbc r13,r29
+ 189 00be 80E0      		ldi r24,lo8(uip_conns)
+ 190 00c0 E82E      		mov r14,r24
+ 191 00c2 80E0      		ldi r24,hi8(uip_conns)
+ 192 00c4 F82E      		mov r15,r24
+ 138:Lib/TELNETServerApp.c **** 	uint8_t  ActiveConnCount = 0;
+ 193               		.loc 1 138 0
+ 194 00c6 912C      		mov r9,__zero_reg__
+ 195               	.LBB10:
+ 196               	.LBB11:
+ 139:Lib/TELNETServerApp.c **** 
+ 140:Lib/TELNETServerApp.c **** 	/* Loop through the complete uIP TCP connections list, looking for active connections */
+ 141:Lib/TELNETServerApp.c **** 	for (uint8_t i = 0; i < UIP_CONNS; i++)
+ 142:Lib/TELNETServerApp.c **** 	{
+ 143:Lib/TELNETServerApp.c **** 		struct uip_conn* CurrConnection = &uip_conns[i];
+ 144:Lib/TELNETServerApp.c **** 
+ 145:Lib/TELNETServerApp.c **** 		/* If the connection is not closed, it is active and must be added to the out buffer */
+ 146:Lib/TELNETServerApp.c **** 		if (CurrConnection->tcpstateflags != UIP_CLOSED)
+ 147:Lib/TELNETServerApp.c **** 		{
+ 148:Lib/TELNETServerApp.c **** 			/* Add the current connection's details to the out buffer */
+ 149:Lib/TELNETServerApp.c **** 			ResponseLen += sprintf_P(&AppData[ResponseLen], PSTR("%u) %d.%d.%d.%d (Local Port %u <=> Remote 
+ 197               		.loc 1 149 0
+ 198 00c8 90E0      		ldi r25,lo8(__c.2479)
+ 199 00ca A92E      		mov r10,r25
+ 200 00cc 90E0      		ldi r25,hi8(__c.2479)
+ 201 00ce B92E      		mov r11,r25
+ 202               	.L13:
+ 146:Lib/TELNETServerApp.c **** 		{
+ 203               		.loc 1 146 0
+ 204 00d0 F701      		movw r30,r14
+ 205 00d2 818D      		ldd r24,Z+25
+ 206 00d4 8823      		tst r24
+ 207 00d6 01F0      		breq .L12
+ 208               		.loc 1 149 0
+ 209 00d8 9394      		inc r9
+ 210 00da 8681      		ldd r24,Z+6
+ 211 00dc 9781      		ldd r25,Z+7
+ 212 00de 9827      		eor r25,r24
+ 213 00e0 8927      		eor r24,r25
+ 214 00e2 9827      		eor r25,r24
+ 215 00e4 9F93      		push r25
+ 216               	.LCFI11:
+ 217               		.cfi_def_cfa_offset 14
+ 218 00e6 8F93      		push r24
+ 219               	.LCFI12:
+ 220               		.cfi_def_cfa_offset 15
+ 221 00e8 8481      		ldd r24,Z+4
+ 222 00ea 9581      		ldd r25,Z+5
+ 223 00ec 9827      		eor r25,r24
+ 224 00ee 8927      		eor r24,r25
+ 225 00f0 9827      		eor r25,r24
+ 226 00f2 9F93      		push r25
+ 227               	.LCFI13:
+ 228               		.cfi_def_cfa_offset 16
+ 229 00f4 8F93      		push r24
+ 230               	.LCFI14:
+ 231               		.cfi_def_cfa_offset 17
+ 232 00f6 8381      		ldd r24,Z+3
+ 233 00f8 1F92      		push __zero_reg__
+ 234               	.LCFI15:
+ 235               		.cfi_def_cfa_offset 18
+ 236 00fa 8F93      		push r24
+ 237               	.LCFI16:
+ 238               		.cfi_def_cfa_offset 19
+ 239 00fc 8281      		ldd r24,Z+2
+ 240 00fe 1F92      		push __zero_reg__
+ 241               	.LCFI17:
+ 242               		.cfi_def_cfa_offset 20
+ 243 0100 8F93      		push r24
+ 244               	.LCFI18:
+ 245               		.cfi_def_cfa_offset 21
+ 246 0102 8181      		ldd r24,Z+1
+ 247 0104 1F92      		push __zero_reg__
+ 248               	.LCFI19:
+ 249               		.cfi_def_cfa_offset 22
+ 250 0106 8F93      		push r24
+ 251               	.LCFI20:
+ 252               		.cfi_def_cfa_offset 23
+ 253 0108 8081      		ld r24,Z
+ 254 010a 1F92      		push __zero_reg__
+ 255               	.LCFI21:
+ 256               		.cfi_def_cfa_offset 24
+ 257 010c 8F93      		push r24
+ 258               	.LCFI22:
+ 259               		.cfi_def_cfa_offset 25
+ 260 010e 1F92      		push __zero_reg__
+ 261               	.LCFI23:
+ 262               		.cfi_def_cfa_offset 26
+ 263 0110 9F92      		push r9
+ 264               	.LCFI24:
+ 265               		.cfi_def_cfa_offset 27
+ 266 0112 BF92      		push r11
+ 267               	.LCFI25:
+ 268               		.cfi_def_cfa_offset 28
+ 269 0114 AF92      		push r10
+ 270               	.LCFI26:
+ 271               		.cfi_def_cfa_offset 29
+ 272 0116 CE01      		movw r24,r28
+ 273 0118 8C0D      		add r24,r12
+ 274 011a 9D1D      		adc r25,r13
+ 275 011c 9F93      		push r25
+ 276               	.LCFI27:
+ 277               		.cfi_def_cfa_offset 30
+ 278 011e 8F93      		push r24
+ 279               	.LCFI28:
+ 280               		.cfi_def_cfa_offset 31
+ 281 0120 0E94 0000 		call sprintf_P
+ 282 0124 C80E      		add r12,r24
+ 283 0126 D91E      		adc r13,r25
+ 284 0128 8DB7      		in r24,__SP_L__
+ 285 012a 9EB7      		in r25,__SP_H__
+ 286 012c 4296      		adiw r24,18
+ 287 012e 0FB6      		in __tmp_reg__,__SREG__
+ 288 0130 F894      		cli
+ 289 0132 9EBF      		out __SP_H__,r25
+ 290 0134 0FBE      		out __SREG__,__tmp_reg__
+ 291 0136 8DBF      		out __SP_L__,r24
+ 292               	.LCFI29:
+ 293               		.cfi_def_cfa_offset 13
+ 294               	.L12:
+ 295 0138 91E7      		ldi r25,113
+ 296 013a E90E      		add r14,r25
+ 297 013c F11C      		adc r15,__zero_reg__
+ 298               	.LBE11:
+ 141:Lib/TELNETServerApp.c **** 	{
+ 299               		.loc 1 141 0
+ 300 013e E0E0      		ldi r30,lo8(uip_conns+339)
+ 301 0140 EE16      		cp r14,r30
+ 302 0142 E0E0      		ldi r30,hi8(uip_conns+339)
+ 303 0144 FE06      		cpc r15,r30
+ 304 0146 01F4      		brne .L13
+ 305               	.LBE10:
+ 150:Lib/TELNETServerApp.c **** 			                         ++ActiveConnCount,
+ 151:Lib/TELNETServerApp.c **** 			                         CurrConnection->ripaddr.u8[0],
+ 152:Lib/TELNETServerApp.c **** 			                         CurrConnection->ripaddr.u8[1],
+ 153:Lib/TELNETServerApp.c **** 			                         CurrConnection->ripaddr.u8[2],
+ 154:Lib/TELNETServerApp.c **** 			                         CurrConnection->ripaddr.u8[3],
+ 155:Lib/TELNETServerApp.c **** 			                         HTONS(CurrConnection->lport), HTONS(CurrConnection->rport));
+ 156:Lib/TELNETServerApp.c **** 		}
+ 157:Lib/TELNETServerApp.c **** 	}
+ 158:Lib/TELNETServerApp.c **** 
+ 159:Lib/TELNETServerApp.c **** 	uip_send(AppData, ResponseLen);
+ 306               		.loc 1 159 0
+ 307 0148 B601      		movw r22,r12
+ 308 014a 00C0      		rjmp .L32
+ 309               	.L31:
+ 310               	.LBE9:
+ 311               	.LBE8:
+ 119:Lib/TELNETServerApp.c **** 						uip_send(AppData, strlen(AppData));
+ 312               		.loc 1 119 0
+ 313 014c 60E0      		ldi r22,lo8(__c.2469)
+ 314 014e 70E0      		ldi r23,hi8(__c.2469)
+ 315               	.L34:
+ 316 0150 CE01      		movw r24,r28
+ 317 0152 0E94 0000 		call strcpy_P
+ 120:Lib/TELNETServerApp.c **** 						break;
+ 318               		.loc 1 120 0
+ 319 0156 FE01      		movw r30,r28
+ 320               		0:
+ 321 0158 0190      		ld __tmp_reg__,Z+
+ 322 015a 0020      		tst __tmp_reg__
+ 323 015c 01F4      		brne 0b
+ 324 015e 3197      		sbiw r30,1
+ 325 0160 BF01      		movw r22,r30
+ 326 0162 6C1B      		sub r22,r28
+ 327 0164 7D0B      		sbc r23,r29
+ 328               	.L32:
+ 329 0166 CE01      		movw r24,r28
+ 330 0168 0E94 0000 		call uip_send
+ 124:Lib/TELNETServerApp.c **** 				break;
+ 331               		.loc 1 124 0
+ 332 016c 81E0      		ldi r24,lo8(1)
+ 333               	.L33:
+ 334 016e F801      		movw r30,r16
+ 335 0170 858F      		std Z+29,r24
+ 336               	.L2:
+ 337               	/* epilogue start */
+ 128:Lib/TELNETServerApp.c **** 
+ 338               		.loc 1 128 0
+ 339 0172 DF91      		pop r29
+ 340 0174 CF91      		pop r28
+ 341 0176 1F91      		pop r17
+ 342 0178 0F91      		pop r16
+ 343 017a FF90      		pop r15
+ 344 017c EF90      		pop r14
+ 345 017e DF90      		pop r13
+ 346 0180 CF90      		pop r12
+ 347 0182 BF90      		pop r11
+ 348 0184 AF90      		pop r10
+ 349 0186 9F90      		pop r9
+ 350 0188 0895      		ret
+ 351               		.cfi_endproc
+ 352               	.LFE8:
+ 354               		.section	.progmem.data,"a",@progbits
+ 357               	__c.2479:
+ 358 0000 2575 2920 		.string	"%u) %d.%d.%d.%d (Local Port %u <=> Remote Port %u)\r\n"
+ 358      2564 2E25 
+ 358      642E 2564 
+ 358      2E25 6420 
+ 358      284C 6F63 
+ 361               	__c.2469:
+ 362 0035 496E 7661 		.string	"Invalid Command.\r\n"
+ 362      6C69 6420 
+ 362      436F 6D6D 
+ 362      616E 642E 
+ 362      0D0A 00
+ 363               	.global	CurrentConnectionsHeader
+ 366               	CurrentConnectionsHeader:
+ 367 0048 0D0A 2A20 		.string	"\r\n* Current TCP Connections: *\r\n"
+ 367      4375 7272 
+ 367      656E 7420 
+ 367      5443 5020 
+ 367      436F 6E6E 
+ 368               	.global	TELNETMenu
+ 371               	TELNETMenu:
+ 372 0069 0D0A 2020 		.string	"\r\n  == Available Commands: ==\r\n     c) List Active TCP Connections\r\n  =============
+ 372      3D3D 2041 
+ 372      7661 696C 
+ 372      6162 6C65 
+ 372      2043 6F6D 
+ 373               	.global	WelcomeHeader
+ 376               	WelcomeHeader:
+ 377 00ce 2A2A 2A2A 		.string	"********************************************\r\n*       LUFA uIP Webserver (TELNET)      
+ 377      2A2A 2A2A 
+ 377      2A2A 2A2A 
+ 377      2A2A 2A2A 
+ 377      2A2A 2A2A 
+ 378               		.text
+ 379               	.Letext0:
+ 380               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 381               		.file 3 "Lib/FATFs/integer.h"
+ 382               		.file 4 "Lib/FATFs/ff.h"
+ 383               		.file 5 "Lib/uip/uipopt.h"
+ 384               		.file 6 "Lib/uip/uip.h"
+ 385               		.file 7 "Lib/TELNETServerApp.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 TELNETServerApp.c
+     /tmp/ccE7lgTp.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccE7lgTp.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccE7lgTp.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccE7lgTp.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccE7lgTp.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccE7lgTp.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccE7lgTp.s:14     .text.TELNETServerApp_Init:0000000000000000 TELNETServerApp_Init
+     /tmp/ccE7lgTp.s:34     .text.TELNETServerApp_Callback:0000000000000000 TELNETServerApp_Callback
+     /tmp/ccE7lgTp.s:376    .progmem.data:00000000000000ce WelcomeHeader
+     /tmp/ccE7lgTp.s:371    .progmem.data:0000000000000069 TELNETMenu
+     /tmp/ccE7lgTp.s:366    .progmem.data:0000000000000048 CurrentConnectionsHeader
+     /tmp/ccE7lgTp.s:357    .progmem.data:0000000000000000 __c.2479
+     /tmp/ccE7lgTp.s:361    .progmem.data:0000000000000035 __c.2469
+
+UNDEFINED SYMBOLS
+uip_listen
+uip_conn
+uip_appdata
+uip_flags
+strcpy_P
+uip_send
+uip_len
+uip_conns
+sprintf_P

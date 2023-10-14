@@ -1,0 +1,1131 @@
+   1               		.file	"ConfigDescriptor.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.DComp_NextCDCControlInterface,"ax",@progbits
+  12               	.global	DComp_NextCDCControlInterface
+  14               	DComp_NextCDCControlInterface:
+  15               	.LFB148:
+  16               		.file 1 "ConfigDescriptor.c"
+   1:ConfigDescriptor.c **** /*
+   2:ConfigDescriptor.c ****              LUFA Library
+   3:ConfigDescriptor.c ****      Copyright (C) Dean Camera, 2011.
+   4:ConfigDescriptor.c **** 
+   5:ConfigDescriptor.c ****   dean [at] fourwalledcubicle [dot] com
+   6:ConfigDescriptor.c ****            www.lufa-lib.org
+   7:ConfigDescriptor.c **** */
+   8:ConfigDescriptor.c **** 
+   9:ConfigDescriptor.c **** /*
+  10:ConfigDescriptor.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:ConfigDescriptor.c **** 
+  12:ConfigDescriptor.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:ConfigDescriptor.c ****   software and its documentation for any purpose is hereby granted
+  14:ConfigDescriptor.c ****   without fee, provided that the above copyright notice appear in
+  15:ConfigDescriptor.c ****   all copies and that both that the copyright notice and this
+  16:ConfigDescriptor.c ****   permission notice and warranty disclaimer appear in supporting
+  17:ConfigDescriptor.c ****   documentation, and that the name of the author not be used in
+  18:ConfigDescriptor.c ****   advertising or publicity pertaining to distribution of the
+  19:ConfigDescriptor.c ****   software without specific, written prior permission.
+  20:ConfigDescriptor.c **** 
+  21:ConfigDescriptor.c ****   The author disclaim all warranties with regard to this
+  22:ConfigDescriptor.c ****   software, including all implied warranties of merchantability
+  23:ConfigDescriptor.c ****   and fitness.  In no event shall the author be liable for any
+  24:ConfigDescriptor.c ****   special, indirect or consequential damages or any damages
+  25:ConfigDescriptor.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:ConfigDescriptor.c ****   in an action of contract, negligence or other tortious action,
+  27:ConfigDescriptor.c ****   arising out of or in connection with the use or performance of
+  28:ConfigDescriptor.c ****   this software.
+  29:ConfigDescriptor.c **** */
+  30:ConfigDescriptor.c **** 
+  31:ConfigDescriptor.c **** /** \file
+  32:ConfigDescriptor.c ****  *
+  33:ConfigDescriptor.c ****  *  USB Device Configuration Descriptor processing routines, to determine the correct pipe configur
+  34:ConfigDescriptor.c ****  *  needed to communication with an attached USB device. Descriptors are special  computer-readable
+  35:ConfigDescriptor.c ****  *  which the host requests upon device enumeration, to determine the device's capabilities and fun
+  36:ConfigDescriptor.c ****  */
+  37:ConfigDescriptor.c **** 
+  38:ConfigDescriptor.c **** #include "ConfigDescriptor.h"
+  39:ConfigDescriptor.c **** 
+  40:ConfigDescriptor.c **** /** Reads and processes an attached device's descriptors, to determine compatibility and pipe confi
+  41:ConfigDescriptor.c ****  *  routine will read in the entire configuration descriptor, and configure the hosts pipes to corr
+  42:ConfigDescriptor.c ****  *  with compatible devices.
+  43:ConfigDescriptor.c ****  *
+  44:ConfigDescriptor.c ****  *  This routine searches for a RNDIS interface descriptor containing bulk data IN and OUT endpoint
+  45:ConfigDescriptor.c ****  *
+  46:ConfigDescriptor.c ****  *  \return An error code from the \ref RNDISHost_GetConfigDescriptorDataCodes_t enum.
+  47:ConfigDescriptor.c ****  */
+  48:ConfigDescriptor.c **** uint8_t ProcessConfigurationDescriptor(void)
+  49:ConfigDescriptor.c **** {
+  50:ConfigDescriptor.c **** 	uint8_t  ConfigDescriptorData[512];
+  51:ConfigDescriptor.c **** 	void*    CurrConfigLocation = ConfigDescriptorData;
+  52:ConfigDescriptor.c **** 	uint16_t CurrConfigBytesRem;
+  53:ConfigDescriptor.c **** 
+  54:ConfigDescriptor.c **** 	USB_Descriptor_Interface_t* RNDISControlInterface  = NULL;
+  55:ConfigDescriptor.c **** 	USB_Descriptor_Endpoint_t*  DataINEndpoint         = NULL;
+  56:ConfigDescriptor.c **** 	USB_Descriptor_Endpoint_t*  DataOUTEndpoint        = NULL;
+  57:ConfigDescriptor.c **** 	USB_Descriptor_Endpoint_t*  NotificationEndpoint   = NULL;
+  58:ConfigDescriptor.c **** 
+  59:ConfigDescriptor.c **** 	/* Retrieve the entire configuration descriptor into the allocated buffer */
+  60:ConfigDescriptor.c **** 	switch (USB_Host_GetDeviceConfigDescriptor(1, &CurrConfigBytesRem, ConfigDescriptorData, sizeof(Co
+  61:ConfigDescriptor.c **** 	{
+  62:ConfigDescriptor.c **** 		case HOST_GETCONFIG_Successful:
+  63:ConfigDescriptor.c **** 			break;
+  64:ConfigDescriptor.c **** 		case HOST_GETCONFIG_InvalidData:
+  65:ConfigDescriptor.c **** 			return InvalidConfigDataReturned;
+  66:ConfigDescriptor.c **** 		case HOST_GETCONFIG_BuffOverflow:
+  67:ConfigDescriptor.c **** 			return DescriptorTooLarge;
+  68:ConfigDescriptor.c **** 		default:
+  69:ConfigDescriptor.c **** 			return ControlError;
+  70:ConfigDescriptor.c **** 	}
+  71:ConfigDescriptor.c **** 
+  72:ConfigDescriptor.c **** 	while (!(DataINEndpoint) || !(DataOUTEndpoint) || !(NotificationEndpoint))
+  73:ConfigDescriptor.c **** 	{
+  74:ConfigDescriptor.c **** 		/* See if we've found a likely compatible interface, and if there is an endpoint within that inte
+  75:ConfigDescriptor.c **** 		if (!(RNDISControlInterface) ||
+  76:ConfigDescriptor.c **** 		    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+  77:ConfigDescriptor.c **** 		                              DComp_NextCDCDataInterfaceEndpoint) != DESCRIPTOR_SEARCH_COMP_Found
+  78:ConfigDescriptor.c **** 		{
+  79:ConfigDescriptor.c **** 			/* Check if we have already found the control interface's notification endpoint or not */
+  80:ConfigDescriptor.c **** 			if (NotificationEndpoint)
+  81:ConfigDescriptor.c **** 			{
+  82:ConfigDescriptor.c **** 				/* Get the next RNDIS data interface from the configuration descriptor */
+  83:ConfigDescriptor.c **** 				if (USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+  84:ConfigDescriptor.c **** 											  DComp_NextCDCDataInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+  85:ConfigDescriptor.c **** 				{
+  86:ConfigDescriptor.c **** 					/* Descriptor not found, error out */
+  87:ConfigDescriptor.c **** 					return NoCompatibleInterfaceFound;
+  88:ConfigDescriptor.c **** 				}
+  89:ConfigDescriptor.c **** 
+  90:ConfigDescriptor.c **** 				/* Clear any found endpoints */
+  91:ConfigDescriptor.c **** 				DataINEndpoint       = NULL;
+  92:ConfigDescriptor.c **** 				DataOUTEndpoint      = NULL;
+  93:ConfigDescriptor.c **** 			}
+  94:ConfigDescriptor.c **** 			else
+  95:ConfigDescriptor.c **** 			{
+  96:ConfigDescriptor.c **** 				/* Get the next RNDIS control interface from the configuration descriptor */
+  97:ConfigDescriptor.c **** 				if (USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+  98:ConfigDescriptor.c **** 											  DComp_NextCDCControlInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+  99:ConfigDescriptor.c **** 				{
+ 100:ConfigDescriptor.c **** 					/* Descriptor not found, error out */
+ 101:ConfigDescriptor.c **** 					return NoCompatibleInterfaceFound;
+ 102:ConfigDescriptor.c **** 				}
+ 103:ConfigDescriptor.c **** 
+ 104:ConfigDescriptor.c **** 				/* Save the interface in case we need to refer back to it later */
+ 105:ConfigDescriptor.c **** 				RNDISControlInterface = DESCRIPTOR_PCAST(CurrConfigLocation, USB_Descriptor_Interface_t);
+ 106:ConfigDescriptor.c **** 
+ 107:ConfigDescriptor.c **** 				/* Clear any found endpoints */
+ 108:ConfigDescriptor.c **** 				NotificationEndpoint = NULL;
+ 109:ConfigDescriptor.c **** 			}
+ 110:ConfigDescriptor.c **** 
+ 111:ConfigDescriptor.c **** 			/* Skip the remainder of the loop as we have not found an endpoint yet */
+ 112:ConfigDescriptor.c **** 			continue;
+ 113:ConfigDescriptor.c **** 		}
+ 114:ConfigDescriptor.c **** 
+ 115:ConfigDescriptor.c **** 		/* Retrieve the endpoint address from the endpoint descriptor */
+ 116:ConfigDescriptor.c **** 		USB_Descriptor_Endpoint_t* EndpointData = DESCRIPTOR_PCAST(CurrConfigLocation, USB_Descriptor_End
+ 117:ConfigDescriptor.c **** 
+ 118:ConfigDescriptor.c **** 		/* If the endpoint is a IN type endpoint */
+ 119:ConfigDescriptor.c **** 		if ((EndpointData->EndpointAddress & ENDPOINT_DIR_MASK) == ENDPOINT_DIR_IN)
+ 120:ConfigDescriptor.c **** 		{
+ 121:ConfigDescriptor.c **** 			/* Check if the found endpoint is a interrupt or bulk type descriptor */
+ 122:ConfigDescriptor.c **** 			if ((EndpointData->Attributes & EP_TYPE_MASK) == EP_TYPE_INTERRUPT)
+ 123:ConfigDescriptor.c **** 			  NotificationEndpoint = EndpointData;
+ 124:ConfigDescriptor.c **** 			else
+ 125:ConfigDescriptor.c **** 			  DataINEndpoint = EndpointData;
+ 126:ConfigDescriptor.c **** 		}
+ 127:ConfigDescriptor.c **** 		else
+ 128:ConfigDescriptor.c **** 		{
+ 129:ConfigDescriptor.c **** 			DataOUTEndpoint = EndpointData;
+ 130:ConfigDescriptor.c **** 		}
+ 131:ConfigDescriptor.c **** 	}
+ 132:ConfigDescriptor.c **** 
+ 133:ConfigDescriptor.c **** 	/* Configure the RNDIS data IN pipe */
+ 134:ConfigDescriptor.c **** 	Pipe_ConfigurePipe(RNDIS_DATA_IN_PIPE, EP_TYPE_BULK, PIPE_TOKEN_IN,
+ 135:ConfigDescriptor.c **** 	                   DataINEndpoint->EndpointAddress, DataINEndpoint->EndpointSize, PIPE_BANK_SINGLE
+ 136:ConfigDescriptor.c **** 
+ 137:ConfigDescriptor.c **** 	/* Configure the RNDIS data OUT pipe */
+ 138:ConfigDescriptor.c **** 	Pipe_ConfigurePipe(RNDIS_DATA_OUT_PIPE, EP_TYPE_BULK, PIPE_TOKEN_OUT,
+ 139:ConfigDescriptor.c **** 					   DataOUTEndpoint->EndpointAddress, DataOUTEndpoint->EndpointSize, PIPE_BANK_SINGLE);
+ 140:ConfigDescriptor.c **** 
+ 141:ConfigDescriptor.c **** 	/* Configure the RNDIS notification pipe */
+ 142:ConfigDescriptor.c **** 	Pipe_ConfigurePipe(RNDIS_NOTIFICATION_PIPE, EP_TYPE_INTERRUPT, PIPE_TOKEN_IN,
+ 143:ConfigDescriptor.c **** 					   NotificationEndpoint->EndpointAddress, NotificationEndpoint->EndpointSize, PIPE_BANK_SINGLE
+ 144:ConfigDescriptor.c **** 	Pipe_SetInterruptPeriod(NotificationEndpoint->PollingIntervalMS);
+ 145:ConfigDescriptor.c **** 
+ 146:ConfigDescriptor.c **** 	/* Valid data found, return success */
+ 147:ConfigDescriptor.c **** 	return SuccessfulConfigRead;
+ 148:ConfigDescriptor.c **** }
+ 149:ConfigDescriptor.c **** 
+ 150:ConfigDescriptor.c **** /** Descriptor comparator function. This comparator function is can be called while processing an a
+ 151:ConfigDescriptor.c ****  *  configuration descriptor, to search for a specific sub descriptor. It can also be used to abort
+ 152:ConfigDescriptor.c ****  *  descriptor processing if an incompatible descriptor configuration is found.
+ 153:ConfigDescriptor.c ****  *
+ 154:ConfigDescriptor.c ****  *  This comparator searches for the next Interface descriptor of the correct CDC control Class, Su
+ 155:ConfigDescriptor.c ****  *
+ 156:ConfigDescriptor.c ****  *  \return A value from the DSEARCH_Return_ErrorCodes_t enum
+ 157:ConfigDescriptor.c ****  */
+ 158:ConfigDescriptor.c **** uint8_t DComp_NextCDCControlInterface(void* CurrentDescriptor)
+ 159:ConfigDescriptor.c **** {
+  17               		.loc 1 159 0
+  18               		.cfi_startproc
+  19               	.LVL0:
+  20               	/* prologue: function */
+  21               	/* frame size = 0 */
+  22               	/* stack size = 0 */
+  23               	.L__stack_usage = 0
+  24 0000 FC01      		movw r30,r24
+  25               	.LVL1:
+ 160:ConfigDescriptor.c **** 	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+ 161:ConfigDescriptor.c **** 
+ 162:ConfigDescriptor.c **** 	if (Header->Type == DTYPE_Interface)
+  26               		.loc 1 162 0
+  27 0002 8181      		ldd r24,Z+1
+  28               	.LVL2:
+  29 0004 8430      		cpi r24,lo8(4)
+  30 0006 01F4      		brne .L5
+  31               	.LVL3:
+  32               	.LBB5:
+ 163:ConfigDescriptor.c **** 	{
+ 164:ConfigDescriptor.c **** 		USB_Descriptor_Interface_t* Interface = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Interf
+ 165:ConfigDescriptor.c **** 
+ 166:ConfigDescriptor.c **** 		/* Check the CDC descriptor class, subclass and protocol, break out if correct control interface 
+ 167:ConfigDescriptor.c **** 		if ((Interface->Class    == CDC_CSCP_CDCClass)    &&
+  33               		.loc 1 167 0
+  34 0008 8581      		ldd r24,Z+5
+  35 000a 8230      		cpi r24,lo8(2)
+  36 000c 01F4      		brne .L5
+ 168:ConfigDescriptor.c **** 		    (Interface->SubClass == CDC_CSCP_ACMSubclass) &&
+  37               		.loc 1 168 0 discriminator 1
+  38 000e 8681      		ldd r24,Z+6
+ 167:ConfigDescriptor.c **** 		    (Interface->SubClass == CDC_CSCP_ACMSubclass) &&
+  39               		.loc 1 167 0 discriminator 1
+  40 0010 8230      		cpi r24,lo8(2)
+  41 0012 01F4      		brne .L5
+  42               		.loc 1 168 0
+  43 0014 9781      		ldd r25,Z+7
+  44 0016 9F3F      		cpi r25,lo8(-1)
+  45 0018 01F4      		brne .L2
+ 169:ConfigDescriptor.c **** 		    (Interface->Protocol == CDC_CSCP_VendorSpecificProtocol))
+ 170:ConfigDescriptor.c **** 		{
+ 171:ConfigDescriptor.c **** 			return DESCRIPTOR_SEARCH_Found;
+  46               		.loc 1 171 0
+  47 001a 80E0      		ldi r24,0
+  48 001c 0895      		ret
+  49               	.LVL4:
+  50               	.L5:
+  51               	.LBE5:
+ 172:ConfigDescriptor.c **** 		}
+ 173:ConfigDescriptor.c **** 	}
+ 174:ConfigDescriptor.c **** 
+ 175:ConfigDescriptor.c **** 	return DESCRIPTOR_SEARCH_NotFound;
+  52               		.loc 1 175 0
+  53 001e 82E0      		ldi r24,lo8(2)
+  54               	.L2:
+ 176:ConfigDescriptor.c **** }
+  55               		.loc 1 176 0
+  56 0020 0895      		ret
+  57               		.cfi_endproc
+  58               	.LFE148:
+  60               		.section	.text.DComp_NextCDCDataInterface,"ax",@progbits
+  61               	.global	DComp_NextCDCDataInterface
+  63               	DComp_NextCDCDataInterface:
+  64               	.LFB149:
+ 177:ConfigDescriptor.c **** 
+ 178:ConfigDescriptor.c **** /** Descriptor comparator function. This comparator function is can be called while processing an a
+ 179:ConfigDescriptor.c ****  *  configuration descriptor, to search for a specific sub descriptor. It can also be used to abort
+ 180:ConfigDescriptor.c ****  *  descriptor processing if an incompatible descriptor configuration is found.
+ 181:ConfigDescriptor.c ****  *
+ 182:ConfigDescriptor.c ****  *  This comparator searches for the next Interface descriptor of the correct CDC data Class, Subcl
+ 183:ConfigDescriptor.c ****  *
+ 184:ConfigDescriptor.c ****  *  \return A value from the DSEARCH_Return_ErrorCodes_t enum
+ 185:ConfigDescriptor.c ****  */
+ 186:ConfigDescriptor.c **** uint8_t DComp_NextCDCDataInterface(void* CurrentDescriptor)
+ 187:ConfigDescriptor.c **** {
+  65               		.loc 1 187 0
+  66               		.cfi_startproc
+  67               	.LVL5:
+  68               	/* prologue: function */
+  69               	/* frame size = 0 */
+  70               	/* stack size = 0 */
+  71               	.L__stack_usage = 0
+  72 0000 FC01      		movw r30,r24
+  73               	.LVL6:
+ 188:ConfigDescriptor.c **** 	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+ 189:ConfigDescriptor.c **** 
+ 190:ConfigDescriptor.c **** 	if (Header->Type == DTYPE_Interface)
+  74               		.loc 1 190 0
+  75 0002 8181      		ldd r24,Z+1
+  76               	.LVL7:
+  77 0004 8430      		cpi r24,lo8(4)
+  78 0006 01F4      		brne .L12
+  79               	.LVL8:
+  80               	.LBB6:
+ 191:ConfigDescriptor.c **** 	{
+ 192:ConfigDescriptor.c **** 		USB_Descriptor_Interface_t* Interface = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Interf
+ 193:ConfigDescriptor.c **** 
+ 194:ConfigDescriptor.c **** 		/* Check the CDC descriptor class, subclass and protocol, break out if correct data interface fou
+ 195:ConfigDescriptor.c **** 		if ((Interface->Class    == CDC_CSCP_CDCDataClass)   &&
+  81               		.loc 1 195 0
+  82 0008 8581      		ldd r24,Z+5
+  83 000a 8A30      		cpi r24,lo8(10)
+  84 000c 01F4      		brne .L12
+  85               		.loc 1 195 0 is_stmt 0 discriminator 1
+  86 000e 8681      		ldd r24,Z+6
+  87 0010 8111      		cpse r24,__zero_reg__
+  88 0012 00C0      		rjmp .L12
+ 196:ConfigDescriptor.c **** 		    (Interface->SubClass == CDC_CSCP_NoDataSubclass) &&
+ 197:ConfigDescriptor.c **** 		    (Interface->Protocol == CDC_CSCP_NoDataProtocol))
+  89               		.loc 1 197 0 is_stmt 1
+  90 0014 8781      		ldd r24,Z+7
+ 196:ConfigDescriptor.c **** 		    (Interface->SubClass == CDC_CSCP_NoDataSubclass) &&
+  91               		.loc 1 196 0
+  92 0016 8111      		cpse r24,__zero_reg__
+  93 0018 00C0      		rjmp .L12
+  94 001a 0895      		ret
+  95               	.LVL9:
+  96               	.L12:
+  97               	.LBE6:
+ 198:ConfigDescriptor.c **** 		{
+ 199:ConfigDescriptor.c **** 			return DESCRIPTOR_SEARCH_Found;
+ 200:ConfigDescriptor.c **** 		}
+ 201:ConfigDescriptor.c **** 	}
+ 202:ConfigDescriptor.c **** 
+ 203:ConfigDescriptor.c **** 	return DESCRIPTOR_SEARCH_NotFound;
+  98               		.loc 1 203 0
+  99 001c 82E0      		ldi r24,lo8(2)
+ 204:ConfigDescriptor.c **** }
+ 100               		.loc 1 204 0
+ 101 001e 0895      		ret
+ 102               		.cfi_endproc
+ 103               	.LFE149:
+ 105               		.section	.text.DComp_NextCDCDataInterfaceEndpoint,"ax",@progbits
+ 106               	.global	DComp_NextCDCDataInterfaceEndpoint
+ 108               	DComp_NextCDCDataInterfaceEndpoint:
+ 109               	.LFB150:
+ 205:ConfigDescriptor.c **** 
+ 206:ConfigDescriptor.c **** /** Descriptor comparator function. This comparator function is can be called while processing an a
+ 207:ConfigDescriptor.c ****  *  configuration descriptor, to search for a specific sub descriptor. It can also be used to abort
+ 208:ConfigDescriptor.c ****  *  descriptor processing if an incompatible descriptor configuration is found.
+ 209:ConfigDescriptor.c ****  *
+ 210:ConfigDescriptor.c ****  *  This comparator searches for the next bulk IN or OUT endpoint, or interrupt IN endpoint within 
+ 211:ConfigDescriptor.c ****  *  aborting the search if another interface descriptor is found before the required endpoint (so t
+ 212:ConfigDescriptor.c ****  *  using a different comparator to determine if it is another CDC class interface).
+ 213:ConfigDescriptor.c ****  *
+ 214:ConfigDescriptor.c ****  *  \return A value from the DSEARCH_Return_ErrorCodes_t enum
+ 215:ConfigDescriptor.c ****  */
+ 216:ConfigDescriptor.c **** uint8_t DComp_NextCDCDataInterfaceEndpoint(void* CurrentDescriptor)
+ 217:ConfigDescriptor.c **** {
+ 110               		.loc 1 217 0
+ 111               		.cfi_startproc
+ 112               	.LVL10:
+ 113               	/* prologue: function */
+ 114               	/* frame size = 0 */
+ 115               	/* stack size = 0 */
+ 116               	.L__stack_usage = 0
+ 117 0000 FC01      		movw r30,r24
+ 118               	.LVL11:
+ 218:ConfigDescriptor.c **** 	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+ 219:ConfigDescriptor.c **** 
+ 220:ConfigDescriptor.c **** 	if (Header->Type == DTYPE_Endpoint)
+ 119               		.loc 1 220 0
+ 120 0002 9181      		ldd r25,Z+1
+ 121 0004 9530      		cpi r25,lo8(5)
+ 122 0006 01F4      		brne .L14
+ 123               	.LVL12:
+ 124               	.LBB7:
+ 221:ConfigDescriptor.c **** 	{
+ 222:ConfigDescriptor.c **** 		USB_Descriptor_Endpoint_t* Endpoint = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Endpoint
+ 223:ConfigDescriptor.c **** 
+ 224:ConfigDescriptor.c **** 		/* Check the endpoint type, break out if correct BULK or INTERRUPT type endpoint found */
+ 225:ConfigDescriptor.c **** 		if (((Endpoint->Attributes & EP_TYPE_MASK) == EP_TYPE_BULK) || 
+ 125               		.loc 1 225 0
+ 126 0008 8381      		ldd r24,Z+3
+ 127               	.LVL13:
+ 128 000a 8370      		andi r24,lo8(3)
+ 129 000c 90E0      		ldi r25,0
+ 130 000e 0297      		sbiw r24,2
+ 131 0010 0297      		sbiw r24,2
+ 132 0012 00F4      		brsh .L17
+ 226:ConfigDescriptor.c **** 		    ((Endpoint->Attributes & EP_TYPE_MASK) == EP_TYPE_INTERRUPT))
+ 227:ConfigDescriptor.c **** 		{
+ 228:ConfigDescriptor.c **** 			return DESCRIPTOR_SEARCH_Found;
+ 133               		.loc 1 228 0
+ 134 0014 80E0      		ldi r24,0
+ 135 0016 0895      		ret
+ 136               	.LVL14:
+ 137               	.L14:
+ 138               	.LBE7:
+ 229:ConfigDescriptor.c **** 		}
+ 230:ConfigDescriptor.c **** 	}
+ 231:ConfigDescriptor.c **** 	else if (Header->Type == DTYPE_Interface)
+ 139               		.loc 1 231 0
+ 140 0018 9430      		cpi r25,lo8(4)
+ 141 001a 01F4      		brne .L17
+ 232:ConfigDescriptor.c **** 	{
+ 233:ConfigDescriptor.c **** 		return DESCRIPTOR_SEARCH_Fail;
+ 142               		.loc 1 233 0
+ 143 001c 81E0      		ldi r24,lo8(1)
+ 144               	.LVL15:
+ 145 001e 0895      		ret
+ 146               	.L17:
+ 234:ConfigDescriptor.c **** 	}
+ 235:ConfigDescriptor.c **** 
+ 236:ConfigDescriptor.c **** 	return DESCRIPTOR_SEARCH_NotFound;
+ 147               		.loc 1 236 0
+ 148 0020 82E0      		ldi r24,lo8(2)
+ 237:ConfigDescriptor.c **** }
+ 149               		.loc 1 237 0
+ 150 0022 0895      		ret
+ 151               		.cfi_endproc
+ 152               	.LFE150:
+ 154               		.section	.text.ProcessConfigurationDescriptor,"ax",@progbits
+ 155               	.global	ProcessConfigurationDescriptor
+ 157               	ProcessConfigurationDescriptor:
+ 158               	.LFB147:
+  49:ConfigDescriptor.c **** 	uint8_t  ConfigDescriptorData[512];
+ 159               		.loc 1 49 0
+ 160               		.cfi_startproc
+ 161 0000 8F92      		push r8
+ 162               	.LCFI0:
+ 163               		.cfi_def_cfa_offset 3
+ 164               		.cfi_offset 8, -2
+ 165 0002 9F92      		push r9
+ 166               	.LCFI1:
+ 167               		.cfi_def_cfa_offset 4
+ 168               		.cfi_offset 9, -3
+ 169 0004 AF92      		push r10
+ 170               	.LCFI2:
+ 171               		.cfi_def_cfa_offset 5
+ 172               		.cfi_offset 10, -4
+ 173 0006 BF92      		push r11
+ 174               	.LCFI3:
+ 175               		.cfi_def_cfa_offset 6
+ 176               		.cfi_offset 11, -5
+ 177 0008 CF92      		push r12
+ 178               	.LCFI4:
+ 179               		.cfi_def_cfa_offset 7
+ 180               		.cfi_offset 12, -6
+ 181 000a DF92      		push r13
+ 182               	.LCFI5:
+ 183               		.cfi_def_cfa_offset 8
+ 184               		.cfi_offset 13, -7
+ 185 000c EF92      		push r14
+ 186               	.LCFI6:
+ 187               		.cfi_def_cfa_offset 9
+ 188               		.cfi_offset 14, -8
+ 189 000e FF92      		push r15
+ 190               	.LCFI7:
+ 191               		.cfi_def_cfa_offset 10
+ 192               		.cfi_offset 15, -9
+ 193 0010 0F93      		push r16
+ 194               	.LCFI8:
+ 195               		.cfi_def_cfa_offset 11
+ 196               		.cfi_offset 16, -10
+ 197 0012 1F93      		push r17
+ 198               	.LCFI9:
+ 199               		.cfi_def_cfa_offset 12
+ 200               		.cfi_offset 17, -11
+ 201 0014 CF93      		push r28
+ 202               	.LCFI10:
+ 203               		.cfi_def_cfa_offset 13
+ 204               		.cfi_offset 28, -12
+ 205 0016 DF93      		push r29
+ 206               	.LCFI11:
+ 207               		.cfi_def_cfa_offset 14
+ 208               		.cfi_offset 29, -13
+ 209 0018 CDB7      		in r28,__SP_L__
+ 210 001a DEB7      		in r29,__SP_H__
+ 211               	.LCFI12:
+ 212               		.cfi_def_cfa_register 28
+ 213 001c C450      		subi r28,4
+ 214 001e D240      		sbci r29,2
+ 215               	.LCFI13:
+ 216               		.cfi_def_cfa_offset 530
+ 217 0020 0FB6      		in __tmp_reg__,__SREG__
+ 218 0022 F894      		cli
+ 219 0024 DEBF      		out __SP_H__,r29
+ 220 0026 0FBE      		out __SREG__,__tmp_reg__
+ 221 0028 CDBF      		out __SP_L__,r28
+ 222               	/* prologue: function */
+ 223               	/* frame size = 516 */
+ 224               	/* stack size = 528 */
+ 225               	.L__stack_usage = 528
+  51:ConfigDescriptor.c **** 	uint16_t CurrConfigBytesRem;
+ 226               		.loc 1 51 0
+ 227 002a AE01      		movw r20,r28
+ 228 002c 4F5F      		subi r20,-1
+ 229 002e 5F4F      		sbci r21,-1
+ 230 0030 CD5F      		subi r28,lo8(-515)
+ 231 0032 DD4F      		sbci r29,hi8(-515)
+ 232 0034 5983      		std Y+1,r21
+ 233 0036 4883      		st Y,r20
+ 234 0038 C350      		subi r28,lo8(515)
+ 235 003a D240      		sbci r29,hi8(515)
+ 236               	.LVL16:
+  60:ConfigDescriptor.c **** 	{
+ 237               		.loc 1 60 0
+ 238 003c 20E0      		ldi r18,0
+ 239 003e 32E0      		ldi r19,lo8(2)
+ 240 0040 BE01      		movw r22,r28
+ 241 0042 6F5F      		subi r22,-1
+ 242 0044 7D4F      		sbci r23,-3
+ 243 0046 81E0      		ldi r24,lo8(1)
+ 244 0048 0E94 0000 		call USB_Host_GetDeviceConfigDescriptor
+ 245               	.LVL17:
+ 246 004c F82E      		mov r15,r24
+ 247 004e 85E0      		ldi r24,lo8(5)
+ 248 0050 F816      		cp r15,r24
+ 249 0052 01F0      		breq .L20
+ 250 0054 E6E0      		ldi r30,lo8(6)
+ 251 0056 FE16      		cp r15,r30
+ 252 0058 01F4      		brne .+2
+ 253 005a 00C0      		rjmp .L33
+ 254 005c F110      		cpse r15,__zero_reg__
+ 255 005e 00C0      		rjmp .L46
+ 256 0060 C12C      		mov r12,__zero_reg__
+ 257 0062 D12C      		mov r13,__zero_reg__
+ 258 0064 812C      		mov r8,__zero_reg__
+ 259 0066 912C      		mov r9,__zero_reg__
+ 260 0068 A12C      		mov r10,__zero_reg__
+ 261 006a B12C      		mov r11,__zero_reg__
+ 262 006c 00E0      		ldi r16,0
+ 263 006e 10E0      		ldi r17,0
+ 264 0070 00C0      		rjmp .L23
+ 265               	.L20:
+  67:ConfigDescriptor.c **** 		default:
+ 266               		.loc 1 67 0
+ 267 0072 22E0      		ldi r18,lo8(2)
+ 268 0074 F22E      		mov r15,r18
+ 269 0076 00C0      		rjmp .L47
+ 270               	.L46:
+  69:ConfigDescriptor.c **** 	}
+ 271               		.loc 1 69 0
+ 272 0078 FF24      		clr r15
+ 273 007a F394      		inc r15
+ 274 007c 00C0      		rjmp .L47
+ 275               	.LVL18:
+ 276               	.L50:
+  72:ConfigDescriptor.c **** 	{
+ 277               		.loc 1 72 0 discriminator 1
+ 278 007e 8114      		cp r8,__zero_reg__
+ 279 0080 9104      		cpc r9,__zero_reg__
+ 280 0082 01F0      		breq .+2
+ 281 0084 00C0      		rjmp .L49
+ 282               	.L31:
+ 283               	.LBB8:
+  75:ConfigDescriptor.c **** 		    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+ 284               		.loc 1 75 0
+ 285 0086 0115      		cp r16,__zero_reg__
+ 286 0088 1105      		cpc r17,__zero_reg__
+ 287 008a 01F4      		brne .L24
+ 288               	.L27:
+  80:ConfigDescriptor.c **** 			{
+ 289               		.loc 1 80 0
+ 290 008c C114      		cp r12,__zero_reg__
+ 291 008e D104      		cpc r13,__zero_reg__
+ 292 0090 01F4      		brne .L25
+ 293               	.L26:
+  97:ConfigDescriptor.c **** 											  DComp_NextCDCControlInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+ 294               		.loc 1 97 0
+ 295 0092 40E0      		ldi r20,lo8(gs(DComp_NextCDCControlInterface))
+ 296 0094 50E0      		ldi r21,hi8(gs(DComp_NextCDCControlInterface))
+ 297 0096 BE01      		movw r22,r28
+ 298 0098 6D5F      		subi r22,-3
+ 299 009a 7D4F      		sbci r23,-3
+ 300 009c CE01      		movw r24,r28
+ 301 009e 8F5F      		subi r24,-1
+ 302 00a0 9D4F      		sbci r25,-3
+ 303 00a2 0E94 0000 		call USB_GetNextDescriptorComp
+ 304               	.LVL19:
+ 305 00a6 8111      		cpse r24,__zero_reg__
+ 306 00a8 00C0      		rjmp .L30
+ 105:ConfigDescriptor.c **** 
+ 307               		.loc 1 105 0
+ 308 00aa CD5F      		subi r28,lo8(-515)
+ 309 00ac DD4F      		sbci r29,hi8(-515)
+ 310 00ae 0881      		ld r16,Y
+ 311 00b0 1981      		ldd r17,Y+1
+ 312 00b2 C350      		subi r28,lo8(515)
+ 313 00b4 D240      		sbci r29,hi8(515)
+ 314               	.LVL20:
+ 108:ConfigDescriptor.c **** 			}
+ 315               		.loc 1 108 0
+ 316 00b6 C12C      		mov r12,__zero_reg__
+ 317 00b8 D12C      		mov r13,__zero_reg__
+ 318               	.LVL21:
+ 319               	.L23:
+ 320               	.LBE8:
+  72:ConfigDescriptor.c **** 	{
+ 321               		.loc 1 72 0
+ 322 00ba A114      		cp r10,__zero_reg__
+ 323 00bc B104      		cpc r11,__zero_reg__
+ 324 00be 01F4      		brne .L50
+ 325 00c0 00C0      		rjmp .L31
+ 326               	.L32:
+ 327               	.LBB9:
+  75:ConfigDescriptor.c **** 		    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+ 328               		.loc 1 75 0
+ 329 00c2 0115      		cp r16,__zero_reg__
+ 330 00c4 1105      		cpc r17,__zero_reg__
+ 331 00c6 01F0      		breq .L26
+ 332               	.L24:
+  76:ConfigDescriptor.c **** 		                              DComp_NextCDCDataInterfaceEndpoint) != DESCRIPTOR_SEARCH_COMP_Found
+ 333               		.loc 1 76 0 discriminator 1
+ 334 00c8 40E0      		ldi r20,lo8(gs(DComp_NextCDCDataInterfaceEndpoint))
+ 335 00ca 50E0      		ldi r21,hi8(gs(DComp_NextCDCDataInterfaceEndpoint))
+ 336 00cc BE01      		movw r22,r28
+ 337 00ce 6D5F      		subi r22,-3
+ 338 00d0 7D4F      		sbci r23,-3
+ 339 00d2 CE01      		movw r24,r28
+ 340 00d4 8F5F      		subi r24,-1
+ 341 00d6 9D4F      		sbci r25,-3
+ 342 00d8 0E94 0000 		call USB_GetNextDescriptorComp
+ 343               	.LVL22:
+  75:ConfigDescriptor.c **** 		    USB_GetNextDescriptorComp(&CurrConfigBytesRem, &CurrConfigLocation,
+ 344               		.loc 1 75 0 discriminator 1
+ 345 00dc 8111      		cpse r24,__zero_reg__
+ 346 00de 00C0      		rjmp .L27
+ 347 00e0 00C0      		rjmp .L51
+ 348               	.L25:
+  83:ConfigDescriptor.c **** 											  DComp_NextCDCDataInterface) != DESCRIPTOR_SEARCH_COMP_Found)
+ 349               		.loc 1 83 0
+ 350 00e2 40E0      		ldi r20,lo8(gs(DComp_NextCDCDataInterface))
+ 351 00e4 50E0      		ldi r21,hi8(gs(DComp_NextCDCDataInterface))
+ 352 00e6 BE01      		movw r22,r28
+ 353 00e8 6D5F      		subi r22,-3
+ 354 00ea 7D4F      		sbci r23,-3
+ 355 00ec CE01      		movw r24,r28
+ 356 00ee 8F5F      		subi r24,-1
+ 357 00f0 9D4F      		sbci r25,-3
+ 358 00f2 0E94 0000 		call USB_GetNextDescriptorComp
+ 359               	.LVL23:
+ 360 00f6 8823      		tst r24
+ 361 00f8 01F0      		breq .L34
+ 362               	.L30:
+  87:ConfigDescriptor.c **** 				}
+ 363               		.loc 1 87 0
+ 364 00fa 94E0      		ldi r25,lo8(4)
+ 365 00fc F92E      		mov r15,r25
+ 366 00fe 00C0      		rjmp .L47
+ 367               	.L51:
+ 116:ConfigDescriptor.c **** 
+ 368               		.loc 1 116 0
+ 369 0100 CD5F      		subi r28,lo8(-515)
+ 370 0102 DD4F      		sbci r29,hi8(-515)
+ 371 0104 E881      		ld r30,Y
+ 372 0106 F981      		ldd r31,Y+1
+ 373 0108 C350      		subi r28,lo8(515)
+ 374 010a D240      		sbci r29,hi8(515)
+ 375               	.LVL24:
+ 119:ConfigDescriptor.c **** 		{
+ 376               		.loc 1 119 0
+ 377 010c 8281      		ldd r24,Z+2
+ 378 010e 87FF      		sbrs r24,7
+ 379 0110 00C0      		rjmp .L35
+ 122:ConfigDescriptor.c **** 			  NotificationEndpoint = EndpointData;
+ 380               		.loc 1 122 0
+ 381 0112 8381      		ldd r24,Z+3
+ 382 0114 8370      		andi r24,lo8(3)
+ 383 0116 8330      		cpi r24,lo8(3)
+ 384 0118 01F0      		breq .L36
+ 125:ConfigDescriptor.c **** 		}
+ 385               		.loc 1 125 0
+ 386 011a 5F01      		movw r10,r30
+ 387               	.LVL25:
+ 388 011c 00C0      		rjmp .L23
+ 389               	.LVL26:
+ 390               	.L34:
+  92:ConfigDescriptor.c **** 			}
+ 391               		.loc 1 92 0
+ 392 011e 812C      		mov r8,__zero_reg__
+ 393 0120 912C      		mov r9,__zero_reg__
+ 394               	.LVL27:
+  91:ConfigDescriptor.c **** 				DataOUTEndpoint      = NULL;
+ 395               		.loc 1 91 0
+ 396 0122 A12C      		mov r10,__zero_reg__
+ 397 0124 B12C      		mov r11,__zero_reg__
+ 398               	.LVL28:
+ 399 0126 00C0      		rjmp .L23
+ 400               	.LVL29:
+ 401               	.L35:
+ 129:ConfigDescriptor.c **** 		}
+ 402               		.loc 1 129 0
+ 403 0128 4F01      		movw r8,r30
+ 404               	.LVL30:
+ 405 012a 00C0      		rjmp .L23
+ 406               	.LVL31:
+ 407               	.L36:
+ 123:ConfigDescriptor.c **** 			else
+ 408               		.loc 1 123 0
+ 409 012c 6F01      		movw r12,r30
+ 410               	.LVL32:
+ 411 012e 00C0      		rjmp .L23
+ 412               	.LVL33:
+ 413               	.L49:
+ 414               	.LBE9:
+  72:ConfigDescriptor.c **** 	{
+ 415               		.loc 1 72 0 discriminator 2
+ 416 0130 C114      		cp r12,__zero_reg__
+ 417 0132 D104      		cpc r13,__zero_reg__
+ 418 0134 01F0      		breq .L32
+ 134:ConfigDescriptor.c **** 	                   DataINEndpoint->EndpointAddress, DataINEndpoint->EndpointSize, PIPE_BANK_SINGLE
+ 419               		.loc 1 134 0
+ 420 0136 F501      		movw r30,r10
+ 421 0138 0481      		ldd r16,Z+4
+ 422 013a 1581      		ldd r17,Z+5
+ 423               	.LVL34:
+ 424 013c E12C      		mov r14,__zero_reg__
+ 425 013e 2281      		ldd r18,Z+2
+ 426 0140 40E1      		ldi r20,lo8(16)
+ 427 0142 62E0      		ldi r22,lo8(2)
+ 428 0144 81E0      		ldi r24,lo8(1)
+ 429 0146 0E94 0000 		call Pipe_ConfigurePipe
+ 430               	.LVL35:
+ 138:ConfigDescriptor.c **** 					   DataOUTEndpoint->EndpointAddress, DataOUTEndpoint->EndpointSize, PIPE_BANK_SINGLE);
+ 431               		.loc 1 138 0
+ 432 014a F401      		movw r30,r8
+ 433 014c 0481      		ldd r16,Z+4
+ 434 014e 1581      		ldd r17,Z+5
+ 435 0150 2281      		ldd r18,Z+2
+ 436 0152 40E2      		ldi r20,lo8(32)
+ 437 0154 62E0      		ldi r22,lo8(2)
+ 438 0156 82E0      		ldi r24,lo8(2)
+ 439 0158 0E94 0000 		call Pipe_ConfigurePipe
+ 440               	.LVL36:
+ 142:ConfigDescriptor.c **** 					   NotificationEndpoint->EndpointAddress, NotificationEndpoint->EndpointSize, PIPE_BANK_SINGLE
+ 441               		.loc 1 142 0
+ 442 015c F601      		movw r30,r12
+ 443 015e 0481      		ldd r16,Z+4
+ 444 0160 1581      		ldd r17,Z+5
+ 445 0162 2281      		ldd r18,Z+2
+ 446 0164 40E1      		ldi r20,lo8(16)
+ 447 0166 63E0      		ldi r22,lo8(3)
+ 448 0168 83E0      		ldi r24,lo8(3)
+ 449 016a 0E94 0000 		call Pipe_ConfigurePipe
+ 450               	.LVL37:
+ 144:ConfigDescriptor.c **** 
+ 451               		.loc 1 144 0
+ 452 016e F601      		movw r30,r12
+ 453 0170 8681      		ldd r24,Z+6
+ 454               	.LVL38:
+ 455               	.LBB10:
+ 456               	.LBB11:
+ 457               		.file 2 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h"
+   1:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /*
+   2:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+   5:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** */
+   8:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+   9:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /*
+  10:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  12:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  21:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   this software.
+  29:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** */
+  30:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  31:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \file
+  32:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief USB Pipe definitions for the AVR8 microcontrollers.
+  33:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \copydetails Group_PipeManagement_AVR8
+  34:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  35:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  36:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *        dispatch header located in LUFA/Drivers/USB/USB.h.
+  37:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  38:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  39:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipeRW
+  40:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipeRW_AVR8 Pipe Data Reading and Writing (AVR8)
+  41:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe data read/write definitions for the Atmel AVR8 architecture.
+  42:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  43:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Functions, macros, variables, enums and types related to data reading and writing from and to p
+  44:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  45:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  46:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipePrimitiveRW
+  47:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipePrimitiveRW_AVR8 Read/Write of Primitive Data Types (AVR8)
+  48:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe primitive data read/write definitions for the Atmel AVR8 architecture.
+  49:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  50:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Functions, macros, variables, enums and types related to data reading and writing of primitive 
+  51:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  from and to pipes.
+  52:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  53:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  54:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipePacketManagement
+  55:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipePacketManagement_AVR8 Pipe Packet Management (AVR8)
+  56:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe packet management definitions for the Atmel AVR8 architecture.
+  57:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  58:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Functions, macros, variables, enums and types related to packet management of pipes.
+  59:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  60:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  61:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipeControlReq
+  62:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipeControlReq_AVR8 Pipe Control Request Management (AVR8)
+  63:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe control request management definitions for the Atmel AVR8 architecture.
+  64:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  65:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Module for host mode request processing. This module allows for the transmission of standard, c
+  66:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  vendor control requests to the default control endpoint of an attached device while in host mod
+  67:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  68:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \see Chapter 9 of the USB 2.0 specification.
+  69:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  70:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  71:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipeManagement
+  72:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipeManagement_AVR8 Pipe Management (AVR8)
+  73:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe management definitions for the Atmel AVR8 architecture.
+  74:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  75:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  This module contains functions, macros and enums related to pipe management when in USB Host mo
+  76:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  module contains the pipe management macros, as well as pipe interrupt and data send/receive fun
+  77:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  for various data types.
+  78:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  79:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  @{
+  80:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  81:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  82:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** #ifndef __PIPE_AVR8_H__
+  83:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** #define __PIPE_AVR8_H__
+  84:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  85:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Includes: */
+  86:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#include "../../../../Common/Common.h"
+  87:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#include "../USBTask.h"
+  88:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  89:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Enable C linkage for C++ Compilers: */
+  90:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#if defined(__cplusplus)
+  91:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			extern "C" {
+  92:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#endif
+  93:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  94:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Preprocessor Checks: */
+  95:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#if !defined(__INCLUDE_FROM_USB_DRIVER)
+  96:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
+  97:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#endif
+  98:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  99:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Public Interface - May be used in end-application: */
+ 100:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		/* Macros: */
+ 101:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** \name Pipe Error Flag Masks */
+ 102:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@{
+ 103:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that an overflow error occurred in the pipe o
+ 104:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_OVERFLOW         (1 << 6)
+ 105:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 106:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that an underflow error occurred in the pipe 
+ 107:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_UNDERFLOW        (1 << 5)
+ 108:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 109:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a CRC error occurred in the pipe on the 
+ 110:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_CRC16            (1 << 4)
+ 111:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 112:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware timeout error occurred in the
+ 113:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_TIMEOUT          (1 << 3)
+ 114:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 115:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware PID error occurred in the pip
+ 116:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_PID              (1 << 2)
+ 117:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 118:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware data PID error occurred in th
+ 119:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_DATAPID          (1 << 1)
+ 120:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 121:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware data toggle error occurred in
+ 122:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_DATATGL          (1 << 0)
+ 123:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@}
+ 124:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 125:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** \name Pipe Token Masks */
+ 126:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@{
+ 127:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Token mask for \ref Pipe_ConfigurePipe(). This sets the pipe as a SETUP token (for CONTROL t
+ 128:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  which will trigger a control request on the attached device when data is written to the pipe
+ 129:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 130:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOKEN_SETUP                (0 << PTOKEN0)
+ 131:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 132:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Token mask for \ref Pipe_ConfigurePipe(). This sets the pipe as a IN token (for non-CONTROL 
+ 133:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  indicating that the pipe data will flow from device to host.
+ 134:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 135:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOKEN_IN                   (1 << PTOKEN0)
+ 136:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 137:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Token mask for \ref Pipe_ConfigurePipe(). This sets the pipe as a OUT token (for non-CONTROL
+ 138:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  indicating that the pipe data will flow from host to device.
+ 139:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 140:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOKEN_OUT                  (2 << PTOKEN0)
+ 141:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@}
+ 142:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			
+ 143:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** \name Pipe Bank Mode Masks */
+ 144:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@{
+ 145:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for the bank mode selection for the \ref Pipe_ConfigurePipe() macro. This indicates tha
+ 146:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  should have one single bank, which requires less USB FIFO memory but results in slower trans
+ 147:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  only one USB device (the AVR or the attached device) can access the pipe's bank at the one t
+ 148:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 149:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_BANK_SINGLE                (0 << EPBK0)
+ 150:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 151:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for the bank mode selection for the \ref Pipe_ConfigurePipe() macro. This indicates tha
+ 152:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  should have two banks, which requires more USB FIFO memory but results in faster transfers a
+ 153:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  USB device (the AVR or the attached device) can access one bank while the other accesses the
+ 154:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  bank.
+ 155:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 156:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_BANK_DOUBLE                (1 << EPBK0)
+ 157:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@}
+ 158:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 159:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Default size of the default control pipe's bank, until altered by the Endpoint0Size value
+ 160:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  in the device descriptor of the attached device.
+ 161:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 162:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_CONTROLPIPE_DEFAULT_SIZE   64
+ 163:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 164:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Total number of pipes (including the default control pipe at address 0) which may be used in
+ 165:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  the device. Different USB AVR models support different amounts of pipes, this value reflects
+ 166:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  the maximum number of pipes for the currently selected AVR model.
+ 167:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 168:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOTAL_PIPES                7
+ 169:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 170:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Size in bytes of the largest pipe bank size possible in the device. Not all banks on each AV
+ 171:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  model supports the largest bank size possible on the device; different pipe numbers support
+ 172:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  different maximum bank sizes. This value reflects the largest possible bank of any pipe on t
+ 173:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  currently selected USB AVR model.
+ 174:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 175:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_MAX_SIZE                   256
+ 176:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 177:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		/* Enums: */
+ 178:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Enum for the possible error return codes of the \ref Pipe_WaitUntilReady() function.
+ 179:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 180:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipeRW_AVR8
+ 181:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 182:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			enum Pipe_WaitUntilReady_ErrorCodes_t
+ 183:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 184:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_NoError                 = 0, /**< Pipe ready for next packet, no error. */
+ 185:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_PipeStalled             = 1,	/**< The device stalled the pipe while waiting. */
+ 186:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_DeviceDisconnected      = 2,	/**< Device was disconnected from the host while wa
+ 187:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_Timeout                 = 3, /**< The device failed to accept or send the next p
+ 188:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                                             *   within the software timeout period set by the
+ 189:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                                             *   \ref USB_STREAM_TIMEOUT_MS macro.
+ 190:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                                             */
+ 191:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			};
+ 192:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 193:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		/* Inline Functions: */
+ 194:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Indicates the number of bytes currently stored in the current pipes's selected bank.
+ 195:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 196:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \note The return width of this function may differ, depending on the maximum pipe bank size
+ 197:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *        of the selected AVR model.
+ 198:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 199:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipeRW_AVR8
+ 200:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 201:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Total number of bytes in the currently selected pipe's FIFO buffer.
+ 202:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 203:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint16_t Pipe_BytesInPipe(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 204:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint16_t Pipe_BytesInPipe(void)
+ 205:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 206:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return UPBCX;
+ 207:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 208:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 209:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Returns the pipe address of the currently selected pipe. This is typically used to save the
+ 210:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  currently selected pipe number so that it can be restored after another pipe has been manipu
+ 211:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 212:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Index of the currently selected pipe.
+ 213:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 214:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetCurrentPipe(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 215:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetCurrentPipe(void)
+ 216:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 217:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return (UPNUM & PIPE_PIPENUM_MASK);
+ 218:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 219:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 220:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Selects the given pipe number. Any pipe operations which do not require the pipe number to b
+ 221:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  indicated will operate on the currently selected pipe.
+ 222:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 223:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] PipeNumber  Index of the pipe to select.
+ 224:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 225:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SelectPipe(const uint8_t PipeNumber) ATTR_ALWAYS_INLINE;
+ 226:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SelectPipe(const uint8_t PipeNumber)
+ 227:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPNUM = PipeNumber;
+ 229:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 230:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 231:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Resets the desired pipe, including the pipe banks and flags.
+ 232:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 233:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] PipeNumber  Index of the pipe to reset.
+ 234:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 235:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ResetPipe(const uint8_t PipeNumber) ATTR_ALWAYS_INLINE;
+ 236:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ResetPipe(const uint8_t PipeNumber)
+ 237:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 238:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPRST = (1 << PipeNumber);
+ 239:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPRST = 0;
+ 240:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 241:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 242:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Enables the currently selected pipe so that data can be sent and received through it to and 
+ 243:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  an attached device.
+ 244:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 245:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \pre The currently selected pipe must first be configured properly via \ref Pipe_ConfigurePi
+ 246:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 247:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_EnablePipe(void) ATTR_ALWAYS_INLINE;
+ 248:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_EnablePipe(void)
+ 249:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 250:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX |= (1 << PEN);
+ 251:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 252:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 253:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Disables the currently selected pipe so that data cannot be sent and received through it to 
+ 254:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  from an attached device.
+ 255:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 256:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_DisablePipe(void) ATTR_ALWAYS_INLINE;
+ 257:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_DisablePipe(void)
+ 258:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 259:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX &= ~(1 << PEN);
+ 260:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 261:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 262:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the currently selected pipe is enabled, but not necessarily configured.
+ 263:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 264:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 * \return Boolean \c true if the currently selected pipe is enabled, \c false otherwise.
+ 265:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 266:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsEnabled(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 267:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsEnabled(void)
+ 268:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 269:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPCONX & (1 << PEN)) ? true : false);
+ 270:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 271:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 272:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Gets the current pipe token, indicating the pipe's data direction and type.
+ 273:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 274:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return The current pipe token, as a \c PIPE_TOKEN_* mask.
+ 275:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 276:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetPipeToken(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 277:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetPipeToken(void)
+ 278:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 279:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return (UPCFG0X & (0x03 << PTOKEN0));
+ 280:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 281:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 282:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Sets the token for the currently selected pipe to one of the tokens specified by the \c PIPE
+ 283:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  masks. This can be used on CONTROL type pipes, to allow for bidirectional transfer of data d
+ 284:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  control requests, or on regular pipes to allow for half-duplex bidirectional data transfer t
+ 285:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  which have two endpoints of opposite direction sharing the same endpoint address within the 
+ 286:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 287:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] Token  New pipe token to set the selected pipe to, as a \c PIPE_TOKEN_* mask.
+ 288:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 289:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetPipeToken(const uint8_t Token) ATTR_ALWAYS_INLINE;
+ 290:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetPipeToken(const uint8_t Token)
+ 291:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 292:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCFG0X = ((UPCFG0X & ~(0x03 << PTOKEN0)) | Token);
+ 293:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 294:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 295:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Configures the currently selected pipe to allow for an unlimited number of IN requests. */
+ 296:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetInfiniteINRequests(void) ATTR_ALWAYS_INLINE;
+ 297:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetInfiniteINRequests(void)
+ 298:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 299:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX |= (1 << INMODE);
+ 300:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 301:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 302:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Configures the currently selected pipe to only allow the specified number of IN requests to 
+ 303:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  accepted by the pipe before it is automatically frozen.
+ 304:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 305:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] TotalINRequests  Total number of IN requests that the pipe may receive before fre
+ 306:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 307:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetFiniteINRequests(const uint8_t TotalINRequests) ATTR_ALWAYS_INLINE;
+ 308:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetFiniteINRequests(const uint8_t TotalINRequests)
+ 309:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 310:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX &= ~(1 << INMODE);
+ 311:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPINRQX = TotalINRequests;
+ 312:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 313:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 314:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the currently selected pipe is configured.
+ 315:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 316:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the selected pipe is configured, \c false otherwise.
+ 317:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 318:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsConfigured(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 319:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsConfigured(void)
+ 320:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 321:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPSTAX & (1 << CFGOK)) ? true : false);
+ 322:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 323:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 324:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Retrieves the endpoint address of the endpoint within the attached device that the currently
+ 325:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  pipe is bound to.
+ 326:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 327:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Endpoint address the currently selected pipe is bound to.
+ 328:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 329:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetBoundEndpointAddress(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INL
+ 330:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetBoundEndpointAddress(void)
+ 331:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 332:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return (((UPCFG0X >> PEPNUM0) & PIPE_EPNUM_MASK) |
+ 333:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				        ((Pipe_GetPipeToken() == PIPE_TOKEN_IN) ? PIPE_EPDIR_MASK : 0));
+ 334:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 335:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 336:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Sets the period between interrupts for an INTERRUPT type pipe to a specified number of milli
+ 337:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 338:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] Milliseconds  Number of milliseconds between each pipe poll.
+ 339:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 340:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetInterruptPeriod(const uint8_t Milliseconds) ATTR_ALWAYS_INLINE;
+ 341:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetInterruptPeriod(const uint8_t Milliseconds)
+ 342:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 343:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCFG2X = Milliseconds;
+ 458               		.loc 2 343 0
+ 459 0172 8093 AD00 		sts 173,r24
+ 460               	.LVL39:
+ 461               	.LBE11:
+ 462               	.LBE10:
+ 147:ConfigDescriptor.c **** }
+ 463               		.loc 1 147 0
+ 464 0176 00C0      		rjmp .L47
+ 465               	.LVL40:
+ 466               	.L33:
+  65:ConfigDescriptor.c **** 		case HOST_GETCONFIG_BuffOverflow:
+ 467               		.loc 1 65 0
+ 468 0178 83E0      		ldi r24,lo8(3)
+ 469 017a F82E      		mov r15,r24
+ 470               	.LVL41:
+ 471               	.L47:
+ 148:ConfigDescriptor.c **** 
+ 472               		.loc 1 148 0
+ 473 017c 8F2D      		mov r24,r15
+ 474               	/* epilogue start */
+ 475 017e CC5F      		subi r28,-4
+ 476 0180 DD4F      		sbci r29,-3
+ 477 0182 0FB6      		in __tmp_reg__,__SREG__
+ 478 0184 F894      		cli
+ 479 0186 DEBF      		out __SP_H__,r29
+ 480 0188 0FBE      		out __SREG__,__tmp_reg__
+ 481 018a CDBF      		out __SP_L__,r28
+ 482 018c DF91      		pop r29
+ 483 018e CF91      		pop r28
+ 484 0190 1F91      		pop r17
+ 485 0192 0F91      		pop r16
+ 486 0194 FF90      		pop r15
+ 487 0196 EF90      		pop r14
+ 488 0198 DF90      		pop r13
+ 489 019a CF90      		pop r12
+ 490 019c BF90      		pop r11
+ 491 019e AF90      		pop r10
+ 492 01a0 9F90      		pop r9
+ 493 01a2 8F90      		pop r8
+ 494 01a4 0895      		ret
+ 495               		.cfi_endproc
+ 496               	.LFE147:
+ 498               		.text
+ 499               	.Letext0:
+ 500               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 501               		.file 4 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../StdDescriptors.h"
+ 502               		.file 5 "../../../../LUFA/Drivers/USB/Core/ConfigDescriptor.h"
+ 503               		.file 6 "../../../../LUFA/Drivers/USB/Class/Host/../Common/CDC.h"
+ 504               		.file 7 "/usr/lib/avr/include/stdio.h"
+ 505               		.file 8 "ConfigDescriptor.h"
+ 506               		.file 9 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+ 507               		.file 10 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ConfigDescriptor.c
+     /tmp/cc4RpRxA.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc4RpRxA.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc4RpRxA.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc4RpRxA.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc4RpRxA.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc4RpRxA.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc4RpRxA.s:14     .text.DComp_NextCDCControlInterface:0000000000000000 DComp_NextCDCControlInterface
+     /tmp/cc4RpRxA.s:63     .text.DComp_NextCDCDataInterface:0000000000000000 DComp_NextCDCDataInterface
+     /tmp/cc4RpRxA.s:108    .text.DComp_NextCDCDataInterfaceEndpoint:0000000000000000 DComp_NextCDCDataInterfaceEndpoint
+     /tmp/cc4RpRxA.s:157    .text.ProcessConfigurationDescriptor:0000000000000000 ProcessConfigurationDescriptor
+
+UNDEFINED SYMBOLS
+USB_Host_GetDeviceConfigDescriptor
+USB_GetNextDescriptorComp
+Pipe_ConfigurePipe

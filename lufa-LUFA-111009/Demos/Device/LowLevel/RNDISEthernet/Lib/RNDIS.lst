@@ -1,0 +1,1269 @@
+   1               		.file	"RNDIS.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.ProcessRNDISControlMessage,"ax",@progbits
+  12               	.global	ProcessRNDISControlMessage
+  14               	ProcessRNDISControlMessage:
+  15               	.LFB116:
+  16               		.file 1 "Lib/RNDIS.c"
+   1:Lib/RNDIS.c   **** /*
+   2:Lib/RNDIS.c   ****              LUFA Library
+   3:Lib/RNDIS.c   ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/RNDIS.c   **** 
+   5:Lib/RNDIS.c   ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/RNDIS.c   ****            www.lufa-lib.org
+   7:Lib/RNDIS.c   **** */
+   8:Lib/RNDIS.c   **** 
+   9:Lib/RNDIS.c   **** /*
+  10:Lib/RNDIS.c   ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/RNDIS.c   **** 
+  12:Lib/RNDIS.c   ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/RNDIS.c   ****   software and its documentation for any purpose is hereby granted
+  14:Lib/RNDIS.c   ****   without fee, provided that the above copyright notice appear in
+  15:Lib/RNDIS.c   ****   all copies and that both that the copyright notice and this
+  16:Lib/RNDIS.c   ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/RNDIS.c   ****   documentation, and that the name of the author not be used in
+  18:Lib/RNDIS.c   ****   advertising or publicity pertaining to distribution of the
+  19:Lib/RNDIS.c   ****   software without specific, written prior permission.
+  20:Lib/RNDIS.c   **** 
+  21:Lib/RNDIS.c   ****   The author disclaim all warranties with regard to this
+  22:Lib/RNDIS.c   ****   software, including all implied warranties of merchantability
+  23:Lib/RNDIS.c   ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/RNDIS.c   ****   special, indirect or consequential damages or any damages
+  25:Lib/RNDIS.c   ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/RNDIS.c   ****   in an action of contract, negligence or other tortious action,
+  27:Lib/RNDIS.c   ****   arising out of or in connection with the use or performance of
+  28:Lib/RNDIS.c   ****   this software.
+  29:Lib/RNDIS.c   **** */
+  30:Lib/RNDIS.c   **** 
+  31:Lib/RNDIS.c   **** /** \file
+  32:Lib/RNDIS.c   ****  *
+  33:Lib/RNDIS.c   ****  *  RNDIS command handler functions. This handles RNDIS commands according to
+  34:Lib/RNDIS.c   ****  *  the Microsoft RNDIS specification, creating a USB Ethernet network adapter.
+  35:Lib/RNDIS.c   ****  */
+  36:Lib/RNDIS.c   **** 
+  37:Lib/RNDIS.c   **** #define  INCLUDE_FROM_RNDIS_C
+  38:Lib/RNDIS.c   **** #include "RNDIS.h"
+  39:Lib/RNDIS.c   **** 
+  40:Lib/RNDIS.c   **** /** Physical MAC address of the network adapter, which becomes the MAC address of the host for pack
+  41:Lib/RNDIS.c   **** static const MAC_Address_t PROGMEM AdapterMACAddress     = {ADAPTER_MAC_ADDRESS};
+  42:Lib/RNDIS.c   **** 
+  43:Lib/RNDIS.c   **** /** Vendor description of the adapter. This is overridden by the INF file required to install the a
+  44:Lib/RNDIS.c   ****  *  the device, but may still be used by the OS in some circumstances.
+  45:Lib/RNDIS.c   ****  */
+  46:Lib/RNDIS.c   **** static const char PROGMEM AdapterVendorDescription[]     = "LUFA RNDIS Adapter";
+  47:Lib/RNDIS.c   **** 
+  48:Lib/RNDIS.c   **** /** List of RNDIS OID commands supported by this adapter. */
+  49:Lib/RNDIS.c   **** static const uint32_t PROGMEM AdapterSupportedOIDList[]  =
+  50:Lib/RNDIS.c   **** 							{
+  51:Lib/RNDIS.c   **** 								OID_GEN_SUPPORTED_LIST,
+  52:Lib/RNDIS.c   **** 								OID_GEN_PHYSICAL_MEDIUM,
+  53:Lib/RNDIS.c   **** 								OID_GEN_HARDWARE_STATUS,
+  54:Lib/RNDIS.c   **** 								OID_GEN_MEDIA_SUPPORTED,
+  55:Lib/RNDIS.c   **** 								OID_GEN_MEDIA_IN_USE,
+  56:Lib/RNDIS.c   **** 								OID_GEN_MAXIMUM_FRAME_SIZE,
+  57:Lib/RNDIS.c   **** 								OID_GEN_MAXIMUM_TOTAL_SIZE,
+  58:Lib/RNDIS.c   **** 								OID_GEN_LINK_SPEED,
+  59:Lib/RNDIS.c   **** 								OID_GEN_TRANSMIT_BLOCK_SIZE,
+  60:Lib/RNDIS.c   **** 								OID_GEN_RECEIVE_BLOCK_SIZE,
+  61:Lib/RNDIS.c   **** 								OID_GEN_VENDOR_ID,
+  62:Lib/RNDIS.c   **** 								OID_GEN_VENDOR_DESCRIPTION,
+  63:Lib/RNDIS.c   **** 								OID_GEN_CURRENT_PACKET_FILTER,
+  64:Lib/RNDIS.c   **** 								OID_GEN_MAXIMUM_TOTAL_SIZE,
+  65:Lib/RNDIS.c   **** 								OID_GEN_MEDIA_CONNECT_STATUS,
+  66:Lib/RNDIS.c   **** 								OID_GEN_XMIT_OK,
+  67:Lib/RNDIS.c   **** 								OID_GEN_RCV_OK,
+  68:Lib/RNDIS.c   **** 								OID_GEN_XMIT_ERROR,
+  69:Lib/RNDIS.c   **** 								OID_GEN_RCV_ERROR,
+  70:Lib/RNDIS.c   **** 								OID_GEN_RCV_NO_BUFFER,
+  71:Lib/RNDIS.c   **** 								OID_802_3_PERMANENT_ADDRESS,
+  72:Lib/RNDIS.c   **** 								OID_802_3_CURRENT_ADDRESS,
+  73:Lib/RNDIS.c   **** 								OID_802_3_MULTICAST_LIST,
+  74:Lib/RNDIS.c   **** 								OID_802_3_MAXIMUM_LIST_SIZE,
+  75:Lib/RNDIS.c   **** 								OID_802_3_RCV_ERROR_ALIGNMENT,
+  76:Lib/RNDIS.c   **** 								OID_802_3_XMIT_ONE_COLLISION,
+  77:Lib/RNDIS.c   **** 								OID_802_3_XMIT_MORE_COLLISIONS,
+  78:Lib/RNDIS.c   **** 							};
+  79:Lib/RNDIS.c   **** 
+  80:Lib/RNDIS.c   **** /** Buffer for RNDIS messages (as distinct from Ethernet frames sent through the adapter. This must
+  81:Lib/RNDIS.c   ****  *  Supported OID list, plus the response header. The buffer is half-duplex, and is written to as i
+  82:Lib/RNDIS.c   ****  *  reason, care must be taken when constructing RNDIS responses that unread data is not overwritte
+  83:Lib/RNDIS.c   ****  */
+  84:Lib/RNDIS.c   **** uint8_t                 RNDISMessageBuffer[sizeof(AdapterSupportedOIDList) + sizeof(RNDIS_Query_Com
+  85:Lib/RNDIS.c   **** 
+  86:Lib/RNDIS.c   **** /** Pointer to the RNDIS message header at the top of the RNDIS message buffer, for convenience. */
+  87:Lib/RNDIS.c   **** RNDIS_Message_Header_t* MessageHeader = (RNDIS_Message_Header_t*)&RNDISMessageBuffer;
+  88:Lib/RNDIS.c   **** 
+  89:Lib/RNDIS.c   **** /** Indicates if a RNDIS message response is ready to be sent back to the host. */
+  90:Lib/RNDIS.c   **** bool                    ResponseReady               = false;
+  91:Lib/RNDIS.c   **** 
+  92:Lib/RNDIS.c   **** /** Current RNDIS adapter state, a value from the \c RNDIS_States_t enum. */
+  93:Lib/RNDIS.c   **** uint8_t                 CurrRNDISState              = RNDIS_Uninitialized;
+  94:Lib/RNDIS.c   **** 
+  95:Lib/RNDIS.c   **** /** Current Ethernet packet filter mask. This is non-zero when the adapter is initialized, or zero 
+  96:Lib/RNDIS.c   **** uint32_t                CurrPacketFilter            = 0;
+  97:Lib/RNDIS.c   **** 
+  98:Lib/RNDIS.c   **** 
+  99:Lib/RNDIS.c   **** /** Processes the RNDIS message received by the host and stored in the RNDISMessageBuffer global bu
+ 100:Lib/RNDIS.c   ****  *  created, the ResponseReady global is updated so that the response is written back to the host u
+ 101:Lib/RNDIS.c   ****  */
+ 102:Lib/RNDIS.c   **** void ProcessRNDISControlMessage(void)
+ 103:Lib/RNDIS.c   **** {
+  17               		.loc 1 103 0
+  18               		.cfi_startproc
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+ 104:Lib/RNDIS.c   **** 	/* Note: Only a single buffer is used for both the received message and its response to save SRAM.
+ 105:Lib/RNDIS.c   **** 	         this, response bytes should be filled in order so that they do not clobber unread data in
+ 106:Lib/RNDIS.c   **** 
+ 107:Lib/RNDIS.c   **** 	switch (MessageHeader->MessageType)
+  23               		.loc 1 107 0
+  24 0000 E091 0000 		lds r30,MessageHeader
+  25 0004 F091 0000 		lds r31,MessageHeader+1
+  26 0008 8081      		ld r24,Z
+  27 000a 9181      		ldd r25,Z+1
+  28 000c A281      		ldd r26,Z+2
+  29 000e B381      		ldd r27,Z+3
+  30 0010 8430      		cpi r24,4
+  31 0012 9105      		cpc r25,__zero_reg__
+  32 0014 A105      		cpc r26,__zero_reg__
+  33 0016 B105      		cpc r27,__zero_reg__
+  34 0018 01F4      		brne .+2
+  35 001a 00C0      		rjmp .L3
+  36 001c 00F4      		brsh .L4
+  37 001e 8230      		cpi r24,2
+  38 0020 9105      		cpc r25,__zero_reg__
+  39 0022 A105      		cpc r26,__zero_reg__
+  40 0024 B105      		cpc r27,__zero_reg__
+  41 0026 01F0      		breq .L5
+  42 0028 0397      		sbiw r24,3
+  43 002a A105      		cpc r26,__zero_reg__
+  44 002c B105      		cpc r27,__zero_reg__
+  45 002e 01F4      		brne .+2
+  46 0030 00C0      		rjmp .L6
+  47 0032 0895      		ret
+  48               	.L4:
+  49 0034 8630      		cpi r24,6
+  50 0036 9105      		cpc r25,__zero_reg__
+  51 0038 A105      		cpc r26,__zero_reg__
+  52 003a B105      		cpc r27,__zero_reg__
+  53 003c 01F4      		brne .+2
+  54 003e 00C0      		rjmp .L7
+  55 0040 00F4      		brsh .+2
+  56 0042 00C0      		rjmp .L8
+  57 0044 0897      		sbiw r24,8
+  58 0046 A105      		cpc r26,__zero_reg__
+  59 0048 B105      		cpc r27,__zero_reg__
+  60 004a 01F4      		brne .+2
+  61 004c 00C0      		rjmp .L9
+  62 004e 0895      		ret
+  63               	.L5:
+  64               	.LBB7:
+ 108:Lib/RNDIS.c   **** 	{
+ 109:Lib/RNDIS.c   **** 		case REMOTE_NDIS_INITIALIZE_MSG:
+ 110:Lib/RNDIS.c   **** 			/* Initialize the adapter - return information about the supported RNDIS version and buffer size
+ 111:Lib/RNDIS.c   **** 
+ 112:Lib/RNDIS.c   **** 			ResponseReady = true;
+  65               		.loc 1 112 0
+  66 0050 21E0      		ldi r18,lo8(1)
+  67 0052 2093 0000 		sts ResponseReady,r18
+  68               	.LVL0:
+ 113:Lib/RNDIS.c   **** 
+ 114:Lib/RNDIS.c   **** 			RNDIS_Initialize_Message_t*  INITIALIZE_Message  = (RNDIS_Initialize_Message_t*)&RNDISMessageBuf
+ 115:Lib/RNDIS.c   **** 			RNDIS_Initialize_Complete_t* INITIALIZE_Response = (RNDIS_Initialize_Complete_t*)&RNDISMessageBu
+ 116:Lib/RNDIS.c   **** 
+ 117:Lib/RNDIS.c   **** 			INITIALIZE_Response->MessageType           = REMOTE_NDIS_INITIALIZE_CMPLT;
+  69               		.loc 1 117 0
+  70 0056 82E0      		ldi r24,lo8(2)
+  71 0058 90E0      		ldi r25,0
+  72 005a A0E0      		ldi r26,0
+  73 005c B0E8      		ldi r27,lo8(-128)
+  74 005e 8093 0000 		sts RNDISMessageBuffer,r24
+  75 0062 9093 0000 		sts RNDISMessageBuffer+1,r25
+  76 0066 A093 0000 		sts RNDISMessageBuffer+2,r26
+  77 006a B093 0000 		sts RNDISMessageBuffer+3,r27
+ 118:Lib/RNDIS.c   **** 			INITIALIZE_Response->MessageLength         = sizeof(RNDIS_Initialize_Complete_t);
+  78               		.loc 1 118 0
+  79 006e 84E3      		ldi r24,lo8(52)
+  80 0070 90E0      		ldi r25,0
+  81 0072 A0E0      		ldi r26,0
+  82 0074 B0E0      		ldi r27,0
+  83 0076 8093 0000 		sts RNDISMessageBuffer+4,r24
+  84 007a 9093 0000 		sts RNDISMessageBuffer+4+1,r25
+  85 007e A093 0000 		sts RNDISMessageBuffer+4+2,r26
+  86 0082 B093 0000 		sts RNDISMessageBuffer+4+3,r27
+ 119:Lib/RNDIS.c   **** 			INITIALIZE_Response->RequestId             = INITIALIZE_Message->RequestId;
+ 120:Lib/RNDIS.c   **** 			INITIALIZE_Response->Status                = REMOTE_NDIS_STATUS_SUCCESS;
+  87               		.loc 1 120 0
+  88 0086 1092 0000 		sts RNDISMessageBuffer+12,__zero_reg__
+  89 008a 1092 0000 		sts RNDISMessageBuffer+12+1,__zero_reg__
+  90 008e 1092 0000 		sts RNDISMessageBuffer+12+2,__zero_reg__
+  91 0092 1092 0000 		sts RNDISMessageBuffer+12+3,__zero_reg__
+ 121:Lib/RNDIS.c   **** 
+ 122:Lib/RNDIS.c   **** 			INITIALIZE_Response->MajorVersion          = REMOTE_NDIS_VERSION_MAJOR;
+  92               		.loc 1 122 0
+  93 0096 81E0      		ldi r24,lo8(1)
+  94 0098 90E0      		ldi r25,0
+  95 009a A0E0      		ldi r26,0
+  96 009c B0E0      		ldi r27,0
+  97 009e 8093 0000 		sts RNDISMessageBuffer+16,r24
+  98 00a2 9093 0000 		sts RNDISMessageBuffer+16+1,r25
+  99 00a6 A093 0000 		sts RNDISMessageBuffer+16+2,r26
+ 100 00aa B093 0000 		sts RNDISMessageBuffer+16+3,r27
+ 123:Lib/RNDIS.c   **** 			INITIALIZE_Response->MinorVersion          = REMOTE_NDIS_VERSION_MINOR;
+ 101               		.loc 1 123 0
+ 102 00ae 1092 0000 		sts RNDISMessageBuffer+20,__zero_reg__
+ 103 00b2 1092 0000 		sts RNDISMessageBuffer+20+1,__zero_reg__
+ 104 00b6 1092 0000 		sts RNDISMessageBuffer+20+2,__zero_reg__
+ 105 00ba 1092 0000 		sts RNDISMessageBuffer+20+3,__zero_reg__
+ 124:Lib/RNDIS.c   **** 			INITIALIZE_Response->DeviceFlags           = REMOTE_NDIS_DF_CONNECTIONLESS;
+ 106               		.loc 1 124 0
+ 107 00be 8093 0000 		sts RNDISMessageBuffer+24,r24
+ 108 00c2 9093 0000 		sts RNDISMessageBuffer+24+1,r25
+ 109 00c6 A093 0000 		sts RNDISMessageBuffer+24+2,r26
+ 110 00ca B093 0000 		sts RNDISMessageBuffer+24+3,r27
+ 125:Lib/RNDIS.c   **** 			INITIALIZE_Response->Medium                = REMOTE_NDIS_MEDIUM_802_3;
+ 111               		.loc 1 125 0
+ 112 00ce 1092 0000 		sts RNDISMessageBuffer+28,__zero_reg__
+ 113 00d2 1092 0000 		sts RNDISMessageBuffer+28+1,__zero_reg__
+ 114 00d6 1092 0000 		sts RNDISMessageBuffer+28+2,__zero_reg__
+ 115 00da 1092 0000 		sts RNDISMessageBuffer+28+3,__zero_reg__
+ 126:Lib/RNDIS.c   **** 			INITIALIZE_Response->MaxPacketsPerTransfer = 1;
+ 116               		.loc 1 126 0
+ 117 00de 8093 0000 		sts RNDISMessageBuffer+32,r24
+ 118 00e2 9093 0000 		sts RNDISMessageBuffer+32+1,r25
+ 119 00e6 A093 0000 		sts RNDISMessageBuffer+32+2,r26
+ 120 00ea B093 0000 		sts RNDISMessageBuffer+32+3,r27
+ 127:Lib/RNDIS.c   **** 			INITIALIZE_Response->MaxTransferSize       = (sizeof(RNDIS_Packet_Message_t) + ETHERNET_FRAME_SI
+ 121               		.loc 1 127 0
+ 122 00ee 88E0      		ldi r24,lo8(8)
+ 123 00f0 96E0      		ldi r25,lo8(6)
+ 124 00f2 A0E0      		ldi r26,0
+ 125 00f4 B0E0      		ldi r27,0
+ 126 00f6 8093 0000 		sts RNDISMessageBuffer+36,r24
+ 127 00fa 9093 0000 		sts RNDISMessageBuffer+36+1,r25
+ 128 00fe A093 0000 		sts RNDISMessageBuffer+36+2,r26
+ 129 0102 B093 0000 		sts RNDISMessageBuffer+36+3,r27
+ 128:Lib/RNDIS.c   **** 			INITIALIZE_Response->PacketAlignmentFactor = 0;
+ 130               		.loc 1 128 0
+ 131 0106 1092 0000 		sts RNDISMessageBuffer+40,__zero_reg__
+ 132 010a 1092 0000 		sts RNDISMessageBuffer+40+1,__zero_reg__
+ 133 010e 1092 0000 		sts RNDISMessageBuffer+40+2,__zero_reg__
+ 134 0112 1092 0000 		sts RNDISMessageBuffer+40+3,__zero_reg__
+ 129:Lib/RNDIS.c   **** 			INITIALIZE_Response->AFListOffset          = 0;
+ 135               		.loc 1 129 0
+ 136 0116 1092 0000 		sts RNDISMessageBuffer+44,__zero_reg__
+ 137 011a 1092 0000 		sts RNDISMessageBuffer+44+1,__zero_reg__
+ 138 011e 1092 0000 		sts RNDISMessageBuffer+44+2,__zero_reg__
+ 139 0122 1092 0000 		sts RNDISMessageBuffer+44+3,__zero_reg__
+ 130:Lib/RNDIS.c   **** 			INITIALIZE_Response->AFListSize            = 0;
+ 140               		.loc 1 130 0
+ 141 0126 1092 0000 		sts RNDISMessageBuffer+48,__zero_reg__
+ 142 012a 1092 0000 		sts RNDISMessageBuffer+48+1,__zero_reg__
+ 143 012e 1092 0000 		sts RNDISMessageBuffer+48+2,__zero_reg__
+ 144 0132 1092 0000 		sts RNDISMessageBuffer+48+3,__zero_reg__
+ 131:Lib/RNDIS.c   **** 
+ 132:Lib/RNDIS.c   **** 			CurrRNDISState = RNDIS_Initialized;
+ 145               		.loc 1 132 0
+ 146 0136 2093 0000 		sts CurrRNDISState,r18
+ 133:Lib/RNDIS.c   **** 
+ 134:Lib/RNDIS.c   **** 			break;
+ 147               		.loc 1 134 0
+ 148 013a 0895      		ret
+ 149               	.LVL1:
+ 150               	.L6:
+ 135:Lib/RNDIS.c   **** 		case REMOTE_NDIS_HALT_MSG:
+ 136:Lib/RNDIS.c   **** 			/* Halt the adapter, reset the adapter state - note that no response should be returned when com
+ 137:Lib/RNDIS.c   **** 
+ 138:Lib/RNDIS.c   **** 			ResponseReady = false;
+ 151               		.loc 1 138 0
+ 152 013c 1092 0000 		sts ResponseReady,__zero_reg__
+ 139:Lib/RNDIS.c   **** 			MessageHeader->MessageLength = 0;
+ 153               		.loc 1 139 0
+ 154 0140 1482      		std Z+4,__zero_reg__
+ 155 0142 1582      		std Z+5,__zero_reg__
+ 156 0144 1682      		std Z+6,__zero_reg__
+ 157 0146 1782      		std Z+7,__zero_reg__
+ 140:Lib/RNDIS.c   **** 
+ 141:Lib/RNDIS.c   **** 			CurrRNDISState = RNDIS_Uninitialized;
+ 158               		.loc 1 141 0
+ 159 0148 1092 0000 		sts CurrRNDISState,__zero_reg__
+ 142:Lib/RNDIS.c   **** 
+ 143:Lib/RNDIS.c   **** 			break;
+ 160               		.loc 1 143 0
+ 161 014c 0895      		ret
+ 162               	.L3:
+ 144:Lib/RNDIS.c   **** 		case REMOTE_NDIS_QUERY_MSG:
+ 145:Lib/RNDIS.c   **** 			/* Request for information about a parameter about the adapter, specified as an OID token */
+ 146:Lib/RNDIS.c   **** 
+ 147:Lib/RNDIS.c   **** 			ResponseReady = true;
+ 163               		.loc 1 147 0
+ 164 014e 81E0      		ldi r24,lo8(1)
+ 165 0150 8093 0000 		sts ResponseReady,r24
+ 166               	.LVL2:
+ 148:Lib/RNDIS.c   **** 
+ 149:Lib/RNDIS.c   **** 			RNDIS_Query_Message_t*  QUERY_Message  = (RNDIS_Query_Message_t*)&RNDISMessageBuffer;
+ 150:Lib/RNDIS.c   **** 			RNDIS_Query_Complete_t* QUERY_Response = (RNDIS_Query_Complete_t*)&RNDISMessageBuffer;
+ 151:Lib/RNDIS.c   **** 			uint32_t                Query_Oid      = QUERY_Message->Oid;
+ 167               		.loc 1 151 0
+ 168 0154 8091 0000 		lds r24,RNDISMessageBuffer+12
+ 169 0158 9091 0000 		lds r25,RNDISMessageBuffer+12+1
+ 170 015c A091 0000 		lds r26,RNDISMessageBuffer+12+2
+ 171 0160 B091 0000 		lds r27,RNDISMessageBuffer+12+3
+ 172               	.LVL3:
+ 152:Lib/RNDIS.c   **** 
+ 153:Lib/RNDIS.c   **** 			void*     QueryData                 = &RNDISMessageBuffer[sizeof(RNDIS_Message_Header_t) +
+ 154:Lib/RNDIS.c   **** 			                                                          QUERY_Message->InformationBufferOffset
+ 155:Lib/RNDIS.c   **** 			void*     ResponseData              = &RNDISMessageBuffer[sizeof(RNDIS_Query_Complete_t)];
+ 156:Lib/RNDIS.c   **** 			uint16_t  ResponseSize;
+ 157:Lib/RNDIS.c   **** 
+ 158:Lib/RNDIS.c   **** 			QUERY_Response->MessageType         = REMOTE_NDIS_QUERY_CMPLT;
+ 173               		.loc 1 158 0
+ 174 0164 44E0      		ldi r20,lo8(4)
+ 175 0166 50E0      		ldi r21,0
+ 176 0168 60E0      		ldi r22,0
+ 177 016a 70E8      		ldi r23,lo8(-128)
+ 178 016c 4093 0000 		sts RNDISMessageBuffer,r20
+ 179 0170 5093 0000 		sts RNDISMessageBuffer+1,r21
+ 180 0174 6093 0000 		sts RNDISMessageBuffer+2,r22
+ 181 0178 7093 0000 		sts RNDISMessageBuffer+3,r23
+ 159:Lib/RNDIS.c   **** 			QUERY_Response->MessageLength       = sizeof(RNDIS_Query_Complete_t);
+ 182               		.loc 1 159 0
+ 183 017c 48E1      		ldi r20,lo8(24)
+ 184 017e 50E0      		ldi r21,0
+ 185 0180 60E0      		ldi r22,0
+ 186 0182 70E0      		ldi r23,0
+ 187 0184 4093 0000 		sts RNDISMessageBuffer+4,r20
+ 188 0188 5093 0000 		sts RNDISMessageBuffer+4+1,r21
+ 189 018c 6093 0000 		sts RNDISMessageBuffer+4+2,r22
+ 190 0190 7093 0000 		sts RNDISMessageBuffer+4+3,r23
+ 191               	.LVL4:
+ 192               	.LBB8:
+ 193               	.LBB9:
+ 160:Lib/RNDIS.c   **** 
+ 161:Lib/RNDIS.c   **** 			if (ProcessNDISQuery(Query_Oid, QueryData, QUERY_Message->InformationBufferLength,
+ 162:Lib/RNDIS.c   **** 			                     ResponseData, &ResponseSize))
+ 163:Lib/RNDIS.c   **** 			{
+ 164:Lib/RNDIS.c   **** 				QUERY_Response->Status                  = REMOTE_NDIS_STATUS_SUCCESS;
+ 165:Lib/RNDIS.c   **** 				QUERY_Response->MessageLength          += ResponseSize;
+ 166:Lib/RNDIS.c   **** 
+ 167:Lib/RNDIS.c   **** 				QUERY_Response->InformationBufferLength = ResponseSize;
+ 168:Lib/RNDIS.c   **** 				QUERY_Response->InformationBufferOffset = (sizeof(RNDIS_Query_Complete_t) - sizeof(RNDIS_Messag
+ 169:Lib/RNDIS.c   **** 			}
+ 170:Lib/RNDIS.c   **** 			else
+ 171:Lib/RNDIS.c   **** 			{
+ 172:Lib/RNDIS.c   **** 				QUERY_Response->Status                  = REMOTE_NDIS_STATUS_NOT_SUPPORTED;
+ 173:Lib/RNDIS.c   **** 
+ 174:Lib/RNDIS.c   **** 				QUERY_Response->InformationBufferLength = 0;
+ 175:Lib/RNDIS.c   **** 				QUERY_Response->InformationBufferOffset = 0;
+ 176:Lib/RNDIS.c   **** 			}
+ 177:Lib/RNDIS.c   **** 
+ 178:Lib/RNDIS.c   **** 			break;
+ 179:Lib/RNDIS.c   **** 		case REMOTE_NDIS_SET_MSG:
+ 180:Lib/RNDIS.c   **** 			/* Request to set a parameter of the adapter, specified as an OID token */
+ 181:Lib/RNDIS.c   **** 
+ 182:Lib/RNDIS.c   **** 			ResponseReady = true;
+ 183:Lib/RNDIS.c   **** 
+ 184:Lib/RNDIS.c   **** 			RNDIS_Set_Message_t*  SET_Message  = (RNDIS_Set_Message_t*)&RNDISMessageBuffer;
+ 185:Lib/RNDIS.c   **** 			RNDIS_Set_Complete_t* SET_Response = (RNDIS_Set_Complete_t*)&RNDISMessageBuffer;
+ 186:Lib/RNDIS.c   **** 			uint32_t              SET_Oid      = SET_Message->Oid;
+ 187:Lib/RNDIS.c   **** 
+ 188:Lib/RNDIS.c   **** 			SET_Response->MessageType       = REMOTE_NDIS_SET_CMPLT;
+ 189:Lib/RNDIS.c   **** 			SET_Response->MessageLength     = sizeof(RNDIS_Set_Complete_t);
+ 190:Lib/RNDIS.c   **** 			SET_Response->RequestId         = SET_Message->RequestId;
+ 191:Lib/RNDIS.c   **** 
+ 192:Lib/RNDIS.c   **** 			void* SetData                   = &RNDISMessageBuffer[sizeof(RNDIS_Message_Header_t) +
+ 193:Lib/RNDIS.c   **** 			                                                      SET_Message->InformationBufferOffset];
+ 194:Lib/RNDIS.c   **** 
+ 195:Lib/RNDIS.c   **** 			if (ProcessNDISSet(SET_Oid, SetData, SET_Message->InformationBufferLength))
+ 196:Lib/RNDIS.c   **** 			  SET_Response->Status        = REMOTE_NDIS_STATUS_SUCCESS;
+ 197:Lib/RNDIS.c   **** 			else
+ 198:Lib/RNDIS.c   **** 			  SET_Response->Status        = REMOTE_NDIS_STATUS_NOT_SUPPORTED;
+ 199:Lib/RNDIS.c   **** 
+ 200:Lib/RNDIS.c   **** 			break;
+ 201:Lib/RNDIS.c   **** 		case REMOTE_NDIS_RESET_MSG:
+ 202:Lib/RNDIS.c   **** 			/* Soft reset the adapter */
+ 203:Lib/RNDIS.c   **** 
+ 204:Lib/RNDIS.c   **** 			ResponseReady = true;
+ 205:Lib/RNDIS.c   **** 
+ 206:Lib/RNDIS.c   **** 			RNDIS_Reset_Complete_t* RESET_Response = (RNDIS_Reset_Complete_t*)&RNDISMessageBuffer;
+ 207:Lib/RNDIS.c   **** 
+ 208:Lib/RNDIS.c   **** 			RESET_Response->MessageType         = REMOTE_NDIS_RESET_CMPLT;
+ 209:Lib/RNDIS.c   **** 			RESET_Response->MessageLength       = sizeof(RNDIS_Reset_Complete_t);
+ 210:Lib/RNDIS.c   **** 			RESET_Response->Status              = REMOTE_NDIS_STATUS_SUCCESS;
+ 211:Lib/RNDIS.c   **** 			RESET_Response->AddressingReset     = 0;
+ 212:Lib/RNDIS.c   **** 
+ 213:Lib/RNDIS.c   **** 			break;
+ 214:Lib/RNDIS.c   **** 		case REMOTE_NDIS_KEEPALIVE_MSG:
+ 215:Lib/RNDIS.c   **** 			/* Keep alive message sent to the adapter every 5 seconds when idle to ensure it is still respon
+ 216:Lib/RNDIS.c   **** 
+ 217:Lib/RNDIS.c   **** 			ResponseReady = true;
+ 218:Lib/RNDIS.c   **** 
+ 219:Lib/RNDIS.c   **** 			RNDIS_KeepAlive_Message_t*  KEEPALIVE_Message  = (RNDIS_KeepAlive_Message_t*)&RNDISMessageBuffer
+ 220:Lib/RNDIS.c   **** 			RNDIS_KeepAlive_Complete_t* KEEPALIVE_Response = (RNDIS_KeepAlive_Complete_t*)&RNDISMessageBuffe
+ 221:Lib/RNDIS.c   **** 
+ 222:Lib/RNDIS.c   **** 			KEEPALIVE_Response->MessageType     = REMOTE_NDIS_KEEPALIVE_CMPLT;
+ 223:Lib/RNDIS.c   **** 			KEEPALIVE_Response->MessageLength   = sizeof(RNDIS_KeepAlive_Complete_t);
+ 224:Lib/RNDIS.c   **** 			KEEPALIVE_Response->RequestId       = KEEPALIVE_Message->RequestId;
+ 225:Lib/RNDIS.c   **** 			KEEPALIVE_Response->Status          = REMOTE_NDIS_STATUS_SUCCESS;
+ 226:Lib/RNDIS.c   **** 
+ 227:Lib/RNDIS.c   **** 			break;
+ 228:Lib/RNDIS.c   **** 	}
+ 229:Lib/RNDIS.c   **** }
+ 230:Lib/RNDIS.c   **** 
+ 231:Lib/RNDIS.c   **** /** Processes RNDIS query commands, retrieving information from the adapter and reporting it back t
+ 232:Lib/RNDIS.c   ****  *  parameter is given as an OID value.
+ 233:Lib/RNDIS.c   ****  *
+ 234:Lib/RNDIS.c   ****  *  \param[in] OId            OId value of the parameter being queried
+ 235:Lib/RNDIS.c   ****  *  \param[in] QueryData      Pointer to any extra query data being sent by the host to the device 
+ 236:Lib/RNDIS.c   ****  *  \param[in] QuerySize      Size in bytes of the extra query data being sent by the host
+ 237:Lib/RNDIS.c   ****  *  \param[out] ResponseData  Pointer to the start of the query response inside the RNDIS message b
+ 238:Lib/RNDIS.c   ****  *  \param[out] ResponseSize  Pointer to the size in bytes of the response data being sent to the h
+ 239:Lib/RNDIS.c   ****  *
+ 240:Lib/RNDIS.c   ****  *  \return Boolean true if the query was handled, false otherwise
+ 241:Lib/RNDIS.c   ****  */
+ 242:Lib/RNDIS.c   **** static bool ProcessNDISQuery(const uint32_t OId, void* QueryData, uint16_t QuerySize,
+ 243:Lib/RNDIS.c   ****                              void* ResponseData, uint16_t* ResponseSize)
+ 244:Lib/RNDIS.c   **** {
+ 245:Lib/RNDIS.c   **** 	/* Handler for REMOTE_NDIS_QUERY_MSG messages */
+ 246:Lib/RNDIS.c   **** 
+ 247:Lib/RNDIS.c   **** 	switch (OId)
+ 194               		.loc 1 247 0
+ 195 0194 8E30      		cpi r24,14
+ 196 0196 21E0      		ldi r18,1
+ 197 0198 9207      		cpc r25,r18
+ 198 019a A207      		cpc r26,r18
+ 199 019c B105      		cpc r27,__zero_reg__
+ 200 019e 01F4      		brne .+2
+ 201 01a0 00C0      		rjmp .L11
+ 202 01a2 00F0      		brlo .+2
+ 203 01a4 00C0      		rjmp .L12
+ 204 01a6 8630      		cpi r24,6
+ 205 01a8 21E0      		ldi r18,1
+ 206 01aa 9207      		cpc r25,r18
+ 207 01ac A207      		cpc r26,r18
+ 208 01ae B105      		cpc r27,__zero_reg__
+ 209 01b0 01F4      		brne .+2
+ 210 01b2 00C0      		rjmp .L13
+ 211 01b4 00F4      		brsh .L14
+ 212 01b6 8230      		cpi r24,2
+ 213 01b8 21E0      		ldi r18,1
+ 214 01ba 9207      		cpc r25,r18
+ 215 01bc A207      		cpc r26,r18
+ 216 01be B105      		cpc r27,__zero_reg__
+ 217 01c0 01F4      		brne .+2
+ 218 01c2 00C0      		rjmp .L24
+ 219 01c4 00F4      		brsh .L16
+ 220 01c6 8130      		cpi r24,1
+ 221 01c8 9140      		sbci r25,1
+ 222 01ca A140      		sbci r26,1
+ 223 01cc B105      		cpc r27,__zero_reg__
+ 224 01ce 01F0      		breq .+2
+ 225 01d0 00C0      		rjmp .L10
+ 226               	.LVL5:
+ 248:Lib/RNDIS.c   **** 	{
+ 249:Lib/RNDIS.c   **** 		case OID_GEN_SUPPORTED_LIST:
+ 250:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(AdapterSupportedOIDList);
+ 251:Lib/RNDIS.c   **** 
+ 252:Lib/RNDIS.c   **** 			/* Copy the list of supported NDIS OID tokens to the response buffer */
+ 253:Lib/RNDIS.c   **** 			memcpy_P(ResponseData, AdapterSupportedOIDList, sizeof(AdapterSupportedOIDList));
+ 227               		.loc 1 253 0
+ 228 01d2 4CE6      		ldi r20,lo8(108)
+ 229 01d4 50E0      		ldi r21,0
+ 230 01d6 60E0      		ldi r22,lo8(AdapterSupportedOIDList)
+ 231 01d8 70E0      		ldi r23,hi8(AdapterSupportedOIDList)
+ 232 01da 80E0      		ldi r24,lo8(RNDISMessageBuffer+24)
+ 233 01dc 90E0      		ldi r25,hi8(RNDISMessageBuffer+24)
+ 234               	.LVL6:
+ 235 01de 0E94 0000 		call memcpy_P
+ 236               	.LVL7:
+ 250:Lib/RNDIS.c   **** 
+ 237               		.loc 1 250 0
+ 238 01e2 8CE6      		ldi r24,lo8(108)
+ 239 01e4 90E0      		ldi r25,0
+ 240 01e6 00C0      		rjmp .L31
+ 241               	.LVL8:
+ 242               	.L16:
+ 247:Lib/RNDIS.c   **** 	{
+ 243               		.loc 1 247 0
+ 244 01e8 8530      		cpi r24,5
+ 245 01ea 9140      		sbci r25,1
+ 246 01ec A140      		sbci r26,1
+ 247 01ee B105      		cpc r27,__zero_reg__
+ 248 01f0 00F4      		brsh .+2
+ 249 01f2 00C0      		rjmp .L24
+ 250 01f4 00C0      		rjmp .L10
+ 251               	.L14:
+ 252 01f6 8C30      		cpi r24,12
+ 253 01f8 21E0      		ldi r18,1
+ 254 01fa 9207      		cpc r25,r18
+ 255 01fc A207      		cpc r26,r18
+ 256 01fe B105      		cpc r27,__zero_reg__
+ 257 0200 00F4      		brsh .L19
+ 258 0202 8A30      		cpi r24,10
+ 259 0204 21E0      		ldi r18,1
+ 260 0206 9207      		cpc r25,r18
+ 261 0208 A207      		cpc r26,r18
+ 262 020a B105      		cpc r27,__zero_reg__
+ 263 020c 00F0      		brlo .+2
+ 264 020e 00C0      		rjmp .L13
+ 265 0210 8730      		cpi r24,7
+ 266 0212 9140      		sbci r25,1
+ 267 0214 A140      		sbci r26,1
+ 268 0216 B105      		cpc r27,__zero_reg__
+ 269 0218 01F0      		breq .+2
+ 270 021a 00C0      		rjmp .L10
+ 271               	.LVL9:
+ 254:Lib/RNDIS.c   **** 
+ 255:Lib/RNDIS.c   **** 			return true;
+ 256:Lib/RNDIS.c   **** 		case OID_GEN_PHYSICAL_MEDIUM:
+ 257:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(uint32_t);
+ 258:Lib/RNDIS.c   **** 
+ 259:Lib/RNDIS.c   **** 			/* Indicate that the device is a true ethernet link */
+ 260:Lib/RNDIS.c   **** 			*((uint32_t*)ResponseData) = 0;
+ 261:Lib/RNDIS.c   **** 
+ 262:Lib/RNDIS.c   **** 			return true;
+ 263:Lib/RNDIS.c   **** 		case OID_GEN_HARDWARE_STATUS:
+ 264:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(uint32_t);
+ 265:Lib/RNDIS.c   **** 
+ 266:Lib/RNDIS.c   **** 			/* Always indicate hardware ready */
+ 267:Lib/RNDIS.c   **** 			*((uint32_t*)ResponseData) = NDIS_HardwareStatus_Ready;
+ 268:Lib/RNDIS.c   **** 
+ 269:Lib/RNDIS.c   **** 			return true;
+ 270:Lib/RNDIS.c   **** 		case OID_GEN_MEDIA_SUPPORTED:
+ 271:Lib/RNDIS.c   **** 		case OID_GEN_MEDIA_IN_USE:
+ 272:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(uint32_t);
+ 273:Lib/RNDIS.c   **** 
+ 274:Lib/RNDIS.c   **** 			/* Indicate 802.3 (Ethernet) supported by the adapter */
+ 275:Lib/RNDIS.c   **** 			*((uint32_t*)ResponseData) = REMOTE_NDIS_MEDIUM_802_3;
+ 276:Lib/RNDIS.c   **** 
+ 277:Lib/RNDIS.c   **** 			return true;
+ 278:Lib/RNDIS.c   **** 		case OID_GEN_VENDOR_ID:
+ 279:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(uint32_t);
+ 280:Lib/RNDIS.c   **** 
+ 281:Lib/RNDIS.c   **** 			/* Vendor ID 0x0xFFFFFF is reserved for vendors who have not purchased a NDIS VID */
+ 282:Lib/RNDIS.c   **** 			*((uint32_t*)ResponseData) = 0x00FFFFFF;
+ 283:Lib/RNDIS.c   **** 
+ 284:Lib/RNDIS.c   **** 			return true;
+ 285:Lib/RNDIS.c   **** 		case OID_GEN_MAXIMUM_FRAME_SIZE:
+ 286:Lib/RNDIS.c   **** 		case OID_GEN_TRANSMIT_BLOCK_SIZE:
+ 287:Lib/RNDIS.c   **** 		case OID_GEN_RECEIVE_BLOCK_SIZE:
+ 288:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(uint32_t);
+ 289:Lib/RNDIS.c   **** 
+ 290:Lib/RNDIS.c   **** 			/* Indicate that the maximum frame size is the size of the ethernet frame buffer */
+ 291:Lib/RNDIS.c   **** 			*((uint32_t*)ResponseData) = ETHERNET_FRAME_SIZE_MAX;
+ 292:Lib/RNDIS.c   **** 
+ 293:Lib/RNDIS.c   **** 			return true;
+ 294:Lib/RNDIS.c   **** 		case OID_GEN_VENDOR_DESCRIPTION:
+ 295:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(AdapterVendorDescription);
+ 296:Lib/RNDIS.c   **** 
+ 297:Lib/RNDIS.c   **** 			/* Copy vendor description string to the response buffer */
+ 298:Lib/RNDIS.c   **** 			memcpy_P(ResponseData, AdapterVendorDescription, sizeof(AdapterVendorDescription));
+ 299:Lib/RNDIS.c   **** 
+ 300:Lib/RNDIS.c   **** 			return true;
+ 301:Lib/RNDIS.c   **** 		case OID_GEN_MEDIA_CONNECT_STATUS:
+ 302:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(uint32_t);
+ 303:Lib/RNDIS.c   **** 
+ 304:Lib/RNDIS.c   **** 			/* Always indicate that the adapter is connected to a network */
+ 305:Lib/RNDIS.c   **** 			*((uint32_t*)ResponseData) = REMOTE_NDIS_MEDIA_STATE_CONNECTED;
+ 306:Lib/RNDIS.c   **** 
+ 307:Lib/RNDIS.c   **** 			return true;
+ 308:Lib/RNDIS.c   **** 		case OID_GEN_LINK_SPEED:
+ 309:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(uint32_t);
+ 310:Lib/RNDIS.c   **** 
+ 311:Lib/RNDIS.c   **** 			/* Indicate 10Mb/s link speed */
+ 312:Lib/RNDIS.c   **** 			*((uint32_t*)ResponseData) = 100000;
+ 272               		.loc 1 312 0
+ 273 021c 80EA      		ldi r24,lo8(-96)
+ 274 021e 96E8      		ldi r25,lo8(-122)
+ 275 0220 A1E0      		ldi r26,lo8(1)
+ 276 0222 B0E0      		ldi r27,0
+ 277               	.LVL10:
+ 278 0224 00C0      		rjmp .L45
+ 279               	.LVL11:
+ 280               	.L19:
+ 247:Lib/RNDIS.c   **** 	{
+ 281               		.loc 1 247 0
+ 282 0226 8C30      		cpi r24,12
+ 283 0228 21E0      		ldi r18,1
+ 284 022a 9207      		cpc r25,r18
+ 285 022c A207      		cpc r26,r18
+ 286 022e B105      		cpc r27,__zero_reg__
+ 287 0230 01F4      		brne .+2
+ 288 0232 00C0      		rjmp .L21
+ 289 0234 8D30      		cpi r24,13
+ 290 0236 9140      		sbci r25,1
+ 291 0238 A140      		sbci r26,1
+ 292 023a B105      		cpc r27,__zero_reg__
+ 293 023c 01F0      		breq .+2
+ 294 023e 00C0      		rjmp .L10
+ 295               	.LVL12:
+ 298:Lib/RNDIS.c   **** 
+ 296               		.loc 1 298 0
+ 297 0240 43E1      		ldi r20,lo8(19)
+ 298 0242 50E0      		ldi r21,0
+ 299 0244 60E0      		ldi r22,lo8(AdapterVendorDescription)
+ 300 0246 70E0      		ldi r23,hi8(AdapterVendorDescription)
+ 301 0248 80E0      		ldi r24,lo8(RNDISMessageBuffer+24)
+ 302 024a 90E0      		ldi r25,hi8(RNDISMessageBuffer+24)
+ 303               	.LVL13:
+ 304 024c 0E94 0000 		call memcpy_P
+ 305               	.LVL14:
+ 295:Lib/RNDIS.c   **** 
+ 306               		.loc 1 295 0
+ 307 0250 83E1      		ldi r24,lo8(19)
+ 308 0252 90E0      		ldi r25,0
+ 309 0254 00C0      		rjmp .L31
+ 310               	.LVL15:
+ 311               	.L12:
+ 247:Lib/RNDIS.c   **** 	{
+ 312               		.loc 1 247 0
+ 313 0256 8630      		cpi r24,6
+ 314 0258 21E0      		ldi r18,1
+ 315 025a 9207      		cpc r25,r18
+ 316 025c 22E0      		ldi r18,2
+ 317 025e A207      		cpc r26,r18
+ 318 0260 B105      		cpc r27,__zero_reg__
+ 319 0262 00F4      		brsh .L23
+ 320 0264 8130      		cpi r24,1
+ 321 0266 21E0      		ldi r18,1
+ 322 0268 9207      		cpc r25,r18
+ 323 026a 22E0      		ldi r18,2
+ 324 026c A207      		cpc r26,r18
+ 325 026e B105      		cpc r27,__zero_reg__
+ 326 0270 00F0      		brlo .+2
+ 327 0272 00C0      		rjmp .L24
+ 328 0274 8431      		cpi r24,20
+ 329 0276 21E0      		ldi r18,1
+ 330 0278 9207      		cpc r25,r18
+ 331 027a A207      		cpc r26,r18
+ 332 027c B105      		cpc r27,__zero_reg__
+ 333 027e 01F4      		brne .+2
+ 334 0280 00C0      		rjmp .L24
+ 335 0282 8230      		cpi r24,2
+ 336 0284 22E0      		ldi r18,2
+ 337 0286 9207      		cpc r25,r18
+ 338 0288 21E0      		ldi r18,1
+ 339 028a A207      		cpc r26,r18
+ 340 028c B105      		cpc r27,__zero_reg__
+ 341 028e 01F4      		brne .+2
+ 342 0290 00C0      		rjmp .L24
+ 343 0292 8131      		cpi r24,17
+ 344 0294 9140      		sbci r25,1
+ 345 0296 A140      		sbci r26,1
+ 346 0298 B105      		cpc r27,__zero_reg__
+ 347 029a 01F0      		breq .+2
+ 348 029c 00C0      		rjmp .L10
+ 349               	.LVL16:
+ 313:Lib/RNDIS.c   **** 
+ 314:Lib/RNDIS.c   **** 			return true;
+ 315:Lib/RNDIS.c   **** 		case OID_802_3_PERMANENT_ADDRESS:
+ 316:Lib/RNDIS.c   **** 		case OID_802_3_CURRENT_ADDRESS:
+ 317:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(MAC_Address_t);
+ 318:Lib/RNDIS.c   **** 
+ 319:Lib/RNDIS.c   **** 			/* Copy over the fixed adapter MAC to the response buffer */
+ 320:Lib/RNDIS.c   **** 			memcpy_P(ResponseData, &AdapterMACAddress, sizeof(MAC_Address_t));
+ 321:Lib/RNDIS.c   **** 
+ 322:Lib/RNDIS.c   **** 			return true;
+ 323:Lib/RNDIS.c   **** 		case OID_802_3_MAXIMUM_LIST_SIZE:
+ 324:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(uint32_t);
+ 325:Lib/RNDIS.c   **** 
+ 326:Lib/RNDIS.c   **** 			/* Indicate only one multicast address supported */
+ 327:Lib/RNDIS.c   **** 			*((uint32_t*)ResponseData) = 1;
+ 328:Lib/RNDIS.c   **** 
+ 329:Lib/RNDIS.c   **** 			return true;
+ 330:Lib/RNDIS.c   **** 		case OID_GEN_CURRENT_PACKET_FILTER:
+ 331:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(uint32_t);
+ 332:Lib/RNDIS.c   **** 
+ 333:Lib/RNDIS.c   **** 			/* Indicate the current packet filter mask */
+ 334:Lib/RNDIS.c   **** 			*((uint32_t*)ResponseData) = CurrPacketFilter;
+ 335:Lib/RNDIS.c   **** 
+ 336:Lib/RNDIS.c   **** 			return true;
+ 337:Lib/RNDIS.c   **** 		case OID_GEN_XMIT_OK:
+ 338:Lib/RNDIS.c   **** 		case OID_GEN_RCV_OK:
+ 339:Lib/RNDIS.c   **** 		case OID_GEN_XMIT_ERROR:
+ 340:Lib/RNDIS.c   **** 		case OID_GEN_RCV_ERROR:
+ 341:Lib/RNDIS.c   **** 		case OID_GEN_RCV_NO_BUFFER:
+ 342:Lib/RNDIS.c   **** 		case OID_802_3_RCV_ERROR_ALIGNMENT:
+ 343:Lib/RNDIS.c   **** 		case OID_802_3_XMIT_ONE_COLLISION:
+ 344:Lib/RNDIS.c   **** 		case OID_802_3_XMIT_MORE_COLLISIONS:
+ 345:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(uint32_t);
+ 346:Lib/RNDIS.c   **** 
+ 347:Lib/RNDIS.c   **** 			/* Unused statistic OIDs - always return 0 for each */
+ 348:Lib/RNDIS.c   **** 			*((uint32_t*)ResponseData) = 0;
+ 349:Lib/RNDIS.c   **** 
+ 350:Lib/RNDIS.c   **** 			return true;
+ 351:Lib/RNDIS.c   **** 		case OID_GEN_MAXIMUM_TOTAL_SIZE:
+ 352:Lib/RNDIS.c   **** 			*ResponseSize = sizeof(uint32_t);
+ 353:Lib/RNDIS.c   **** 
+ 354:Lib/RNDIS.c   **** 			/* Indicate maximum overall buffer (Ethernet frame and RNDIS header) the adapter can handle */
+ 355:Lib/RNDIS.c   **** 			*((uint32_t*)ResponseData) = (sizeof(RNDISMessageBuffer) + ETHERNET_FRAME_SIZE_MAX);
+ 350               		.loc 1 355 0
+ 351 029e 80E6      		ldi r24,lo8(96)
+ 352 02a0 96E0      		ldi r25,lo8(6)
+ 353 02a2 A0E0      		ldi r26,0
+ 354 02a4 B0E0      		ldi r27,0
+ 355               	.LVL17:
+ 356 02a6 00C0      		rjmp .L45
+ 357               	.LVL18:
+ 358               	.L23:
+ 247:Lib/RNDIS.c   **** 	{
+ 359               		.loc 1 247 0
+ 360 02a8 8430      		cpi r24,4
+ 361 02aa 21E0      		ldi r18,1
+ 362 02ac 9207      		cpc r25,r18
+ 363 02ae A207      		cpc r26,r18
+ 364 02b0 B207      		cpc r27,r18
+ 365 02b2 01F0      		breq .L28
+ 366 02b4 00F4      		brsh .L29
+ 367 02b6 8150      		subi r24,1
+ 368 02b8 9140      		sbci r25,1
+ 369 02ba A140      		sbci r26,1
+ 370 02bc B140      		sbci r27,1
+ 371               	.LVL19:
+ 372 02be 0297      		sbiw r24,2
+ 373 02c0 A105      		cpc r26,__zero_reg__
+ 374 02c2 B105      		cpc r27,__zero_reg__
+ 375 02c4 00F0      		brlo .+2
+ 376 02c6 00C0      		rjmp .L10
+ 377               	.LVL20:
+ 320:Lib/RNDIS.c   **** 
+ 378               		.loc 1 320 0
+ 379 02c8 46E0      		ldi r20,lo8(6)
+ 380 02ca 50E0      		ldi r21,0
+ 381 02cc 60E0      		ldi r22,lo8(AdapterMACAddress)
+ 382 02ce 70E0      		ldi r23,hi8(AdapterMACAddress)
+ 383 02d0 80E0      		ldi r24,lo8(RNDISMessageBuffer+24)
+ 384 02d2 90E0      		ldi r25,hi8(RNDISMessageBuffer+24)
+ 385               	.LVL21:
+ 386 02d4 0E94 0000 		call memcpy_P
+ 387               	.LVL22:
+ 317:Lib/RNDIS.c   **** 
+ 388               		.loc 1 317 0
+ 389 02d8 86E0      		ldi r24,lo8(6)
+ 390 02da 90E0      		ldi r25,0
+ 391 02dc 00C0      		rjmp .L31
+ 392               	.LVL23:
+ 393               	.L29:
+ 247:Lib/RNDIS.c   **** 	{
+ 394               		.loc 1 247 0
+ 395 02de 8150      		subi r24,1
+ 396 02e0 9140      		sbci r25,1
+ 397 02e2 A240      		sbci r26,2
+ 398 02e4 B140      		sbci r27,1
+ 399               	.LVL24:
+ 400 02e6 0397      		sbiw r24,3
+ 401 02e8 A105      		cpc r26,__zero_reg__
+ 402 02ea B105      		cpc r27,__zero_reg__
+ 403 02ec 00F0      		brlo .L24
+ 404 02ee 00C0      		rjmp .L10
+ 405               	.LVL25:
+ 406               	.L21:
+ 282:Lib/RNDIS.c   **** 
+ 407               		.loc 1 282 0
+ 408 02f0 8FEF      		ldi r24,lo8(-1)
+ 409 02f2 9FEF      		ldi r25,lo8(-1)
+ 410 02f4 AFEF      		ldi r26,lo8(-1)
+ 411 02f6 B0E0      		ldi r27,0
+ 412               	.LVL26:
+ 413 02f8 00C0      		rjmp .L45
+ 414               	.LVL27:
+ 415               	.L13:
+ 291:Lib/RNDIS.c   **** 
+ 416               		.loc 1 291 0
+ 417 02fa 8CED      		ldi r24,lo8(-36)
+ 418 02fc 95E0      		ldi r25,lo8(5)
+ 419 02fe A0E0      		ldi r26,0
+ 420 0300 B0E0      		ldi r27,0
+ 421               	.LVL28:
+ 422 0302 00C0      		rjmp .L45
+ 423               	.LVL29:
+ 424               	.L28:
+ 327:Lib/RNDIS.c   **** 
+ 425               		.loc 1 327 0
+ 426 0304 81E0      		ldi r24,lo8(1)
+ 427 0306 90E0      		ldi r25,0
+ 428 0308 A0E0      		ldi r26,0
+ 429 030a B0E0      		ldi r27,0
+ 430               	.LVL30:
+ 431 030c 00C0      		rjmp .L45
+ 432               	.LVL31:
+ 433               	.L11:
+ 334:Lib/RNDIS.c   **** 
+ 434               		.loc 1 334 0
+ 435 030e 8091 0000 		lds r24,CurrPacketFilter
+ 436 0312 9091 0000 		lds r25,CurrPacketFilter+1
+ 437 0316 A091 0000 		lds r26,CurrPacketFilter+2
+ 438 031a B091 0000 		lds r27,CurrPacketFilter+3
+ 439               	.LVL32:
+ 440 031e 00C0      		rjmp .L45
+ 441               	.LVL33:
+ 442               	.L24:
+ 348:Lib/RNDIS.c   **** 
+ 443               		.loc 1 348 0
+ 444 0320 1092 0000 		sts RNDISMessageBuffer+24,__zero_reg__
+ 445 0324 1092 0000 		sts RNDISMessageBuffer+24+1,__zero_reg__
+ 446 0328 1092 0000 		sts RNDISMessageBuffer+24+2,__zero_reg__
+ 447 032c 1092 0000 		sts RNDISMessageBuffer+24+3,__zero_reg__
+ 448 0330 00C0      		rjmp .L44
+ 449               	.L45:
+ 450               		.loc 1 355 0
+ 451 0332 8093 0000 		sts RNDISMessageBuffer+24,r24
+ 452 0336 9093 0000 		sts RNDISMessageBuffer+24+1,r25
+ 453 033a A093 0000 		sts RNDISMessageBuffer+24+2,r26
+ 454 033e B093 0000 		sts RNDISMessageBuffer+24+3,r27
+ 455               	.L44:
+ 352:Lib/RNDIS.c   **** 
+ 456               		.loc 1 352 0
+ 457 0342 84E0      		ldi r24,lo8(4)
+ 458 0344 90E0      		ldi r25,0
+ 459 0346 00C0      		rjmp .L31
+ 460               	.LVL34:
+ 461               	.L8:
+ 462               	.LBE9:
+ 463               	.LBE8:
+ 182:Lib/RNDIS.c   **** 
+ 464               		.loc 1 182 0
+ 465 0348 81E0      		ldi r24,lo8(1)
+ 466 034a 8093 0000 		sts ResponseReady,r24
+ 467               	.LVL35:
+ 186:Lib/RNDIS.c   **** 
+ 468               		.loc 1 186 0
+ 469 034e 8091 0000 		lds r24,RNDISMessageBuffer+12
+ 470 0352 9091 0000 		lds r25,RNDISMessageBuffer+12+1
+ 471 0356 A091 0000 		lds r26,RNDISMessageBuffer+12+2
+ 472 035a B091 0000 		lds r27,RNDISMessageBuffer+12+3
+ 473               	.LVL36:
+ 188:Lib/RNDIS.c   **** 			SET_Response->MessageLength     = sizeof(RNDIS_Set_Complete_t);
+ 474               		.loc 1 188 0
+ 475 035e 45E0      		ldi r20,lo8(5)
+ 476 0360 50E0      		ldi r21,0
+ 477 0362 60E0      		ldi r22,0
+ 478 0364 70E8      		ldi r23,lo8(-128)
+ 479 0366 4093 0000 		sts RNDISMessageBuffer,r20
+ 480 036a 5093 0000 		sts RNDISMessageBuffer+1,r21
+ 481 036e 6093 0000 		sts RNDISMessageBuffer+2,r22
+ 482 0372 7093 0000 		sts RNDISMessageBuffer+3,r23
+ 189:Lib/RNDIS.c   **** 			SET_Response->RequestId         = SET_Message->RequestId;
+ 483               		.loc 1 189 0
+ 484 0376 40E1      		ldi r20,lo8(16)
+ 485 0378 50E0      		ldi r21,0
+ 486 037a 60E0      		ldi r22,0
+ 487 037c 70E0      		ldi r23,0
+ 488 037e 4093 0000 		sts RNDISMessageBuffer+4,r20
+ 489 0382 5093 0000 		sts RNDISMessageBuffer+4+1,r21
+ 490 0386 6093 0000 		sts RNDISMessageBuffer+4+2,r22
+ 491 038a 7093 0000 		sts RNDISMessageBuffer+4+3,r23
+ 492               	.LVL37:
+ 493               	.LBB10:
+ 494               	.LBB11:
+ 356:Lib/RNDIS.c   **** 
+ 357:Lib/RNDIS.c   **** 			return true;
+ 358:Lib/RNDIS.c   **** 		default:
+ 359:Lib/RNDIS.c   **** 			return false;
+ 360:Lib/RNDIS.c   **** 	}
+ 361:Lib/RNDIS.c   **** }
+ 362:Lib/RNDIS.c   **** 
+ 363:Lib/RNDIS.c   **** /** Processes RNDIS set commands, setting adapter parameters to values given by the host. The reque
+ 364:Lib/RNDIS.c   ****  *  as an OID value.
+ 365:Lib/RNDIS.c   ****  *
+ 366:Lib/RNDIS.c   ****  *  \param[in] OId      OId value of the parameter being set
+ 367:Lib/RNDIS.c   ****  *  \param[in] SetData  Pointer to the parameter value in the RNDIS message buffer
+ 368:Lib/RNDIS.c   ****  *  \param[in] SetSize  Size in bytes of the parameter value being sent by the host
+ 369:Lib/RNDIS.c   ****  *
+ 370:Lib/RNDIS.c   ****  *  \return Boolean true if the set was handled, false otherwise
+ 371:Lib/RNDIS.c   ****  */
+ 372:Lib/RNDIS.c   **** static bool ProcessNDISSet(uint32_t OId, void* SetData, uint16_t SetSize)
+ 373:Lib/RNDIS.c   **** {
+ 374:Lib/RNDIS.c   **** 	/* Handler for REMOTE_NDIS_SET_MSG messages */
+ 375:Lib/RNDIS.c   **** 
+ 376:Lib/RNDIS.c   **** 	switch (OId)
+ 495               		.loc 1 376 0
+ 496 038e 8E30      		cpi r24,14
+ 497 0390 21E0      		ldi r18,1
+ 498 0392 9207      		cpc r25,r18
+ 499 0394 A207      		cpc r26,r18
+ 500 0396 B105      		cpc r27,__zero_reg__
+ 501 0398 01F0      		breq .L33
+ 502 039a 8330      		cpi r24,3
+ 503 039c 9140      		sbci r25,1
+ 504 039e A140      		sbci r26,1
+ 505 03a0 B140      		sbci r27,1
+ 506 03a2 01F4      		brne .+2
+ 507 03a4 00C0      		rjmp .L34
+ 508               	.LVL38:
+ 509               	.LBE11:
+ 510               	.LBE10:
+ 198:Lib/RNDIS.c   **** 
+ 511               		.loc 1 198 0
+ 512 03a6 8BEB      		ldi r24,lo8(-69)
+ 513 03a8 90E0      		ldi r25,0
+ 514 03aa A0E0      		ldi r26,0
+ 515 03ac B0EC      		ldi r27,lo8(-64)
+ 516               	.LVL39:
+ 517 03ae 8093 0000 		sts RNDISMessageBuffer+12,r24
+ 518 03b2 9093 0000 		sts RNDISMessageBuffer+12+1,r25
+ 519 03b6 A093 0000 		sts RNDISMessageBuffer+12+2,r26
+ 520 03ba B093 0000 		sts RNDISMessageBuffer+12+3,r27
+ 521               	.LVL40:
+ 522 03be 0895      		ret
+ 523               	.LVL41:
+ 524               	.L33:
+ 192:Lib/RNDIS.c   **** 			                                                      SET_Message->InformationBufferOffset];
+ 525               		.loc 1 192 0
+ 526 03c0 8091 0000 		lds r24,RNDISMessageBuffer+20
+ 527 03c4 9091 0000 		lds r25,RNDISMessageBuffer+20+1
+ 528 03c8 A091 0000 		lds r26,RNDISMessageBuffer+20+2
+ 529 03cc B091 0000 		lds r27,RNDISMessageBuffer+20+3
+ 530               	.LVL42:
+ 531 03d0 0896      		adiw r24,8
+ 532 03d2 A11D      		adc r26,__zero_reg__
+ 533 03d4 B11D      		adc r27,__zero_reg__
+ 534               	.LBB13:
+ 535               	.LBB12:
+ 377:Lib/RNDIS.c   **** 	{
+ 378:Lib/RNDIS.c   **** 		case OID_GEN_CURRENT_PACKET_FILTER:
+ 379:Lib/RNDIS.c   **** 			/* Save the packet filter mask in case the host queries it again later */
+ 380:Lib/RNDIS.c   **** 			CurrPacketFilter = *((uint32_t*)SetData);
+ 536               		.loc 1 380 0
+ 537 03d6 FC01      		movw r30,r24
+ 538 03d8 E050      		subi r30,lo8(-(RNDISMessageBuffer))
+ 539 03da F040      		sbci r31,hi8(-(RNDISMessageBuffer))
+ 540 03dc 8081      		ld r24,Z
+ 541 03de 9181      		ldd r25,Z+1
+ 542 03e0 A281      		ldd r26,Z+2
+ 543 03e2 B381      		ldd r27,Z+3
+ 544 03e4 8093 0000 		sts CurrPacketFilter,r24
+ 545 03e8 9093 0000 		sts CurrPacketFilter+1,r25
+ 546 03ec A093 0000 		sts CurrPacketFilter+2,r26
+ 547 03f0 B093 0000 		sts CurrPacketFilter+3,r27
+ 381:Lib/RNDIS.c   **** 
+ 382:Lib/RNDIS.c   **** 			/* Set the RNDIS state to initialized if the packet filter is non-zero */
+ 383:Lib/RNDIS.c   **** 			CurrRNDISState = ((CurrPacketFilter) ? RNDIS_Data_Initialized : RNDIS_Data_Initialized);
+ 548               		.loc 1 383 0
+ 549 03f4 82E0      		ldi r24,lo8(2)
+ 550 03f6 8093 0000 		sts CurrRNDISState,r24
+ 551 03fa 00C0      		rjmp .L34
+ 552               	.LVL43:
+ 553               	.L7:
+ 554               	.LBE12:
+ 555               	.LBE13:
+ 204:Lib/RNDIS.c   **** 
+ 556               		.loc 1 204 0
+ 557 03fc 81E0      		ldi r24,lo8(1)
+ 558 03fe 8093 0000 		sts ResponseReady,r24
+ 559               	.LVL44:
+ 208:Lib/RNDIS.c   **** 			RESET_Response->MessageLength       = sizeof(RNDIS_Reset_Complete_t);
+ 560               		.loc 1 208 0
+ 561 0402 86E0      		ldi r24,lo8(6)
+ 562 0404 90E0      		ldi r25,0
+ 563 0406 A0E0      		ldi r26,0
+ 564 0408 B0E8      		ldi r27,lo8(-128)
+ 565 040a 8093 0000 		sts RNDISMessageBuffer,r24
+ 566 040e 9093 0000 		sts RNDISMessageBuffer+1,r25
+ 567 0412 A093 0000 		sts RNDISMessageBuffer+2,r26
+ 568 0416 B093 0000 		sts RNDISMessageBuffer+3,r27
+ 209:Lib/RNDIS.c   **** 			RESET_Response->Status              = REMOTE_NDIS_STATUS_SUCCESS;
+ 569               		.loc 1 209 0
+ 570 041a 80E1      		ldi r24,lo8(16)
+ 571 041c 90E0      		ldi r25,0
+ 572 041e A0E0      		ldi r26,0
+ 573 0420 B0E0      		ldi r27,0
+ 574 0422 8093 0000 		sts RNDISMessageBuffer+4,r24
+ 575 0426 9093 0000 		sts RNDISMessageBuffer+4+1,r25
+ 576 042a A093 0000 		sts RNDISMessageBuffer+4+2,r26
+ 577 042e B093 0000 		sts RNDISMessageBuffer+4+3,r27
+ 210:Lib/RNDIS.c   **** 			RESET_Response->AddressingReset     = 0;
+ 578               		.loc 1 210 0
+ 579 0432 1092 0000 		sts RNDISMessageBuffer+8,__zero_reg__
+ 580 0436 1092 0000 		sts RNDISMessageBuffer+8+1,__zero_reg__
+ 581 043a 1092 0000 		sts RNDISMessageBuffer+8+2,__zero_reg__
+ 582 043e 1092 0000 		sts RNDISMessageBuffer+8+3,__zero_reg__
+ 583 0442 00C0      		rjmp .L34
+ 584               	.LVL45:
+ 585               	.L9:
+ 217:Lib/RNDIS.c   **** 
+ 586               		.loc 1 217 0
+ 587 0444 81E0      		ldi r24,lo8(1)
+ 588 0446 8093 0000 		sts ResponseReady,r24
+ 589               	.LVL46:
+ 222:Lib/RNDIS.c   **** 			KEEPALIVE_Response->MessageLength   = sizeof(RNDIS_KeepAlive_Complete_t);
+ 590               		.loc 1 222 0
+ 591 044a 88E0      		ldi r24,lo8(8)
+ 592 044c 90E0      		ldi r25,0
+ 593 044e A0E0      		ldi r26,0
+ 594 0450 B0E8      		ldi r27,lo8(-128)
+ 595 0452 8093 0000 		sts RNDISMessageBuffer,r24
+ 596 0456 9093 0000 		sts RNDISMessageBuffer+1,r25
+ 597 045a A093 0000 		sts RNDISMessageBuffer+2,r26
+ 598 045e B093 0000 		sts RNDISMessageBuffer+3,r27
+ 223:Lib/RNDIS.c   **** 			KEEPALIVE_Response->RequestId       = KEEPALIVE_Message->RequestId;
+ 599               		.loc 1 223 0
+ 600 0462 80E1      		ldi r24,lo8(16)
+ 601 0464 90E0      		ldi r25,0
+ 602 0466 A0E0      		ldi r26,0
+ 603 0468 B0E0      		ldi r27,0
+ 604 046a 8093 0000 		sts RNDISMessageBuffer+4,r24
+ 605 046e 9093 0000 		sts RNDISMessageBuffer+4+1,r25
+ 606 0472 A093 0000 		sts RNDISMessageBuffer+4+2,r26
+ 607 0476 B093 0000 		sts RNDISMessageBuffer+4+3,r27
+ 608 047a 00C0      		rjmp .L34
+ 609               	.LVL47:
+ 610               	.L31:
+ 164:Lib/RNDIS.c   **** 				QUERY_Response->MessageLength          += ResponseSize;
+ 611               		.loc 1 164 0
+ 612 047c 1092 0000 		sts RNDISMessageBuffer+12,__zero_reg__
+ 613 0480 1092 0000 		sts RNDISMessageBuffer+12+1,__zero_reg__
+ 614 0484 1092 0000 		sts RNDISMessageBuffer+12+2,__zero_reg__
+ 615 0488 1092 0000 		sts RNDISMessageBuffer+12+3,__zero_reg__
+ 165:Lib/RNDIS.c   **** 
+ 616               		.loc 1 165 0
+ 617 048c A0E0      		ldi r26,0
+ 618 048e B0E0      		ldi r27,0
+ 619 0490 4091 0000 		lds r20,RNDISMessageBuffer+4
+ 620 0494 5091 0000 		lds r21,RNDISMessageBuffer+4+1
+ 621 0498 6091 0000 		lds r22,RNDISMessageBuffer+4+2
+ 622 049c 7091 0000 		lds r23,RNDISMessageBuffer+4+3
+ 623 04a0 480F      		add r20,r24
+ 624 04a2 591F      		adc r21,r25
+ 625 04a4 6A1F      		adc r22,r26
+ 626 04a6 7B1F      		adc r23,r27
+ 627 04a8 4093 0000 		sts RNDISMessageBuffer+4,r20
+ 628 04ac 5093 0000 		sts RNDISMessageBuffer+4+1,r21
+ 629 04b0 6093 0000 		sts RNDISMessageBuffer+4+2,r22
+ 630 04b4 7093 0000 		sts RNDISMessageBuffer+4+3,r23
+ 167:Lib/RNDIS.c   **** 				QUERY_Response->InformationBufferOffset = (sizeof(RNDIS_Query_Complete_t) - sizeof(RNDIS_Messag
+ 631               		.loc 1 167 0
+ 632 04b8 8093 0000 		sts RNDISMessageBuffer+16,r24
+ 633 04bc 9093 0000 		sts RNDISMessageBuffer+16+1,r25
+ 634 04c0 A093 0000 		sts RNDISMessageBuffer+16+2,r26
+ 635 04c4 B093 0000 		sts RNDISMessageBuffer+16+3,r27
+ 168:Lib/RNDIS.c   **** 			}
+ 636               		.loc 1 168 0
+ 637 04c8 80E1      		ldi r24,lo8(16)
+ 638 04ca 90E0      		ldi r25,0
+ 639 04cc A0E0      		ldi r26,0
+ 640 04ce B0E0      		ldi r27,0
+ 641               	.LVL48:
+ 642 04d0 8093 0000 		sts RNDISMessageBuffer+20,r24
+ 643 04d4 9093 0000 		sts RNDISMessageBuffer+20+1,r25
+ 644 04d8 A093 0000 		sts RNDISMessageBuffer+20+2,r26
+ 645 04dc B093 0000 		sts RNDISMessageBuffer+20+3,r27
+ 646 04e0 0895      		ret
+ 647               	.LVL49:
+ 648               	.L10:
+ 172:Lib/RNDIS.c   **** 
+ 649               		.loc 1 172 0
+ 650 04e2 8BEB      		ldi r24,lo8(-69)
+ 651 04e4 90E0      		ldi r25,0
+ 652 04e6 A0E0      		ldi r26,0
+ 653 04e8 B0EC      		ldi r27,lo8(-64)
+ 654 04ea 8093 0000 		sts RNDISMessageBuffer+12,r24
+ 655 04ee 9093 0000 		sts RNDISMessageBuffer+12+1,r25
+ 656 04f2 A093 0000 		sts RNDISMessageBuffer+12+2,r26
+ 657 04f6 B093 0000 		sts RNDISMessageBuffer+12+3,r27
+ 658               	.LVL50:
+ 174:Lib/RNDIS.c   **** 				QUERY_Response->InformationBufferOffset = 0;
+ 659               		.loc 1 174 0
+ 660 04fa 1092 0000 		sts RNDISMessageBuffer+16,__zero_reg__
+ 661 04fe 1092 0000 		sts RNDISMessageBuffer+16+1,__zero_reg__
+ 662 0502 1092 0000 		sts RNDISMessageBuffer+16+2,__zero_reg__
+ 663 0506 1092 0000 		sts RNDISMessageBuffer+16+3,__zero_reg__
+ 664               	.LVL51:
+ 175:Lib/RNDIS.c   **** 			}
+ 665               		.loc 1 175 0
+ 666 050a 1092 0000 		sts RNDISMessageBuffer+20,__zero_reg__
+ 667 050e 1092 0000 		sts RNDISMessageBuffer+20+1,__zero_reg__
+ 668 0512 1092 0000 		sts RNDISMessageBuffer+20+2,__zero_reg__
+ 669 0516 1092 0000 		sts RNDISMessageBuffer+20+3,__zero_reg__
+ 670               	.LVL52:
+ 671 051a 0895      		ret
+ 672               	.LVL53:
+ 673               	.L34:
+ 196:Lib/RNDIS.c   **** 			else
+ 674               		.loc 1 196 0
+ 675 051c 1092 0000 		sts RNDISMessageBuffer+12,__zero_reg__
+ 676 0520 1092 0000 		sts RNDISMessageBuffer+12+1,__zero_reg__
+ 677 0524 1092 0000 		sts RNDISMessageBuffer+12+2,__zero_reg__
+ 678 0528 1092 0000 		sts RNDISMessageBuffer+12+3,__zero_reg__
+ 679 052c 0895      		ret
+ 680               	.LBE7:
+ 681               		.cfi_endproc
+ 682               	.LFE116:
+ 684               	.global	CurrPacketFilter
+ 685               		.section .bss
+ 688               	CurrPacketFilter:
+ 689 0000 0000 0000 		.zero	4
+ 690               	.global	CurrRNDISState
+ 693               	CurrRNDISState:
+ 694 0004 00        		.zero	1
+ 695               	.global	ResponseReady
+ 698               	ResponseReady:
+ 699 0005 00        		.zero	1
+ 700               	.global	MessageHeader
+ 701               		.data
+ 704               	MessageHeader:
+ 705 0000 0000      		.word	RNDISMessageBuffer
+ 706               		.comm	RNDISMessageBuffer,132,1
+ 707               		.section	.progmem.data,"a",@progbits
+ 710               	AdapterSupportedOIDList:
+ 711 0000 01        		.byte	1
+ 712 0001 01        		.byte	1
+ 713 0002 01        		.byte	1
+ 714 0003 00        		.byte	0
+ 715 0004 02        		.byte	2
+ 716 0005 02        		.byte	2
+ 717 0006 01        		.byte	1
+ 718 0007 00        		.byte	0
+ 719 0008 02        		.byte	2
+ 720 0009 01        		.byte	1
+ 721 000a 01        		.byte	1
+ 722 000b 00        		.byte	0
+ 723 000c 03        		.byte	3
+ 724 000d 01        		.byte	1
+ 725 000e 01        		.byte	1
+ 726 000f 00        		.byte	0
+ 727 0010 04        		.byte	4
+ 728 0011 01        		.byte	1
+ 729 0012 01        		.byte	1
+ 730 0013 00        		.byte	0
+ 731 0014 06        		.byte	6
+ 732 0015 01        		.byte	1
+ 733 0016 01        		.byte	1
+ 734 0017 00        		.byte	0
+ 735 0018 11        		.byte	17
+ 736 0019 01        		.byte	1
+ 737 001a 01        		.byte	1
+ 738 001b 00        		.byte	0
+ 739 001c 07        		.byte	7
+ 740 001d 01        		.byte	1
+ 741 001e 01        		.byte	1
+ 742 001f 00        		.byte	0
+ 743 0020 0A        		.byte	10
+ 744 0021 01        		.byte	1
+ 745 0022 01        		.byte	1
+ 746 0023 00        		.byte	0
+ 747 0024 0B        		.byte	11
+ 748 0025 01        		.byte	1
+ 749 0026 01        		.byte	1
+ 750 0027 00        		.byte	0
+ 751 0028 0C        		.byte	12
+ 752 0029 01        		.byte	1
+ 753 002a 01        		.byte	1
+ 754 002b 00        		.byte	0
+ 755 002c 0D        		.byte	13
+ 756 002d 01        		.byte	1
+ 757 002e 01        		.byte	1
+ 758 002f 00        		.byte	0
+ 759 0030 0E        		.byte	14
+ 760 0031 01        		.byte	1
+ 761 0032 01        		.byte	1
+ 762 0033 00        		.byte	0
+ 763 0034 11        		.byte	17
+ 764 0035 01        		.byte	1
+ 765 0036 01        		.byte	1
+ 766 0037 00        		.byte	0
+ 767 0038 14        		.byte	20
+ 768 0039 01        		.byte	1
+ 769 003a 01        		.byte	1
+ 770 003b 00        		.byte	0
+ 771 003c 01        		.byte	1
+ 772 003d 01        		.byte	1
+ 773 003e 02        		.byte	2
+ 774 003f 00        		.byte	0
+ 775 0040 02        		.byte	2
+ 776 0041 01        		.byte	1
+ 777 0042 02        		.byte	2
+ 778 0043 00        		.byte	0
+ 779 0044 03        		.byte	3
+ 780 0045 01        		.byte	1
+ 781 0046 02        		.byte	2
+ 782 0047 00        		.byte	0
+ 783 0048 04        		.byte	4
+ 784 0049 01        		.byte	1
+ 785 004a 02        		.byte	2
+ 786 004b 00        		.byte	0
+ 787 004c 05        		.byte	5
+ 788 004d 01        		.byte	1
+ 789 004e 02        		.byte	2
+ 790 004f 00        		.byte	0
+ 791 0050 01        		.byte	1
+ 792 0051 01        		.byte	1
+ 793 0052 01        		.byte	1
+ 794 0053 01        		.byte	1
+ 795 0054 02        		.byte	2
+ 796 0055 01        		.byte	1
+ 797 0056 01        		.byte	1
+ 798 0057 01        		.byte	1
+ 799 0058 03        		.byte	3
+ 800 0059 01        		.byte	1
+ 801 005a 01        		.byte	1
+ 802 005b 01        		.byte	1
+ 803 005c 04        		.byte	4
+ 804 005d 01        		.byte	1
+ 805 005e 01        		.byte	1
+ 806 005f 01        		.byte	1
+ 807 0060 01        		.byte	1
+ 808 0061 01        		.byte	1
+ 809 0062 02        		.byte	2
+ 810 0063 01        		.byte	1
+ 811 0064 02        		.byte	2
+ 812 0065 01        		.byte	1
+ 813 0066 02        		.byte	2
+ 814 0067 01        		.byte	1
+ 815 0068 03        		.byte	3
+ 816 0069 01        		.byte	1
+ 817 006a 02        		.byte	2
+ 818 006b 01        		.byte	1
+ 821               	AdapterVendorDescription:
+ 822 006c 4C55 4641 		.string	"LUFA RNDIS Adapter"
+ 822      2052 4E44 
+ 822      4953 2041 
+ 822      6461 7074 
+ 822      6572 00
+ 825               	AdapterMACAddress:
+ 826 007f 02        		.byte	2
+ 827 0080 00        		.byte	0
+ 828 0081 02        		.byte	2
+ 829 0082 00        		.byte	0
+ 830 0083 02        		.byte	2
+ 831 0084 00        		.byte	0
+ 832               		.text
+ 833               	.Letext0:
+ 834               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 835               		.file 3 "/usr/lib/avr/include/stdio.h"
+ 836               		.file 4 "../../../../LUFA/Drivers/USB/Class/Device/../Common/RNDIS.h"
+ 837               		.file 5 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+ 838               		.file 6 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 839               		.file 7 "/usr/lib/avr/include/avr/pgmspace.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 RNDIS.c
+     /tmp/ccV9UIhG.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccV9UIhG.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccV9UIhG.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccV9UIhG.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccV9UIhG.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccV9UIhG.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccV9UIhG.s:14     .text.ProcessRNDISControlMessage:0000000000000000 ProcessRNDISControlMessage
+     /tmp/ccV9UIhG.s:704    .data:0000000000000000 MessageHeader
+     /tmp/ccV9UIhG.s:698    .bss:0000000000000005 ResponseReady
+                            *COM*:0000000000000084 RNDISMessageBuffer
+     /tmp/ccV9UIhG.s:693    .bss:0000000000000004 CurrRNDISState
+     /tmp/ccV9UIhG.s:710    .progmem.data:0000000000000000 AdapterSupportedOIDList
+     /tmp/ccV9UIhG.s:821    .progmem.data:000000000000006c AdapterVendorDescription
+     /tmp/ccV9UIhG.s:825    .progmem.data:000000000000007f AdapterMACAddress
+     /tmp/ccV9UIhG.s:688    .bss:0000000000000000 CurrPacketFilter
+
+UNDEFINED SYMBOLS
+memcpy_P
+__do_copy_data
+__do_clear_bss

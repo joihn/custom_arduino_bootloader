@@ -1,0 +1,2127 @@
+   1               		.file	"SCSI.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.SCSI_Command_ReadWrite_10,"ax",@progbits
+  13               	SCSI_Command_ReadWrite_10:
+  14               	.LFB133:
+  15               		.file 1 "Lib/SCSI.c"
+   1:Lib/SCSI.c    **** /*
+   2:Lib/SCSI.c    ****              LUFA Library
+   3:Lib/SCSI.c    ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/SCSI.c    **** 
+   5:Lib/SCSI.c    ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/SCSI.c    ****            www.lufa-lib.org
+   7:Lib/SCSI.c    **** */
+   8:Lib/SCSI.c    **** 
+   9:Lib/SCSI.c    **** /*
+  10:Lib/SCSI.c    ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/SCSI.c    **** 
+  12:Lib/SCSI.c    ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/SCSI.c    ****   software and its documentation for any purpose is hereby granted
+  14:Lib/SCSI.c    ****   without fee, provided that the above copyright notice appear in
+  15:Lib/SCSI.c    ****   all copies and that both that the copyright notice and this
+  16:Lib/SCSI.c    ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/SCSI.c    ****   documentation, and that the name of the author not be used in
+  18:Lib/SCSI.c    ****   advertising or publicity pertaining to distribution of the
+  19:Lib/SCSI.c    ****   software without specific, written prior permission.
+  20:Lib/SCSI.c    **** 
+  21:Lib/SCSI.c    ****   The author disclaim all warranties with regard to this
+  22:Lib/SCSI.c    ****   software, including all implied warranties of merchantability
+  23:Lib/SCSI.c    ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/SCSI.c    ****   special, indirect or consequential damages or any damages
+  25:Lib/SCSI.c    ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/SCSI.c    ****   in an action of contract, negligence or other tortious action,
+  27:Lib/SCSI.c    ****   arising out of or in connection with the use or performance of
+  28:Lib/SCSI.c    ****   this software.
+  29:Lib/SCSI.c    **** */
+  30:Lib/SCSI.c    **** 
+  31:Lib/SCSI.c    **** /** \file
+  32:Lib/SCSI.c    ****  *
+  33:Lib/SCSI.c    ****  *  SCSI command processing routines, for SCSI commands issued by the host. Mass Storage
+  34:Lib/SCSI.c    ****  *  devices use a thin "Bulk-Only Transport" protocol for issuing commands and status information,
+  35:Lib/SCSI.c    ****  *  which wrap around standard SCSI device commands for controlling the actual storage medium.
+  36:Lib/SCSI.c    ****  */
+  37:Lib/SCSI.c    **** 
+  38:Lib/SCSI.c    **** #define  INCLUDE_FROM_SCSI_C
+  39:Lib/SCSI.c    **** #include "SCSI.h"
+  40:Lib/SCSI.c    **** 
+  41:Lib/SCSI.c    **** /** Structure to hold the SCSI response data to a SCSI INQUIRY command. This gives information abou
+  42:Lib/SCSI.c    ****  *  features and capabilities.
+  43:Lib/SCSI.c    ****  */
+  44:Lib/SCSI.c    **** static const SCSI_Inquiry_Response_t InquiryData =
+  45:Lib/SCSI.c    **** 	{
+  46:Lib/SCSI.c    **** 		.DeviceType          = DEVICE_TYPE_BLOCK,
+  47:Lib/SCSI.c    **** 		.PeripheralQualifier = 0,
+  48:Lib/SCSI.c    **** 
+  49:Lib/SCSI.c    **** 		.Removable           = true,
+  50:Lib/SCSI.c    **** 
+  51:Lib/SCSI.c    **** 		.Version             = 0,
+  52:Lib/SCSI.c    **** 
+  53:Lib/SCSI.c    **** 		.ResponseDataFormat  = 2,
+  54:Lib/SCSI.c    **** 		.NormACA             = false,
+  55:Lib/SCSI.c    **** 		.TrmTsk              = false,
+  56:Lib/SCSI.c    **** 		.AERC                = false,
+  57:Lib/SCSI.c    **** 
+  58:Lib/SCSI.c    **** 		.AdditionalLength    = 0x1F,
+  59:Lib/SCSI.c    **** 
+  60:Lib/SCSI.c    **** 		.SoftReset           = false,
+  61:Lib/SCSI.c    **** 		.CmdQue              = false,
+  62:Lib/SCSI.c    **** 		.Linked              = false,
+  63:Lib/SCSI.c    **** 		.Sync                = false,
+  64:Lib/SCSI.c    **** 		.WideBus16Bit        = false,
+  65:Lib/SCSI.c    **** 		.WideBus32Bit        = false,
+  66:Lib/SCSI.c    **** 		.RelAddr             = false,
+  67:Lib/SCSI.c    **** 
+  68:Lib/SCSI.c    **** 		.VendorID            = "LUFA",
+  69:Lib/SCSI.c    **** 		.ProductID           = "Dataflash Disk",
+  70:Lib/SCSI.c    **** 		.RevisionID          = {'0','.','0','0'},
+  71:Lib/SCSI.c    **** 	};
+  72:Lib/SCSI.c    **** 
+  73:Lib/SCSI.c    **** /** Structure to hold the sense data for the last issued SCSI command, which is returned to the hos
+  74:Lib/SCSI.c    ****  *  command is issued. This gives information on exactly why the last command failed to complete.
+  75:Lib/SCSI.c    ****  */
+  76:Lib/SCSI.c    **** static SCSI_Request_Sense_Response_t SenseData =
+  77:Lib/SCSI.c    **** 	{
+  78:Lib/SCSI.c    **** 		.ResponseCode        = 0x70,
+  79:Lib/SCSI.c    **** 		.AdditionalLength    = 0x0A,
+  80:Lib/SCSI.c    **** 	};
+  81:Lib/SCSI.c    **** 
+  82:Lib/SCSI.c    **** 
+  83:Lib/SCSI.c    **** /** Main routine to process the SCSI command located in the Command Block Wrapper read from the hos
+  84:Lib/SCSI.c    ****  *  to the appropriate SCSI command handling routine if the issued command is supported by the devi
+  85:Lib/SCSI.c    ****  *  a command failure due to a ILLEGAL REQUEST.
+  86:Lib/SCSI.c    ****  *
+  87:Lib/SCSI.c    ****  *  \param[in] MSInterfaceInfo  Pointer to the Mass Storage class interface structure that the comm
+  88:Lib/SCSI.c    ****  *
+  89:Lib/SCSI.c    ****  *  \return Boolean true if the command completed successfully, false otherwise
+  90:Lib/SCSI.c    ****  */
+  91:Lib/SCSI.c    **** bool SCSI_DecodeSCSICommand(USB_ClassInfo_MS_Device_t* const MSInterfaceInfo)
+  92:Lib/SCSI.c    **** {
+  93:Lib/SCSI.c    **** 	bool CommandSuccess = false;
+  94:Lib/SCSI.c    **** 
+  95:Lib/SCSI.c    **** 	/* Run the appropriate SCSI command hander function based on the passed command */
+  96:Lib/SCSI.c    **** 	switch (MSInterfaceInfo->State.CommandBlock.SCSICommandData[0])
+  97:Lib/SCSI.c    **** 	{
+  98:Lib/SCSI.c    **** 		case SCSI_CMD_INQUIRY:
+  99:Lib/SCSI.c    **** 			CommandSuccess = SCSI_Command_Inquiry(MSInterfaceInfo);
+ 100:Lib/SCSI.c    **** 			break;
+ 101:Lib/SCSI.c    **** 		case SCSI_CMD_REQUEST_SENSE:
+ 102:Lib/SCSI.c    **** 			CommandSuccess = SCSI_Command_Request_Sense(MSInterfaceInfo);
+ 103:Lib/SCSI.c    **** 			break;
+ 104:Lib/SCSI.c    **** 		case SCSI_CMD_READ_CAPACITY_10:
+ 105:Lib/SCSI.c    **** 			CommandSuccess = SCSI_Command_Read_Capacity_10(MSInterfaceInfo);
+ 106:Lib/SCSI.c    **** 			break;
+ 107:Lib/SCSI.c    **** 		case SCSI_CMD_SEND_DIAGNOSTIC:
+ 108:Lib/SCSI.c    **** 			CommandSuccess = SCSI_Command_Send_Diagnostic(MSInterfaceInfo);
+ 109:Lib/SCSI.c    **** 			break;
+ 110:Lib/SCSI.c    **** 		case SCSI_CMD_WRITE_10:
+ 111:Lib/SCSI.c    **** 			CommandSuccess = SCSI_Command_ReadWrite_10(MSInterfaceInfo, DATA_WRITE);
+ 112:Lib/SCSI.c    **** 			break;
+ 113:Lib/SCSI.c    **** 		case SCSI_CMD_READ_10:
+ 114:Lib/SCSI.c    **** 			CommandSuccess = SCSI_Command_ReadWrite_10(MSInterfaceInfo, DATA_READ);
+ 115:Lib/SCSI.c    **** 			break;
+ 116:Lib/SCSI.c    **** 		case SCSI_CMD_MODE_SENSE_6:
+ 117:Lib/SCSI.c    **** 			CommandSuccess = SCSI_Command_ModeSense_6(MSInterfaceInfo);
+ 118:Lib/SCSI.c    **** 			break;
+ 119:Lib/SCSI.c    **** 		case SCSI_CMD_TEST_UNIT_READY:
+ 120:Lib/SCSI.c    **** 		case SCSI_CMD_PREVENT_ALLOW_MEDIUM_REMOVAL:
+ 121:Lib/SCSI.c    **** 		case SCSI_CMD_VERIFY_10:
+ 122:Lib/SCSI.c    **** 			/* These commands should just succeed, no handling required */
+ 123:Lib/SCSI.c    **** 			CommandSuccess = true;
+ 124:Lib/SCSI.c    **** 			MSInterfaceInfo->State.CommandBlock.DataTransferLength = 0;
+ 125:Lib/SCSI.c    **** 			break;
+ 126:Lib/SCSI.c    **** 		default:
+ 127:Lib/SCSI.c    **** 			/* Update the SENSE key to reflect the invalid command */
+ 128:Lib/SCSI.c    **** 			SCSI_SET_SENSE(SCSI_SENSE_KEY_ILLEGAL_REQUEST,
+ 129:Lib/SCSI.c    **** 		                   SCSI_ASENSE_INVALID_COMMAND,
+ 130:Lib/SCSI.c    **** 		                   SCSI_ASENSEQ_NO_QUALIFIER);
+ 131:Lib/SCSI.c    **** 			break;
+ 132:Lib/SCSI.c    **** 	}
+ 133:Lib/SCSI.c    **** 
+ 134:Lib/SCSI.c    **** 	/* Check if command was successfully processed */
+ 135:Lib/SCSI.c    **** 	if (CommandSuccess)
+ 136:Lib/SCSI.c    **** 	{
+ 137:Lib/SCSI.c    **** 		SCSI_SET_SENSE(SCSI_SENSE_KEY_GOOD,
+ 138:Lib/SCSI.c    **** 		               SCSI_ASENSE_NO_ADDITIONAL_INFORMATION,
+ 139:Lib/SCSI.c    **** 		               SCSI_ASENSEQ_NO_QUALIFIER);
+ 140:Lib/SCSI.c    **** 
+ 141:Lib/SCSI.c    **** 		return true;
+ 142:Lib/SCSI.c    **** 	}
+ 143:Lib/SCSI.c    **** 
+ 144:Lib/SCSI.c    **** 	return false;
+ 145:Lib/SCSI.c    **** }
+ 146:Lib/SCSI.c    **** 
+ 147:Lib/SCSI.c    **** /** Command processing for an issued SCSI INQUIRY command. This command returns information about t
+ 148:Lib/SCSI.c    ****  *  and capabilities to the host.
+ 149:Lib/SCSI.c    ****  *
+ 150:Lib/SCSI.c    ****  *  \param[in] MSInterfaceInfo  Pointer to the Mass Storage class interface structure that the comm
+ 151:Lib/SCSI.c    ****  *
+ 152:Lib/SCSI.c    ****  *  \return Boolean true if the command completed successfully, false otherwise.
+ 153:Lib/SCSI.c    ****  */
+ 154:Lib/SCSI.c    **** static bool SCSI_Command_Inquiry(USB_ClassInfo_MS_Device_t* const MSInterfaceInfo)
+ 155:Lib/SCSI.c    **** {
+ 156:Lib/SCSI.c    **** 	uint16_t AllocationLength  = SwapEndian_16(*(uint16_t*)&MSInterfaceInfo->State.CommandBlock.SCSICo
+ 157:Lib/SCSI.c    **** 	uint16_t BytesTransferred  = MIN(AllocationLength, sizeof(InquiryData));
+ 158:Lib/SCSI.c    **** 
+ 159:Lib/SCSI.c    **** 	/* Only the standard INQUIRY data is supported, check if any optional INQUIRY bits set */
+ 160:Lib/SCSI.c    **** 	if ((MSInterfaceInfo->State.CommandBlock.SCSICommandData[1] & ((1 << 0) | (1 << 1))) ||
+ 161:Lib/SCSI.c    **** 	     MSInterfaceInfo->State.CommandBlock.SCSICommandData[2])
+ 162:Lib/SCSI.c    **** 	{
+ 163:Lib/SCSI.c    **** 		/* Optional but unsupported bits set - update the SENSE key and fail the request */
+ 164:Lib/SCSI.c    **** 		SCSI_SET_SENSE(SCSI_SENSE_KEY_ILLEGAL_REQUEST,
+ 165:Lib/SCSI.c    **** 		               SCSI_ASENSE_INVALID_FIELD_IN_CDB,
+ 166:Lib/SCSI.c    **** 		               SCSI_ASENSEQ_NO_QUALIFIER);
+ 167:Lib/SCSI.c    **** 
+ 168:Lib/SCSI.c    **** 		return false;
+ 169:Lib/SCSI.c    **** 	}
+ 170:Lib/SCSI.c    **** 
+ 171:Lib/SCSI.c    **** 	Endpoint_Write_Stream_LE(&InquiryData, BytesTransferred, NULL);
+ 172:Lib/SCSI.c    **** 
+ 173:Lib/SCSI.c    **** 	/* Pad out remaining bytes with 0x00 */
+ 174:Lib/SCSI.c    **** 	Endpoint_Null_Stream((AllocationLength - BytesTransferred), NULL);
+ 175:Lib/SCSI.c    **** 
+ 176:Lib/SCSI.c    **** 	/* Finalize the stream transfer to send the last packet */
+ 177:Lib/SCSI.c    **** 	Endpoint_ClearIN();
+ 178:Lib/SCSI.c    **** 
+ 179:Lib/SCSI.c    **** 	/* Succeed the command and update the bytes transferred counter */
+ 180:Lib/SCSI.c    **** 	MSInterfaceInfo->State.CommandBlock.DataTransferLength -= BytesTransferred;
+ 181:Lib/SCSI.c    **** 
+ 182:Lib/SCSI.c    **** 	return true;
+ 183:Lib/SCSI.c    **** }
+ 184:Lib/SCSI.c    **** 
+ 185:Lib/SCSI.c    **** /** Command processing for an issued SCSI REQUEST SENSE command. This command returns information a
+ 186:Lib/SCSI.c    ****  *  including the error code and additional error information so that the host can determine why a 
+ 187:Lib/SCSI.c    ****  *
+ 188:Lib/SCSI.c    ****  *  \param[in] MSInterfaceInfo  Pointer to the Mass Storage class interface structure that the comm
+ 189:Lib/SCSI.c    ****  *
+ 190:Lib/SCSI.c    ****  *  \return Boolean true if the command completed successfully, false otherwise.
+ 191:Lib/SCSI.c    ****  */
+ 192:Lib/SCSI.c    **** static bool SCSI_Command_Request_Sense(USB_ClassInfo_MS_Device_t* const MSInterfaceInfo)
+ 193:Lib/SCSI.c    **** {
+ 194:Lib/SCSI.c    **** 	uint8_t  AllocationLength = MSInterfaceInfo->State.CommandBlock.SCSICommandData[4];
+ 195:Lib/SCSI.c    **** 	uint8_t  BytesTransferred = MIN(AllocationLength, sizeof(SenseData));
+ 196:Lib/SCSI.c    **** 
+ 197:Lib/SCSI.c    **** 	Endpoint_Write_Stream_LE(&SenseData, BytesTransferred, NULL);
+ 198:Lib/SCSI.c    **** 	Endpoint_Null_Stream((AllocationLength - BytesTransferred), NULL);
+ 199:Lib/SCSI.c    **** 	Endpoint_ClearIN();
+ 200:Lib/SCSI.c    **** 
+ 201:Lib/SCSI.c    **** 	/* Succeed the command and update the bytes transferred counter */
+ 202:Lib/SCSI.c    **** 	MSInterfaceInfo->State.CommandBlock.DataTransferLength -= BytesTransferred;
+ 203:Lib/SCSI.c    **** 
+ 204:Lib/SCSI.c    **** 	return true;
+ 205:Lib/SCSI.c    **** }
+ 206:Lib/SCSI.c    **** 
+ 207:Lib/SCSI.c    **** /** Command processing for an issued SCSI READ CAPACITY (10) command. This command returns informat
+ 208:Lib/SCSI.c    ****  *  on the selected Logical Unit (drive), as a number of OS-sized blocks.
+ 209:Lib/SCSI.c    ****  *
+ 210:Lib/SCSI.c    ****  *  \param[in] MSInterfaceInfo  Pointer to the Mass Storage class interface structure that the comm
+ 211:Lib/SCSI.c    ****  *
+ 212:Lib/SCSI.c    ****  *  \return Boolean true if the command completed successfully, false otherwise.
+ 213:Lib/SCSI.c    ****  */
+ 214:Lib/SCSI.c    **** static bool SCSI_Command_Read_Capacity_10(USB_ClassInfo_MS_Device_t* const MSInterfaceInfo)
+ 215:Lib/SCSI.c    **** {
+ 216:Lib/SCSI.c    **** 	uint32_t LastBlockAddressInLUN = (LUN_MEDIA_BLOCKS - 1);
+ 217:Lib/SCSI.c    **** 	uint32_t MediaBlockSize        = VIRTUAL_MEMORY_BLOCK_SIZE;
+ 218:Lib/SCSI.c    **** 
+ 219:Lib/SCSI.c    **** 	Endpoint_Write_Stream_BE(&LastBlockAddressInLUN, sizeof(LastBlockAddressInLUN), NULL);
+ 220:Lib/SCSI.c    **** 	Endpoint_Write_Stream_BE(&MediaBlockSize, sizeof(MediaBlockSize), NULL);
+ 221:Lib/SCSI.c    **** 	Endpoint_ClearIN();
+ 222:Lib/SCSI.c    **** 
+ 223:Lib/SCSI.c    **** 	/* Succeed the command and update the bytes transferred counter */
+ 224:Lib/SCSI.c    **** 	MSInterfaceInfo->State.CommandBlock.DataTransferLength -= 8;
+ 225:Lib/SCSI.c    **** 
+ 226:Lib/SCSI.c    **** 	return true;
+ 227:Lib/SCSI.c    **** }
+ 228:Lib/SCSI.c    **** 
+ 229:Lib/SCSI.c    **** /** Command processing for an issued SCSI SEND DIAGNOSTIC command. This command performs a quick ch
+ 230:Lib/SCSI.c    ****  *  board, and indicates if they are present and functioning correctly. Only the Self-Test portion 
+ 231:Lib/SCSI.c    ****  *  supported.
+ 232:Lib/SCSI.c    ****  *
+ 233:Lib/SCSI.c    ****  *  \param[in] MSInterfaceInfo  Pointer to the Mass Storage class interface structure that the comm
+ 234:Lib/SCSI.c    ****  *
+ 235:Lib/SCSI.c    ****  *  \return Boolean true if the command completed successfully, false otherwise.
+ 236:Lib/SCSI.c    ****  */
+ 237:Lib/SCSI.c    **** static bool SCSI_Command_Send_Diagnostic(USB_ClassInfo_MS_Device_t* const MSInterfaceInfo)
+ 238:Lib/SCSI.c    **** {
+ 239:Lib/SCSI.c    **** 	/* Check to see if the SELF TEST bit is not set */
+ 240:Lib/SCSI.c    **** 	if (!(MSInterfaceInfo->State.CommandBlock.SCSICommandData[1] & (1 << 2)))
+ 241:Lib/SCSI.c    **** 	{
+ 242:Lib/SCSI.c    **** 		/* Only self-test supported - update SENSE key and fail the command */
+ 243:Lib/SCSI.c    **** 		SCSI_SET_SENSE(SCSI_SENSE_KEY_ILLEGAL_REQUEST,
+ 244:Lib/SCSI.c    **** 		               SCSI_ASENSE_INVALID_FIELD_IN_CDB,
+ 245:Lib/SCSI.c    **** 		               SCSI_ASENSEQ_NO_QUALIFIER);
+ 246:Lib/SCSI.c    **** 
+ 247:Lib/SCSI.c    **** 		return false;
+ 248:Lib/SCSI.c    **** 	}
+ 249:Lib/SCSI.c    **** 
+ 250:Lib/SCSI.c    **** 	/* Check to see if all attached Dataflash ICs are functional */
+ 251:Lib/SCSI.c    **** 	if (!(DataflashManager_CheckDataflashOperation()))
+ 252:Lib/SCSI.c    **** 	{
+ 253:Lib/SCSI.c    **** 		/* Update SENSE key with a hardware error condition and return command fail */
+ 254:Lib/SCSI.c    **** 		SCSI_SET_SENSE(SCSI_SENSE_KEY_HARDWARE_ERROR,
+ 255:Lib/SCSI.c    **** 		               SCSI_ASENSE_NO_ADDITIONAL_INFORMATION,
+ 256:Lib/SCSI.c    **** 		               SCSI_ASENSEQ_NO_QUALIFIER);
+ 257:Lib/SCSI.c    **** 
+ 258:Lib/SCSI.c    **** 		return false;
+ 259:Lib/SCSI.c    **** 	}
+ 260:Lib/SCSI.c    **** 
+ 261:Lib/SCSI.c    **** 	/* Succeed the command and update the bytes transferred counter */
+ 262:Lib/SCSI.c    **** 	MSInterfaceInfo->State.CommandBlock.DataTransferLength = 0;
+ 263:Lib/SCSI.c    **** 
+ 264:Lib/SCSI.c    **** 	return true;
+ 265:Lib/SCSI.c    **** }
+ 266:Lib/SCSI.c    **** 
+ 267:Lib/SCSI.c    **** /** Command processing for an issued SCSI READ (10) or WRITE (10) command. This command reads in th
+ 268:Lib/SCSI.c    ****  *  and total number of blocks to process, then calls the appropriate low-level Dataflash routine t
+ 269:Lib/SCSI.c    ****  *  reading and writing of the data.
+ 270:Lib/SCSI.c    ****  *
+ 271:Lib/SCSI.c    ****  *  \param[in] MSInterfaceInfo  Pointer to the Mass Storage class interface structure that the comm
+ 272:Lib/SCSI.c    ****  *  \param[in] IsDataRead  Indicates if the command is a READ (10) command or WRITE (10) command (D
+ 273:Lib/SCSI.c    ****  *
+ 274:Lib/SCSI.c    ****  *  \return Boolean true if the command completed successfully, false otherwise.
+ 275:Lib/SCSI.c    ****  */
+ 276:Lib/SCSI.c    **** static bool SCSI_Command_ReadWrite_10(USB_ClassInfo_MS_Device_t* const MSInterfaceInfo,
+ 277:Lib/SCSI.c    ****                                       const bool IsDataRead)
+ 278:Lib/SCSI.c    **** {
+  16               		.loc 1 278 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19 0000 0F93      		push r16
+  20               	.LCFI0:
+  21               		.cfi_def_cfa_offset 3
+  22               		.cfi_offset 16, -2
+  23 0002 1F93      		push r17
+  24               	.LCFI1:
+  25               		.cfi_def_cfa_offset 4
+  26               		.cfi_offset 17, -3
+  27 0004 CF93      		push r28
+  28               	.LCFI2:
+  29               		.cfi_def_cfa_offset 5
+  30               		.cfi_offset 28, -4
+  31 0006 DF93      		push r29
+  32               	.LCFI3:
+  33               		.cfi_def_cfa_offset 6
+  34               		.cfi_offset 29, -5
+  35               	/* prologue: function */
+  36               	/* frame size = 0 */
+  37               	/* stack size = 4 */
+  38               	.L__stack_usage = 4
+  39 0008 EC01      		movw r28,r24
+  40 000a 862F      		mov r24,r22
+  41               	.LVL1:
+  42               	.LBB24:
+  43               	.LBB25:
+  44               		.file 2 "../../../../LUFA/Drivers/USB/../../Common/Endianness.h"
+   1:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /*
+   2:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+   5:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** */
+   8:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+   9:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /*
+  10:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  12:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  21:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   this software.
+  29:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** */
+  30:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  31:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /** \file
+  32:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \brief Endianness and Byte Ordering macros and functions.
+  33:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *
+  34:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \copydetails Group_Endianness
+  35:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  */
+  36:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  37:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /** \ingroup Group_Endianness
+  38:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \defgroup Group_ByteSwapping Byte Reordering
+  39:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \brief Macros and functions for forced byte reordering.
+  40:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  */
+  41:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  42:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /** \ingroup Group_Endianness
+  43:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \defgroup Group_EndianConversion Endianness Conversion
+  44:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \brief Macros and functions for automatic endianness conversion.
+  45:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  */
+  46:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  47:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /** \ingroup Group_Common
+  48:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \defgroup Group_Endianness Endianness and Byte Ordering
+  49:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \brief Convenience macros and functions relating to byte (re-)ordering
+  50:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *
+  51:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  Common library convenience macros and functions relating to byte (re-)ordering.
+  52:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *
+  53:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  @{
+  54:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  */
+  55:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  56:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** #ifndef __LUFA_ENDIANNESS_H__
+  57:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** #define __LUFA_ENDIANNESS_H__
+  58:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  59:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 	/* Enable C linkage for C++ Compilers: */
+  60:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#if defined(__cplusplus)
+  61:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			extern "C" {
+  62:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#endif
+  63:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  64:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 	/* Preprocessor Checks: */
+  65:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#if !defined(__INCLUDE_FROM_COMMON_H)
+  66:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#error Do not include this file directly. Include LUFA/Common/Common.h instead to gain this func
+  67:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#endif
+  68:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		
+  69:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#if !(defined(ARCH_BIG_ENDIAN) || defined(ARCH_LITTLE_ENDIAN))
+  70:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#error ARCH_BIG_ENDIAN or ARCH_LITTLE_ENDIAN not set for the specified architecture.
+  71:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#endif
+  72:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  73:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 	/* Public Interface - May be used in end-application: */
+  74:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		/* Macros: */
+  75:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			/** Swaps the byte ordering of a 16-bit value at compile-time. Do not use this macro for swappin
+  76:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  of dynamic values computed at runtime, use \ref SwapEndian_16() instead. The result of this 
+  77:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  inside struct or other variable initializers outside of a function, something that is not po
+  78:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  inline function variant.
+  79:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  80:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+  81:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  82:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \param[in] x  16-bit value whose byte ordering is to be swapped.
+  83:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  84:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \return Input value with the byte ordering reversed.
+  85:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 */
+  86:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#define SWAPENDIAN_16(x)            (uint16_t)((((x) & 0xFF00) >> 8) | (((x) & 0x00FF) << 8))
+  87:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  88:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			/** Swaps the byte ordering of a 32-bit value at compile-time. Do not use this macro for swappin
+  89:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  of dynamic values computed at runtime- use \ref SwapEndian_32() instead. The result of this 
+  90:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  inside struct or other variable initializers outside of a function, something that is not po
+  91:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  inline function variant.
+  92:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  93:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+  94:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  95:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \param[in] x  32-bit value whose byte ordering is to be swapped.
+  96:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  97:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \return Input value with the byte ordering reversed.
+  98:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 */
+  99:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#define SWAPENDIAN_32(x)            (uint32_t)((((x) & 0xFF000000UL) >> 24UL) | (((x) & 0x00FF00
+ 100:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			                                               (((x) & 0x0000FF00UL) << 8UL)  | (((x) & 0x000000
+ 101:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 102:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#if defined(ARCH_BIG_ENDIAN) && !defined(le16_to_cpu)
+ 103:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define le16_to_cpu(x)           SwapEndian_16(x)
+ 104:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define le32_to_cpu(x)           SwapEndian_32(x)
+ 105:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define be16_to_cpu(x)           (x)
+ 106:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define be32_to_cpu(x)           (x)
+ 107:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_le16(x)           SwapEndian_16(x)
+ 108:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_le32(x)           SwapEndian_32(x)
+ 109:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_be16(x)           (x)
+ 110:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_be32(x)           (x)
+ 111:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define LE16_TO_CPU(x)           SWAPENDIAN_16(x)
+ 112:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define LE32_TO_CPU(x)           SWAPENDIAN_32(x)
+ 113:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define BE16_TO_CPU(x)           (x)
+ 114:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define BE32_TO_CPU(x)           (x)
+ 115:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_LE16(x)           SWAPENDIAN_16(x)
+ 116:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_LE32(x)           SWAPENDIAN_32(x)
+ 117:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_BE16(x)           (x)
+ 118:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_BE32(x)           (x)			
+ 119:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#elif !defined(le16_to_cpu)
+ 120:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** \name Run-time endianness conversion */
+ 121:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				//@{
+ 122:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			
+ 123:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 16-bit piece of data and the
+ 124:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 125:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 126:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 127:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 128:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 129:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref LE16_TO_CPU instead.
+ 130:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 131:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 132:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 133:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 134:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 135:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 136:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 137:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define le16_to_cpu(x)           (x)
+ 138:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 139:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 32-bit piece of data and the
+ 140:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 141:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 142:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 143:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 144:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 145:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref LE32_TO_CPU instead.
+ 146:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 147:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 148:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 149:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 150:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 151:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 152:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 153:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define le32_to_cpu(x)           (x)
+ 154:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 155:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 16-bit piece of data and the
+ 156:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 157:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 158:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 159:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 160:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 161:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref BE16_TO_CPU instead.
+ 162:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 163:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 164:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 165:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 166:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 167:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 168:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 169:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define be16_to_cpu(x)           SwapEndian_16(x)
+ 170:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 171:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 32-bit piece of data and the
+ 172:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 173:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 174:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 175:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 176:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 177:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref BE32_TO_CPU instead.
+ 178:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 179:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 180:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 181:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 182:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 183:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 184:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 185:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define be32_to_cpu(x)           SwapEndian_32(x)
+ 186:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 187:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 188:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 189:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 190:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 191:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 192:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 193:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_LE16 instead.
+ 194:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 195:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 196:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 197:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 198:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 199:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 200:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 201:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_le16(x)           (x)
+ 202:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 203:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 204:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 205:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 206:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 207:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 208:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 209:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_LE32 instead.
+ 210:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 211:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 212:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 213:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 214:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 215:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 216:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 217:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_le32(x)           (x)
+ 218:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 219:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 220:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 221:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 222:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 223:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 224:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 225:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_BE16 instead.
+ 226:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 227:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 228:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 229:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 230:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 231:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 232:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 233:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_be16(x)           SwapEndian_16(x)
+ 234:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 235:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 236:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 237:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 238:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 239:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 240:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 241:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_BE32 instead.
+ 242:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 243:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 244:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 245:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 246:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 247:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 248:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 249:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_be32(x)           SwapEndian_32(x)
+ 250:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 251:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				//@}
+ 252:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 253:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** \name Compile-time endianness conversion */
+ 254:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				//@{
+ 255:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 256:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 16-bit piece of data and the
+ 257:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 258:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 259:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 260:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 261:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run time endianness
+ 262:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref le16_to_cpu instead.
+ 263:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 264:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 265:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 266:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 267:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 268:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 269:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 270:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define LE16_TO_CPU(x)           (x)
+ 271:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 272:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 32-bit piece of data and the
+ 273:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 274:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 275:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 276:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 277:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run time endianness
+ 278:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref le32_to_cpu instead.
+ 279:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 280:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 281:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 282:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 283:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 284:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 285:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 286:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define LE32_TO_CPU(x)           (x)
+ 287:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 288:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 16-bit piece of data and the
+ 289:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 290:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 291:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 292:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 293:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 294:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref be16_to_cpu instead.
+ 295:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 296:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 297:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 298:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 299:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 300:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 301:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 302:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define BE16_TO_CPU(x)           SWAPENDIAN_16(x)
+ 303:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 304:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 32-bit piece of data and the
+ 305:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 306:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 307:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 308:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 309:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 310:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref be32_to_cpu instead.
+ 311:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 312:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 313:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 314:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 315:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 316:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 317:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 318:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define BE32_TO_CPU(x)           SWAPENDIAN_32(x)
+ 319:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 320:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 321:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 322:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 323:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 324:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 325:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 326:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_le16 instead.
+ 327:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 328:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 329:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 330:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 331:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 332:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 333:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 334:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_LE16(x)           (x)
+ 335:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 336:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 337:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 338:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 339:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 340:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 341:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 342:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_le32 instead.
+ 343:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 344:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 345:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 346:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 347:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 348:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 349:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 350:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_LE32(x)           (x)
+ 351:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 352:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 353:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 354:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 355:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 356:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 357:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 358:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_be16 instead.
+ 359:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 360:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 361:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 362:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 363:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 364:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 365:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 366:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_BE16(x)           SWAPENDIAN_16(x)
+ 367:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 368:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 369:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 370:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 371:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 372:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 373:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 374:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_be32 instead.
+ 375:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 376:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 377:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 378:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 379:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 380:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 381:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 382:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_BE32(x)           SWAPENDIAN_32(x)
+ 383:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 384:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				//! @}
+ 385:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#endif
+ 386:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 387:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		/* Inline Functions: */
+ 388:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			/** Function to reverse the byte ordering of the individual bytes in a 16 bit value.
+ 389:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+ 390:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+ 391:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+ 392:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \param[in] Word  Word of data whose bytes are to be swapped.
+ 393:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+ 394:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \return Input data with the individual bytes reversed.
+ 395:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 */
+ 396:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			static inline uint16_t SwapEndian_16(const uint16_t Word) ATTR_WARN_UNUSED_RESULT ATTR_CONST;
+ 397:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			static inline uint16_t SwapEndian_16(const uint16_t Word)
+ 398:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			{
+ 399:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				if (GCC_IS_COMPILE_CONST(Word))
+ 400:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				  return SWAPENDIAN_16(Word);
+ 401:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			
+ 402:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				uint8_t Temp;
+ 403:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 404:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				union
+ 405:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				{
+ 406:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 					uint16_t Word;
+ 407:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 					uint8_t  Bytes[2];
+ 408:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				} Data;
+ 409:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 410:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.Word = Word;
+ 411:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 412:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Temp = Data.Bytes[0];
+ 413:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.Bytes[0] = Data.Bytes[1];
+ 414:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.Bytes[1] = Temp;
+ 415:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 416:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				return Data.Word;
+ 417:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			}
+ 418:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 419:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			/** Function to reverse the byte ordering of the individual bytes in a 32 bit value.
+ 420:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+ 421:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+ 422:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+ 423:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \param[in] DWord  Double word of data whose bytes are to be swapped.
+ 424:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+ 425:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \return Input data with the individual bytes reversed.
+ 426:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 */
+ 427:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			static inline uint32_t SwapEndian_32(const uint32_t DWord) ATTR_WARN_UNUSED_RESULT ATTR_CONST;
+ 428:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			static inline uint32_t SwapEndian_32(const uint32_t DWord)
+ 429:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			{
+ 430:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				if (GCC_IS_COMPILE_CONST(DWord))
+ 431:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				  return SWAPENDIAN_32(DWord);
+ 432:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 433:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				uint8_t Temp;
+ 434:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 435:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				union
+ 436:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				{
+ 437:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 					uint32_t DWord;
+ 438:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 					uint8_t  Bytes[4];
+ 439:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				} Data;
+ 440:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 441:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.DWord = DWord;
+ 442:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 443:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Temp = Data.Bytes[0];
+ 444:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.Bytes[0] = Data.Bytes[3];
+ 445:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.Bytes[3] = Temp;
+ 446:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 447:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Temp = Data.Bytes[1];
+ 448:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.Bytes[1] = Data.Bytes[2];
+ 449:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.Bytes[2] = Temp;
+ 450:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 451:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				return Data.DWord;
+  45               		.loc 2 451 0
+  46 000c 4E8D      		ldd r20,Y+30
+  47 000e 5D8D      		ldd r21,Y+29
+  48 0010 6C8D      		ldd r22,Y+28
+  49               	.LVL2:
+  50 0012 7B8D      		ldd r23,Y+27
+  51               	.LVL3:
+  52               	.LBE25:
+  53               	.LBE24:
+  54               	.LBB26:
+  55               	.LBB27:
+  56               	.LBB28:
+  57               	.LBB29:
+ 416:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			}
+  58               		.loc 2 416 0
+  59 0014 09A1      		ldd r16,Y+33
+  60 0016 18A1      		ldd r17,Y+32
+  61               	.LVL4:
+  62               	.LBE29:
+  63               	.LBE28:
+  64               	.LBE27:
+  65               	.LBE26:
+ 279:Lib/SCSI.c    **** 	uint32_t BlockAddress;
+ 280:Lib/SCSI.c    **** 	uint16_t TotalBlocks;
+ 281:Lib/SCSI.c    **** 
+ 282:Lib/SCSI.c    **** 	/* Check if the disk is write protected or not */
+ 283:Lib/SCSI.c    **** 	if ((IsDataRead == DATA_WRITE) && DISK_READ_ONLY)
+ 284:Lib/SCSI.c    **** 	{
+ 285:Lib/SCSI.c    **** 		/* Block address is invalid, update SENSE key and return command fail */
+ 286:Lib/SCSI.c    **** 		SCSI_SET_SENSE(SCSI_SENSE_KEY_DATA_PROTECT,
+ 287:Lib/SCSI.c    **** 		               SCSI_ASENSE_WRITE_PROTECTED,
+ 288:Lib/SCSI.c    **** 		               SCSI_ASENSEQ_NO_QUALIFIER);
+ 289:Lib/SCSI.c    **** 
+ 290:Lib/SCSI.c    **** 		return false;		
+ 291:Lib/SCSI.c    **** 	}
+ 292:Lib/SCSI.c    **** 
+ 293:Lib/SCSI.c    **** 	/* Load in the 32-bit block address (SCSI uses big-endian, so have to reverse the byte order) */
+ 294:Lib/SCSI.c    **** 	BlockAddress = SwapEndian_32(*(uint32_t*)&MSInterfaceInfo->State.CommandBlock.SCSICommandData[2]);
+ 295:Lib/SCSI.c    **** 
+ 296:Lib/SCSI.c    **** 	/* Load in the 16-bit total blocks (SCSI uses big-endian, so have to reverse the byte order) */
+ 297:Lib/SCSI.c    **** 	TotalBlocks  = SwapEndian_16(*(uint16_t*)&MSInterfaceInfo->State.CommandBlock.SCSICommandData[7]);
+ 298:Lib/SCSI.c    **** 
+ 299:Lib/SCSI.c    **** 	/* Check if the block address is outside the maximum allowable value for the LUN */
+ 300:Lib/SCSI.c    **** 	if (BlockAddress >= LUN_MEDIA_BLOCKS)
+  66               		.loc 1 300 0
+  67 0018 4115      		cp r20,__zero_reg__
+  68 001a 20E8      		ldi r18,-128
+  69 001c 5207      		cpc r21,r18
+  70 001e 6105      		cpc r22,__zero_reg__
+  71 0020 7105      		cpc r23,__zero_reg__
+  72 0022 00F0      		brlo .L2
+ 301:Lib/SCSI.c    **** 	{
+ 302:Lib/SCSI.c    **** 		/* Block address is invalid, update SENSE key and return command fail */
+ 303:Lib/SCSI.c    **** 		SCSI_SET_SENSE(SCSI_SENSE_KEY_ILLEGAL_REQUEST,
+  73               		.loc 1 303 0
+  74 0024 8091 0000 		lds r24,SenseData+2
+  75               	.LVL5:
+  76 0028 807F      		andi r24,lo8(-16)
+  77 002a 8560      		ori r24,lo8(5)
+  78 002c 8093 0000 		sts SenseData+2,r24
+  79 0030 81E2      		ldi r24,lo8(33)
+  80 0032 8093 0000 		sts SenseData+12,r24
+  81 0036 1092 0000 		sts SenseData+13,__zero_reg__
+ 304:Lib/SCSI.c    **** 		               SCSI_ASENSE_LOGICAL_BLOCK_ADDRESS_OUT_OF_RANGE,
+ 305:Lib/SCSI.c    **** 		               SCSI_ASENSEQ_NO_QUALIFIER);
+ 306:Lib/SCSI.c    **** 
+ 307:Lib/SCSI.c    **** 		return false;
+  82               		.loc 1 307 0
+  83 003a 80E0      		ldi r24,0
+  84 003c 00C0      		rjmp .L3
+  85               	.LVL6:
+  86               	.L2:
+ 308:Lib/SCSI.c    **** 	}
+ 309:Lib/SCSI.c    **** 
+ 310:Lib/SCSI.c    **** 	#if (TOTAL_LUNS > 1)
+ 311:Lib/SCSI.c    **** 	/* Adjust the given block address to the real media address based on the selected LUN */
+ 312:Lib/SCSI.c    **** 	BlockAddress += ((uint32_t)MSInterfaceInfo->State.CommandBlock.LUN * LUN_MEDIA_BLOCKS);
+ 313:Lib/SCSI.c    **** 	#endif
+ 314:Lib/SCSI.c    **** 	
+ 315:Lib/SCSI.c    **** 	/* Determine if the packet is a READ (10) or WRITE (10) command, call appropriate function */
+ 316:Lib/SCSI.c    **** 	if (IsDataRead == DATA_READ)
+ 317:Lib/SCSI.c    **** 	  DataflashManager_ReadBlocks(MSInterfaceInfo, BlockAddress, TotalBlocks);
+  87               		.loc 1 317 0
+  88 003e 9801      		movw r18,r16
+ 316:Lib/SCSI.c    **** 	  DataflashManager_ReadBlocks(MSInterfaceInfo, BlockAddress, TotalBlocks);
+  89               		.loc 1 316 0
+  90 0040 8823      		tst r24
+  91 0042 01F0      		breq .L4
+  92               		.loc 1 317 0
+  93 0044 CE01      		movw r24,r28
+  94               	.LVL7:
+  95 0046 0E94 0000 		call DataflashManager_ReadBlocks
+  96               	.LVL8:
+  97 004a 00C0      		rjmp .L5
+  98               	.LVL9:
+  99               	.L4:
+ 318:Lib/SCSI.c    **** 	else
+ 319:Lib/SCSI.c    **** 	  DataflashManager_WriteBlocks(MSInterfaceInfo, BlockAddress, TotalBlocks);
+ 100               		.loc 1 319 0
+ 101 004c CE01      		movw r24,r28
+ 102               	.LVL10:
+ 103 004e 0E94 0000 		call DataflashManager_WriteBlocks
+ 104               	.LVL11:
+ 105               	.L5:
+ 320:Lib/SCSI.c    **** 
+ 321:Lib/SCSI.c    **** 	/* Update the bytes transferred counter and succeed the command */
+ 322:Lib/SCSI.c    **** 	MSInterfaceInfo->State.CommandBlock.DataTransferLength -= ((uint32_t)TotalBlocks * VIRTUAL_MEMORY_
+ 106               		.loc 1 322 0
+ 107 0052 C801      		movw r24,r16
+ 108 0054 A0E0      		ldi r26,0
+ 109 0056 B0E0      		ldi r27,0
+ 110 0058 29E0      		ldi r18,9
+ 111               		1:
+ 112 005a 880F      		lsl r24
+ 113 005c 991F      		rol r25
+ 114 005e AA1F      		rol r26
+ 115 0060 BB1F      		rol r27
+ 116 0062 2A95      		dec r18
+ 117 0064 01F4      		brne 1b
+ 118 0066 4A89      		ldd r20,Y+18
+ 119 0068 5B89      		ldd r21,Y+19
+ 120 006a 6C89      		ldd r22,Y+20
+ 121 006c 7D89      		ldd r23,Y+21
+ 122 006e 8A01      		movw r16,r20
+ 123 0070 9B01      		movw r18,r22
+ 124 0072 081B      		sub r16,r24
+ 125 0074 190B      		sbc r17,r25
+ 126 0076 2A0B      		sbc r18,r26
+ 127 0078 3B0B      		sbc r19,r27
+ 128 007a 0A8B      		std Y+18,r16
+ 129 007c 1B8B      		std Y+19,r17
+ 130 007e 2C8B      		std Y+20,r18
+ 131 0080 3D8B      		std Y+21,r19
+ 323:Lib/SCSI.c    **** 
+ 324:Lib/SCSI.c    **** 	return true;
+ 132               		.loc 1 324 0
+ 133 0082 81E0      		ldi r24,lo8(1)
+ 134               	.L3:
+ 135               	/* epilogue start */
+ 325:Lib/SCSI.c    **** }
+ 136               		.loc 1 325 0
+ 137 0084 DF91      		pop r29
+ 138 0086 CF91      		pop r28
+ 139               	.LVL12:
+ 140 0088 1F91      		pop r17
+ 141 008a 0F91      		pop r16
+ 142 008c 0895      		ret
+ 143               		.cfi_endproc
+ 144               	.LFE133:
+ 146               		.section	.text.SCSI_DecodeSCSICommand,"ax",@progbits
+ 147               	.global	SCSI_DecodeSCSICommand
+ 149               	SCSI_DecodeSCSICommand:
+ 150               	.LFB128:
+  92:Lib/SCSI.c    **** 	bool CommandSuccess = false;
+ 151               		.loc 1 92 0
+ 152               		.cfi_startproc
+ 153               	.LVL13:
+ 154 0000 CF92      		push r12
+ 155               	.LCFI4:
+ 156               		.cfi_def_cfa_offset 3
+ 157               		.cfi_offset 12, -2
+ 158 0002 DF92      		push r13
+ 159               	.LCFI5:
+ 160               		.cfi_def_cfa_offset 4
+ 161               		.cfi_offset 13, -3
+ 162 0004 EF92      		push r14
+ 163               	.LCFI6:
+ 164               		.cfi_def_cfa_offset 5
+ 165               		.cfi_offset 14, -4
+ 166 0006 FF92      		push r15
+ 167               	.LCFI7:
+ 168               		.cfi_def_cfa_offset 6
+ 169               		.cfi_offset 15, -5
+ 170 0008 0F93      		push r16
+ 171               	.LCFI8:
+ 172               		.cfi_def_cfa_offset 7
+ 173               		.cfi_offset 16, -6
+ 174 000a 1F93      		push r17
+ 175               	.LCFI9:
+ 176               		.cfi_def_cfa_offset 8
+ 177               		.cfi_offset 17, -7
+ 178 000c CF93      		push r28
+ 179               	.LCFI10:
+ 180               		.cfi_def_cfa_offset 9
+ 181               		.cfi_offset 28, -8
+ 182 000e DF93      		push r29
+ 183               	.LCFI11:
+ 184               		.cfi_def_cfa_offset 10
+ 185               		.cfi_offset 29, -9
+ 186 0010 CDB7      		in r28,__SP_L__
+ 187 0012 DEB7      		in r29,__SP_H__
+ 188               	.LCFI12:
+ 189               		.cfi_def_cfa_register 28
+ 190 0014 2897      		sbiw r28,8
+ 191               	.LCFI13:
+ 192               		.cfi_def_cfa_offset 18
+ 193 0016 0FB6      		in __tmp_reg__,__SREG__
+ 194 0018 F894      		cli
+ 195 001a DEBF      		out __SP_H__,r29
+ 196 001c 0FBE      		out __SREG__,__tmp_reg__
+ 197 001e CDBF      		out __SP_L__,r28
+ 198               	/* prologue: function */
+ 199               	/* frame size = 8 */
+ 200               	/* stack size = 16 */
+ 201               	.L__stack_usage = 16
+ 202 0020 8C01      		movw r16,r24
+ 203               	.LVL14:
+  96:Lib/SCSI.c    **** 	{
+ 204               		.loc 1 96 0
+ 205 0022 FC01      		movw r30,r24
+ 206 0024 818D      		ldd r24,Z+25
+ 207               	.LVL15:
+ 208 0026 8D31      		cpi r24,lo8(29)
+ 209 0028 01F4      		brne .+2
+ 210 002a 00C0      		rjmp .L9
+ 211 002c 00F4      		brsh .L10
+ 212 002e 8330      		cpi r24,lo8(3)
+ 213 0030 01F4      		brne .+2
+ 214 0032 00C0      		rjmp .L11
+ 215 0034 00F4      		brsh .L12
+ 216 0036 8823      		tst r24
+ 217 0038 01F4      		brne .+2
+ 218 003a 00C0      		rjmp .L13
+ 219 003c 00C0      		rjmp .L8
+ 220               	.L12:
+ 221 003e 8231      		cpi r24,lo8(18)
+ 222 0040 01F4      		brne .+2
+ 223 0042 00C0      		rjmp .L14
+ 224 0044 8A31      		cpi r24,lo8(26)
+ 225 0046 01F0      		breq .+2
+ 226 0048 00C0      		rjmp .L8
+ 227               	.LVL16:
+ 228               	.LBB60:
+ 229               	.LBB61:
+ 230               	.LBB62:
+ 231               	.LBB63:
+ 232               		.file 3 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
+   1:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** /*
+   2:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+   5:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** */
+   8:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+   9:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** /*
+  10:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+  12:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+  21:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****   this software.
+  29:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** */
+  30:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+  31:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** /** \file
+  32:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  \brief USB Endpoint definitions for the AVR8 microcontrollers.
+  33:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  \copydetails Group_EndpointManagement_AVR8
+  34:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *
+  35:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  36:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *        dispatch header located in LUFA/Drivers/USB/USB.h.
+  37:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  */
+  38:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+  39:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** /** \ingroup Group_EndpointRW
+  40:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  \defgroup Group_EndpointRW_AVR8 Endpoint Data Reading and Writing (AVR8)
+  41:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  \brief Endpoint data read/write definitions for the Atmel AVR8 architecture.
+  42:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *
+  43:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  Functions, macros, variables, enums and types related to data reading and writing from and to e
+  44:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  */
+  45:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+  46:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** /** \ingroup Group_EndpointPrimitiveRW
+  47:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  \defgroup Group_EndpointPrimitiveRW_AVR8 Read/Write of Primitive Data Types (AVR8)
+  48:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  \brief Endpoint primitive read/write definitions for the Atmel AVR8 architecture.
+  49:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *
+  50:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  Functions, macros, variables, enums and types related to data reading and writing of primitive 
+  51:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  from and to endpoints.
+  52:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  */
+  53:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+  54:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** /** \ingroup Group_EndpointPacketManagement
+  55:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  \defgroup Group_EndpointPacketManagement_AVR8 Endpoint Packet Management (AVR8)
+  56:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  \brief Endpoint packet management definitions for the Atmel AVR8 architecture.
+  57:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *
+  58:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  Functions, macros, variables, enums and types related to packet management of endpoints.
+  59:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  */
+  60:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+  61:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** /** \ingroup Group_EndpointManagement
+  62:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  \defgroup Group_EndpointManagement_AVR8 Endpoint Management (AVR8)
+  63:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  \brief Endpoint management definitions for the Atmel AVR8 architecture.
+  64:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *
+  65:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  Functions, macros and enums related to endpoint management when in USB Device mode. This
+  66:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  module contains the endpoint management macros, as well as endpoint interrupt and data
+  67:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  send/receive functions for various data types.
+  68:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *
+  69:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  *  @{
+  70:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h ****  */
+  71:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+  72:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** #ifndef __ENDPOINT_AVR8_H__
+  73:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** #define __ENDPOINT_AVR8_H__
+  74:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+  75:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 	/* Includes: */
+  76:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 		#include "../../../../Common/Common.h"
+  77:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 		#include "../USBTask.h"
+  78:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 		#include "../USBInterrupt.h"
+  79:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+  80:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 	/* Enable C linkage for C++ Compilers: */
+  81:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 		#if defined(__cplusplus)
+  82:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			extern "C" {
+  83:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 		#endif
+  84:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+  85:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 	/* Preprocessor Checks: */
+  86:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 		#if !defined(__INCLUDE_FROM_USB_DRIVER)
+  87:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
+  88:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 		#endif
+  89:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+  90:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 	/* Private Interface - For use in library only: */
+  91:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 	#if !defined(__DOXYGEN__)
+  92:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 		/* Macros: */
+  93:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#define _ENDPOINT_GET_MAXSIZE(EPIndex)         _ENDPOINT_GET_MAXSIZE2(ENDPOINT_DETAILS_EP ## EPI
+  94:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#define _ENDPOINT_GET_MAXSIZE2(EPDetails)      _ENDPOINT_GET_MAXSIZE3(EPDetails)
+  95:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#define _ENDPOINT_GET_MAXSIZE3(MaxSize, Banks) (MaxSize)
+  96:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+  97:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#define _ENDPOINT_GET_BANKS(EPIndex)           _ENDPOINT_GET_BANKS2(ENDPOINT_DETAILS_EP ## EPInd
+  98:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#define _ENDPOINT_GET_BANKS2(EPDetails)        _ENDPOINT_GET_BANKS3(EPDetails)
+  99:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#define _ENDPOINT_GET_BANKS3(MaxSize, Banks)   (Banks)
+ 100:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 101:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#if defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR)
+ 102:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_MAXEP             7
+ 103:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 104:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_EP0               64,  1
+ 105:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_EP1               256, 2
+ 106:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_EP2               64,  2
+ 107:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_EP3               64,  2
+ 108:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_EP4               64,  2
+ 109:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_EP5               64,  2
+ 110:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_EP6               64,  2
+ 111:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#else
+ 112:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_MAXEP             5
+ 113:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 114:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_EP0               64,  1
+ 115:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_EP1               64,  1
+ 116:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_EP2               64,  1
+ 117:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_EP3               64,  2
+ 118:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_DETAILS_EP4               64,  2
+ 119:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#endif
+ 120:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 121:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 		/* Inline Functions: */
+ 122:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes) ATTR_WARN_UNUSED_RESULT A
+ 123:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			                                                                       ATTR_ALWAYS_INLINE;
+ 124:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
+ 125:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 126:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				uint8_t  MaskVal    = 0;
+ 127:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				uint16_t CheckBytes = 8;
+ 128:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 129:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				while (CheckBytes < Bytes)
+ 130:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				{
+ 131:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					MaskVal++;
+ 132:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					CheckBytes <<= 1;
+ 133:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				}
+ 134:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 135:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return (MaskVal << EPSIZE0);
+ 136:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 137:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 138:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 		/* Function Prototypes: */
+ 139:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			void Endpoint_ClearEndpoints(void);
+ 140:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
+ 141:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			                                    const uint8_t UECFG0XData,
+ 142:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			                                    const uint8_t UECFG1XData);
+ 143:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 144:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 	#endif
+ 145:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 146:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 	/* Public Interface - May be used in end-application: */
+ 147:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 		/* Macros: */			
+ 148:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** \name Endpoint Bank Mode Masks */
+ 149:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			//@{
+ 150:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Mask for the bank mode selection for the \ref Endpoint_ConfigureEndpoint() macro. This indic
+ 151:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  that the endpoint should have one single bank, which requires less USB FIFO memory but resul
+ 152:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  in slower transfers as only one USB device (the AVR or the host) can access the endpoint's
+ 153:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  bank at the one time.
+ 154:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 155:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#define ENDPOINT_BANK_SINGLE                    (0 << EPBK0)
+ 156:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 157:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Mask for the bank mode selection for the \ref Endpoint_ConfigureEndpoint() macro. This indic
+ 158:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  that the endpoint should have two banks, which requires more USB FIFO memory but results
+ 159:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  in faster transfers as one USB device (the AVR or the host) can access one bank while the ot
+ 160:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  accesses the second bank.
+ 161:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 162:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#define ENDPOINT_BANK_DOUBLE                    (1 << EPBK0)
+ 163:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			//@}
+ 164:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 165:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#if (!defined(FIXED_CONTROL_ENDPOINT_SIZE) || defined(__DOXYGEN__))
+ 166:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				/** Default size of the default control endpoint's bank, until altered by the control endpoint 
+ 167:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				 *  value in the device descriptor. Not available if the \c FIXED_CONTROL_ENDPOINT_SIZE token i
+ 168:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				 */
+ 169:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_CONTROLEP_DEFAULT_SIZE     8
+ 170:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#endif
+ 171:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 172:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Retrieves the maximum bank size in bytes of a given endpoint.
+ 173:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 174:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \note This macro will only work correctly on endpoint indexes that are compile-time constant
+ 175:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *        defined by the preprocessor.
+ 176:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 177:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \param[in] EPIndex  Endpoint number, a value between 0 and (\ref ENDPOINT_TOTAL_ENDPOINTS - 
+ 178:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 179:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#define ENDPOINT_MAX_SIZE(EPIndex)              _ENDPOINT_GET_MAXSIZE(EPIndex)
+ 180:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 181:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Retrieves the total number of banks supported by the given endpoint.
+ 182:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 183:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \note This macro will only work correctly on endpoint indexes that are compile-time constant
+ 184:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *        defined by the preprocessor.
+ 185:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 186:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \param[in] EPIndex  Endpoint number, a value between 0 and (\ref ENDPOINT_TOTAL_ENDPOINTS - 
+ 187:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 188:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#define ENDPOINT_BANKS_SUPPORTED(EPIndex)       _ENDPOINT_GET_BANKS(EPIndex)
+ 189:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 190:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#if !defined(CONTROL_ONLY_DEVICE) || defined(__DOXYGEN__)
+ 191:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				/** Total number of endpoints (including the default control endpoint at address 0) which may
+ 192:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				 *  be used in the device. Different USB AVR models support different amounts of endpoints,
+ 193:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				 *  this value reflects the maximum number of endpoints for the currently selected AVR model.
+ 194:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				 */
+ 195:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_TOTAL_ENDPOINTS            ENDPOINT_DETAILS_MAXEP
+ 196:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#else
+ 197:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#define ENDPOINT_TOTAL_ENDPOINTS            1
+ 198:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			#endif
+ 199:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 200:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 		/* Enums: */
+ 201:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Enum for the possible error return codes of the \ref Endpoint_WaitUntilReady() function.
+ 202:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 203:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointRW_AVR8
+ 204:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 205:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			enum Endpoint_WaitUntilReady_ErrorCodes_t
+ 206:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 207:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				ENDPOINT_READYWAIT_NoError                 = 0, /**< Endpoint is ready for next packet, no erro
+ 208:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				ENDPOINT_READYWAIT_EndpointStalled         = 1, /**< The endpoint was stalled during the stream
+ 209:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				                                                 *   transfer by the host or device.
+ 210:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				                                                 */
+ 211:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				ENDPOINT_READYWAIT_DeviceDisconnected      = 2,	/**< Device was disconnected from the host whil
+ 212:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				                                                 *   waiting for the endpoint to become ready.
+ 213:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				                                                 */
+ 214:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				ENDPOINT_READYWAIT_BusSuspended            = 3, /**< The USB bus has been suspended by the host
+ 215:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				                                                 *   no USB endpoint traffic can occur until th
+ 216:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				                                                 *   has resumed.
+ 217:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				                                                 */
+ 218:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				ENDPOINT_READYWAIT_Timeout                 = 4, /**< The host failed to accept or send the next
+ 219:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				                                                 *   within the software timeout period set by 
+ 220:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				                                                 *   \ref USB_STREAM_TIMEOUT_MS macro.
+ 221:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				                                                 */
+ 222:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			};
+ 223:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 224:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 		/* Inline Functions: */
+ 225:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Configures the specified endpoint number with the given endpoint type, direction, bank size
+ 226:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  and banking mode. Once configured, the endpoint may be read from or written to, depending
+ 227:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  on its direction.
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 229:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \param[in] Number     Endpoint number to configure. This must be more than 0 and less than
+ 230:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *                        \ref ENDPOINT_TOTAL_ENDPOINTS.
+ 231:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 232:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \param[in] Type       Type of endpoint to configure, a \c EP_TYPE_* mask. Not all endpoint t
+ 233:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *                        are available on Low Speed USB devices - refer to the USB 2.0 specific
+ 234:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 235:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \param[in] Direction  Endpoint data direction, either \ref ENDPOINT_DIR_OUT or \ref ENDPOINT
+ 236:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *                        All endpoints (except Control type) are unidirectional - data may only
+ 237:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *                        from or written to the endpoint bank based on its direction, not both.
+ 238:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 239:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \param[in] Size       Size of the endpoint's bank, where packets are stored before they are 
+ 240:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *                        to the USB host, or after they have been received from the USB host (d
+ 241:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *                        the endpoint's data direction). The bank size must indicate the maximu
+ 242:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *                        that the endpoint can handle.
+ 243:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 244:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \param[in] Banks      Number of banks to use for the endpoint being configured, an \c ENDPOI
+ 245:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *                        More banks uses more USB DPRAM, but offers better performance. Isochro
+ 246:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *                        endpoints <b>must</b> have at least two banks.
+ 247:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 248:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \note When the \c ORDERED_EP_CONFIG compile time option is used, Endpoints <b>must</b> be co
+ 249:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *        ascending order, or bank corruption will occur.
+ 250:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *        \n\n
+ 251:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 252:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \note Different endpoints may have different maximum packet sizes based on the endpoint's in
+ 253:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *        the chosen microcontroller model's datasheet to determine the maximum bank size for ea
+ 254:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *        \n\n
+ 255:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 256:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \note The default control endpoint should not be manually configured by the user application
+ 257:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *        it is automatically configured by the library internally.
+ 258:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *        \n\n
+ 259:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 260:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \note This routine will automatically select the specified endpoint upon success. Upon failu
+ 261:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *        which failed to reconfigure correctly will be selected.
+ 262:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 263:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return Boolean \c true if the configuration succeeded, \c false otherwise.
+ 264:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 265:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_ConfigureEndpoint(const uint8_t Number,
+ 266:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			                                              const uint8_t Type,
+ 267:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			                                              const uint8_t Direction,
+ 268:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			                                              const uint16_t Size,
+ 269:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			                                              const uint8_t Banks) ATTR_ALWAYS_INLINE;
+ 270:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_ConfigureEndpoint(const uint8_t Number,
+ 271:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			                                              const uint8_t Type,
+ 272:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			                                              const uint8_t Direction,
+ 273:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			                                              const uint16_t Size,
+ 274:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			                                              const uint8_t Banks)
+ 275:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 276:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return Endpoint_ConfigureEndpoint_Prv(Number, ((Type << EPTYPE0) | (Direction ? (1 << EPDIR) : 
+ 277:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				                                      ((1 << ALLOC) | Banks | Endpoint_BytesToEPSizeMask(Size))
+ 278:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 279:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 280:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Indicates the number of bytes currently stored in the current endpoint's selected bank.
+ 281:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 282:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \note The return width of this function may differ, depending on the maximum endpoint bank s
+ 283:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *        of the selected AVR model.
+ 284:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 285:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointRW_AVR8
+ 286:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 287:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return Total number of bytes in the currently selected Endpoint's FIFO buffer.
+ 288:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 289:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint16_t Endpoint_BytesInEndpoint(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE
+ 290:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint16_t Endpoint_BytesInEndpoint(void)
+ 291:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 292:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#if defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR)
+ 293:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					return UEBCX;
+ 294:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#elif defined(USB_SERIES_4_AVR)
+ 295:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					return (((uint16_t)UEBCHX << 8) | UEBCLX);
+ 296:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#elif defined(USB_SERIES_2_AVR)
+ 297:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					return UEBCLX;
+ 298:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#endif
+ 299:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 300:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 301:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Get the endpoint address of the currently selected endpoint. This is typically used to save
+ 302:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  the currently selected endpoint number so that it can be restored after another endpoint has
+ 303:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  been manipulated.
+ 304:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 305:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return Index of the currently selected endpoint.
+ 306:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 307:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint8_t Endpoint_GetCurrentEndpoint(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLI
+ 308:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint8_t Endpoint_GetCurrentEndpoint(void)
+ 309:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 310:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#if !defined(CONTROL_ONLY_DEVICE)
+ 311:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					return (UENUM & ENDPOINT_EPNUM_MASK);
+ 312:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#else
+ 313:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					return ENDPOINT_CONTROLEP;
+ 314:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#endif
+ 315:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 316:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 317:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Selects the given endpoint number. If the address from the device descriptors is used, the
+ 318:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  value should be masked with the \ref ENDPOINT_EPNUM_MASK constant to extract only the endpoi
+ 319:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  number (and discarding the endpoint direction bit).
+ 320:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 321:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  Any endpoint operations which do not require the endpoint number to be indicated will operat
+ 322:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  the currently selected endpoint.
+ 323:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 324:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \param[in] EndpointNumber Endpoint number to select.
+ 325:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 326:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber) ATTR_ALWAYS_INLINE;
+ 327:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_SelectEndpoint(const uint8_t EndpointNumber)
+ 328:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 329:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#if !defined(CONTROL_ONLY_DEVICE)
+ 330:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					UENUM = EndpointNumber;
+ 331:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#endif
+ 332:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 333:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 334:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Resets the endpoint bank FIFO. This clears all the endpoint banks and resets the USB control
+ 335:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  data In and Out pointers to the bank's contents.
+ 336:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 337:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \param[in] EndpointNumber Endpoint number whose FIFO buffers are to be reset.
+ 338:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 339:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_ResetEndpoint(const uint8_t EndpointNumber) ATTR_ALWAYS_INLINE;
+ 340:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_ResetEndpoint(const uint8_t EndpointNumber)
+ 341:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 342:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				UERST = (1 << EndpointNumber);
+ 343:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				UERST = 0;
+ 344:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 345:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 346:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Enables the currently selected endpoint so that data can be sent and received through it to
+ 347:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  and from a host.
+ 348:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 349:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \note Endpoints must first be configured properly via \ref Endpoint_ConfigureEndpoint().
+ 350:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 351:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_EnableEndpoint(void) ATTR_ALWAYS_INLINE;
+ 352:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_EnableEndpoint(void)
+ 353:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 354:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				UECONX |= (1 << EPEN);
+ 355:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 356:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 357:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Disables the currently selected endpoint so that data cannot be sent and received through it
+ 358:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  to and from a host.
+ 359:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 360:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_DisableEndpoint(void) ATTR_ALWAYS_INLINE;
+ 361:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_DisableEndpoint(void)
+ 362:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 363:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				UECONX &= ~(1 << EPEN);
+ 364:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 365:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 366:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Determines if the currently selected endpoint is enabled, but not necessarily configured.
+ 367:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 368:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 * \return Boolean \c true if the currently selected endpoint is enabled, \c false otherwise.
+ 369:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 370:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsEnabled(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 371:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsEnabled(void)
+ 372:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 373:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return ((UECONX & (1 << EPEN)) ? true : false);
+ 374:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 375:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 376:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Retrieves the number of busy banks in the currently selected endpoint, which have been queue
+ 377:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  transmission via the \ref Endpoint_ClearIN() command, or are awaiting acknowledgement via th
+ 378:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ref Endpoint_ClearOUT() command.
+ 379:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 380:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPacketManagement_AVR8
+ 381:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 382:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return Total number of busy banks in the selected endpoint.
+ 383:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 384:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint8_t Endpoint_GetBusyBanks(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
+ 385:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint8_t Endpoint_GetBusyBanks(void)
+ 386:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 387:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return (UESTA0X & (0x03 << NBUSYBK0));
+ 388:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 389:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 390:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Aborts all pending IN transactions on the currently selected endpoint, once the bank
+ 391:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  has been queued for transmission to the host via \ref Endpoint_ClearIN(). This function
+ 392:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  will terminate all queued transactions, resetting the endpoint banks ready for a new
+ 393:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  packet.
+ 394:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 395:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPacketManagement_AVR8
+ 396:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 397:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_AbortPendingIN(void)
+ 398:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 399:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				while (Endpoint_GetBusyBanks() != 0)
+ 400:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				{
+ 401:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					UEINTX |= (1 << RXOUTI);
+ 402:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					while (UEINTX & (1 << RXOUTI));
+ 403:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				}
+ 404:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 405:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 406:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Determines if the currently selected endpoint may be read from (if data is waiting in the en
+ 407:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  bank and the endpoint is an OUT direction, or if the bank is not yet full if the endpoint is
+ 408:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  direction). This function will return false if an error has occurred in the endpoint, if the
+ 409:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  is an OUT direction and no packet (or an empty packet) has been received, or if the endpoint
+ 410:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  direction and the endpoint bank is full.
+ 411:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 412:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPacketManagement_AVR8
+ 413:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 414:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return Boolean \c true if the currently selected endpoint may be read from or written to, d
+ 415:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *          on its direction.
+ 416:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 417:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsReadWriteAllowed(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 418:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsReadWriteAllowed(void)
+ 419:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 420:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return ((UEINTX & (1 << RWAL)) ? true : false);
+ 421:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 422:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 423:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Determines if the currently selected endpoint is configured.
+ 424:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 425:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return Boolean \c true if the currently selected endpoint has been configured, \c false oth
+ 426:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 427:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsConfigured(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 428:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsConfigured(void)
+ 429:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 430:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return ((UESTA0X & (1 << CFGOK)) ? true : false);
+ 431:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 432:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 433:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Returns a mask indicating which INTERRUPT type endpoints have interrupted - i.e. their
+ 434:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  interrupt duration has elapsed. Which endpoints have interrupted can be determined by
+ 435:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  masking the return value against <tt>(1 << <i>{Endpoint Number}</i>)</tt>.
+ 436:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 437:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return Mask whose bits indicate which endpoints have interrupted.
+ 438:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 439:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint8_t Endpoint_GetEndpointInterrupts(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_I
+ 440:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint8_t Endpoint_GetEndpointInterrupts(void)
+ 441:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 442:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return UEINT;
+ 443:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 444:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 445:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Determines if the specified endpoint number has interrupted (valid only for INTERRUPT type
+ 446:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  endpoints).
+ 447:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 448:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \param[in] EndpointNumber  Index of the endpoint whose interrupt flag should be tested.
+ 449:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 450:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return Boolean \c true if the specified endpoint has interrupted, \c false otherwise.
+ 451:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 452:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_HasEndpointInterrupted(const uint8_t EndpointNumber) ATTR_WARN_UNUSE
+ 453:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_HasEndpointInterrupted(const uint8_t EndpointNumber)
+ 454:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 455:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return ((Endpoint_GetEndpointInterrupts() & (1 << EndpointNumber)) ? true : false);
+ 456:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 457:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 458:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Determines if the selected IN endpoint is ready for a new packet to be sent to the host.
+ 459:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 460:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPacketManagement_AVR8
+ 461:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 462:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return Boolean \c true if the current endpoint is ready for an IN packet, \c false otherwis
+ 463:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 464:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsINReady(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 465:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsINReady(void)
+ 466:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 467:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return ((UEINTX & (1 << TXINI)) ? true : false);
+ 468:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 469:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 470:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Determines if the selected OUT endpoint has received new packet from the host.
+ 471:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 472:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPacketManagement_AVR8
+ 473:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 474:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return Boolean \c true if current endpoint is has received an OUT packet, \c false otherwis
+ 475:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 476:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsOUTReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 477:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsOUTReceived(void)
+ 478:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 479:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return ((UEINTX & (1 << RXOUTI)) ? true : false);
+ 480:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 481:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 482:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Determines if the current CONTROL type endpoint has received a SETUP packet.
+ 483:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 484:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPacketManagement_AVR8
+ 485:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 486:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return Boolean \c true if the selected endpoint has received a SETUP packet, \c false other
+ 487:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 488:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsSETUPReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 489:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsSETUPReceived(void)
+ 490:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 491:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return ((UEINTX & (1 << RXSTPI)) ? true : false);
+ 492:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 493:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 494:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Clears a received SETUP packet on the currently selected CONTROL type endpoint, freeing up t
+ 495:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  endpoint for the next packet.
+ 496:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 497:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPacketManagement_AVR8
+ 498:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 499:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \note This is not applicable for non CONTROL type endpoints.
+ 500:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 501:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_ClearSETUP(void) ATTR_ALWAYS_INLINE;
+ 502:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_ClearSETUP(void)
+ 503:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 504:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				UEINTX &= ~(1 << RXSTPI);
+ 505:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 506:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 507:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Sends an IN packet to the host on the currently selected endpoint, freeing up the endpoint f
+ 508:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  next packet and switching to the alternative endpoint bank if double banked.
+ 509:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 510:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPacketManagement_AVR8
+ 511:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 512:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_ClearIN(void) ATTR_ALWAYS_INLINE;
+ 513:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_ClearIN(void)
+ 514:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 515:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#if !defined(CONTROL_ONLY_DEVICE)
+ 516:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					UEINTX &= ~((1 << TXINI) | (1 << FIFOCON));
+ 517:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#else
+ 518:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					UEINTX &= ~(1 << TXINI);
+ 519:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#endif
+ 520:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 521:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 522:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Acknowledges an OUT packet to the host on the currently selected endpoint, freeing up the en
+ 523:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  for the next packet and switching to the alternative endpoint bank if double banked.
+ 524:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 525:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPacketManagement_AVR8
+ 526:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 527:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_ClearOUT(void) ATTR_ALWAYS_INLINE;
+ 528:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_ClearOUT(void)
+ 529:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 530:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#if !defined(CONTROL_ONLY_DEVICE)
+ 531:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					UEINTX &= ~((1 << RXOUTI) | (1 << FIFOCON));
+ 532:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#else
+ 533:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 					UEINTX &= ~(1 << RXOUTI);
+ 534:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#endif
+ 535:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 536:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 537:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Stalls the current endpoint, indicating to the host that a logical problem occurred with the
+ 538:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  indicated endpoint and that the current transfer sequence should be aborted. This provides a
+ 539:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  way for devices to indicate invalid commands to the host so that the current transfer can be
+ 540:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  aborted and the host can begin its own recovery sequence.
+ 541:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 542:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  The currently selected endpoint remains stalled until either the \ref Endpoint_ClearStall() 
+ 543:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  is called, or the host issues a CLEAR FEATURE request to the device for the currently select
+ 544:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  endpoint.
+ 545:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 546:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPacketManagement_AVR8
+ 547:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 548:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_StallTransaction(void) ATTR_ALWAYS_INLINE;
+ 549:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_StallTransaction(void)
+ 550:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 551:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				UECONX |= (1 << STALLRQ);
+ 552:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 553:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 554:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Clears the STALL condition on the currently selected endpoint.
+ 555:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 556:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPacketManagement_AVR8
+ 557:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 558:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_ClearStall(void) ATTR_ALWAYS_INLINE;
+ 559:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_ClearStall(void)
+ 560:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 561:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				UECONX |= (1 << STALLRQC);
+ 562:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 563:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 564:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Determines if the currently selected endpoint is stalled, false otherwise.
+ 565:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 566:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPacketManagement_AVR8
+ 567:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 568:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return Boolean \c true if the currently selected endpoint is stalled, \c false otherwise.
+ 569:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 570:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsStalled(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 571:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline bool Endpoint_IsStalled(void)
+ 572:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 573:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return ((UECONX & (1 << STALLRQ)) ? true : false);
+ 574:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 575:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 576:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Resets the data toggle of the currently selected endpoint. */
+ 577:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_ResetDataToggle(void) ATTR_ALWAYS_INLINE;
+ 578:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_ResetDataToggle(void)
+ 579:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 580:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				UECONX |= (1 << RSTDT);
+ 581:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 582:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 583:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Determines the currently selected endpoint's direction.
+ 584:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 585:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return The currently selected endpoint's direction, as a \c ENDPOINT_DIR_* mask.
+ 586:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 587:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint8_t Endpoint_GetEndpointDirection(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_IN
+ 588:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint8_t Endpoint_GetEndpointDirection(void)
+ 589:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 590:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return (UECFG0X & (1 << EPDIR)) ? ENDPOINT_DIR_IN : ENDPOINT_DIR_OUT;
+ 591:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 592:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 593:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Sets the direction of the currently selected endpoint.
+ 594:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 595:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \param[in] DirectionMask  New endpoint direction, as a \c ENDPOINT_DIR_* mask.
+ 596:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 597:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_SetEndpointDirection(const uint8_t DirectionMask) ATTR_ALWAYS_INLINE
+ 598:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_SetEndpointDirection(const uint8_t DirectionMask)
+ 599:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 600:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				UECFG0X = ((UECFG0X & ~(1 << EPDIR)) | (DirectionMask ? (1 << EPDIR) : 0));
+ 601:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 602:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 603:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Reads one byte from the currently selected endpoint's bank, for OUT direction endpoints.
+ 604:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 605:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPrimitiveRW_AVR8
+ 606:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 607:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \return Next byte in the currently selected endpoint's FIFO buffer.
+ 608:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 609:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint8_t Endpoint_Read_8(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 610:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline uint8_t Endpoint_Read_8(void)
+ 611:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 612:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				return UEDATX;
+ 613:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			}
+ 614:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 
+ 615:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			/** Writes one byte to the currently selected endpoint's bank, for IN direction endpoints.
+ 616:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 617:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \ingroup Group_EndpointPrimitiveRW_AVR8
+ 618:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *
+ 619:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 *  \param[in] Data  Data to write into the the currently selected endpoint's FIFO buffer.
+ 620:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			 */
+ 621:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_Write_8(const uint8_t Data) ATTR_ALWAYS_INLINE;
+ 622:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			static inline void Endpoint_Write_8(const uint8_t Data)
+ 623:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 			{
+ 624:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				UEDATX = Data;
+ 233               		.loc 3 624 0
+ 234 004a 1092 F100 		sts 241,__zero_reg__
+ 235               	.LVL17:
+ 236               	.LBE63:
+ 237               	.LBE62:
+ 238               	.LBB64:
+ 239               	.LBB65:
+ 240 004e 1092 F100 		sts 241,__zero_reg__
+ 241               	.LVL18:
+ 242               	.LBE65:
+ 243               	.LBE64:
+ 244               	.LBB66:
+ 245               	.LBB67:
+ 246 0052 1092 F100 		sts 241,__zero_reg__
+ 247               	.LVL19:
+ 248               	.LBE67:
+ 249               	.LBE66:
+ 250               	.LBB68:
+ 251               	.LBB69:
+ 252 0056 1092 F100 		sts 241,__zero_reg__
+ 253               	.LVL20:
+ 254               	.LBE69:
+ 255               	.LBE68:
+ 256               	.LBB70:
+ 257               	.LBB71:
+ 516:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#else
+ 258               		.loc 3 516 0
+ 259 005a 8091 E800 		lds r24,232
+ 260 005e 8E77      		andi r24,lo8(126)
+ 261 0060 8093 E800 		sts 232,r24
+ 262               	.LBE71:
+ 263               	.LBE70:
+ 326:Lib/SCSI.c    **** 
+ 327:Lib/SCSI.c    **** /** Command processing for an issued SCSI MODE SENSE (6) command. This command returns various info
+ 328:Lib/SCSI.c    ****  *  the SCSI device, as well as the device's Write Protect status.
+ 329:Lib/SCSI.c    ****  *
+ 330:Lib/SCSI.c    ****  *  \param[in] MSInterfaceInfo  Pointer to the Mass Storage class interface structure that the comm
+ 331:Lib/SCSI.c    ****  *
+ 332:Lib/SCSI.c    ****  *  \return Boolean true if the command completed successfully, false otherwise.
+ 333:Lib/SCSI.c    ****  */
+ 334:Lib/SCSI.c    **** static bool SCSI_Command_ModeSense_6(USB_ClassInfo_MS_Device_t* const MSInterfaceInfo)
+ 335:Lib/SCSI.c    **** {
+ 336:Lib/SCSI.c    **** 	/* Send an empty header response with the Write Protect flag status */
+ 337:Lib/SCSI.c    **** 	Endpoint_Write_8(0x00);
+ 338:Lib/SCSI.c    **** 	Endpoint_Write_8(0x00);
+ 339:Lib/SCSI.c    **** 	Endpoint_Write_8(DISK_READ_ONLY ? 0x80 : 0x00);
+ 340:Lib/SCSI.c    **** 	Endpoint_Write_8(0x00);
+ 341:Lib/SCSI.c    **** 	Endpoint_ClearIN();
+ 342:Lib/SCSI.c    **** 
+ 343:Lib/SCSI.c    **** 	/* Update the bytes transferred counter and succeed the command */
+ 344:Lib/SCSI.c    **** 	MSInterfaceInfo->State.CommandBlock.DataTransferLength -= 4;
+ 264               		.loc 1 344 0
+ 265 0064 F801      		movw r30,r16
+ 266 0066 8289      		ldd r24,Z+18
+ 267 0068 9389      		ldd r25,Z+19
+ 268 006a A489      		ldd r26,Z+20
+ 269 006c B589      		ldd r27,Z+21
+ 270 006e 0497      		sbiw r24,4
+ 271 0070 A109      		sbc r26,__zero_reg__
+ 272 0072 B109      		sbc r27,__zero_reg__
+ 273 0074 00C0      		rjmp .L43
+ 274               	.LVL21:
+ 275               	.L10:
+ 276               	.LBE61:
+ 277               	.LBE60:
+  96:Lib/SCSI.c    **** 	{
+ 278               		.loc 1 96 0
+ 279 0076 8832      		cpi r24,lo8(40)
+ 280 0078 01F4      		brne .+2
+ 281 007a 00C0      		rjmp .L16
+ 282 007c 00F4      		brsh .L17
+ 283 007e 8E31      		cpi r24,lo8(30)
+ 284 0080 01F4      		brne .+2
+ 285 0082 00C0      		rjmp .L13
+ 286 0084 8532      		cpi r24,lo8(37)
+ 287 0086 01F0      		breq .+2
+ 288 0088 00C0      		rjmp .L8
+ 289               	.LVL22:
+ 290               	.LBB73:
+ 291               	.LBB74:
+ 216:Lib/SCSI.c    **** 	uint32_t MediaBlockSize        = VIRTUAL_MEMORY_BLOCK_SIZE;
+ 292               		.loc 1 216 0
+ 293 008a 8FEF      		ldi r24,lo8(-1)
+ 294 008c 9FE7      		ldi r25,lo8(127)
+ 295 008e A0E0      		ldi r26,0
+ 296 0090 B0E0      		ldi r27,0
+ 297 0092 8D83      		std Y+5,r24
+ 298 0094 9E83      		std Y+6,r25
+ 299 0096 AF83      		std Y+7,r26
+ 300 0098 B887      		std Y+8,r27
+ 217:Lib/SCSI.c    **** 
+ 301               		.loc 1 217 0
+ 302 009a 80E0      		ldi r24,0
+ 303 009c 92E0      		ldi r25,lo8(2)
+ 304 009e A0E0      		ldi r26,0
+ 305 00a0 B0E0      		ldi r27,0
+ 306 00a2 8983      		std Y+1,r24
+ 307 00a4 9A83      		std Y+2,r25
+ 308 00a6 AB83      		std Y+3,r26
+ 309 00a8 BC83      		std Y+4,r27
+ 219:Lib/SCSI.c    **** 	Endpoint_Write_Stream_BE(&MediaBlockSize, sizeof(MediaBlockSize), NULL);
+ 310               		.loc 1 219 0
+ 311 00aa 40E0      		ldi r20,0
+ 312 00ac 50E0      		ldi r21,0
+ 313 00ae 64E0      		ldi r22,lo8(4)
+ 314 00b0 70E0      		ldi r23,0
+ 315 00b2 CE01      		movw r24,r28
+ 316 00b4 0596      		adiw r24,5
+ 317 00b6 0E94 0000 		call Endpoint_Write_Stream_BE
+ 318               	.LVL23:
+ 220:Lib/SCSI.c    **** 	Endpoint_ClearIN();
+ 319               		.loc 1 220 0
+ 320 00ba 40E0      		ldi r20,0
+ 321 00bc 50E0      		ldi r21,0
+ 322 00be 64E0      		ldi r22,lo8(4)
+ 323 00c0 70E0      		ldi r23,0
+ 324 00c2 CE01      		movw r24,r28
+ 325 00c4 0196      		adiw r24,1
+ 326 00c6 0E94 0000 		call Endpoint_Write_Stream_BE
+ 327               	.LVL24:
+ 328               	.LBB75:
+ 329               	.LBB76:
+ 516:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#else
+ 330               		.loc 3 516 0
+ 331 00ca 8091 E800 		lds r24,232
+ 332 00ce 8E77      		andi r24,lo8(126)
+ 333 00d0 8093 E800 		sts 232,r24
+ 334               	.LBE76:
+ 335               	.LBE75:
+ 224:Lib/SCSI.c    **** 
+ 336               		.loc 1 224 0
+ 337 00d4 F801      		movw r30,r16
+ 338 00d6 8289      		ldd r24,Z+18
+ 339 00d8 9389      		ldd r25,Z+19
+ 340 00da A489      		ldd r26,Z+20
+ 341 00dc B589      		ldd r27,Z+21
+ 342 00de 0897      		sbiw r24,8
+ 343 00e0 A109      		sbc r26,__zero_reg__
+ 344 00e2 B109      		sbc r27,__zero_reg__
+ 345 00e4 00C0      		rjmp .L43
+ 346               	.LVL25:
+ 347               	.L17:
+ 348               	.LBE74:
+ 349               	.LBE73:
+  96:Lib/SCSI.c    **** 	{
+ 350               		.loc 1 96 0
+ 351 00e6 8A32      		cpi r24,lo8(42)
+ 352 00e8 01F4      		brne .+2
+ 353 00ea 00C0      		rjmp .L19
+ 354 00ec 8F32      		cpi r24,lo8(47)
+ 355 00ee 01F4      		brne .+2
+ 356 00f0 00C0      		rjmp .L13
+ 357 00f2 00C0      		rjmp .L8
+ 358               	.L14:
+ 359               	.LVL26:
+ 360               	.LBB77:
+ 361               	.LBB78:
+ 362               	.LBB79:
+ 363               	.LBB80:
+ 364               	.LBB81:
+ 365               	.LBB82:
+ 416:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			}
+ 366               		.loc 2 416 0
+ 367 00f4 F801      		movw r30,r16
+ 368 00f6 E58C      		ldd r14,Z+29
+ 369 00f8 F48C      		ldd r15,Z+28
+ 370               	.LVL27:
+ 371               	.LBE82:
+ 372               	.LBE81:
+ 373               	.LBE80:
+ 374               	.LBE79:
+ 160:Lib/SCSI.c    **** 	     MSInterfaceInfo->State.CommandBlock.SCSICommandData[2])
+ 375               		.loc 1 160 0
+ 376 00fa 828D      		ldd r24,Z+26
+ 377 00fc 8370      		andi r24,lo8(3)
+ 378 00fe 01F4      		brne .L20
+ 379 0100 838D      		ldd r24,Z+27
+ 380 0102 8823      		tst r24
+ 381 0104 01F0      		breq .L21
+ 382               	.LVL28:
+ 383               	.L20:
+ 164:Lib/SCSI.c    **** 		               SCSI_ASENSE_INVALID_FIELD_IN_CDB,
+ 384               		.loc 1 164 0
+ 385 0106 8091 0000 		lds r24,SenseData+2
+ 386 010a 807F      		andi r24,lo8(-16)
+ 387 010c 8560      		ori r24,lo8(5)
+ 388 010e 8093 0000 		sts SenseData+2,r24
+ 389 0112 84E2      		ldi r24,lo8(36)
+ 390 0114 00C0      		rjmp .L45
+ 391               	.LVL29:
+ 392               	.L21:
+ 157:Lib/SCSI.c    **** 
+ 393               		.loc 1 157 0
+ 394 0116 6701      		movw r12,r14
+ 395 0118 F5E2      		ldi r31,37
+ 396 011a EF16      		cp r14,r31
+ 397 011c F104      		cpc r15,__zero_reg__
+ 398 011e 00F0      		brlo .L23
+ 399               	.LVL30:
+ 400 0120 94E2      		ldi r25,lo8(36)
+ 401 0122 C92E      		mov r12,r25
+ 402 0124 D12C      		mov r13,__zero_reg__
+ 403               	.LVL31:
+ 404               	.L23:
+ 171:Lib/SCSI.c    **** 
+ 405               		.loc 1 171 0
+ 406 0126 40E0      		ldi r20,0
+ 407 0128 50E0      		ldi r21,0
+ 408 012a B601      		movw r22,r12
+ 409 012c 80E0      		ldi r24,lo8(InquiryData)
+ 410 012e 90E0      		ldi r25,hi8(InquiryData)
+ 411 0130 0E94 0000 		call Endpoint_Write_Stream_LE
+ 412               	.LVL32:
+ 174:Lib/SCSI.c    **** 
+ 413               		.loc 1 174 0
+ 414 0134 60E0      		ldi r22,0
+ 415 0136 70E0      		ldi r23,0
+ 416 0138 C701      		movw r24,r14
+ 417 013a 8C19      		sub r24,r12
+ 418 013c 9D09      		sbc r25,r13
+ 419 013e 0E94 0000 		call Endpoint_Null_Stream
+ 420               	.LVL33:
+ 421               	.LBB83:
+ 422               	.LBB84:
+ 516:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#else
+ 423               		.loc 3 516 0
+ 424 0142 8091 E800 		lds r24,232
+ 425 0146 8E77      		andi r24,lo8(126)
+ 426 0148 8093 E800 		sts 232,r24
+ 427               	.LBE84:
+ 428               	.LBE83:
+ 180:Lib/SCSI.c    **** 
+ 429               		.loc 1 180 0
+ 430 014c F801      		movw r30,r16
+ 431 014e 8289      		ldd r24,Z+18
+ 432 0150 9389      		ldd r25,Z+19
+ 433 0152 A489      		ldd r26,Z+20
+ 434 0154 B589      		ldd r27,Z+21
+ 435 0156 8C19      		sub r24,r12
+ 436 0158 9D09      		sbc r25,r13
+ 437 015a A109      		sbc r26,__zero_reg__
+ 438 015c B109      		sbc r27,__zero_reg__
+ 439 015e 00C0      		rjmp .L43
+ 440               	.LVL34:
+ 441               	.L11:
+ 442               	.LBE78:
+ 443               	.LBE77:
+ 444               	.LBB85:
+ 445               	.LBB86:
+ 194:Lib/SCSI.c    **** 	uint8_t  BytesTransferred = MIN(AllocationLength, sizeof(SenseData));
+ 446               		.loc 1 194 0
+ 447 0160 F801      		movw r30,r16
+ 448 0162 F58C      		ldd r15,Z+29
+ 449               	.LVL35:
+ 195:Lib/SCSI.c    **** 
+ 450               		.loc 1 195 0
+ 451 0164 EF2C      		mov r14,r15
+ 452 0166 F2E1      		ldi r31,lo8(18)
+ 453 0168 FF15      		cp r31,r15
+ 454 016a 00F4      		brsh .L25
+ 455 016c 82E1      		ldi r24,lo8(18)
+ 456 016e E82E      		mov r14,r24
+ 457               	.L25:
+ 458               	.LVL36:
+ 197:Lib/SCSI.c    **** 	Endpoint_Null_Stream((AllocationLength - BytesTransferred), NULL);
+ 459               		.loc 1 197 0
+ 460 0170 CE2C      		mov r12,r14
+ 461 0172 D12C      		mov r13,__zero_reg__
+ 462 0174 40E0      		ldi r20,0
+ 463 0176 50E0      		ldi r21,0
+ 464 0178 B601      		movw r22,r12
+ 465 017a 80E0      		ldi r24,lo8(SenseData)
+ 466 017c 90E0      		ldi r25,hi8(SenseData)
+ 467 017e 0E94 0000 		call Endpoint_Write_Stream_LE
+ 468               	.LVL37:
+ 198:Lib/SCSI.c    **** 	Endpoint_ClearIN();
+ 469               		.loc 1 198 0
+ 470 0182 8F2D      		mov r24,r15
+ 471 0184 90E0      		ldi r25,0
+ 472 0186 60E0      		ldi r22,0
+ 473 0188 70E0      		ldi r23,0
+ 474 018a 8C19      		sub r24,r12
+ 475 018c 9D09      		sbc r25,r13
+ 476 018e 0E94 0000 		call Endpoint_Null_Stream
+ 477               	.LVL38:
+ 478               	.LBB87:
+ 479               	.LBB88:
+ 516:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h **** 				#else
+ 480               		.loc 3 516 0
+ 481 0192 8091 E800 		lds r24,232
+ 482 0196 8E77      		andi r24,lo8(126)
+ 483 0198 8093 E800 		sts 232,r24
+ 484               	.LBE88:
+ 485               	.LBE87:
+ 202:Lib/SCSI.c    **** 
+ 486               		.loc 1 202 0
+ 487 019c F801      		movw r30,r16
+ 488 019e 8289      		ldd r24,Z+18
+ 489 01a0 9389      		ldd r25,Z+19
+ 490 01a2 A489      		ldd r26,Z+20
+ 491 01a4 B589      		ldd r27,Z+21
+ 492 01a6 8E19      		sub r24,r14
+ 493 01a8 9109      		sbc r25,__zero_reg__
+ 494 01aa A109      		sbc r26,__zero_reg__
+ 495 01ac B109      		sbc r27,__zero_reg__
+ 496 01ae 00C0      		rjmp .L43
+ 497               	.LVL39:
+ 498               	.L9:
+ 499               	.LBE86:
+ 500               	.LBE85:
+ 501               	.LBB89:
+ 502               	.LBB90:
+ 240:Lib/SCSI.c    **** 	{
+ 503               		.loc 1 240 0
+ 504 01b0 F801      		movw r30,r16
+ 505 01b2 828D      		ldd r24,Z+26
+ 506 01b4 82FF      		sbrs r24,2
+ 507 01b6 00C0      		rjmp .L20
+ 251:Lib/SCSI.c    **** 	{
+ 508               		.loc 1 251 0
+ 509 01b8 0E94 0000 		call DataflashManager_CheckDataflashOperation
+ 510               	.LVL40:
+ 511 01bc 8111      		cpse r24,__zero_reg__
+ 512 01be 00C0      		rjmp .L13
+ 254:Lib/SCSI.c    **** 		               SCSI_ASENSE_NO_ADDITIONAL_INFORMATION,
+ 513               		.loc 1 254 0
+ 514 01c0 8091 0000 		lds r24,SenseData+2
+ 515 01c4 807F      		andi r24,lo8(-16)
+ 516 01c6 8460      		ori r24,lo8(4)
+ 517 01c8 8093 0000 		sts SenseData+2,r24
+ 518 01cc 1092 0000 		sts SenseData+12,__zero_reg__
+ 519               	.LVL41:
+ 520               	.L44:
+ 521 01d0 1092 0000 		sts SenseData+13,__zero_reg__
+ 522 01d4 00C0      		rjmp .L22
+ 523               	.L19:
+ 524               	.LBE90:
+ 525               	.LBE89:
+ 111:Lib/SCSI.c    **** 			break;
+ 526               		.loc 1 111 0
+ 527 01d6 60E0      		ldi r22,0
+ 528 01d8 00C0      		rjmp .L42
+ 529               	.L16:
+ 114:Lib/SCSI.c    **** 			break;
+ 530               		.loc 1 114 0
+ 531 01da 61E0      		ldi r22,lo8(1)
+ 532               	.L42:
+ 533 01dc C801      		movw r24,r16
+ 534 01de 0E94 0000 		call SCSI_Command_ReadWrite_10
+ 535               	.LVL42:
+ 135:Lib/SCSI.c    **** 	{
+ 536               		.loc 1 135 0
+ 537 01e2 8111      		cpse r24,__zero_reg__
+ 538 01e4 00C0      		rjmp .L24
+ 539 01e6 00C0      		rjmp .L22
+ 540               	.LVL43:
+ 541               	.L43:
+ 542               	.LBB91:
+ 543               	.LBB72:
+ 544               		.loc 1 344 0
+ 545 01e8 828B      		std Z+18,r24
+ 546 01ea 938B      		std Z+19,r25
+ 547 01ec A48B      		std Z+20,r26
+ 548 01ee B58B      		std Z+21,r27
+ 549               	.LVL44:
+ 550               	.LBE72:
+ 551               	.LBE91:
+ 118:Lib/SCSI.c    **** 		case SCSI_CMD_TEST_UNIT_READY:
+ 552               		.loc 1 118 0
+ 553 01f0 00C0      		rjmp .L24
+ 554               	.LVL45:
+ 555               	.L13:
+ 124:Lib/SCSI.c    **** 			break;
+ 556               		.loc 1 124 0
+ 557 01f2 F801      		movw r30,r16
+ 558 01f4 128A      		std Z+18,__zero_reg__
+ 559 01f6 138A      		std Z+19,__zero_reg__
+ 560 01f8 148A      		std Z+20,__zero_reg__
+ 561 01fa 158A      		std Z+21,__zero_reg__
+ 125:Lib/SCSI.c    **** 		default:
+ 562               		.loc 1 125 0
+ 563 01fc 00C0      		rjmp .L24
+ 564               	.LVL46:
+ 565               	.L8:
+ 128:Lib/SCSI.c    **** 		                   SCSI_ASENSE_INVALID_COMMAND,
+ 566               		.loc 1 128 0
+ 567 01fe 8091 0000 		lds r24,SenseData+2
+ 568 0202 807F      		andi r24,lo8(-16)
+ 569 0204 8560      		ori r24,lo8(5)
+ 570 0206 8093 0000 		sts SenseData+2,r24
+ 571 020a 80E2      		ldi r24,lo8(32)
+ 572               	.L45:
+ 573 020c 8093 0000 		sts SenseData+12,r24
+ 574 0210 00C0      		rjmp .L44
+ 575               	.LVL47:
+ 576               	.L24:
+ 137:Lib/SCSI.c    **** 		               SCSI_ASENSE_NO_ADDITIONAL_INFORMATION,
+ 577               		.loc 1 137 0
+ 578 0212 8091 0000 		lds r24,SenseData+2
+ 579 0216 807F      		andi r24,lo8(-16)
+ 580 0218 8093 0000 		sts SenseData+2,r24
+ 581 021c 1092 0000 		sts SenseData+12,__zero_reg__
+ 582 0220 1092 0000 		sts SenseData+13,__zero_reg__
+ 141:Lib/SCSI.c    **** 	}
+ 583               		.loc 1 141 0
+ 584 0224 81E0      		ldi r24,lo8(1)
+ 585 0226 00C0      		rjmp .L41
+ 586               	.L22:
+ 587               	.LVL48:
+ 144:Lib/SCSI.c    **** }
+ 588               		.loc 1 144 0
+ 589 0228 80E0      		ldi r24,0
+ 590               	.LVL49:
+ 591               	.L41:
+ 592               	/* epilogue start */
+ 145:Lib/SCSI.c    **** 
+ 593               		.loc 1 145 0
+ 594 022a 2896      		adiw r28,8
+ 595 022c 0FB6      		in __tmp_reg__,__SREG__
+ 596 022e F894      		cli
+ 597 0230 DEBF      		out __SP_H__,r29
+ 598 0232 0FBE      		out __SREG__,__tmp_reg__
+ 599 0234 CDBF      		out __SP_L__,r28
+ 600 0236 DF91      		pop r29
+ 601 0238 CF91      		pop r28
+ 602 023a 1F91      		pop r17
+ 603 023c 0F91      		pop r16
+ 604               	.LVL50:
+ 605 023e FF90      		pop r15
+ 606 0240 EF90      		pop r14
+ 607 0242 DF90      		pop r13
+ 608 0244 CF90      		pop r12
+ 609 0246 0895      		ret
+ 610               		.cfi_endproc
+ 611               	.LFE128:
+ 613               		.data
+ 616               	SenseData:
+ 617 0000 70        		.byte	112
+ 618 0001 0000 0000 		.zero	6
+ 618      0000 
+ 619 0007 0A        		.byte	10
+ 620 0008 0000 0000 		.zero	10
+ 620      0000 0000 
+ 620      0000 
+ 621               		.section	.rodata
+ 624               	InquiryData:
+ 625 0000 00        		.byte	0
+ 626 0001 80        		.byte	128
+ 627 0002 00        		.byte	0
+ 628 0003 02        		.byte	2
+ 629 0004 1F        		.byte	31
+ 630 0005 0000      		.zero	2
+ 631 0007 00        		.byte	0
+ 632 0008 4C55 4641 		.string	"LUFA"
+ 632      00
+ 633 000d 0000 00   		.zero	3
+ 634 0010 4461 7461 		.string	"Dataflash Disk"
+ 634      666C 6173 
+ 634      6820 4469 
+ 634      736B 00
+ 635 001f 00        		.zero	1
+ 636 0020 30        		.byte	48
+ 637 0021 2E        		.byte	46
+ 638 0022 30        		.byte	48
+ 639 0023 30        		.byte	48
+ 640               		.text
+ 641               	.Letext0:
+ 642               		.file 4 "/usr/lib/avr/include/stdint.h"
+ 643               		.file 5 "../../../../LUFA/Drivers/USB/Class/Device/../Common/MassStorage.h"
+ 644               		.file 6 "../../../../LUFA/Drivers/USB/Class/Device/MassStorage.h"
+ 645               		.file 7 "./Lib/DataflashManager.h"
+ 646               		.file 8 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/EndpointStream_AVR8.h"
+ 647               		.file 9 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 SCSI.c
+     /tmp/cc1X1euL.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc1X1euL.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc1X1euL.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc1X1euL.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc1X1euL.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc1X1euL.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc1X1euL.s:13     .text.SCSI_Command_ReadWrite_10:0000000000000000 SCSI_Command_ReadWrite_10
+     /tmp/cc1X1euL.s:616    .data:0000000000000000 SenseData
+     /tmp/cc1X1euL.s:149    .text.SCSI_DecodeSCSICommand:0000000000000000 SCSI_DecodeSCSICommand
+     /tmp/cc1X1euL.s:624    .rodata:0000000000000000 InquiryData
+
+UNDEFINED SYMBOLS
+DataflashManager_ReadBlocks
+DataflashManager_WriteBlocks
+Endpoint_Write_Stream_BE
+Endpoint_Write_Stream_LE
+Endpoint_Null_Stream
+DataflashManager_CheckDataflashOperation
+__do_copy_data

@@ -1,0 +1,1039 @@
+   1               		.file	"DHCPServerApp.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.DHCPServerApp_FillDHCPHeader,"ax",@progbits
+  13               	DHCPServerApp_FillDHCPHeader:
+  14               	.LFB224:
+  15               		.file 1 "Lib/DHCPServerApp.c"
+   1:Lib/DHCPServerApp.c **** /*
+   2:Lib/DHCPServerApp.c ****              LUFA Library
+   3:Lib/DHCPServerApp.c ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/DHCPServerApp.c **** 
+   5:Lib/DHCPServerApp.c ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/DHCPServerApp.c ****            www.lufa-lib.org
+   7:Lib/DHCPServerApp.c **** */
+   8:Lib/DHCPServerApp.c **** 
+   9:Lib/DHCPServerApp.c **** /*
+  10:Lib/DHCPServerApp.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/DHCPServerApp.c **** 
+  12:Lib/DHCPServerApp.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/DHCPServerApp.c ****   software and its documentation for any purpose is hereby granted
+  14:Lib/DHCPServerApp.c ****   without fee, provided that the above copyright notice appear in
+  15:Lib/DHCPServerApp.c ****   all copies and that both that the copyright notice and this
+  16:Lib/DHCPServerApp.c ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/DHCPServerApp.c ****   documentation, and that the name of the author not be used in
+  18:Lib/DHCPServerApp.c ****   advertising or publicity pertaining to distribution of the
+  19:Lib/DHCPServerApp.c ****   software without specific, written prior permission.
+  20:Lib/DHCPServerApp.c **** 
+  21:Lib/DHCPServerApp.c ****   The author disclaim all warranties with regard to this
+  22:Lib/DHCPServerApp.c ****   software, including all implied warranties of merchantability
+  23:Lib/DHCPServerApp.c ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/DHCPServerApp.c ****   special, indirect or consequential damages or any damages
+  25:Lib/DHCPServerApp.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/DHCPServerApp.c ****   in an action of contract, negligence or other tortious action,
+  27:Lib/DHCPServerApp.c ****   arising out of or in connection with the use or performance of
+  28:Lib/DHCPServerApp.c ****   this software.
+  29:Lib/DHCPServerApp.c **** */
+  30:Lib/DHCPServerApp.c **** 
+  31:Lib/DHCPServerApp.c **** #if defined(ENABLE_DHCP_SERVER) || defined(__DOXYGEN__)
+  32:Lib/DHCPServerApp.c **** 
+  33:Lib/DHCPServerApp.c **** /** \file
+  34:Lib/DHCPServerApp.c ****  *
+  35:Lib/DHCPServerApp.c ****  *  DHCP Server Application. When connected to the uIP stack, this will send IP configuration setti
+  36:Lib/DHCPServerApp.c ****  *  DHCP client on the network.
+  37:Lib/DHCPServerApp.c ****  */
+  38:Lib/DHCPServerApp.c **** 
+  39:Lib/DHCPServerApp.c **** #define  INCLUDE_FROM_DHCPSERVERAPP_C
+  40:Lib/DHCPServerApp.c **** #include "DHCPServerApp.h"
+  41:Lib/DHCPServerApp.c **** 
+  42:Lib/DHCPServerApp.c **** struct uip_conn* BroadcastConnection;
+  43:Lib/DHCPServerApp.c **** 
+  44:Lib/DHCPServerApp.c **** uint8_t LeasedIPs[255 / 8];
+  45:Lib/DHCPServerApp.c **** 	
+  46:Lib/DHCPServerApp.c **** /** Initialization function for the DHCP server. */
+  47:Lib/DHCPServerApp.c **** void DHCPServerApp_Init(void)
+  48:Lib/DHCPServerApp.c **** {
+  49:Lib/DHCPServerApp.c **** 	/* Listen on port 67 for DHCP server connections from hosts */
+  50:Lib/DHCPServerApp.c **** 	uip_listen(HTONS(DHCP_SERVER_PORT));
+  51:Lib/DHCPServerApp.c **** 	
+  52:Lib/DHCPServerApp.c **** 	/* Create a new UDP connection to the DHCP server port for the DHCP solicitation */
+  53:Lib/DHCPServerApp.c **** 	struct uip_udp_conn* BroadcastConnection = uip_udp_new(&uip_broadcast_addr, HTONS(DHCP_CLIENT_PORT
+  54:Lib/DHCPServerApp.c **** 
+  55:Lib/DHCPServerApp.c **** 	/* If the connection was successfully created, bind it to the local DHCP client port */
+  56:Lib/DHCPServerApp.c **** 	if (BroadcastConnection != NULL)
+  57:Lib/DHCPServerApp.c **** 	  uip_udp_bind(BroadcastConnection, HTONS(DHCP_SERVER_PORT));
+  58:Lib/DHCPServerApp.c **** 	  
+  59:Lib/DHCPServerApp.c **** 	/* Set all IP addresses as unleased */
+  60:Lib/DHCPServerApp.c **** 	memset(LeasedIPs, 0x00, sizeof(LeasedIPs));
+  61:Lib/DHCPServerApp.c **** }
+  62:Lib/DHCPServerApp.c **** 
+  63:Lib/DHCPServerApp.c **** /** uIP stack application callback for the DHCP server. This function must be called each time the 
+  64:Lib/DHCPServerApp.c ****  *  needs a UDP packet to be processed.
+  65:Lib/DHCPServerApp.c ****  */
+  66:Lib/DHCPServerApp.c **** void DHCPServerApp_Callback(void)
+  67:Lib/DHCPServerApp.c **** {
+  68:Lib/DHCPServerApp.c **** 	DHCP_Header_t* const AppData     = (DHCP_Header_t*)uip_appdata;
+  69:Lib/DHCPServerApp.c **** 	uint16_t             AppDataSize = 0;
+  70:Lib/DHCPServerApp.c **** 
+  71:Lib/DHCPServerApp.c **** 	/* Only process when new data arrives - don't retransmit lost packets */
+  72:Lib/DHCPServerApp.c **** 	if (uip_newdata())
+  73:Lib/DHCPServerApp.c **** 	{
+  74:Lib/DHCPServerApp.c **** 		/* Get the DHCP message type (if present), otherwise early-abort */
+  75:Lib/DHCPServerApp.c **** 		uint8_t DHCPMessageType;
+  76:Lib/DHCPServerApp.c **** 		if (!(DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_MSG_TYPE, &DHCPMessageType)))
+  77:Lib/DHCPServerApp.c **** 			return;
+  78:Lib/DHCPServerApp.c **** 
+  79:Lib/DHCPServerApp.c **** 		uip_ipaddr_t        Netmask, GatewayIPAddress, PreferredClientIP;
+  80:Lib/DHCPServerApp.c **** 		struct uip_eth_addr RemoteMACAddress;
+  81:Lib/DHCPServerApp.c **** 		uint32_t            TransactionID;
+  82:Lib/DHCPServerApp.c **** 
+  83:Lib/DHCPServerApp.c **** 		/* Get configured network mask, gateway IP and extract out DHCP transaction ID and remote IP */
+  84:Lib/DHCPServerApp.c **** 		uip_getnetmask(&Netmask);
+  85:Lib/DHCPServerApp.c **** 		uip_getdraddr(&GatewayIPAddress);
+  86:Lib/DHCPServerApp.c **** 		memcpy(&RemoteMACAddress, &AppData->ClientHardwareAddress, sizeof(struct uip_eth_addr));
+  87:Lib/DHCPServerApp.c **** 		TransactionID = AppData->TransactionID;
+  88:Lib/DHCPServerApp.c **** 
+  89:Lib/DHCPServerApp.c **** 		/* Try to extract out the client's preferred IP address if it is indicated in the packet */
+  90:Lib/DHCPServerApp.c **** 		if (!(DHCPCommon_GetOption(AppData->Options, DHCP_OPTION_REQ_IPADDR, &PreferredClientIP)))
+  91:Lib/DHCPServerApp.c **** 		  memcpy(&PreferredClientIP, &uip_all_zeroes_addr, sizeof(uip_ipaddr_t));	
+  92:Lib/DHCPServerApp.c **** 		
+  93:Lib/DHCPServerApp.c **** 		switch (DHCPMessageType)
+  94:Lib/DHCPServerApp.c **** 		{
+  95:Lib/DHCPServerApp.c **** 			case DHCP_DISCOVER:
+  96:Lib/DHCPServerApp.c **** 				/* If no preference was made or the preferred IP is already taken, find a new address */
+  97:Lib/DHCPServerApp.c **** 				if (DHCPServerApp_CheckIfIPLeased(&PreferredClientIP))
+  98:Lib/DHCPServerApp.c **** 				  DHCPServerApp_GetUnleasedIP(&PreferredClientIP);
+  99:Lib/DHCPServerApp.c **** 
+ 100:Lib/DHCPServerApp.c **** 				/* Create a new DHCP OFFER packet with the offered IP address */
+ 101:Lib/DHCPServerApp.c **** 				AppDataSize += DHCPServerApp_FillDHCPHeader(AppData, DHCP_OFFER, &RemoteMACAddress, &PreferredC
+ 102:Lib/DHCPServerApp.c **** 
+ 103:Lib/DHCPServerApp.c **** 				/* Add network mask and router information to the list of DHCP OFFER packet options */
+ 104:Lib/DHCPServerApp.c **** 				AppDataSize += DHCPCommon_SetOption(AppData->Options, DHCP_OPTION_SUBNET_MASK,
+ 105:Lib/DHCPServerApp.c **** 													sizeof(uip_ipaddr_t), &Netmask);
+ 106:Lib/DHCPServerApp.c **** 				AppDataSize += DHCPCommon_SetOption(AppData->Options, DHCP_OPTION_ROUTER,
+ 107:Lib/DHCPServerApp.c **** 					                                sizeof(uip_ipaddr_t), &GatewayIPAddress);
+ 108:Lib/DHCPServerApp.c **** 
+ 109:Lib/DHCPServerApp.c **** 				/* Send the DHCP OFFER packet */
+ 110:Lib/DHCPServerApp.c **** 				uip_poll_conn(BroadcastConnection);
+ 111:Lib/DHCPServerApp.c **** 				memcpy(&uip_udp_conn->ripaddr, &uip_broadcast_addr, sizeof(uip_ipaddr_t));
+ 112:Lib/DHCPServerApp.c **** 				uip_udp_send(AppDataSize);
+ 113:Lib/DHCPServerApp.c **** 
+ 114:Lib/DHCPServerApp.c **** 				break;
+ 115:Lib/DHCPServerApp.c **** 			case DHCP_REQUEST:
+ 116:Lib/DHCPServerApp.c **** 				/* Check to see if the requested IP address has already been leased to a client */
+ 117:Lib/DHCPServerApp.c **** 				if (!(DHCPServerApp_CheckIfIPLeased(&PreferredClientIP)))
+ 118:Lib/DHCPServerApp.c **** 				{
+ 119:Lib/DHCPServerApp.c **** 					/* Create a new DHCP ACK packet to accept the IP address lease */					
+ 120:Lib/DHCPServerApp.c **** 					AppDataSize += DHCPServerApp_FillDHCPHeader(AppData, DHCP_ACK, &RemoteMACAddress, &PreferredCl
+ 121:Lib/DHCPServerApp.c **** 
+ 122:Lib/DHCPServerApp.c **** 					/* Add network mask and router information to the list of DHCP ACK packet options */
+ 123:Lib/DHCPServerApp.c **** 					AppDataSize += DHCPCommon_SetOption(AppData->Options, DHCP_OPTION_SUBNET_MASK,
+ 124:Lib/DHCPServerApp.c **** 														sizeof(uip_ipaddr_t), &Netmask);
+ 125:Lib/DHCPServerApp.c **** 					AppDataSize += DHCPCommon_SetOption(AppData->Options, DHCP_OPTION_ROUTER,
+ 126:Lib/DHCPServerApp.c **** 					                                    sizeof(uip_ipaddr_t), &GatewayIPAddress);
+ 127:Lib/DHCPServerApp.c **** 
+ 128:Lib/DHCPServerApp.c **** 					/* Mark the requested IP as leased to a client */
+ 129:Lib/DHCPServerApp.c **** 					DHCPServerApp_LeaseIP(&PreferredClientIP);
+ 130:Lib/DHCPServerApp.c **** 				}
+ 131:Lib/DHCPServerApp.c **** 				else
+ 132:Lib/DHCPServerApp.c **** 				{
+ 133:Lib/DHCPServerApp.c **** 					/* Create a new DHCP NAK packet to reject the requested allocation */
+ 134:Lib/DHCPServerApp.c **** 					AppDataSize += DHCPServerApp_FillDHCPHeader(AppData, DHCP_NAK, &RemoteMACAddress, &uip_all_zer
+ 135:Lib/DHCPServerApp.c **** 				}
+ 136:Lib/DHCPServerApp.c **** 				
+ 137:Lib/DHCPServerApp.c **** 				/* Send the DHCP ACK or NAK packet */
+ 138:Lib/DHCPServerApp.c **** 				uip_poll_conn(BroadcastConnection);
+ 139:Lib/DHCPServerApp.c **** 				memcpy(&uip_udp_conn->ripaddr, &uip_broadcast_addr, sizeof(uip_ipaddr_t));
+ 140:Lib/DHCPServerApp.c **** 				uip_udp_send(AppDataSize);
+ 141:Lib/DHCPServerApp.c **** 			
+ 142:Lib/DHCPServerApp.c **** 				break;
+ 143:Lib/DHCPServerApp.c **** 			case DHCP_RELEASE:
+ 144:Lib/DHCPServerApp.c **** 				/* Mark the IP address as released in the allocation table */
+ 145:Lib/DHCPServerApp.c **** 				DHCPServerApp_UnleaseIP(&uip_udp_conn->ripaddr);
+ 146:Lib/DHCPServerApp.c **** 				break;
+ 147:Lib/DHCPServerApp.c **** 		}
+ 148:Lib/DHCPServerApp.c **** 	}
+ 149:Lib/DHCPServerApp.c **** }
+ 150:Lib/DHCPServerApp.c **** 
+ 151:Lib/DHCPServerApp.c **** /** Fills the DHCP packet response with the appropriate BOOTP header for DHCP. This fills out all t
+ 152:Lib/DHCPServerApp.c ****  *  fields, leaving only the additional DHCP options to be added to the packet before it is sent to
+ 153:Lib/DHCPServerApp.c ****  *
+ 154:Lib/DHCPServerApp.c ****  *  \param[out] DHCPHeader             Location in the packet buffer where the BOOTP header should 
+ 155:Lib/DHCPServerApp.c ****  *  \param[in]  DHCPMessageType        DHCP Message type, such as DHCP_DISCOVER
+ 156:Lib/DHCPServerApp.c ****  *  \param[in]  ClientHardwareAddress  Client MAC address the created transaction should be directe
+ 157:Lib/DHCPServerApp.c ****  *  \param[in]  PreferredClientIP      Preferred IP that should be given to the client if it is una
+ 158:Lib/DHCPServerApp.c ****  *  \param[in]  TransactionID          Transaction ID the created transaction should be associated 
+ 159:Lib/DHCPServerApp.c ****  *
+ 160:Lib/DHCPServerApp.c ****  *  \return Size in bytes of the created DHCP packet
+ 161:Lib/DHCPServerApp.c ****  */
+ 162:Lib/DHCPServerApp.c **** static uint16_t DHCPServerApp_FillDHCPHeader(DHCP_Header_t* const DHCPHeader,
+ 163:Lib/DHCPServerApp.c ****                                              const uint8_t DHCPMessageType,
+ 164:Lib/DHCPServerApp.c ****                                              const struct uip_eth_addr* const ClientHardwareAddress
+ 165:Lib/DHCPServerApp.c **** 											 const uip_ipaddr_t* const PreferredClientIP,
+ 166:Lib/DHCPServerApp.c ****                                              const uint32_t TransactionID)
+ 167:Lib/DHCPServerApp.c **** {
+  16               		.loc 1 167 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19 0000 CF92      		push r12
+  20               	.LCFI0:
+  21               		.cfi_def_cfa_offset 3
+  22               		.cfi_offset 12, -2
+  23 0002 DF92      		push r13
+  24               	.LCFI1:
+  25               		.cfi_def_cfa_offset 4
+  26               		.cfi_offset 13, -3
+  27 0004 EF92      		push r14
+  28               	.LCFI2:
+  29               		.cfi_def_cfa_offset 5
+  30               		.cfi_offset 14, -4
+  31 0006 FF92      		push r15
+  32               	.LCFI3:
+  33               		.cfi_def_cfa_offset 6
+  34               		.cfi_offset 15, -5
+  35 0008 0F93      		push r16
+  36               	.LCFI4:
+  37               		.cfi_def_cfa_offset 7
+  38               		.cfi_offset 16, -6
+  39 000a 1F93      		push r17
+  40               	.LCFI5:
+  41               		.cfi_def_cfa_offset 8
+  42               		.cfi_offset 17, -7
+  43 000c CF93      		push r28
+  44               	.LCFI6:
+  45               		.cfi_def_cfa_offset 9
+  46               		.cfi_offset 28, -8
+  47 000e DF93      		push r29
+  48               	.LCFI7:
+  49               		.cfi_def_cfa_offset 10
+  50               		.cfi_offset 29, -9
+  51               	/* prologue: function */
+  52               	/* frame size = 0 */
+  53               	/* stack size = 8 */
+  54               	.L__stack_usage = 8
+  55 0010 EC01      		movw r28,r24
+ 168:Lib/DHCPServerApp.c **** 	/* Erase existing packet data so that we start will all 0x00 DHCP header data */
+ 169:Lib/DHCPServerApp.c ****  	memset(DHCPHeader, 0, sizeof(DHCP_Header_t));
+  56               		.loc 1 169 0
+  57 0012 80EF      		ldi r24,lo8(-16)
+  58               	.LVL1:
+  59 0014 FE01      		movw r30,r28
+  60               		0:
+  61 0016 1192      		st Z+,__zero_reg__
+  62 0018 8A95      		dec r24
+  63 001a 01F4      		brne 0b
+ 170:Lib/DHCPServerApp.c **** 
+ 171:Lib/DHCPServerApp.c **** 	DHCPHeader->Operation             = DHCPMessageType;
+  64               		.loc 1 171 0
+  65 001c 6883      		st Y,r22
+ 172:Lib/DHCPServerApp.c **** 	DHCPHeader->HardwareType          = DHCP_HTYPE_ETHERNET;
+  66               		.loc 1 172 0
+  67 001e 81E0      		ldi r24,lo8(1)
+  68 0020 8983      		std Y+1,r24
+ 173:Lib/DHCPServerApp.c **** 	DHCPHeader->HardwareAddressLength = sizeof(MACAddress);
+  69               		.loc 1 173 0
+  70 0022 96E0      		ldi r25,lo8(6)
+  71 0024 9A83      		std Y+2,r25
+ 174:Lib/DHCPServerApp.c **** 	DHCPHeader->Hops                  = 0;
+  72               		.loc 1 174 0
+  73 0026 1B82      		std Y+3,__zero_reg__
+ 175:Lib/DHCPServerApp.c **** 	DHCPHeader->TransactionID         = TransactionID;
+  74               		.loc 1 175 0
+  75 0028 EC82      		std Y+4,r14
+  76 002a FD82      		std Y+5,r15
+  77 002c 0E83      		std Y+6,r16
+  78 002e 1F83      		std Y+7,r17
+ 176:Lib/DHCPServerApp.c **** 	DHCPHeader->ElapsedSeconds        = 0;
+  79               		.loc 1 176 0
+  80 0030 1986      		std Y+9,__zero_reg__
+  81 0032 1886      		std Y+8,__zero_reg__
+ 177:Lib/DHCPServerApp.c **** 	DHCPHeader->Flags                 = 0;
+  82               		.loc 1 177 0
+  83 0034 1B86      		std Y+11,__zero_reg__
+  84 0036 1A86      		std Y+10,__zero_reg__
+ 178:Lib/DHCPServerApp.c **** 	memcpy(&DHCPHeader->NextServerIP, &uip_hostaddr, sizeof(uip_ipaddr_t));
+  85               		.loc 1 178 0
+  86 0038 C090 0000 		lds r12,uip_hostaddr
+  87 003c D090 0000 		lds r13,uip_hostaddr+1
+  88 0040 E090 0000 		lds r14,uip_hostaddr+2
+  89 0044 F090 0000 		lds r15,uip_hostaddr+3
+  90 0048 CC8A      		std Y+20,r12
+  91 004a DD8A      		std Y+21,r13
+  92 004c EE8A      		std Y+22,r14
+  93 004e FF8A      		std Y+23,r15
+ 179:Lib/DHCPServerApp.c **** 	memcpy(&DHCPHeader->YourIP, PreferredClientIP, sizeof(uip_ipaddr_t));
+  94               		.loc 1 179 0
+  95 0050 DE01      		movw r26,r28
+  96 0052 5096      		adiw r26,16
+  97 0054 94E0      		ldi r25,lo8(4)
+  98 0056 F901      		movw r30,r18
+  99               		0:
+ 100 0058 0190      		ld r0,Z+
+ 101 005a 0D92      		st X+,r0
+ 102 005c 9A95      		dec r25
+ 103 005e 01F4      		brne 0b
+ 180:Lib/DHCPServerApp.c **** 	memcpy(&DHCPHeader->ClientHardwareAddress, ClientHardwareAddress, sizeof(struct uip_eth_addr));
+ 104               		.loc 1 180 0
+ 105 0060 DE01      		movw r26,r28
+ 106 0062 5C96      		adiw r26,28
+ 107 0064 96E0      		ldi r25,lo8(6)
+ 108 0066 FA01      		movw r30,r20
+ 109               		0:
+ 110 0068 0190      		ld r0,Z+
+ 111 006a 0D92      		st X+,r0
+ 112 006c 9A95      		dec r25
+ 113 006e 01F4      		brne 0b
+ 181:Lib/DHCPServerApp.c **** 	DHCPHeader->Cookie                = DHCP_MAGIC_COOKIE;
+ 114               		.loc 1 181 0
+ 115 0070 FE01      		movw r30,r28
+ 116 0072 E451      		subi r30,20
+ 117 0074 FF4F      		sbci r31,-1
+ 118 0076 03E6      		ldi r16,lo8(99)
+ 119 0078 12E8      		ldi r17,lo8(-126)
+ 120 007a 23E5      		ldi r18,lo8(83)
+ 121 007c 33E6      		ldi r19,lo8(99)
+ 122 007e 0083      		st Z,r16
+ 123 0080 1183      		std Z+1,r17
+ 124 0082 2283      		std Z+2,r18
+ 125 0084 3383      		std Z+3,r19
+ 182:Lib/DHCPServerApp.c **** 	  
+ 183:Lib/DHCPServerApp.c **** 	/* Add a DHCP message type and terminator options to the start of the DHCP options field */
+ 184:Lib/DHCPServerApp.c **** 	DHCPHeader->Options[0]            = DHCP_OPTION_MSG_TYPE;
+ 126               		.loc 1 184 0
+ 127 0086 3496      		adiw r30,4
+ 128 0088 95E3      		ldi r25,lo8(53)
+ 129 008a 9083      		st Z,r25
+ 185:Lib/DHCPServerApp.c **** 	DHCPHeader->Options[1]            = 1;
+ 130               		.loc 1 185 0
+ 131 008c 3196      		adiw r30,1
+ 132 008e 8083      		st Z,r24
+ 186:Lib/DHCPServerApp.c **** 	DHCPHeader->Options[2]            = DHCPMessageType;
+ 133               		.loc 1 186 0
+ 134 0090 3196      		adiw r30,1
+ 135 0092 6083      		st Z,r22
+ 187:Lib/DHCPServerApp.c **** 	DHCPHeader->Options[3]            = DHCP_OPTION_END;
+ 136               		.loc 1 187 0
+ 137 0094 CD50      		subi r28,13
+ 138 0096 DF4F      		sbci r29,-1
+ 139               	.LVL2:
+ 140 0098 8FEF      		ldi r24,lo8(-1)
+ 141 009a 8883      		st Y,r24
+ 188:Lib/DHCPServerApp.c **** 
+ 189:Lib/DHCPServerApp.c **** 	/* Calculate the total number of bytes added to the outgoing packet */
+ 190:Lib/DHCPServerApp.c **** 	return (sizeof(DHCP_Header_t) + 4);
+ 191:Lib/DHCPServerApp.c **** }
+ 142               		.loc 1 191 0
+ 143 009c 84EF      		ldi r24,lo8(-12)
+ 144 009e 90E0      		ldi r25,0
+ 145               	/* epilogue start */
+ 146 00a0 DF91      		pop r29
+ 147 00a2 CF91      		pop r28
+ 148               	.LVL3:
+ 149 00a4 1F91      		pop r17
+ 150 00a6 0F91      		pop r16
+ 151 00a8 FF90      		pop r15
+ 152 00aa EF90      		pop r14
+ 153               	.LVL4:
+ 154 00ac DF90      		pop r13
+ 155 00ae CF90      		pop r12
+ 156 00b0 0895      		ret
+ 157               		.cfi_endproc
+ 158               	.LFE224:
+ 160               		.section	.text.DHCPServerApp_CheckIfIPLeased.isra.0,"ax",@progbits
+ 162               	DHCPServerApp_CheckIfIPLeased.isra.0:
+ 163               	.LFB229:
+ 192:Lib/DHCPServerApp.c **** 
+ 193:Lib/DHCPServerApp.c **** /** Checks to see if the nominated IP address has already been allocated to a client.
+ 194:Lib/DHCPServerApp.c ****  *
+ 195:Lib/DHCPServerApp.c ****  *  \param[in] IPAddress  IP Address whose lease status should be checked
+ 196:Lib/DHCPServerApp.c ****  *
+ 197:Lib/DHCPServerApp.c ****  *  \pre The IP address must be within the same /24 subnet as the virtual webserver.
+ 198:Lib/DHCPServerApp.c ****  *
+ 199:Lib/DHCPServerApp.c ****  *  \return Boolean true if the IP has already been leased to a client, false otherwise.
+ 200:Lib/DHCPServerApp.c ****  */
+ 201:Lib/DHCPServerApp.c **** static bool DHCPServerApp_CheckIfIPLeased(const uip_ipaddr_t* const IPAddress)
+ 164               		.loc 1 201 0
+ 165               		.cfi_startproc
+ 166               	/* prologue: function */
+ 167               	/* frame size = 0 */
+ 168               	/* stack size = 0 */
+ 169               	.L__stack_usage = 0
+ 170               	.LVL5:
+ 202:Lib/DHCPServerApp.c **** {
+ 203:Lib/DHCPServerApp.c **** 	uint8_t Byte = (IPAddress->u8[3] / 8);
+ 204:Lib/DHCPServerApp.c **** 	uint8_t Mask = (1 << (IPAddress->u8[3] % 8));
+ 205:Lib/DHCPServerApp.c **** 	
+ 206:Lib/DHCPServerApp.c **** 	/* Make sure that the requested IP address isn't already leased to the virtual server or another c
+ 207:Lib/DHCPServerApp.c **** 	if (IPAddress->u8[3] && !(IPAddress->u8[3] == uip_hostaddr.u8[3]) && !(LeasedIPs[Byte] & Mask))
+ 171               		.loc 1 207 0
+ 172 0000 8823      		tst r24
+ 173 0002 01F0      		breq .L6
+ 174 0004 9091 0000 		lds r25,uip_hostaddr+3
+ 175 0008 9817      		cp r25,r24
+ 176 000a 01F0      		breq .L6
+ 177 000c 982F      		mov r25,r24
+ 178 000e 9770      		andi r25,lo8(7)
+ 179               	.LVL6:
+ 180 0010 21E0      		ldi r18,lo8(1)
+ 181 0012 30E0      		ldi r19,0
+ 182 0014 00C0      		rjmp 2f
+ 183               		1:
+ 184 0016 220F      		lsl r18
+ 185               		2:
+ 186 0018 9A95      		dec r25
+ 187 001a 02F4      		brpl 1b
+ 188 001c 8695      		lsr r24
+ 189 001e 8695      		lsr r24
+ 190 0020 8695      		lsr r24
+ 191               	.LVL7:
+ 192 0022 E82F      		mov r30,r24
+ 193 0024 F0E0      		ldi r31,0
+ 194 0026 E050      		subi r30,lo8(-(LeasedIPs))
+ 195 0028 F040      		sbci r31,hi8(-(LeasedIPs))
+ 196 002a 8081      		ld r24,Z
+ 197               	.LVL8:
+ 198 002c 2823      		and r18,r24
+ 199 002e 81E0      		ldi r24,lo8(1)
+ 200 0030 01F4      		brne .L3
+ 201 0032 80E0      		ldi r24,0
+ 202 0034 0895      		ret
+ 203               	.LVL9:
+ 204               	.L6:
+ 208:Lib/DHCPServerApp.c **** 	  return false;
+ 209:Lib/DHCPServerApp.c **** 	else
+ 210:Lib/DHCPServerApp.c **** 	  return true;
+ 205               		.loc 1 210 0
+ 206 0036 81E0      		ldi r24,lo8(1)
+ 207               	.LVL10:
+ 208               	.L3:
+ 211:Lib/DHCPServerApp.c **** }
+ 209               		.loc 1 211 0
+ 210 0038 0895      		ret
+ 211               		.cfi_endproc
+ 212               	.LFE229:
+ 214               		.section	.text.DHCPServerApp_Init,"ax",@progbits
+ 215               	.global	DHCPServerApp_Init
+ 217               	DHCPServerApp_Init:
+ 218               	.LFB222:
+  48:Lib/DHCPServerApp.c **** 	/* Listen on port 67 for DHCP server connections from hosts */
+ 219               		.loc 1 48 0
+ 220               		.cfi_startproc
+ 221               	/* prologue: function */
+ 222               	/* frame size = 0 */
+ 223               	/* stack size = 0 */
+ 224               	.L__stack_usage = 0
+  50:Lib/DHCPServerApp.c **** 	
+ 225               		.loc 1 50 0
+ 226 0000 80E0      		ldi r24,0
+ 227 0002 93E4      		ldi r25,lo8(67)
+ 228 0004 0E94 0000 		call uip_listen
+ 229               	.LVL11:
+  53:Lib/DHCPServerApp.c **** 
+ 230               		.loc 1 53 0
+ 231 0008 60E0      		ldi r22,0
+ 232 000a 74E4      		ldi r23,lo8(68)
+ 233 000c 80E0      		ldi r24,lo8(uip_broadcast_addr)
+ 234 000e 90E0      		ldi r25,hi8(uip_broadcast_addr)
+ 235 0010 0E94 0000 		call uip_udp_new
+ 236               	.LVL12:
+  56:Lib/DHCPServerApp.c **** 	  uip_udp_bind(BroadcastConnection, HTONS(DHCP_SERVER_PORT));
+ 237               		.loc 1 56 0
+ 238 0014 0097      		sbiw r24,0
+ 239 0016 01F0      		breq .L9
+  57:Lib/DHCPServerApp.c **** 	  
+ 240               		.loc 1 57 0
+ 241 0018 20E0      		ldi r18,0
+ 242 001a 33E4      		ldi r19,lo8(67)
+ 243 001c DC01      		movw r26,r24
+ 244 001e 1596      		adiw r26,4+1
+ 245 0020 3C93      		st X,r19
+ 246 0022 2E93      		st -X,r18
+ 247 0024 1497      		sbiw r26,4
+ 248               	.L9:
+  60:Lib/DHCPServerApp.c **** }
+ 249               		.loc 1 60 0
+ 250 0026 8FE1      		ldi r24,lo8(31)
+ 251               	.LVL13:
+ 252 0028 E0E0      		ldi r30,lo8(LeasedIPs)
+ 253 002a F0E0      		ldi r31,hi8(LeasedIPs)
+ 254 002c DF01      		movw r26,r30
+ 255               		0:
+ 256 002e 1D92      		st X+,__zero_reg__
+ 257 0030 8A95      		dec r24
+ 258 0032 01F4      		brne 0b
+ 259 0034 0895      		ret
+ 260               		.cfi_endproc
+ 261               	.LFE222:
+ 263               		.section	.text.DHCPServerApp_Callback,"ax",@progbits
+ 264               	.global	DHCPServerApp_Callback
+ 266               	DHCPServerApp_Callback:
+ 267               	.LFB223:
+  67:Lib/DHCPServerApp.c **** 	DHCP_Header_t* const AppData     = (DHCP_Header_t*)uip_appdata;
+ 268               		.loc 1 67 0
+ 269               		.cfi_startproc
+ 270 0000 4F92      		push r4
+ 271               	.LCFI8:
+ 272               		.cfi_def_cfa_offset 3
+ 273               		.cfi_offset 4, -2
+ 274 0002 5F92      		push r5
+ 275               	.LCFI9:
+ 276               		.cfi_def_cfa_offset 4
+ 277               		.cfi_offset 5, -3
+ 278 0004 6F92      		push r6
+ 279               	.LCFI10:
+ 280               		.cfi_def_cfa_offset 5
+ 281               		.cfi_offset 6, -4
+ 282 0006 7F92      		push r7
+ 283               	.LCFI11:
+ 284               		.cfi_def_cfa_offset 6
+ 285               		.cfi_offset 7, -5
+ 286 0008 AF92      		push r10
+ 287               	.LCFI12:
+ 288               		.cfi_def_cfa_offset 7
+ 289               		.cfi_offset 10, -6
+ 290 000a BF92      		push r11
+ 291               	.LCFI13:
+ 292               		.cfi_def_cfa_offset 8
+ 293               		.cfi_offset 11, -7
+ 294 000c CF92      		push r12
+ 295               	.LCFI14:
+ 296               		.cfi_def_cfa_offset 9
+ 297               		.cfi_offset 12, -8
+ 298 000e DF92      		push r13
+ 299               	.LCFI15:
+ 300               		.cfi_def_cfa_offset 10
+ 301               		.cfi_offset 13, -9
+ 302 0010 EF92      		push r14
+ 303               	.LCFI16:
+ 304               		.cfi_def_cfa_offset 11
+ 305               		.cfi_offset 14, -10
+ 306 0012 FF92      		push r15
+ 307               	.LCFI17:
+ 308               		.cfi_def_cfa_offset 12
+ 309               		.cfi_offset 15, -11
+ 310 0014 0F93      		push r16
+ 311               	.LCFI18:
+ 312               		.cfi_def_cfa_offset 13
+ 313               		.cfi_offset 16, -12
+ 314 0016 1F93      		push r17
+ 315               	.LCFI19:
+ 316               		.cfi_def_cfa_offset 14
+ 317               		.cfi_offset 17, -13
+ 318 0018 CF93      		push r28
+ 319               	.LCFI20:
+ 320               		.cfi_def_cfa_offset 15
+ 321               		.cfi_offset 28, -14
+ 322 001a DF93      		push r29
+ 323               	.LCFI21:
+ 324               		.cfi_def_cfa_offset 16
+ 325               		.cfi_offset 29, -15
+ 326 001c CDB7      		in r28,__SP_L__
+ 327 001e DEB7      		in r29,__SP_H__
+ 328               	.LCFI22:
+ 329               		.cfi_def_cfa_register 28
+ 330 0020 6397      		sbiw r28,19
+ 331               	.LCFI23:
+ 332               		.cfi_def_cfa_offset 35
+ 333 0022 0FB6      		in __tmp_reg__,__SREG__
+ 334 0024 F894      		cli
+ 335 0026 DEBF      		out __SP_H__,r29
+ 336 0028 0FBE      		out __SREG__,__tmp_reg__
+ 337 002a CDBF      		out __SP_L__,r28
+ 338               	/* prologue: function */
+ 339               	/* frame size = 19 */
+ 340               	/* stack size = 33 */
+ 341               	.L__stack_usage = 33
+ 342               	.LVL14:
+  72:Lib/DHCPServerApp.c **** 	{
+ 343               		.loc 1 72 0
+ 344 002c 8091 0000 		lds r24,uip_flags
+ 345 0030 81FF      		sbrs r24,1
+ 346 0032 00C0      		rjmp .L13
+  68:Lib/DHCPServerApp.c **** 	uint16_t             AppDataSize = 0;
+ 347               		.loc 1 68 0
+ 348 0034 C090 0000 		lds r12,uip_appdata
+ 349 0038 D090 0000 		lds r13,uip_appdata+1
+ 350               	.LBB10:
+  76:Lib/DHCPServerApp.c **** 			return;
+ 351               		.loc 1 76 0
+ 352 003c 5601      		movw r10,r12
+ 353 003e 80EF      		ldi r24,-16
+ 354 0040 A80E      		add r10,r24
+ 355 0042 B11C      		adc r11,__zero_reg__
+ 356 0044 AE01      		movw r20,r28
+ 357 0046 4D5E      		subi r20,-19
+ 358 0048 5F4F      		sbci r21,-1
+ 359 004a 65E3      		ldi r22,lo8(53)
+ 360 004c C501      		movw r24,r10
+ 361 004e 0E94 0000 		call DHCPCommon_GetOption
+ 362               	.LVL15:
+ 363 0052 8823      		tst r24
+ 364 0054 01F4      		brne .+2
+ 365 0056 00C0      		rjmp .L13
+  84:Lib/DHCPServerApp.c **** 		uip_getdraddr(&GatewayIPAddress);
+ 366               		.loc 1 84 0
+ 367 0058 8091 0000 		lds r24,uip_netmask
+ 368 005c 9091 0000 		lds r25,uip_netmask+1
+ 369 0060 A091 0000 		lds r26,uip_netmask+2
+ 370 0064 B091 0000 		lds r27,uip_netmask+3
+ 371 0068 8F87      		std Y+15,r24
+ 372 006a 988B      		std Y+16,r25
+ 373 006c A98B      		std Y+17,r26
+ 374 006e BA8B      		std Y+18,r27
+  85:Lib/DHCPServerApp.c **** 		memcpy(&RemoteMACAddress, &AppData->ClientHardwareAddress, sizeof(struct uip_eth_addr));
+ 375               		.loc 1 85 0
+ 376 0070 8091 0000 		lds r24,uip_draddr
+ 377 0074 9091 0000 		lds r25,uip_draddr+1
+ 378 0078 A091 0000 		lds r26,uip_draddr+2
+ 379 007c B091 0000 		lds r27,uip_draddr+3
+ 380 0080 8B87      		std Y+11,r24
+ 381 0082 9C87      		std Y+12,r25
+ 382 0084 AD87      		std Y+13,r26
+ 383 0086 BE87      		std Y+14,r27
+  86:Lib/DHCPServerApp.c **** 		TransactionID = AppData->TransactionID;
+ 384               		.loc 1 86 0
+ 385 0088 86E0      		ldi r24,lo8(6)
+ 386 008a F601      		movw r30,r12
+ 387 008c 7C96      		adiw r30,28
+ 388 008e DE01      		movw r26,r28
+ 389 0090 1196      		adiw r26,1
+ 390               		0:
+ 391 0092 0190      		ld r0,Z+
+ 392 0094 0D92      		st X+,r0
+ 393 0096 8A95      		dec r24
+ 394 0098 01F4      		brne 0b
+  87:Lib/DHCPServerApp.c **** 
+ 395               		.loc 1 87 0
+ 396 009a F601      		movw r30,r12
+ 397 009c 4480      		ldd r4,Z+4
+ 398 009e 5580      		ldd r5,Z+5
+ 399 00a0 6680      		ldd r6,Z+6
+ 400 00a2 7780      		ldd r7,Z+7
+ 401               	.LVL16:
+  90:Lib/DHCPServerApp.c **** 		  memcpy(&PreferredClientIP, &uip_all_zeroes_addr, sizeof(uip_ipaddr_t));	
+ 402               		.loc 1 90 0
+ 403 00a4 AE01      		movw r20,r28
+ 404 00a6 495F      		subi r20,-7
+ 405 00a8 5F4F      		sbci r21,-1
+ 406 00aa 62E3      		ldi r22,lo8(50)
+ 407 00ac C501      		movw r24,r10
+ 408 00ae 0E94 0000 		call DHCPCommon_GetOption
+ 409               	.LVL17:
+ 410 00b2 8111      		cpse r24,__zero_reg__
+ 411 00b4 00C0      		rjmp .L16
+  91:Lib/DHCPServerApp.c **** 		
+ 412               		.loc 1 91 0
+ 413 00b6 8091 0000 		lds r24,uip_all_zeroes_addr
+ 414 00ba 9091 0000 		lds r25,uip_all_zeroes_addr+1
+ 415 00be A091 0000 		lds r26,uip_all_zeroes_addr+2
+ 416 00c2 B091 0000 		lds r27,uip_all_zeroes_addr+3
+ 417 00c6 8F83      		std Y+7,r24
+ 418 00c8 9887      		std Y+8,r25
+ 419 00ca A987      		std Y+9,r26
+ 420 00cc BA87      		std Y+10,r27
+ 421               	.L16:
+  93:Lib/DHCPServerApp.c **** 		{
+ 422               		.loc 1 93 0
+ 423 00ce 8B89      		ldd r24,Y+19
+ 424 00d0 8330      		cpi r24,lo8(3)
+ 425 00d2 01F4      		brne .+2
+ 426 00d4 00C0      		rjmp .L18
+ 427 00d6 8730      		cpi r24,lo8(7)
+ 428 00d8 01F4      		brne .+2
+ 429 00da 00C0      		rjmp .L19
+ 430 00dc 8130      		cpi r24,lo8(1)
+ 431 00de 01F0      		breq .+2
+ 432 00e0 00C0      		rjmp .L13
+  97:Lib/DHCPServerApp.c **** 				  DHCPServerApp_GetUnleasedIP(&PreferredClientIP);
+ 433               		.loc 1 97 0
+ 434 00e2 8A85      		ldd r24,Y+10
+ 435 00e4 0E94 0000 		call DHCPServerApp_CheckIfIPLeased.isra.0
+ 436               	.LVL18:
+ 437 00e8 8111      		cpse r24,__zero_reg__
+ 438 00ea 00C0      		rjmp .L21
+ 439               	.L22:
+ 101:Lib/DHCPServerApp.c **** 
+ 440               		.loc 1 101 0
+ 441 00ec 8301      		movw r16,r6
+ 442 00ee 7201      		movw r14,r4
+ 443 00f0 9E01      		movw r18,r28
+ 444 00f2 295F      		subi r18,-7
+ 445 00f4 3F4F      		sbci r19,-1
+ 446 00f6 AE01      		movw r20,r28
+ 447 00f8 4F5F      		subi r20,-1
+ 448 00fa 5F4F      		sbci r21,-1
+ 449 00fc 62E0      		ldi r22,lo8(2)
+ 450 00fe C601      		movw r24,r12
+ 451 0100 0E94 0000 		call DHCPServerApp_FillDHCPHeader
+ 452               	.LVL19:
+ 453 0104 6C01      		movw r12,r24
+ 454               	.LVL20:
+ 104:Lib/DHCPServerApp.c **** 													sizeof(uip_ipaddr_t), &Netmask);
+ 455               		.loc 1 104 0
+ 456 0106 9E01      		movw r18,r28
+ 457 0108 215F      		subi r18,-15
+ 458 010a 3F4F      		sbci r19,-1
+ 459 010c 44E0      		ldi r20,lo8(4)
+ 460 010e 61E0      		ldi r22,lo8(1)
+ 461 0110 C501      		movw r24,r10
+ 462 0112 0E94 0000 		call DHCPCommon_SetOption
+ 463               	.LVL21:
+ 464 0116 182F      		mov r17,r24
+ 465               	.LVL22:
+ 106:Lib/DHCPServerApp.c **** 					                                sizeof(uip_ipaddr_t), &GatewayIPAddress);
+ 466               		.loc 1 106 0
+ 467 0118 9E01      		movw r18,r28
+ 468 011a 255F      		subi r18,-11
+ 469 011c 3F4F      		sbci r19,-1
+ 470 011e 44E0      		ldi r20,lo8(4)
+ 471 0120 63E0      		ldi r22,lo8(3)
+ 472 0122 C501      		movw r24,r10
+ 473 0124 0E94 0000 		call DHCPCommon_SetOption
+ 474               	.LVL23:
+ 475 0128 90E0      		ldi r25,0
+ 476 012a 810F      		add r24,r17
+ 477 012c 911D      		adc r25,__zero_reg__
+ 478 012e C80E      		add r12,r24
+ 479 0130 D91E      		adc r13,r25
+ 480               	.LVL24:
+ 481 0132 00C0      		rjmp .L25
+ 482               	.LVL25:
+ 483               	.L21:
+ 484               	.LBB11:
+ 485               	.LBB12:
+ 212:Lib/DHCPServerApp.c **** 
+ 213:Lib/DHCPServerApp.c **** /** Retrieves the next unleased IP in the IP address pool.
+ 214:Lib/DHCPServerApp.c ****  *
+ 215:Lib/DHCPServerApp.c ****  *  \param[out] NewIPAddress  Location where the generated IP Address should be stored
+ 216:Lib/DHCPServerApp.c ****  */
+ 217:Lib/DHCPServerApp.c **** static void DHCPServerApp_GetUnleasedIP(uip_ipaddr_t* const NewIPAddress)
+ 218:Lib/DHCPServerApp.c **** {
+ 219:Lib/DHCPServerApp.c **** 	uip_ipaddr_copy(NewIPAddress, &uip_hostaddr);
+ 486               		.loc 1 219 0
+ 487 0134 8091 0000 		lds r24,uip_hostaddr
+ 488 0138 9091 0000 		lds r25,uip_hostaddr+1
+ 489 013c A091 0000 		lds r26,uip_hostaddr+2
+ 490 0140 B091 0000 		lds r27,uip_hostaddr+3
+ 491 0144 8F83      		std Y+7,r24
+ 492 0146 9887      		std Y+8,r25
+ 493 0148 A987      		std Y+9,r26
+ 494 014a BA87      		std Y+10,r27
+ 495               	.LVL26:
+ 496               	.LBB13:
+ 220:Lib/DHCPServerApp.c **** 	
+ 221:Lib/DHCPServerApp.c **** 	/** Look through the current subnet, skipping the broadcast and zero IP addresses */
+ 222:Lib/DHCPServerApp.c **** 	for (uint8_t IP = 1; IP < 254; IP++)
+ 497               		.loc 1 222 0
+ 498 014c 11E0      		ldi r17,lo8(1)
+ 499               	.LVL27:
+ 500               	.L23:
+ 223:Lib/DHCPServerApp.c **** 	{
+ 224:Lib/DHCPServerApp.c **** 		/* Update new IP address to lease with the current IP address to test */
+ 225:Lib/DHCPServerApp.c **** 		NewIPAddress->u8[3] = IP;
+ 501               		.loc 1 225 0
+ 502 014e 1A87      		std Y+10,r17
+ 226:Lib/DHCPServerApp.c **** 		
+ 227:Lib/DHCPServerApp.c **** 		/* If we've found an unleased IP, abort with the updated IP stored for the called */
+ 228:Lib/DHCPServerApp.c **** 		if (!(DHCPServerApp_CheckIfIPLeased(NewIPAddress)))
+ 503               		.loc 1 228 0
+ 504 0150 812F      		mov r24,r17
+ 505 0152 0E94 0000 		call DHCPServerApp_CheckIfIPLeased.isra.0
+ 506               	.LVL28:
+ 507 0156 8823      		tst r24
+ 508 0158 01F0      		breq .L22
+ 222:Lib/DHCPServerApp.c **** 	{
+ 509               		.loc 1 222 0
+ 510 015a 1F5F      		subi r17,lo8(-(1))
+ 511               	.LVL29:
+ 512 015c 1E3F      		cpi r17,lo8(-2)
+ 513 015e 01F4      		brne .L23
+ 514 0160 00C0      		rjmp .L22
+ 515               	.LVL30:
+ 516               	.L18:
+ 517               	.LBE13:
+ 518               	.LBE12:
+ 519               	.LBE11:
+ 117:Lib/DHCPServerApp.c **** 				{
+ 520               		.loc 1 117 0
+ 521 0162 8A85      		ldd r24,Y+10
+ 522 0164 0E94 0000 		call DHCPServerApp_CheckIfIPLeased.isra.0
+ 523               	.LVL31:
+ 120:Lib/DHCPServerApp.c **** 
+ 524               		.loc 1 120 0
+ 525 0168 8301      		movw r16,r6
+ 526 016a 7201      		movw r14,r4
+ 117:Lib/DHCPServerApp.c **** 				{
+ 527               		.loc 1 117 0
+ 528 016c 8111      		cpse r24,__zero_reg__
+ 529 016e 00C0      		rjmp .L24
+ 120:Lib/DHCPServerApp.c **** 
+ 530               		.loc 1 120 0
+ 531 0170 9E01      		movw r18,r28
+ 532 0172 295F      		subi r18,-7
+ 533 0174 3F4F      		sbci r19,-1
+ 534 0176 AE01      		movw r20,r28
+ 535 0178 4F5F      		subi r20,-1
+ 536 017a 5F4F      		sbci r21,-1
+ 537 017c 65E0      		ldi r22,lo8(5)
+ 538 017e C601      		movw r24,r12
+ 539 0180 0E94 0000 		call DHCPServerApp_FillDHCPHeader
+ 540               	.LVL32:
+ 541 0184 6C01      		movw r12,r24
+ 542               	.LVL33:
+ 123:Lib/DHCPServerApp.c **** 														sizeof(uip_ipaddr_t), &Netmask);
+ 543               		.loc 1 123 0
+ 544 0186 9E01      		movw r18,r28
+ 545 0188 215F      		subi r18,-15
+ 546 018a 3F4F      		sbci r19,-1
+ 547 018c 44E0      		ldi r20,lo8(4)
+ 548 018e 61E0      		ldi r22,lo8(1)
+ 549 0190 C501      		movw r24,r10
+ 550 0192 0E94 0000 		call DHCPCommon_SetOption
+ 551               	.LVL34:
+ 552 0196 182F      		mov r17,r24
+ 553               	.LVL35:
+ 125:Lib/DHCPServerApp.c **** 					                                    sizeof(uip_ipaddr_t), &GatewayIPAddress);
+ 554               		.loc 1 125 0
+ 555 0198 9E01      		movw r18,r28
+ 556 019a 255F      		subi r18,-11
+ 557 019c 3F4F      		sbci r19,-1
+ 558 019e 44E0      		ldi r20,lo8(4)
+ 559 01a0 63E0      		ldi r22,lo8(3)
+ 560 01a2 C501      		movw r24,r10
+ 561 01a4 0E94 0000 		call DHCPCommon_SetOption
+ 562               	.LVL36:
+ 563 01a8 90E0      		ldi r25,0
+ 564 01aa 810F      		add r24,r17
+ 565 01ac 911D      		adc r25,__zero_reg__
+ 566 01ae C80E      		add r12,r24
+ 567 01b0 D91E      		adc r13,r25
+ 568               	.LVL37:
+ 569 01b2 8A85      		ldd r24,Y+10
+ 570               	.LVL38:
+ 571               	.LBB14:
+ 572               	.LBB15:
+ 229:Lib/DHCPServerApp.c **** 		  return;
+ 230:Lib/DHCPServerApp.c **** 	}
+ 231:Lib/DHCPServerApp.c **** }
+ 232:Lib/DHCPServerApp.c **** 
+ 233:Lib/DHCPServerApp.c **** /** Marks the given IP Address as leased in the address pool, so that it will not be
+ 234:Lib/DHCPServerApp.c ****  *  allocated to another client unless it is first released.
+ 235:Lib/DHCPServerApp.c ****  *
+ 236:Lib/DHCPServerApp.c ****  *  \param[in] IPAddress  IP Address to mark as leased
+ 237:Lib/DHCPServerApp.c ****  *
+ 238:Lib/DHCPServerApp.c ****  *  \pre The IP address must be within the same /24 subnet as the virtual webserver.
+ 239:Lib/DHCPServerApp.c ****  */
+ 240:Lib/DHCPServerApp.c **** static void DHCPServerApp_LeaseIP(const uip_ipaddr_t* const IPAddress)
+ 241:Lib/DHCPServerApp.c **** {
+ 242:Lib/DHCPServerApp.c **** 	uint8_t Byte = (IPAddress->u8[3] / 8);
+ 243:Lib/DHCPServerApp.c **** 	uint8_t Mask = (1 << (IPAddress->u8[3] % 8));
+ 244:Lib/DHCPServerApp.c **** 	
+ 245:Lib/DHCPServerApp.c **** 	/* Mark the IP address as leased in the allocation table */
+ 246:Lib/DHCPServerApp.c **** 	LeasedIPs[Byte] |= Mask;
+ 573               		.loc 1 246 0
+ 574 01b4 E82F      		mov r30,r24
+ 575 01b6 E695      		lsr r30
+ 576 01b8 E695      		lsr r30
+ 577 01ba E695      		lsr r30
+ 578               	.LVL39:
+ 579 01bc F0E0      		ldi r31,0
+ 580 01be E050      		subi r30,lo8(-(LeasedIPs))
+ 581 01c0 F040      		sbci r31,hi8(-(LeasedIPs))
+ 582               	.LVL40:
+ 583 01c2 8770      		andi r24,lo8(7)
+ 584               	.LVL41:
+ 585 01c4 21E0      		ldi r18,lo8(1)
+ 586 01c6 30E0      		ldi r19,0
+ 587 01c8 00C0      		rjmp 2f
+ 588               		1:
+ 589 01ca 220F      		lsl r18
+ 590               		2:
+ 591 01cc 8A95      		dec r24
+ 592 01ce 02F4      		brpl 1b
+ 593 01d0 8081      		ld r24,Z
+ 594 01d2 282B      		or r18,r24
+ 595 01d4 2083      		st Z,r18
+ 596 01d6 00C0      		rjmp .L25
+ 597               	.LVL42:
+ 598               	.L24:
+ 599               	.LBE15:
+ 600               	.LBE14:
+ 134:Lib/DHCPServerApp.c **** 				}
+ 601               		.loc 1 134 0
+ 602 01d8 20E0      		ldi r18,lo8(uip_all_zeroes_addr)
+ 603 01da 30E0      		ldi r19,hi8(uip_all_zeroes_addr)
+ 604 01dc AE01      		movw r20,r28
+ 605 01de 4F5F      		subi r20,-1
+ 606 01e0 5F4F      		sbci r21,-1
+ 607 01e2 66E0      		ldi r22,lo8(6)
+ 608 01e4 C601      		movw r24,r12
+ 609 01e6 0E94 0000 		call DHCPServerApp_FillDHCPHeader
+ 610               	.LVL43:
+ 611 01ea 6C01      		movw r12,r24
+ 612               	.LVL44:
+ 613               	.L25:
+ 138:Lib/DHCPServerApp.c **** 				memcpy(&uip_udp_conn->ripaddr, &uip_broadcast_addr, sizeof(uip_ipaddr_t));
+ 614               		.loc 1 138 0
+ 615 01ec 8091 0000 		lds r24,BroadcastConnection
+ 616 01f0 9091 0000 		lds r25,BroadcastConnection+1
+ 617 01f4 9093 0000 		sts uip_conn+1,r25
+ 618 01f8 8093 0000 		sts uip_conn,r24
+ 619 01fc 83E0      		ldi r24,lo8(3)
+ 620 01fe 0E94 0000 		call uip_process
+ 621               	.LVL45:
+ 139:Lib/DHCPServerApp.c **** 				uip_udp_send(AppDataSize);
+ 622               		.loc 1 139 0
+ 623 0202 E091 0000 		lds r30,uip_udp_conn
+ 624 0206 F091 0000 		lds r31,uip_udp_conn+1
+ 625 020a 8091 0000 		lds r24,uip_broadcast_addr
+ 626 020e 9091 0000 		lds r25,uip_broadcast_addr+1
+ 627 0212 A091 0000 		lds r26,uip_broadcast_addr+2
+ 628 0216 B091 0000 		lds r27,uip_broadcast_addr+3
+ 629 021a 8083      		st Z,r24
+ 630 021c 9183      		std Z+1,r25
+ 631 021e A283      		std Z+2,r26
+ 632 0220 B383      		std Z+3,r27
+ 140:Lib/DHCPServerApp.c **** 			
+ 633               		.loc 1 140 0
+ 634 0222 B601      		movw r22,r12
+ 635 0224 8091 0000 		lds r24,uip_appdata
+ 636 0228 9091 0000 		lds r25,uip_appdata+1
+ 637 022c 0E94 0000 		call uip_send
+ 638               	.LVL46:
+ 142:Lib/DHCPServerApp.c **** 			case DHCP_RELEASE:
+ 639               		.loc 1 142 0
+ 640 0230 00C0      		rjmp .L13
+ 641               	.LVL47:
+ 642               	.L19:
+ 643 0232 E091 0000 		lds r30,uip_udp_conn
+ 644 0236 F091 0000 		lds r31,uip_udp_conn+1
+ 645 023a 8381      		ldd r24,Z+3
+ 646               	.LVL48:
+ 647               	.LBB16:
+ 648               	.LBB17:
+ 247:Lib/DHCPServerApp.c **** }
+ 248:Lib/DHCPServerApp.c **** 
+ 249:Lib/DHCPServerApp.c **** /** Marks the given IP Address as not leased in the address pool, so that it can be
+ 250:Lib/DHCPServerApp.c ****  *  allocated to another client upon request.
+ 251:Lib/DHCPServerApp.c ****  *
+ 252:Lib/DHCPServerApp.c ****  *  \param[in] IPAddress  IP Address to mark as not leased
+ 253:Lib/DHCPServerApp.c ****  *
+ 254:Lib/DHCPServerApp.c ****  *  \pre The IP address must be within the same /24 subnet as the virtual webserver.
+ 255:Lib/DHCPServerApp.c ****  */
+ 256:Lib/DHCPServerApp.c **** static void DHCPServerApp_UnleaseIP(const uip_ipaddr_t* const IPAddress)
+ 257:Lib/DHCPServerApp.c **** {
+ 258:Lib/DHCPServerApp.c **** 	uint8_t Byte = (IPAddress->u8[3] / 8);
+ 259:Lib/DHCPServerApp.c **** 	uint8_t Mask = (1 << (IPAddress->u8[3] % 8));
+ 260:Lib/DHCPServerApp.c **** 	
+ 261:Lib/DHCPServerApp.c **** 	/* Mark the IP address as unleased in the allocation table */
+ 262:Lib/DHCPServerApp.c **** 	LeasedIPs[Byte] &= ~Mask;
+ 649               		.loc 1 262 0
+ 650 023c E82F      		mov r30,r24
+ 651               	.LVL49:
+ 652 023e E695      		lsr r30
+ 653 0240 E695      		lsr r30
+ 654 0242 E695      		lsr r30
+ 655               	.LVL50:
+ 656 0244 F0E0      		ldi r31,0
+ 657 0246 E050      		subi r30,lo8(-(LeasedIPs))
+ 658 0248 F040      		sbci r31,hi8(-(LeasedIPs))
+ 659               	.LVL51:
+ 660 024a 282F      		mov r18,r24
+ 661 024c 2770      		andi r18,lo8(7)
+ 662 024e 81E0      		ldi r24,lo8(1)
+ 663 0250 90E0      		ldi r25,0
+ 664               	.LVL52:
+ 665 0252 00C0      		rjmp 2f
+ 666               		1:
+ 667 0254 880F      		lsl r24
+ 668               		2:
+ 669 0256 2A95      		dec r18
+ 670 0258 02F4      		brpl 1b
+ 671 025a 8095      		com r24
+ 672 025c 9081      		ld r25,Z
+ 673 025e 8923      		and r24,r25
+ 674 0260 8083      		st Z,r24
+ 675               	.LVL53:
+ 676               	.L13:
+ 677               	/* epilogue start */
+ 678               	.LBE17:
+ 679               	.LBE16:
+ 680               	.LBE10:
+ 149:Lib/DHCPServerApp.c **** 
+ 681               		.loc 1 149 0
+ 682 0262 6396      		adiw r28,19
+ 683 0264 0FB6      		in __tmp_reg__,__SREG__
+ 684 0266 F894      		cli
+ 685 0268 DEBF      		out __SP_H__,r29
+ 686 026a 0FBE      		out __SREG__,__tmp_reg__
+ 687 026c CDBF      		out __SP_L__,r28
+ 688 026e DF91      		pop r29
+ 689 0270 CF91      		pop r28
+ 690 0272 1F91      		pop r17
+ 691 0274 0F91      		pop r16
+ 692 0276 FF90      		pop r15
+ 693 0278 EF90      		pop r14
+ 694 027a DF90      		pop r13
+ 695 027c CF90      		pop r12
+ 696 027e BF90      		pop r11
+ 697 0280 AF90      		pop r10
+ 698 0282 7F90      		pop r7
+ 699 0284 6F90      		pop r6
+ 700 0286 5F90      		pop r5
+ 701 0288 4F90      		pop r4
+ 702 028a 0895      		ret
+ 703               		.cfi_endproc
+ 704               	.LFE223:
+ 706               		.comm	LeasedIPs,31,1
+ 707               		.comm	BroadcastConnection,2,1
+ 708               		.text
+ 709               	.Letext0:
+ 710               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 711               		.file 3 "Lib/FATFs/integer.h"
+ 712               		.file 4 "Lib/FATFs/ff.h"
+ 713               		.file 5 "Lib/uip/clock.h"
+ 714               		.file 6 "Lib/uip/timer.h"
+ 715               		.file 7 "Lib/uip/uipopt.h"
+ 716               		.file 8 "Lib/uip/uip.h"
+ 717               		.file 9 "./Lib/DHCPCommon.h"
+ 718               		.file 10 "../../LUFA/Drivers/USB/Core/USBTask.h"
+ 719               		.file 11 "Lib/../Lib/uIPManagement.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 DHCPServerApp.c
+     /tmp/ccghuvHY.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccghuvHY.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccghuvHY.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccghuvHY.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccghuvHY.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccghuvHY.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccghuvHY.s:13     .text.DHCPServerApp_FillDHCPHeader:0000000000000000 DHCPServerApp_FillDHCPHeader
+     /tmp/ccghuvHY.s:162    .text.DHCPServerApp_CheckIfIPLeased.isra.0:0000000000000000 DHCPServerApp_CheckIfIPLeased.isra.0
+                            *COM*:000000000000001f LeasedIPs
+     /tmp/ccghuvHY.s:217    .text.DHCPServerApp_Init:0000000000000000 DHCPServerApp_Init
+     /tmp/ccghuvHY.s:266    .text.DHCPServerApp_Callback:0000000000000000 DHCPServerApp_Callback
+                            *COM*:0000000000000002 BroadcastConnection
+
+UNDEFINED SYMBOLS
+uip_hostaddr
+uip_listen
+uip_broadcast_addr
+uip_udp_new
+uip_flags
+uip_appdata
+DHCPCommon_GetOption
+uip_netmask
+uip_draddr
+uip_all_zeroes_addr
+DHCPCommon_SetOption
+uip_conn
+uip_process
+uip_udp_conn
+uip_send
+__do_clear_bss

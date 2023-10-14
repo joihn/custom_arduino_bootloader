@@ -1,0 +1,1475 @@
+Archive member included to satisfy reference by file (symbol)
+
+/usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_mulhi3.o)
+                              ../../LUFA/Drivers/USB/Class/Common/HIDParser.o (__mulhi3)
+/usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+                              /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o (exit)
+/usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_tablejump2.o)
+                              Lib/XPROG/XPROGProtocol.o (__tablejump2__)
+/usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+                              Lib/V2Protocol.o (__do_copy_data)
+/usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+                              Lib/V2Protocol.o (__do_clear_bss)
+/usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a(eerd_byte.o)
+                              Lib/V2ProtocolParams.o (eeprom_read_byte)
+/usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a(eeupd_byte.o)
+                              Lib/V2ProtocolParams.o (eeprom_update_byte)
+
+Allocating common symbols
+Common symbol       size              file
+
+USB_IsInitialized   0x1               ../../LUFA/Drivers/USB/Core/USBTask.o
+MustLoadExtendedAddress
+                    0x1               Lib/V2Protocol.o
+USB_Device_ConfigurationNumber
+                    0x1               ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+USB_ControlRequest  0x8               ../../LUFA/Drivers/USB/Core/USBTask.o
+CurrentAddress      0x4               Lib/V2Protocol.o
+IsSending           0x1               Lib/XPROG/XPROGTarget.o
+
+Discarded input sections
+
+ .data          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+ .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+ .text          0x0000000000000000        0x0 AVRISP-MKII.o
+ .data          0x0000000000000000        0x0 AVRISP-MKII.o
+ .bss           0x0000000000000000        0x0 AVRISP-MKII.o
+ .text          0x0000000000000000        0x0 Descriptors.o
+ .data          0x0000000000000000        0x0 Descriptors.o
+ .bss           0x0000000000000000        0x0 Descriptors.o
+ .text          0x0000000000000000        0x0 Lib/V2Protocol.o
+ .data          0x0000000000000000        0x0 Lib/V2Protocol.o
+ .bss           0x0000000000000000        0x0 Lib/V2Protocol.o
+ .text          0x0000000000000000        0x0 Lib/V2ProtocolParams.o
+ .bss           0x0000000000000000        0x0 Lib/V2ProtocolParams.o
+ .text          0x0000000000000000        0x0 Lib/ISP/ISPProtocol.o
+ .data          0x0000000000000000        0x0 Lib/ISP/ISPProtocol.o
+ .bss           0x0000000000000000        0x0 Lib/ISP/ISPProtocol.o
+ .text          0x0000000000000000        0x0 Lib/ISP/ISPTarget.o
+ .text          0x0000000000000000        0x0 Lib/XPROG/XPROGProtocol.o
+ .text          0x0000000000000000        0x0 Lib/XPROG/XPROGTarget.o
+ .data          0x0000000000000000        0x0 Lib/XPROG/XPROGTarget.o
+ .bss           0x0000000000000000        0x0 Lib/XPROG/XPROGTarget.o
+ .text          0x0000000000000000        0x0 Lib/XPROG/XMEGANVM.o
+ .data          0x0000000000000000        0x0 Lib/XPROG/XMEGANVM.o
+ .bss           0x0000000000000000        0x0 Lib/XPROG/XMEGANVM.o
+ .text          0x0000000000000000        0x0 Lib/XPROG/TINYNVM.o
+ .data          0x0000000000000000        0x0 Lib/XPROG/TINYNVM.o
+ .bss           0x0000000000000000        0x0 Lib/XPROG/TINYNVM.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+ .text.USB_Device_SendRemoteWakeup
+                0x0000000000000000       0x2c ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+ .debug_info    0x0000000000000000       0xd2 ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+ .debug_abbrev  0x0000000000000000       0x80 ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+ .debug_aranges
+                0x0000000000000000       0x20 ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+ .debug_ranges  0x0000000000000000       0x10 ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+ .debug_line    0x0000000000000000      0x104 ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+ .debug_str     0x0000000000000000      0x22e ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+ .comment       0x0000000000000000       0x12 ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+ .debug_frame   0x0000000000000000       0x24 ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+ .text.Endpoint_ClearEndpoints
+                0x0000000000000000       0x28 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Host_AVR8.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Host_AVR8.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Host_AVR8.o
+ .debug_line    0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Host_AVR8.o
+ .debug_str     0x0000000000000000      0x166 ../../LUFA/Drivers/USB/Core/AVR8/Host_AVR8.o
+ .comment       0x0000000000000000       0x12 ../../LUFA/Drivers/USB/Core/AVR8/Host_AVR8.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Pipe_AVR8.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Pipe_AVR8.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Pipe_AVR8.o
+ .debug_line    0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/Pipe_AVR8.o
+ .debug_str     0x0000000000000000      0x166 ../../LUFA/Drivers/USB/Core/AVR8/Pipe_AVR8.o
+ .comment       0x0000000000000000       0x12 ../../LUFA/Drivers/USB/Core/AVR8/Pipe_AVR8.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+ .text.USB_Disable
+                0x0000000000000000       0x2e ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Discard_Stream
+                0x0000000000000000       0x82 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Null_Stream
+                0x0000000000000000       0x82 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Write_Stream_BE
+                0x0000000000000000       0xa4 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Write_PStream_LE
+                0x0000000000000000       0x9e ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Write_PStream_BE
+                0x0000000000000000       0xa6 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Write_EStream_LE
+                0x0000000000000000       0xa0 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Write_EStream_BE
+                0x0000000000000000       0xa8 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Read_EStream_LE
+                0x0000000000000000       0xa0 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Read_EStream_BE
+                0x0000000000000000       0xa8 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Write_Control_Stream_LE
+                0x0000000000000000       0xae ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Write_Control_Stream_BE
+                0x0000000000000000       0xba ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Read_Control_Stream_LE
+                0x0000000000000000       0x74 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Read_Control_Stream_BE
+                0x0000000000000000       0x76 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Write_Control_PStream_BE
+                0x0000000000000000       0xbc ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Write_Control_EStream_LE
+                0x0000000000000000       0xdc ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Write_Control_EStream_BE
+                0x0000000000000000       0xee ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Read_Control_EStream_LE
+                0x0000000000000000       0x8c ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text.Endpoint_Read_Control_EStream_BE
+                0x0000000000000000       0x86 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/PipeStream_AVR8.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/PipeStream_AVR8.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/PipeStream_AVR8.o
+ .debug_line    0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/AVR8/PipeStream_AVR8.o
+ .debug_str     0x0000000000000000      0x16c ../../LUFA/Drivers/USB/Core/AVR8/PipeStream_AVR8.o
+ .comment       0x0000000000000000       0x12 ../../LUFA/Drivers/USB/Core/AVR8/PipeStream_AVR8.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .text.USB_GetNextDescriptor
+                0x0000000000000000       0x3c ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .text.USB_GetNextDescriptorOfType
+                0x0000000000000000       0x38 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .text.USB_GetNextDescriptorOfTypeBefore
+                0x0000000000000000       0x46 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .text.USB_GetNextDescriptorOfTypeAfter
+                0x0000000000000000       0x3e ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .text.USB_GetNextDescriptorComp
+                0x0000000000000000       0x66 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .debug_info    0x0000000000000000      0x3d1 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .debug_abbrev  0x0000000000000000      0x178 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .debug_loc     0x0000000000000000      0x59f ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .debug_aranges
+                0x0000000000000000       0x40 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .debug_ranges  0x0000000000000000       0x30 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .debug_line    0x0000000000000000      0x1cc ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .debug_str     0x0000000000000000      0x415 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .comment       0x0000000000000000       0x12 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .debug_frame   0x0000000000000000      0x110 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/Events.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/Events.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/Events.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/HostStandardReq.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/HostStandardReq.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/HostStandardReq.o
+ .debug_line    0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/HostStandardReq.o
+ .debug_str     0x0000000000000000      0x167 ../../LUFA/Drivers/USB/Core/HostStandardReq.o
+ .comment       0x0000000000000000       0x12 ../../LUFA/Drivers/USB/Core/HostStandardReq.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/USBTask.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/USBTask.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Core/USBTask.o
+ .text          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .data          0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .bss           0x0000000000000000        0x0 ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .text.USB_ProcessHIDReport
+                0x0000000000000000      0x6d6 ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .text.USB_GetHIDReportItemInfo
+                0x0000000000000000       0xbc ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .text.USB_SetHIDReportItemInfo
+                0x0000000000000000       0xce ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .text.USB_GetHIDReportSize
+                0x0000000000000000       0x56 ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .debug_info    0x0000000000000000      0x737 ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .debug_abbrev  0x0000000000000000      0x21a ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .debug_loc     0x0000000000000000      0xaec ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .debug_aranges
+                0x0000000000000000       0x38 ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .debug_ranges  0x0000000000000000       0xd0 ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .debug_line    0x0000000000000000      0x56b ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .debug_str     0x0000000000000000      0x6f2 ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .comment       0x0000000000000000       0x12 ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .debug_frame   0x0000000000000000      0x14c ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+ .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_mulhi3.o)
+ .data          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_mulhi3.o)
+ .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_mulhi3.o)
+ .text.libgcc.mul
+                0x0000000000000000       0x22 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_mulhi3.o)
+ .text.libgcc.div
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_mulhi3.o)
+ .text.libgcc   0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_mulhi3.o)
+ .text.libgcc.prologue
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_mulhi3.o)
+ .text.libgcc.builtins
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_mulhi3.o)
+ .text.libgcc.fmul
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_mulhi3.o)
+ .text.libgcc.fixed
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_mulhi3.o)
+ .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+ .data          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+ .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+ .text.libgcc.mul
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+ .text.libgcc.div
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+ .text.libgcc   0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+ .text.libgcc.prologue
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+ .text.libgcc.builtins
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+ .text.libgcc.fmul
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+ .text.libgcc.fixed
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+ .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_tablejump2.o)
+ .data          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_tablejump2.o)
+ .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_tablejump2.o)
+ .text.libgcc.mul
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_tablejump2.o)
+ .text.libgcc.div
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_tablejump2.o)
+ .text.libgcc.prologue
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_tablejump2.o)
+ .text.libgcc.builtins
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_tablejump2.o)
+ .text.libgcc.fmul
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_tablejump2.o)
+ .text.libgcc.fixed
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_tablejump2.o)
+ .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+ .data          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+ .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+ .text.libgcc.mul
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+ .text.libgcc.div
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+ .text.libgcc   0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+ .text.libgcc.prologue
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+ .text.libgcc.builtins
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+ .text.libgcc.fmul
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+ .text.libgcc.fixed
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+ .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+ .data          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+ .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+ .text.libgcc.mul
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+ .text.libgcc.div
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+ .text.libgcc   0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+ .text.libgcc.prologue
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+ .text.libgcc.builtins
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+ .text.libgcc.fmul
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+ .text.libgcc.fixed
+                0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+ .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a(eerd_byte.o)
+ .data          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a(eerd_byte.o)
+ .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a(eerd_byte.o)
+ .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a(eeupd_byte.o)
+ .data          0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a(eeupd_byte.o)
+ .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a(eeupd_byte.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x0000000000000000 0x0000000000004000 xr
+data             0x0000000000800100 0x0000000000000200 rw !x
+eeprom           0x0000000000810000 0x0000000000000200 rw !x
+fuse             0x0000000000820000 0x0000000000000003 rw !x
+lock             0x0000000000830000 0x0000000000000400 rw !x
+signature        0x0000000000840000 0x0000000000000400 rw !x
+user_signatures  0x0000000000850000 0x0000000000000400 rw !x
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+Address of section .data set to 0x800100
+LOAD /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+LOAD AVRISP-MKII.o
+LOAD Descriptors.o
+LOAD Lib/V2Protocol.o
+LOAD Lib/V2ProtocolParams.o
+LOAD Lib/ISP/ISPProtocol.o
+LOAD Lib/ISP/ISPTarget.o
+LOAD Lib/XPROG/XPROGProtocol.o
+LOAD Lib/XPROG/XPROGTarget.o
+LOAD Lib/XPROG/XMEGANVM.o
+LOAD Lib/XPROG/TINYNVM.o
+LOAD ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+LOAD ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+LOAD ../../LUFA/Drivers/USB/Core/AVR8/Host_AVR8.o
+LOAD ../../LUFA/Drivers/USB/Core/AVR8/Pipe_AVR8.o
+LOAD ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+LOAD ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+LOAD ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+LOAD ../../LUFA/Drivers/USB/Core/AVR8/PipeStream_AVR8.o
+LOAD ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+LOAD ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+LOAD ../../LUFA/Drivers/USB/Core/Events.o
+LOAD ../../LUFA/Drivers/USB/Core/HostStandardReq.o
+LOAD ../../LUFA/Drivers/USB/Core/USBTask.o
+LOAD ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+LOAD /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libm.a
+START GROUP
+LOAD /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a
+LOAD /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libm.a
+LOAD /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libc.a
+LOAD /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a
+END GROUP
+                0x0000000000000000                __TEXT_REGION_ORIGIN__ = DEFINED (__TEXT_REGION_ORIGIN__)?__TEXT_REGION_ORIGIN__:0x0
+                [0x0000000000800100]                __DATA_REGION_ORIGIN__ = DEFINED (__DATA_REGION_ORIGIN__)?__DATA_REGION_ORIGIN__:0x800060
+                [0x0000000000004000]                __TEXT_REGION_LENGTH__ = DEFINED (__TEXT_REGION_LENGTH__)?__TEXT_REGION_LENGTH__:0x10000
+                [0x0000000000000200]                __DATA_REGION_LENGTH__ = DEFINED (__DATA_REGION_LENGTH__)?__DATA_REGION_LENGTH__:0xffa0
+                [0x0000000000000200]                __EEPROM_REGION_LENGTH__ = DEFINED (__EEPROM_REGION_LENGTH__)?__EEPROM_REGION_LENGTH__:0x10000
+                [0x0000000000000003]                __FUSE_REGION_LENGTH__ = DEFINED (__FUSE_REGION_LENGTH__)?__FUSE_REGION_LENGTH__:0x400
+                0x0000000000000400                __LOCK_REGION_LENGTH__ = DEFINED (__LOCK_REGION_LENGTH__)?__LOCK_REGION_LENGTH__:0x400
+                0x0000000000000400                __SIGNATURE_REGION_LENGTH__ = DEFINED (__SIGNATURE_REGION_LENGTH__)?__SIGNATURE_REGION_LENGTH__:0x400
+                0x0000000000000400                __USER_SIGNATURE_REGION_LENGTH__ = DEFINED (__USER_SIGNATURE_REGION_LENGTH__)?__USER_SIGNATURE_REGION_LENGTH__:0x400
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x0000000000000000     0x25a8
+ *(.vectors)
+ .vectors       0x0000000000000000       0x74 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+                0x0000000000000000                __vectors
+                0x0000000000000000                __vector_default
+ *(.vectors)
+ *(.progmem.gcc*)
+ .progmem.gcc_sw_table.XPROGProtocol_Command
+                0x0000000000000074        0xe Lib/XPROG/XPROGProtocol.o
+ .progmem.gcc_sw_table.USB_Device_ProcessControlRequest
+                0x0000000000000082       0x14 ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+                0x0000000000000096                . = ALIGN (0x2)
+                0x0000000000000096                __trampolines_start = .
+ *(.trampolines)
+ .trampolines   0x0000000000000096        0x0 linker stubs
+ *(.trampolines*)
+                0x0000000000000096                __trampolines_end = .
+ *libprintf_flt.a:*(.progmem.data)
+ *libc.a:*(.progmem.data)
+ *(.progmem*)
+ .progmem.data  0x0000000000000096       0x9e Descriptors.o
+                0x0000000000000096                SerialString
+                0x00000000000000b4                ProductString
+                0x00000000000000e4                ManufacturerString
+                0x00000000000000fe                LanguageString
+                0x0000000000000102                ConfigurationDescriptor
+                0x0000000000000122                DeviceDescriptor
+ .progmem.data  0x0000000000000134      0x141 Lib/ISP/ISPTarget.o
+                0x0000000000000276                . = ALIGN (0x2)
+ *fill*         0x0000000000000275        0x1 
+ *(.jumptables)
+ *(.jumptables*)
+ *(.lowtext)
+ *(.lowtext*)
+                0x0000000000000276                __ctors_start = .
+ *(.ctors)
+                0x0000000000000276                __ctors_end = .
+                0x0000000000000276                __dtors_start = .
+ *(.dtors)
+                0x0000000000000276                __dtors_end = .
+ SORT(*)(.ctors)
+ SORT(*)(.dtors)
+ *(.init0)
+ .init0         0x0000000000000276        0x0 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+                0x0000000000000276                __init
+ *(.init0)
+ *(.init1)
+ *(.init1)
+ *(.init2)
+ .init2         0x0000000000000276        0xc /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+ *(.init2)
+ *(.init3)
+ *(.init3)
+ *(.init4)
+ .init4         0x0000000000000282       0x16 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+                0x0000000000000282                __do_copy_data
+ .init4         0x0000000000000298       0x10 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+                0x0000000000000298                __do_clear_bss
+ *(.init4)
+ *(.init5)
+ *(.init5)
+ *(.init6)
+ *(.init6)
+ *(.init7)
+ *(.init7)
+ *(.init8)
+ *(.init8)
+ *(.init9)
+ .init9         0x00000000000002a8        0x6 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+ *(.init9)
+ *(.text)
+ .text          0x00000000000002ae        0x2 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+                0x00000000000002ae                __vector_22
+                0x00000000000002ae                __vector_28
+                0x00000000000002ae                __vector_1
+                0x00000000000002ae                __vector_24
+                0x00000000000002ae                __vector_12
+                0x00000000000002ae                __bad_interrupt
+                0x00000000000002ae                __vector_6
+                0x00000000000002ae                __vector_3
+                0x00000000000002ae                __vector_23
+                0x00000000000002ae                __vector_25
+                0x00000000000002ae                __vector_17
+                0x00000000000002ae                __vector_19
+                0x00000000000002ae                __vector_7
+                0x00000000000002ae                __vector_27
+                0x00000000000002ae                __vector_5
+                0x00000000000002ae                __vector_4
+                0x00000000000002ae                __vector_9
+                0x00000000000002ae                __vector_2
+                0x00000000000002ae                __vector_21
+                0x00000000000002ae                __vector_8
+                0x00000000000002ae                __vector_26
+                0x00000000000002ae                __vector_14
+                0x00000000000002ae                __vector_10
+                0x00000000000002ae                __vector_16
+                0x00000000000002ae                __vector_18
+                0x00000000000002ae                __vector_20
+                0x00000000000002b0                . = ALIGN (0x2)
+ *(.text.*)
+ .text.LEDs_SetAllLEDs
+                0x00000000000002b0        0xa AVRISP-MKII.o
+ .text.SetupHardware
+                0x00000000000002ba       0x3e AVRISP-MKII.o
+                0x00000000000002ba                SetupHardware
+ .text.EVENT_USB_Device_Connect
+                0x00000000000002f8        0x4 AVRISP-MKII.o
+                0x00000000000002f8                EVENT_USB_Device_Connect
+ .text.EVENT_USB_Device_Disconnect
+                0x00000000000002fc        0x4 AVRISP-MKII.o
+                0x00000000000002fc                EVENT_USB_Device_Disconnect
+ .text.EVENT_USB_Device_ConfigurationChanged
+                0x0000000000000300       0x16 AVRISP-MKII.o
+                0x0000000000000300                EVENT_USB_Device_ConfigurationChanged
+ .text.AVRISP_Task
+                0x0000000000000316       0x22 AVRISP-MKII.o
+                0x0000000000000316                AVRISP_Task
+ .text.startup.main
+                0x0000000000000338       0x24 AVRISP-MKII.o
+                0x0000000000000338                main
+ .text.CALLBACK_USB_GetDescriptor
+                0x000000000000035c       0x6c Descriptors.o
+                0x000000000000035c                CALLBACK_USB_GetDescriptor
+ .text.__vector_13
+                0x00000000000003c8       0x32 Lib/V2Protocol.o
+                0x00000000000003c8                __vector_13
+ .text.V2Protocol_Init
+                0x00000000000003fa        0x4 Lib/V2Protocol.o
+                0x00000000000003fa                V2Protocol_Init
+ .text.V2Protocol_ProcessCommand
+                0x00000000000003fe      0x24a Lib/V2Protocol.o
+                0x00000000000003fe                V2Protocol_ProcessCommand
+ .text.V2Params_GetParamFromTable
+                0x0000000000000648       0x1e Lib/V2ProtocolParams.o
+ .text.V2Params_LoadNonVolatileParamValues
+                0x0000000000000666       0x1a Lib/V2ProtocolParams.o
+                0x0000000000000666                V2Params_LoadNonVolatileParamValues
+ .text.V2Params_UpdateParamValues
+                0x0000000000000680        0x2 Lib/V2ProtocolParams.o
+                0x0000000000000680                V2Params_UpdateParamValues
+ .text.V2Params_GetParameterPrivileges
+                0x0000000000000682       0x10 Lib/V2ProtocolParams.o
+                0x0000000000000682                V2Params_GetParameterPrivileges
+ .text.V2Params_GetParameterValue
+                0x0000000000000692       0x10 Lib/V2ProtocolParams.o
+                0x0000000000000692                V2Params_GetParameterValue
+ .text.V2Params_SetParameterValue
+                0x00000000000006a2       0x2a Lib/V2ProtocolParams.o
+                0x00000000000006a2                V2Params_SetParameterValue
+ .text.ISPTarget_TransferByte
+                0x00000000000006cc       0x16 Lib/ISP/ISPProtocol.o
+ .text.ISPTarget_SendByte
+                0x00000000000006e2       0x14 Lib/ISP/ISPProtocol.o
+ .text.ISPTarget_ReceiveByte
+                0x00000000000006f6       0x18 Lib/ISP/ISPProtocol.o
+ .text.ISPProtocol_ProgramMemory
+                0x000000000000070e      0x266 Lib/ISP/ISPProtocol.o
+                0x000000000000070e                ISPProtocol_ProgramMemory
+ .text.ISPProtocol_ReadMemory
+                0x0000000000000974      0x140 Lib/ISP/ISPProtocol.o
+                0x0000000000000974                ISPProtocol_ReadMemory
+ .text.ISPProtocol_ReadFuseLockSigOSCCAL
+                0x0000000000000ab4       0xb6 Lib/ISP/ISPProtocol.o
+                0x0000000000000ab4                ISPProtocol_ReadFuseLockSigOSCCAL
+ .text.ISPProtocol_WriteFuseLock
+                0x0000000000000b6a       0x8c Lib/ISP/ISPProtocol.o
+                0x0000000000000b6a                ISPProtocol_WriteFuseLock
+ .text.ISPProtocol_SPIMulti
+                0x0000000000000bf6      0x114 Lib/ISP/ISPProtocol.o
+                0x0000000000000bf6                ISPProtocol_SPIMulti
+ .text.ISPProtocol_DelayMS
+                0x0000000000000d0a       0x1c Lib/ISP/ISPProtocol.o
+                0x0000000000000d0a                ISPProtocol_DelayMS
+ .text.ISPProtocol_EnterISPMode
+                0x0000000000000d26       0xfe Lib/ISP/ISPProtocol.o
+                0x0000000000000d26                ISPProtocol_EnterISPMode
+ .text.ISPProtocol_LeaveISPMode
+                0x0000000000000e24       0x68 Lib/ISP/ISPProtocol.o
+                0x0000000000000e24                ISPProtocol_LeaveISPMode
+ .text.ISPProtocol_ChipErase
+                0x0000000000000e8c       0x9a Lib/ISP/ISPProtocol.o
+                0x0000000000000e8c                ISPProtocol_ChipErase
+ .text.__vector_15
+                0x0000000000000f26       0x5e Lib/ISP/ISPTarget.o
+                0x0000000000000f26                __vector_15
+ .text.ISPTarget_ConfigureRescueClock
+                0x0000000000000f84       0x28 Lib/ISP/ISPTarget.o
+                0x0000000000000f84                ISPTarget_ConfigureRescueClock
+ .text.ISPTarget_DisableTargetISP
+                0x0000000000000fac       0x28 Lib/ISP/ISPTarget.o
+                0x0000000000000fac                ISPTarget_DisableTargetISP
+ .text.ISPTarget_ConfigureSoftwareSPI
+                0x0000000000000fd4       0x30 Lib/ISP/ISPTarget.o
+                0x0000000000000fd4                ISPTarget_ConfigureSoftwareSPI
+ .text.ISPTarget_EnableTargetISP
+                0x0000000000001004       0x4e Lib/ISP/ISPTarget.o
+                0x0000000000001004                ISPTarget_EnableTargetISP
+ .text.ISPTarget_TransferSoftSPIByte
+                0x0000000000001052       0x3e Lib/ISP/ISPTarget.o
+                0x0000000000001052                ISPTarget_TransferSoftSPIByte
+ .text.ISPTarget_SendByte
+                0x0000000000001090       0x14 Lib/ISP/ISPTarget.o
+ .text.ISPTarget_ChangeTargetResetLine
+                0x00000000000010a4       0x18 Lib/ISP/ISPTarget.o
+                0x00000000000010a4                ISPTarget_ChangeTargetResetLine
+ .text.ISPTarget_WaitWhileTargetBusy
+                0x00000000000010bc       0x36 Lib/ISP/ISPTarget.o
+                0x00000000000010bc                ISPTarget_WaitWhileTargetBusy
+ .text.ISPTarget_LoadExtendedAddress
+                0x00000000000010f2       0x12 Lib/ISP/ISPTarget.o
+                0x00000000000010f2                ISPTarget_LoadExtendedAddress
+ .text.ISPTarget_WaitForProgComplete
+                0x0000000000001104       0x96 Lib/ISP/ISPTarget.o
+                0x0000000000001104                ISPTarget_WaitForProgComplete
+ .text.SwapEndian_32
+                0x000000000000119a       0x1c Lib/XPROG/XPROGProtocol.o
+ .text.XPROGProtocol_WriteMemory
+                0x00000000000011b6      0x154 Lib/XPROG/XPROGProtocol.o
+ .text.XPROGProtocol_ReadMemory
+                0x000000000000130a      0x118 Lib/XPROG/XPROGProtocol.o
+ .text.XPROGProtocol_SetMode
+                0x0000000000001422       0x60 Lib/XPROG/XPROGProtocol.o
+                0x0000000000001422                XPROGProtocol_SetMode
+ .text.XPROGProtocol_Command
+                0x0000000000001482      0x27e Lib/XPROG/XPROGProtocol.o
+                0x0000000000001482                XPROGProtocol_Command
+ .text.XPROGTarget_SetTxMode
+                0x0000000000001700       0x2e Lib/XPROG/XPROGTarget.o
+ .text.XPROGTarget_SetRxMode
+                0x000000000000172e       0x30 Lib/XPROG/XPROGTarget.o
+ .text.XPROGTarget_DisableTargetPDI
+                0x000000000000175e       0x1e Lib/XPROG/XPROGTarget.o
+                0x000000000000175e                XPROGTarget_DisableTargetPDI
+ .text.XPROGTarget_DisableTargetTPI
+                0x000000000000177c       0x26 Lib/XPROG/XPROGTarget.o
+                0x000000000000177c                XPROGTarget_DisableTargetTPI
+ .text.XPROGTarget_SendByte
+                0x00000000000017a2       0x28 Lib/XPROG/XPROGTarget.o
+                0x00000000000017a2                XPROGTarget_SendByte
+ .text.XPROGTarget_ReceiveByte
+                0x00000000000017ca       0x1c Lib/XPROG/XPROGTarget.o
+                0x00000000000017ca                XPROGTarget_ReceiveByte
+ .text.XPROGTarget_SendIdle
+                0x00000000000017e6       0x1a Lib/XPROG/XPROGTarget.o
+                0x00000000000017e6                XPROGTarget_SendIdle
+ .text.XPROGTarget_EnableTargetPDI
+                0x0000000000001800       0x32 Lib/XPROG/XPROGTarget.o
+                0x0000000000001800                XPROGTarget_EnableTargetPDI
+ .text.XPROGTarget_EnableTargetTPI
+                0x0000000000001832       0x34 Lib/XPROG/XPROGTarget.o
+                0x0000000000001832                XPROGTarget_EnableTargetTPI
+ .text.XMEGANVM_SendAddress
+                0x0000000000001866       0x24 Lib/XPROG/XMEGANVM.o
+ .text.XMEGANVM_SendNVMRegAddress
+                0x000000000000188a       0x24 Lib/XPROG/XMEGANVM.o
+ .text.XMEGANVM_WaitWhileNVMBusBusy
+                0x00000000000018ae       0x18 Lib/XPROG/XMEGANVM.o
+                0x00000000000018ae                XMEGANVM_WaitWhileNVMBusBusy
+ .text.XMEGANVM_WaitWhileNVMControllerBusy
+                0x00000000000018c6       0x20 Lib/XPROG/XMEGANVM.o
+                0x00000000000018c6                XMEGANVM_WaitWhileNVMControllerBusy
+ .text.XMEGANVM_EnablePDI
+                0x00000000000018e6       0x76 Lib/XPROG/XMEGANVM.o
+                0x00000000000018e6                XMEGANVM_EnablePDI
+ .text.XMEGANVM_DisablePDI
+                0x000000000000195c       0x14 Lib/XPROG/XMEGANVM.o
+                0x000000000000195c                XMEGANVM_DisablePDI
+ .text.XMEGANVM_GetMemoryCRC
+                0x0000000000001970       0x6c Lib/XPROG/XMEGANVM.o
+                0x0000000000001970                XMEGANVM_GetMemoryCRC
+ .text.XMEGANVM_ReadMemory
+                0x00000000000019dc       0x72 Lib/XPROG/XMEGANVM.o
+                0x00000000000019dc                XMEGANVM_ReadMemory
+ .text.XMEGANVM_WriteByteMemory
+                0x0000000000001a4e       0x4a Lib/XPROG/XMEGANVM.o
+                0x0000000000001a4e                XMEGANVM_WriteByteMemory
+ .text.XMEGANVM_WritePageMemory
+                0x0000000000001a98       0xe4 Lib/XPROG/XMEGANVM.o
+                0x0000000000001a98                XMEGANVM_WritePageMemory
+ .text.XMEGANVM_EraseMemory
+                0x0000000000001b7c       0xd8 Lib/XPROG/XMEGANVM.o
+                0x0000000000001b7c                XMEGANVM_EraseMemory
+ .text.TINYNVM_SendWriteNVMRegister
+                0x0000000000001c54        0xe Lib/XPROG/TINYNVM.o
+ .text.TINYNVM_SendPointerAddress
+                0x0000000000001c62       0x1a Lib/XPROG/TINYNVM.o
+ .text.TINYNVM_WaitWhileNVMBusBusy
+                0x0000000000001c7c       0x18 Lib/XPROG/TINYNVM.o
+                0x0000000000001c7c                TINYNVM_WaitWhileNVMBusBusy
+ .text.TINYNVM_WaitWhileNVMControllerBusy
+                0x0000000000001c94       0x26 Lib/XPROG/TINYNVM.o
+                0x0000000000001c94                TINYNVM_WaitWhileNVMControllerBusy
+ .text.TINYNVM_EnableTPI
+                0x0000000000001cba       0x6e Lib/XPROG/TINYNVM.o
+                0x0000000000001cba                TINYNVM_EnableTPI
+ .text.TINYNVM_DisableTPI
+                0x0000000000001d28        0xc Lib/XPROG/TINYNVM.o
+                0x0000000000001d28                TINYNVM_DisableTPI
+ .text.TINYNVM_ReadMemory
+                0x0000000000001d34       0x56 Lib/XPROG/TINYNVM.o
+                0x0000000000001d34                TINYNVM_ReadMemory
+ .text.TINYNVM_WriteMemory
+                0x0000000000001d8a       0x76 Lib/XPROG/TINYNVM.o
+                0x0000000000001d8a                TINYNVM_WriteMemory
+ .text.TINYNVM_EraseMemory
+                0x0000000000001e00       0x3a Lib/XPROG/TINYNVM.o
+                0x0000000000001e00                TINYNVM_EraseMemory
+ .text.Endpoint_ConfigureEndpoint_Prv
+                0x0000000000001e3a       0x26 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+                0x0000000000001e3a                Endpoint_ConfigureEndpoint_Prv
+ .text.Endpoint_ClearStatusStage
+                0x0000000000001e60       0x3a ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+                0x0000000000001e60                Endpoint_ClearStatusStage
+ .text.Endpoint_WaitUntilReady
+                0x0000000000001e9a       0x64 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+                0x0000000000001e9a                Endpoint_WaitUntilReady
+ .text.USB_ResetInterface
+                0x0000000000001efe       0x68 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+                0x0000000000001efe                USB_ResetInterface
+ .text.USB_Init
+                0x0000000000001f66       0x12 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+                0x0000000000001f66                USB_Init
+ .text.USB_INT_DisableAllInterrupts
+                0x0000000000001f78        0x6 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+                0x0000000000001f78                USB_INT_DisableAllInterrupts
+ .text.USB_INT_ClearAllInterrupts
+                0x0000000000001f7e        0x6 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+                0x0000000000001f7e                USB_INT_ClearAllInterrupts
+ .text.__vector_11
+                0x0000000000001f84      0x142 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+                0x0000000000001f84                __vector_11
+ .text.Endpoint_Write_Stream_LE
+                0x00000000000020c6       0x94 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                0x00000000000020c6                Endpoint_Write_Stream_LE
+ .text.Endpoint_Read_Stream_LE
+                0x000000000000215a       0x94 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                0x000000000000215a                Endpoint_Read_Stream_LE
+ .text.Endpoint_Read_Stream_BE
+                0x00000000000021ee       0x9e ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                0x00000000000021ee                Endpoint_Read_Stream_BE
+ .text.Endpoint_Write_Control_PStream_LE
+                0x000000000000228c       0xb0 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                0x000000000000228c                Endpoint_Write_Control_PStream_LE
+ .text.USB_Device_ProcessControlRequest
+                0x000000000000233c      0x204 ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+                0x000000000000233c                USB_Device_ProcessControlRequest
+ .text.USB_Event_Stub
+                0x0000000000002540        0x2 ../../LUFA/Drivers/USB/Core/Events.o
+                0x0000000000002540                EVENT_USB_Device_WakeUp
+                0x0000000000002540                USB_Event_Stub
+                0x0000000000002540                EVENT_USB_Device_Suspend
+                0x0000000000002540                EVENT_USB_Device_StartOfFrame
+                0x0000000000002540                EVENT_USB_Device_Reset
+                0x0000000000002540                EVENT_USB_Device_ControlRequest
+ .text.USB_USBTask
+                0x0000000000002542       0x22 ../../LUFA/Drivers/USB/Core/USBTask.o
+                0x0000000000002542                USB_USBTask
+ .text.libgcc   0x0000000000002564        0xc /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_tablejump2.o)
+                0x0000000000002564                __tablejump2__
+ .text.avr-libc
+                0x0000000000002570       0x10 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a(eerd_byte.o)
+                0x0000000000002570                eeprom_read_byte
+ .text.avr-libc
+                0x0000000000002580       0x24 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a(eeupd_byte.o)
+                0x0000000000002580                eeprom_update_byte
+                0x0000000000002582                eeprom_update_r18
+                0x00000000000025a4                . = ALIGN (0x2)
+ *(.fini9)
+ .fini9         0x00000000000025a4        0x0 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+                0x00000000000025a4                exit
+                0x00000000000025a4                _exit
+ *(.fini9)
+ *(.fini8)
+ *(.fini8)
+ *(.fini7)
+ *(.fini7)
+ *(.fini6)
+ *(.fini6)
+ *(.fini5)
+ *(.fini5)
+ *(.fini4)
+ *(.fini4)
+ *(.fini3)
+ *(.fini3)
+ *(.fini2)
+ *(.fini2)
+ *(.fini1)
+ *(.fini1)
+ *(.fini0)
+ .fini0         0x00000000000025a4        0x4 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+ *(.fini0)
+                0x00000000000025a8                _etext = .
+
+.data           0x0000000000800100       0x62 load address 0x00000000000025a8
+                0x0000000000800100                PROVIDE (__data_start, .)
+ *(.data)
+ .data          0x0000000000800100       0x1e Lib/V2ProtocolParams.o
+ .data          0x000000000080011e        0x1 Lib/ISP/ISPTarget.o
+                0x000000000080011e                HardwareSPIMode
+ .data          0x000000000080011f        0x8 Lib/XPROG/XPROGProtocol.o
+                0x000000000080011f                XPROG_Param_NVMCSRRegAddr
+                0x0000000000800120                XPROG_Param_NVMCMDRegAddr
+                0x0000000000800121                XPROG_Param_EEPageSize
+                0x0000000000800123                XPROG_Param_NVMBase
+ *(.data*)
+ *(.gnu.linkonce.d*)
+ *(.rodata)
+ .rodata        0x0000000000800127       0x20 Lib/XPROG/XPROGProtocol.o
+ .rodata        0x0000000000800147        0x8 Lib/XPROG/XMEGANVM.o
+ .rodata        0x000000000080014f        0x8 Lib/XPROG/TINYNVM.o
+ *(.rodata*)
+ .rodata.str1.1
+                0x0000000000800157        0xb Lib/V2Protocol.o
+ *(.gnu.linkonce.r*)
+                0x0000000000800162                . = ALIGN (0x2)
+                0x0000000000800162                _edata = .
+                0x0000000000800162                PROVIDE (__data_end, .)
+
+.bss            0x0000000000800162       0x13
+                0x0000000000800162                PROVIDE (__bss_start, .)
+ *(.bss)
+ .bss           0x0000000000800162        0x2 Lib/ISP/ISPTarget.o
+ .bss           0x0000000000800164        0x1 Lib/XPROG/XPROGProtocol.o
+                0x0000000000800164                XPROG_SelectedProtocol
+ *(.bss*)
+ *(COMMON)
+ COMMON         0x0000000000800165        0x5 Lib/V2Protocol.o
+                0x0000000000800165                MustLoadExtendedAddress
+                0x0000000000800166                CurrentAddress
+ COMMON         0x000000000080016a        0x1 Lib/XPROG/XPROGTarget.o
+                0x000000000080016a                IsSending
+ COMMON         0x000000000080016b        0x1 ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+                0x000000000080016b                USB_Device_ConfigurationNumber
+ COMMON         0x000000000080016c        0x9 ../../LUFA/Drivers/USB/Core/USBTask.o
+                0x000000000080016c                USB_IsInitialized
+                0x000000000080016d                USB_ControlRequest
+                0x0000000000800175                PROVIDE (__bss_end, .)
+                0x00000000000025a8                __data_load_start = LOADADDR (.data)
+                0x000000000000260a                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x0000000000800175        0x0
+                [!provide]                        PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                [!provide]                        PROVIDE (__noinit_end, .)
+                0x0000000000800175                _end = .
+                [!provide]                        PROVIDE (__heap_start, .)
+
+.eeprom         0x0000000000810000        0x1
+ *(.eeprom*)
+ .eeprom        0x0000000000810000        0x1 Lib/V2ProtocolParams.o
+                0x0000000000810001                __eeprom_end = .
+
+.fuse
+ *(.fuse)
+ *(.lfuse)
+ *(.hfuse)
+ *(.efuse)
+
+.lock
+ *(.lock*)
+
+.signature
+ *(.signature*)
+
+.user_signatures
+ *(.user_signatures*)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment        0x0000000000000000       0x11
+ *(.comment)
+ .comment       0x0000000000000000       0x11 AVRISP-MKII.o
+                                         0x12 (size before relaxing)
+ .comment       0x0000000000000011       0x12 Descriptors.o
+ .comment       0x0000000000000011       0x12 Lib/V2Protocol.o
+ .comment       0x0000000000000011       0x12 Lib/V2ProtocolParams.o
+ .comment       0x0000000000000011       0x12 Lib/ISP/ISPProtocol.o
+ .comment       0x0000000000000011       0x12 Lib/ISP/ISPTarget.o
+ .comment       0x0000000000000011       0x12 Lib/XPROG/XPROGProtocol.o
+ .comment       0x0000000000000011       0x12 Lib/XPROG/XPROGTarget.o
+ .comment       0x0000000000000011       0x12 Lib/XPROG/XMEGANVM.o
+ .comment       0x0000000000000011       0x12 Lib/XPROG/TINYNVM.o
+ .comment       0x0000000000000011       0x12 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+ .comment       0x0000000000000011       0x12 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+ .comment       0x0000000000000011       0x12 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+ .comment       0x0000000000000011       0x12 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .comment       0x0000000000000011       0x12 ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+ .comment       0x0000000000000011       0x12 ../../LUFA/Drivers/USB/Core/Events.o
+ .comment       0x0000000000000011       0x12 ../../LUFA/Drivers/USB/Core/USBTask.o
+
+.note.gnu.avr.deviceinfo
+                0x0000000000000000       0x40
+ .note.gnu.avr.deviceinfo
+                0x0000000000000000       0x40 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+
+.note.gnu.build-id
+ *(.note.gnu.build-id)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x0000000000000000      0x500
+ *(.debug_aranges)
+ .debug_aranges
+                0x0000000000000000       0x50 AVRISP-MKII.o
+ .debug_aranges
+                0x0000000000000050       0x20 Descriptors.o
+ .debug_aranges
+                0x0000000000000070       0x30 Lib/V2Protocol.o
+ .debug_aranges
+                0x00000000000000a0       0x48 Lib/V2ProtocolParams.o
+ .debug_aranges
+                0x00000000000000e8       0x78 Lib/ISP/ISPProtocol.o
+ .debug_aranges
+                0x0000000000000160       0x70 Lib/ISP/ISPTarget.o
+ .debug_aranges
+                0x00000000000001d0       0x40 Lib/XPROG/XPROGProtocol.o
+ .debug_aranges
+                0x0000000000000210       0x60 Lib/XPROG/XPROGTarget.o
+ .debug_aranges
+                0x0000000000000270       0x70 Lib/XPROG/XMEGANVM.o
+ .debug_aranges
+                0x00000000000002e0       0x60 Lib/XPROG/TINYNVM.o
+ .debug_aranges
+                0x0000000000000340       0x38 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+ .debug_aranges
+                0x0000000000000378       0x30 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+ .debug_aranges
+                0x00000000000003a8       0x30 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+ .debug_aranges
+                0x00000000000003d8       0xc8 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .debug_aranges
+                0x00000000000004a0       0x20 ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+ .debug_aranges
+                0x00000000000004c0       0x20 ../../LUFA/Drivers/USB/Core/Events.o
+ .debug_aranges
+                0x00000000000004e0       0x20 ../../LUFA/Drivers/USB/Core/USBTask.o
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info     0x0000000000000000     0x8da6
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x0000000000000000      0x6ba /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+ .debug_info    0x00000000000006ba      0x525 AVRISP-MKII.o
+ .debug_info    0x0000000000000bdf      0x5e5 Descriptors.o
+ .debug_info    0x00000000000011c4      0x8c6 Lib/V2Protocol.o
+ .debug_info    0x0000000000001a8a      0x2ea Lib/V2ProtocolParams.o
+ .debug_info    0x0000000000001d74     0x151f Lib/ISP/ISPProtocol.o
+ .debug_info    0x0000000000003293      0x61c Lib/ISP/ISPTarget.o
+ .debug_info    0x00000000000038af     0x1092 Lib/XPROG/XPROGProtocol.o
+ .debug_info    0x0000000000004941      0x2f5 Lib/XPROG/XPROGTarget.o
+ .debug_info    0x0000000000004c36      0xbb2 Lib/XPROG/XMEGANVM.o
+ .debug_info    0x00000000000057e8      0x58e Lib/XPROG/TINYNVM.o
+ .debug_info    0x0000000000005d76      0x3e1 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+ .debug_info    0x0000000000006157      0x454 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+ .debug_info    0x00000000000065ab      0x598 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+ .debug_info    0x0000000000006b43     0x17c4 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .debug_info    0x0000000000008307      0x7ea ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+ .debug_info    0x0000000000008af1       0x78 ../../LUFA/Drivers/USB/Core/Events.o
+ .debug_info    0x0000000000008b69      0x23d ../../LUFA/Drivers/USB/Core/USBTask.o
+
+.debug_abbrev   0x0000000000000000     0x255a
+ *(.debug_abbrev)
+ .debug_abbrev  0x0000000000000000      0x65d /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+ .debug_abbrev  0x000000000000065d      0x243 AVRISP-MKII.o
+ .debug_abbrev  0x00000000000008a0      0x141 Descriptors.o
+ .debug_abbrev  0x00000000000009e1      0x1ea Lib/V2Protocol.o
+ .debug_abbrev  0x0000000000000bcb      0x168 Lib/V2ProtocolParams.o
+ .debug_abbrev  0x0000000000000d33      0x35a Lib/ISP/ISPProtocol.o
+ .debug_abbrev  0x000000000000108d      0x2a2 Lib/ISP/ISPTarget.o
+ .debug_abbrev  0x000000000000132f      0x2d4 Lib/XPROG/XPROGProtocol.o
+ .debug_abbrev  0x0000000000001603      0x18a Lib/XPROG/XPROGTarget.o
+ .debug_abbrev  0x000000000000178d      0x19b Lib/XPROG/XMEGANVM.o
+ .debug_abbrev  0x0000000000001928      0x1a7 Lib/XPROG/TINYNVM.o
+ .debug_abbrev  0x0000000000001acf      0x187 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+ .debug_abbrev  0x0000000000001c56      0x1a7 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+ .debug_abbrev  0x0000000000001dfd      0x1a2 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+ .debug_abbrev  0x0000000000001f9f      0x1d2 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .debug_abbrev  0x0000000000002171      0x246 ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+ .debug_abbrev  0x00000000000023b7       0x44 ../../LUFA/Drivers/USB/Core/Events.o
+ .debug_abbrev  0x00000000000023fb      0x15f ../../LUFA/Drivers/USB/Core/USBTask.o
+
+.debug_line     0x0000000000000000     0x49d7
+ *(.debug_line .debug_line.* .debug_line_end)
+ .debug_line    0x0000000000000000       0x1a /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+ .debug_line    0x000000000000001a      0x31d AVRISP-MKII.o
+ .debug_line    0x0000000000000337      0x13d Descriptors.o
+ .debug_line    0x0000000000000474      0x38b Lib/V2Protocol.o
+ .debug_line    0x00000000000007ff      0x1b1 Lib/V2ProtocolParams.o
+ .debug_line    0x00000000000009b0      0x923 Lib/ISP/ISPProtocol.o
+ .debug_line    0x00000000000012d3      0x47c Lib/ISP/ISPTarget.o
+ .debug_line    0x000000000000174f      0x5a1 Lib/XPROG/XPROGProtocol.o
+ .debug_line    0x0000000000001cf0      0x30d Lib/XPROG/XPROGTarget.o
+ .debug_line    0x0000000000001ffd      0x50a Lib/XPROG/XMEGANVM.o
+ .debug_line    0x0000000000002507      0x2d4 Lib/XPROG/TINYNVM.o
+ .debug_line    0x00000000000027db      0x323 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+ .debug_line    0x0000000000002afe      0x254 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+ .debug_line    0x0000000000002d52      0x3a0 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+ .debug_line    0x00000000000030f2     0x1392 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .debug_line    0x0000000000004484      0x3b9 ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+ .debug_line    0x000000000000483d       0x52 ../../LUFA/Drivers/USB/Core/Events.o
+ .debug_line    0x000000000000488f      0x148 ../../LUFA/Drivers/USB/Core/USBTask.o
+
+.debug_frame    0x0000000000000000     0x1000
+ *(.debug_frame)
+ .debug_frame   0x0000000000000000       0x84 AVRISP-MKII.o
+ .debug_frame   0x0000000000000084       0x24 Descriptors.o
+ .debug_frame   0x00000000000000a8       0x6c Lib/V2Protocol.o
+ .debug_frame   0x0000000000000114       0x8c Lib/V2ProtocolParams.o
+ .debug_frame   0x00000000000001a0      0x290 Lib/ISP/ISPProtocol.o
+ .debug_frame   0x0000000000000430       0xfc Lib/ISP/ISPTarget.o
+ .debug_frame   0x000000000000052c       0xf0 Lib/XPROG/XPROGProtocol.o
+ .debug_frame   0x000000000000061c       0xac Lib/XPROG/XPROGTarget.o
+ .debug_frame   0x00000000000006c8      0x208 Lib/XPROG/XMEGANVM.o
+ .debug_frame   0x00000000000008d0      0x140 Lib/XPROG/TINYNVM.o
+ .debug_frame   0x0000000000000a10       0x54 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+ .debug_frame   0x0000000000000a64       0x44 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+ .debug_frame   0x0000000000000aa8       0x98 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+ .debug_frame   0x0000000000000b40      0x42c ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .debug_frame   0x0000000000000f6c       0x44 ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+ .debug_frame   0x0000000000000fb0       0x24 ../../LUFA/Drivers/USB/Core/Events.o
+ .debug_frame   0x0000000000000fd4       0x2c ../../LUFA/Drivers/USB/Core/USBTask.o
+
+.debug_str      0x0000000000000000     0x2a7a
+ *(.debug_str)
+ .debug_str     0x0000000000000000      0x262 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+ .debug_str     0x0000000000000262      0x4be AVRISP-MKII.o
+                                        0x518 (size before relaxing)
+ .debug_str     0x0000000000000720      0x55d Descriptors.o
+                                        0x769 (size before relaxing)
+ .debug_str     0x0000000000000c7d      0x35c Lib/V2Protocol.o
+                                        0x59c (size before relaxing)
+ .debug_str     0x0000000000000fd9       0xbd Lib/V2ProtocolParams.o
+                                        0x337 (size before relaxing)
+ .debug_str     0x0000000000001096      0x4a1 Lib/ISP/ISPProtocol.o
+                                        0x83c (size before relaxing)
+ .debug_str     0x0000000000001537       0xd0 Lib/ISP/ISPTarget.o
+                                        0x4a9 (size before relaxing)
+ .debug_str     0x0000000000001607      0x3a2 Lib/XPROG/XPROGProtocol.o
+                                        0x6e0 (size before relaxing)
+ .debug_str     0x00000000000019a9      0x111 Lib/XPROG/XPROGTarget.o
+                                        0x327 (size before relaxing)
+ .debug_str     0x0000000000001aba       0xff Lib/XPROG/XMEGANVM.o
+                                        0x477 (size before relaxing)
+ .debug_str     0x0000000000001bb9       0xb3 Lib/XPROG/TINYNVM.o
+                                        0x3ef (size before relaxing)
+ .debug_str     0x0000000000001c6c      0x279 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+                                        0x582 (size before relaxing)
+ .debug_str     0x0000000000001ee5      0x225 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+                                        0x519 (size before relaxing)
+ .debug_str     0x000000000000210a       0xd3 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+                                        0x503 (size before relaxing)
+ .debug_str     0x00000000000021dd      0x45e ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                                        0x88c (size before relaxing)
+ .debug_str     0x000000000000263b      0x3ad ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+                                        0x7f1 (size before relaxing)
+ .debug_str     0x00000000000029e8       0x34 ../../LUFA/Drivers/USB/Core/Events.o
+                                        0x1d4 (size before relaxing)
+ .debug_str     0x0000000000002a1c       0x5e ../../LUFA/Drivers/USB/Core/USBTask.o
+                                        0x38e (size before relaxing)
+
+.debug_loc      0x0000000000000000     0x56ae
+ *(.debug_loc)
+ .debug_loc     0x0000000000000000       0xd8 AVRISP-MKII.o
+ .debug_loc     0x00000000000000d8      0x186 Descriptors.o
+ .debug_loc     0x000000000000025e      0x2ad Lib/V2Protocol.o
+ .debug_loc     0x000000000000050b      0x243 Lib/V2ProtocolParams.o
+ .debug_loc     0x000000000000074e      0xd55 Lib/ISP/ISPProtocol.o
+ .debug_loc     0x00000000000014a3      0x3d1 Lib/ISP/ISPTarget.o
+ .debug_loc     0x0000000000001874      0x94e Lib/XPROG/XPROGProtocol.o
+ .debug_loc     0x00000000000021c2      0x138 Lib/XPROG/XPROGTarget.o
+ .debug_loc     0x00000000000022fa      0x919 Lib/XPROG/XMEGANVM.o
+ .debug_loc     0x0000000000002c13      0x4cd Lib/XPROG/TINYNVM.o
+ .debug_loc     0x00000000000030e0      0x10f ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+ .debug_loc     0x00000000000031ef       0x64 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+ .debug_loc     0x0000000000003253      0x233 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+ .debug_loc     0x0000000000003486     0x1fa5 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .debug_loc     0x000000000000542b      0x23a ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+ .debug_loc     0x0000000000005665       0x49 ../../LUFA/Drivers/USB/Core/USBTask.o
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+
+.debug_pubtypes
+ *(.debug_pubtypes)
+
+.debug_ranges   0x0000000000000000      0x5c8
+ *(.debug_ranges)
+ .debug_ranges  0x0000000000000000       0x40 AVRISP-MKII.o
+ .debug_ranges  0x0000000000000040       0x28 Descriptors.o
+ .debug_ranges  0x0000000000000068       0x20 Lib/V2Protocol.o
+ .debug_ranges  0x0000000000000088       0x50 Lib/V2ProtocolParams.o
+ .debug_ranges  0x00000000000000d8       0x98 Lib/ISP/ISPProtocol.o
+ .debug_ranges  0x0000000000000170       0x60 Lib/ISP/ISPTarget.o
+ .debug_ranges  0x00000000000001d0       0x48 Lib/XPROG/XPROGProtocol.o
+ .debug_ranges  0x0000000000000218       0x50 Lib/XPROG/XPROGTarget.o
+ .debug_ranges  0x0000000000000268       0x60 Lib/XPROG/XMEGANVM.o
+ .debug_ranges  0x00000000000002c8       0x50 Lib/XPROG/TINYNVM.o
+ .debug_ranges  0x0000000000000318       0x40 ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+ .debug_ranges  0x0000000000000358       0x20 ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+ .debug_ranges  0x0000000000000378       0x20 ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+ .debug_ranges  0x0000000000000398      0x200 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+ .debug_ranges  0x0000000000000598       0x10 ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+ .debug_ranges  0x00000000000005a8       0x10 ../../LUFA/Drivers/USB/Core/Events.o
+ .debug_ranges  0x00000000000005b8       0x10 ../../LUFA/Drivers/USB/Core/USBTask.o
+
+.debug_macro
+ *(.debug_macro)
+OUTPUT(AVRISP-MKII.elf elf32-avr)
+LOAD linker stubs
+
+Cross Reference Table
+
+Symbol                                            File
+AVRISP_Task                                       AVRISP-MKII.o
+CALLBACK_HIDParser_FilterHIDReportItem            ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+CALLBACK_USB_GetDescriptor                        Descriptors.o
+                                                  ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+ConfigurationDescriptor                           Descriptors.o
+CurrentAddress                                    Lib/V2Protocol.o
+                                                  Lib/ISP/ISPTarget.o
+                                                  Lib/ISP/ISPProtocol.o
+DeviceDescriptor                                  Descriptors.o
+EVENT_USB_Device_ConfigurationChanged             AVRISP-MKII.o
+                                                  ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+EVENT_USB_Device_Connect                          AVRISP-MKII.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+EVENT_USB_Device_ControlRequest                   ../../LUFA/Drivers/USB/Core/Events.o
+                                                  ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+EVENT_USB_Device_Disconnect                       AVRISP-MKII.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+EVENT_USB_Device_Reset                            ../../LUFA/Drivers/USB/Core/Events.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+EVENT_USB_Device_StartOfFrame                     ../../LUFA/Drivers/USB/Core/Events.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+EVENT_USB_Device_Suspend                          ../../LUFA/Drivers/USB/Core/Events.o
+EVENT_USB_Device_WakeUp                           ../../LUFA/Drivers/USB/Core/Events.o
+Endpoint_ClearEndpoints                           ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+Endpoint_ClearStatusStage                         ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+                                                  ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+Endpoint_ConfigureEndpoint_Prv                    ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+                                                  AVRISP-MKII.o
+Endpoint_Discard_Stream                           ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Null_Stream                              ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Read_Control_EStream_BE                  ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Read_Control_EStream_LE                  ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Read_Control_Stream_BE                   ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Read_Control_Stream_LE                   ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Read_EStream_BE                          ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Read_EStream_LE                          ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Read_Stream_BE                           ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                                                  Lib/V2Protocol.o
+Endpoint_Read_Stream_LE                           ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                                                  Lib/XPROG/XPROGProtocol.o
+                                                  Lib/ISP/ISPProtocol.o
+Endpoint_WaitUntilReady                           ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                                                  Lib/XPROG/XPROGProtocol.o
+                                                  Lib/ISP/ISPProtocol.o
+                                                  Lib/V2Protocol.o
+Endpoint_Write_Control_EStream_BE                 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Write_Control_EStream_LE                 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Write_Control_PStream_BE                 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Write_Control_PStream_LE                 ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                                                  ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+Endpoint_Write_Control_Stream_BE                  ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Write_Control_Stream_LE                  ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Write_EStream_BE                         ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Write_EStream_LE                         ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Write_PStream_BE                         ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Write_PStream_LE                         ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Write_Stream_BE                          ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+Endpoint_Write_Stream_LE                          ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                                                  Lib/XPROG/XPROGProtocol.o
+                                                  Lib/V2Protocol.o
+HardwareSPIMode                                   Lib/ISP/ISPTarget.o
+                                                  Lib/ISP/ISPProtocol.o
+ISPProtocol_ChipErase                             Lib/ISP/ISPProtocol.o
+                                                  Lib/V2Protocol.o
+ISPProtocol_DelayMS                               Lib/ISP/ISPProtocol.o
+                                                  Lib/ISP/ISPTarget.o
+ISPProtocol_EnterISPMode                          Lib/ISP/ISPProtocol.o
+                                                  Lib/V2Protocol.o
+ISPProtocol_LeaveISPMode                          Lib/ISP/ISPProtocol.o
+                                                  Lib/V2Protocol.o
+ISPProtocol_ProgramMemory                         Lib/ISP/ISPProtocol.o
+                                                  Lib/V2Protocol.o
+ISPProtocol_ReadFuseLockSigOSCCAL                 Lib/ISP/ISPProtocol.o
+                                                  Lib/V2Protocol.o
+ISPProtocol_ReadMemory                            Lib/ISP/ISPProtocol.o
+                                                  Lib/V2Protocol.o
+ISPProtocol_SPIMulti                              Lib/ISP/ISPProtocol.o
+                                                  Lib/V2Protocol.o
+ISPProtocol_WriteFuseLock                         Lib/ISP/ISPProtocol.o
+                                                  Lib/V2Protocol.o
+ISPTarget_ChangeTargetResetLine                   Lib/ISP/ISPTarget.o
+                                                  Lib/ISP/ISPProtocol.o
+ISPTarget_ConfigureRescueClock                    Lib/ISP/ISPTarget.o
+                                                  Lib/V2Protocol.o
+ISPTarget_ConfigureSoftwareSPI                    Lib/ISP/ISPTarget.o
+ISPTarget_DisableTargetISP                        Lib/ISP/ISPTarget.o
+                                                  Lib/ISP/ISPProtocol.o
+ISPTarget_EnableTargetISP                         Lib/ISP/ISPTarget.o
+                                                  Lib/ISP/ISPProtocol.o
+ISPTarget_LoadExtendedAddress                     Lib/ISP/ISPTarget.o
+                                                  Lib/ISP/ISPProtocol.o
+ISPTarget_TransferSoftSPIByte                     Lib/ISP/ISPTarget.o
+                                                  Lib/ISP/ISPProtocol.o
+ISPTarget_WaitForProgComplete                     Lib/ISP/ISPTarget.o
+                                                  Lib/ISP/ISPProtocol.o
+ISPTarget_WaitWhileTargetBusy                     Lib/ISP/ISPTarget.o
+                                                  Lib/ISP/ISPProtocol.o
+IsSending                                         Lib/XPROG/XPROGTarget.o
+LanguageString                                    Descriptors.o
+ManufacturerString                                Descriptors.o
+MustLoadExtendedAddress                           Lib/V2Protocol.o
+                                                  Lib/ISP/ISPProtocol.o
+ProductString                                     Descriptors.o
+SerialString                                      Descriptors.o
+SetupHardware                                     AVRISP-MKII.o
+TINYNVM_DisableTPI                                Lib/XPROG/TINYNVM.o
+                                                  Lib/XPROG/XPROGProtocol.o
+TINYNVM_EnableTPI                                 Lib/XPROG/TINYNVM.o
+                                                  Lib/XPROG/XPROGProtocol.o
+TINYNVM_EraseMemory                               Lib/XPROG/TINYNVM.o
+                                                  Lib/XPROG/XPROGProtocol.o
+TINYNVM_ReadMemory                                Lib/XPROG/TINYNVM.o
+                                                  Lib/XPROG/XPROGProtocol.o
+TINYNVM_WaitWhileNVMBusBusy                       Lib/XPROG/TINYNVM.o
+TINYNVM_WaitWhileNVMControllerBusy                Lib/XPROG/TINYNVM.o
+TINYNVM_WriteMemory                               Lib/XPROG/TINYNVM.o
+                                                  Lib/XPROG/XPROGProtocol.o
+USB_ControlRequest                                ../../LUFA/Drivers/USB/Core/USBTask.o
+                                                  ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.o
+USB_Device_ConfigurationNumber                    ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+USB_Device_ProcessControlRequest                  ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+                                                  ../../LUFA/Drivers/USB/Core/USBTask.o
+USB_Device_SendRemoteWakeup                       ../../LUFA/Drivers/USB/Core/AVR8/Device_AVR8.o
+USB_Disable                                       ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+USB_Event_Stub                                    ../../LUFA/Drivers/USB/Core/Events.o
+USB_GetHIDReportItemInfo                          ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+USB_GetHIDReportSize                              ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+USB_GetNextDescriptorComp                         ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+USB_GetNextDescriptorOfType                       ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+USB_GetNextDescriptorOfTypeAfter                  ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+USB_GetNextDescriptorOfTypeBefore                 ../../LUFA/Drivers/USB/Core/ConfigDescriptor.o
+USB_INT_ClearAllInterrupts                        ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+USB_INT_DisableAllInterrupts                      ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+USB_Init                                          ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+                                                  AVRISP-MKII.o
+USB_IsInitialized                                 ../../LUFA/Drivers/USB/Core/USBTask.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+USB_ProcessHIDReport                              ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+USB_ResetInterface                                ../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.o
+USB_SetHIDReportItemInfo                          ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+USB_USBTask                                       ../../LUFA/Drivers/USB/Core/USBTask.o
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                                                  AVRISP-MKII.o
+V2Params_GetParameterPrivileges                   Lib/V2ProtocolParams.o
+                                                  Lib/V2Protocol.o
+V2Params_GetParameterValue                        Lib/V2ProtocolParams.o
+                                                  Lib/ISP/ISPTarget.o
+                                                  Lib/V2Protocol.o
+V2Params_LoadNonVolatileParamValues               Lib/V2ProtocolParams.o
+                                                  Lib/V2Protocol.o
+V2Params_SetParameterValue                        Lib/V2ProtocolParams.o
+                                                  Lib/V2Protocol.o
+V2Params_UpdateParamValues                        Lib/V2ProtocolParams.o
+                                                  AVRISP-MKII.o
+V2Protocol_Init                                   Lib/V2Protocol.o
+                                                  AVRISP-MKII.o
+V2Protocol_ProcessCommand                         Lib/V2Protocol.o
+                                                  AVRISP-MKII.o
+XMEGANVM_DisablePDI                               Lib/XPROG/XMEGANVM.o
+                                                  Lib/XPROG/XPROGProtocol.o
+XMEGANVM_EnablePDI                                Lib/XPROG/XMEGANVM.o
+                                                  Lib/XPROG/XPROGProtocol.o
+XMEGANVM_EraseMemory                              Lib/XPROG/XMEGANVM.o
+                                                  Lib/XPROG/XPROGProtocol.o
+XMEGANVM_GetMemoryCRC                             Lib/XPROG/XMEGANVM.o
+                                                  Lib/XPROG/XPROGProtocol.o
+XMEGANVM_ReadMemory                               Lib/XPROG/XMEGANVM.o
+                                                  Lib/XPROG/XPROGProtocol.o
+XMEGANVM_WaitWhileNVMBusBusy                      Lib/XPROG/XMEGANVM.o
+XMEGANVM_WaitWhileNVMControllerBusy               Lib/XPROG/XMEGANVM.o
+XMEGANVM_WriteByteMemory                          Lib/XPROG/XMEGANVM.o
+                                                  Lib/XPROG/XPROGProtocol.o
+XMEGANVM_WritePageMemory                          Lib/XPROG/XMEGANVM.o
+                                                  Lib/XPROG/XPROGProtocol.o
+XPROGProtocol_Command                             Lib/XPROG/XPROGProtocol.o
+                                                  Lib/V2Protocol.o
+XPROGProtocol_SetMode                             Lib/XPROG/XPROGProtocol.o
+                                                  Lib/V2Protocol.o
+XPROGTarget_DisableTargetPDI                      Lib/XPROG/XPROGTarget.o
+                                                  Lib/XPROG/XMEGANVM.o
+XPROGTarget_DisableTargetTPI                      Lib/XPROG/XPROGTarget.o
+                                                  Lib/XPROG/TINYNVM.o
+XPROGTarget_EnableTargetPDI                       Lib/XPROG/XPROGTarget.o
+                                                  Lib/XPROG/XMEGANVM.o
+XPROGTarget_EnableTargetTPI                       Lib/XPROG/XPROGTarget.o
+                                                  Lib/XPROG/TINYNVM.o
+XPROGTarget_ReceiveByte                           Lib/XPROG/XPROGTarget.o
+                                                  Lib/XPROG/TINYNVM.o
+                                                  Lib/XPROG/XMEGANVM.o
+XPROGTarget_SendByte                              Lib/XPROG/XPROGTarget.o
+                                                  Lib/XPROG/TINYNVM.o
+                                                  Lib/XPROG/XMEGANVM.o
+XPROGTarget_SendIdle                              Lib/XPROG/XPROGTarget.o
+XPROG_Param_EEPageSize                            Lib/XPROG/XPROGProtocol.o
+                                                  Lib/XPROG/XMEGANVM.o
+XPROG_Param_NVMBase                               Lib/XPROG/XPROGProtocol.o
+                                                  Lib/XPROG/XMEGANVM.o
+XPROG_Param_NVMCMDRegAddr                         Lib/XPROG/XPROGProtocol.o
+                                                  Lib/XPROG/TINYNVM.o
+XPROG_Param_NVMCSRRegAddr                         Lib/XPROG/XPROGProtocol.o
+                                                  Lib/XPROG/TINYNVM.o
+XPROG_SelectedProtocol                            Lib/XPROG/XPROGProtocol.o
+__DATA_REGION_LENGTH__                            /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__DATA_REGION_ORIGIN__                            /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__EEPROM_REGION_LENGTH__                          /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__FUSE_REGION_LENGTH__                            /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__TEXT_REGION_LENGTH__                            /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__bad_interrupt                                   /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__bss_end                                         /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+__bss_start                                       /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+__data_end                                        /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+__data_load_start                                 /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+__data_start                                      /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+__do_clear_bss                                    /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_clear_bss.o)
+                                                  ../../LUFA/Drivers/USB/Core/USBTask.o
+                                                  ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+                                                  Lib/XPROG/XPROGTarget.o
+                                                  Lib/XPROG/XPROGProtocol.o
+                                                  Lib/ISP/ISPTarget.o
+                                                  Lib/V2Protocol.o
+__do_copy_data                                    /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_copy_data.o)
+                                                  Lib/XPROG/TINYNVM.o
+                                                  Lib/XPROG/XMEGANVM.o
+                                                  Lib/XPROG/XPROGProtocol.o
+                                                  Lib/ISP/ISPTarget.o
+                                                  Lib/V2ProtocolParams.o
+                                                  Lib/V2Protocol.o
+__heap_end                                        /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__init                                            /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__mulhi3                                          /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_mulhi3.o)
+                                                  ../../LUFA/Drivers/USB/Class/Common/HIDParser.o
+__stack                                           /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__tablejump2__                                    /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_tablejump2.o)
+                                                  ../../LUFA/Drivers/USB/Core/DeviceStandardReq.o
+                                                  Lib/XPROG/XPROGProtocol.o
+__vector_1                                        /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_10                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_11                                       ../../LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.o
+                                                  /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_12                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_13                                       Lib/V2Protocol.o
+                                                  /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_14                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_15                                       Lib/ISP/ISPTarget.o
+                                                  /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_16                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_17                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_18                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_19                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_2                                        /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_20                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_21                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_22                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_23                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_24                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_25                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_26                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_27                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_28                                       /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_3                                        /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_4                                        /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_5                                        /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_6                                        /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_7                                        /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_8                                        /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_9                                        /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vector_default                                  /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+__vectors                                         /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+_exit                                             /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+eeprom_read_byte                                  /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a(eerd_byte.o)
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                                                  Lib/V2ProtocolParams.o
+eeprom_update_byte                                /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a(eeupd_byte.o)
+                                                  ../../LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.o
+                                                  Lib/V2ProtocolParams.o
+eeprom_update_r18                                 /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/libat90usb162.a(eeupd_byte.o)
+exit                                              /usr/lib/gcc/avr/5.4.0/avr35/libgcc.a(_exit.o)
+                                                  /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o
+main                                              AVRISP-MKII.o
+                                                  /usr/lib/gcc/avr/5.4.0/../../../avr/lib/avr35/crtat90usb162.o

@@ -1,0 +1,728 @@
+   1               		.file	"ARP.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.ARP_ProcessARPPacket,"ax",@progbits
+  12               	.global	ARP_ProcessARPPacket
+  14               	ARP_ProcessARPPacket:
+  15               	.LFB104:
+  16               		.file 1 "Lib/ARP.c"
+   1:Lib/ARP.c     **** /*
+   2:Lib/ARP.c     ****              LUFA Library
+   3:Lib/ARP.c     ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/ARP.c     **** 
+   5:Lib/ARP.c     ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/ARP.c     ****            www.lufa-lib.org
+   7:Lib/ARP.c     **** */
+   8:Lib/ARP.c     **** 
+   9:Lib/ARP.c     **** /*
+  10:Lib/ARP.c     ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/ARP.c     **** 
+  12:Lib/ARP.c     ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/ARP.c     ****   software and its documentation for any purpose is hereby granted
+  14:Lib/ARP.c     ****   without fee, provided that the above copyright notice appear in
+  15:Lib/ARP.c     ****   all copies and that both that the copyright notice and this
+  16:Lib/ARP.c     ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/ARP.c     ****   documentation, and that the name of the author not be used in
+  18:Lib/ARP.c     ****   advertising or publicity pertaining to distribution of the
+  19:Lib/ARP.c     ****   software without specific, written prior permission.
+  20:Lib/ARP.c     **** 
+  21:Lib/ARP.c     ****   The author disclaim all warranties with regard to this
+  22:Lib/ARP.c     ****   software, including all implied warranties of merchantability
+  23:Lib/ARP.c     ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/ARP.c     ****   special, indirect or consequential damages or any damages
+  25:Lib/ARP.c     ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/ARP.c     ****   in an action of contract, negligence or other tortious action,
+  27:Lib/ARP.c     ****   arising out of or in connection with the use or performance of
+  28:Lib/ARP.c     ****   this software.
+  29:Lib/ARP.c     **** */
+  30:Lib/ARP.c     **** 
+  31:Lib/ARP.c     **** /** \file
+  32:Lib/ARP.c     ****  *
+  33:Lib/ARP.c     ****  *  Address Resolution Protocol (ARP) packet handling routines. This protocol handles the
+  34:Lib/ARP.c     ****  *  conversion of physical MAC addresses to protocol IP addresses between the host and the
+  35:Lib/ARP.c     ****  *  device.
+  36:Lib/ARP.c     ****  */
+  37:Lib/ARP.c     **** 
+  38:Lib/ARP.c     **** #include "ARP.h"
+  39:Lib/ARP.c     **** 
+  40:Lib/ARP.c     **** /** Processes an ARP packet inside an Ethernet frame, and writes the appropriate response
+  41:Lib/ARP.c     ****  *  to the output Ethernet frame if the host is requesting the IP or MAC address of the
+  42:Lib/ARP.c     ****  *  virtual server device on the network.
+  43:Lib/ARP.c     ****  *
+  44:Lib/ARP.c     ****  *  \param[in] InDataStart    Pointer to the start of the incoming packet's ARP header
+  45:Lib/ARP.c     ****  *  \param[out] OutDataStart  Pointer to the start of the outgoing packet's ARP header
+  46:Lib/ARP.c     ****  *
+  47:Lib/ARP.c     ****  *  \return The number of bytes written to the out Ethernet frame if any, NO_RESPONSE otherwise
+  48:Lib/ARP.c     ****  */
+  49:Lib/ARP.c     **** int16_t ARP_ProcessARPPacket(void* InDataStart,
+  50:Lib/ARP.c     ****                              void* OutDataStart)
+  51:Lib/ARP.c     **** {
+  17               		.loc 1 51 0
+  18               		.cfi_startproc
+  19               	.LVL0:
+  20 0000 0F93      		push r16
+  21               	.LCFI0:
+  22               		.cfi_def_cfa_offset 3
+  23               		.cfi_offset 16, -2
+  24 0002 1F93      		push r17
+  25               	.LCFI1:
+  26               		.cfi_def_cfa_offset 4
+  27               		.cfi_offset 17, -3
+  28 0004 CF93      		push r28
+  29               	.LCFI2:
+  30               		.cfi_def_cfa_offset 5
+  31               		.cfi_offset 28, -4
+  32 0006 DF93      		push r29
+  33               	.LCFI3:
+  34               		.cfi_def_cfa_offset 6
+  35               		.cfi_offset 29, -5
+  36               	/* prologue: function */
+  37               	/* frame size = 0 */
+  38               	/* stack size = 4 */
+  39               	.L__stack_usage = 4
+  40 0008 EC01      		movw r28,r24
+  41 000a 8B01      		movw r16,r22
+  52:Lib/ARP.c     **** 	DecodeARPHeader(InDataStart);
+  42               		.loc 1 52 0
+  43 000c 0E94 0000 		call DecodeARPHeader
+  44               	.LVL1:
+  45               	.LBB14:
+  46               	.LBB15:
+  47               	.LBB16:
+  48               	.LBB17:
+  49               		.file 2 "../../../../LUFA/Drivers/USB/../../Common/Endianness.h"
+   1:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /*
+   2:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+   5:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** */
+   8:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+   9:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /*
+  10:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  12:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  21:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   this software.
+  29:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** */
+  30:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  31:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /** \file
+  32:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \brief Endianness and Byte Ordering macros and functions.
+  33:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *
+  34:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \copydetails Group_Endianness
+  35:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  */
+  36:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  37:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /** \ingroup Group_Endianness
+  38:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \defgroup Group_ByteSwapping Byte Reordering
+  39:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \brief Macros and functions for forced byte reordering.
+  40:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  */
+  41:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  42:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /** \ingroup Group_Endianness
+  43:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \defgroup Group_EndianConversion Endianness Conversion
+  44:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \brief Macros and functions for automatic endianness conversion.
+  45:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  */
+  46:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  47:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /** \ingroup Group_Common
+  48:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \defgroup Group_Endianness Endianness and Byte Ordering
+  49:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \brief Convenience macros and functions relating to byte (re-)ordering
+  50:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *
+  51:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  Common library convenience macros and functions relating to byte (re-)ordering.
+  52:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *
+  53:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  @{
+  54:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  */
+  55:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  56:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** #ifndef __LUFA_ENDIANNESS_H__
+  57:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** #define __LUFA_ENDIANNESS_H__
+  58:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  59:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 	/* Enable C linkage for C++ Compilers: */
+  60:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#if defined(__cplusplus)
+  61:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			extern "C" {
+  62:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#endif
+  63:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  64:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 	/* Preprocessor Checks: */
+  65:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#if !defined(__INCLUDE_FROM_COMMON_H)
+  66:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#error Do not include this file directly. Include LUFA/Common/Common.h instead to gain this func
+  67:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#endif
+  68:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		
+  69:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#if !(defined(ARCH_BIG_ENDIAN) || defined(ARCH_LITTLE_ENDIAN))
+  70:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#error ARCH_BIG_ENDIAN or ARCH_LITTLE_ENDIAN not set for the specified architecture.
+  71:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#endif
+  72:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  73:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 	/* Public Interface - May be used in end-application: */
+  74:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		/* Macros: */
+  75:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			/** Swaps the byte ordering of a 16-bit value at compile-time. Do not use this macro for swappin
+  76:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  of dynamic values computed at runtime, use \ref SwapEndian_16() instead. The result of this 
+  77:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  inside struct or other variable initializers outside of a function, something that is not po
+  78:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  inline function variant.
+  79:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  80:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+  81:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  82:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \param[in] x  16-bit value whose byte ordering is to be swapped.
+  83:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  84:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \return Input value with the byte ordering reversed.
+  85:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 */
+  86:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#define SWAPENDIAN_16(x)            (uint16_t)((((x) & 0xFF00) >> 8) | (((x) & 0x00FF) << 8))
+  87:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  88:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			/** Swaps the byte ordering of a 32-bit value at compile-time. Do not use this macro for swappin
+  89:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  of dynamic values computed at runtime- use \ref SwapEndian_32() instead. The result of this 
+  90:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  inside struct or other variable initializers outside of a function, something that is not po
+  91:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  inline function variant.
+  92:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  93:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+  94:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  95:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \param[in] x  32-bit value whose byte ordering is to be swapped.
+  96:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  97:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \return Input value with the byte ordering reversed.
+  98:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 */
+  99:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#define SWAPENDIAN_32(x)            (uint32_t)((((x) & 0xFF000000UL) >> 24UL) | (((x) & 0x00FF00
+ 100:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			                                               (((x) & 0x0000FF00UL) << 8UL)  | (((x) & 0x000000
+ 101:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 102:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#if defined(ARCH_BIG_ENDIAN) && !defined(le16_to_cpu)
+ 103:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define le16_to_cpu(x)           SwapEndian_16(x)
+ 104:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define le32_to_cpu(x)           SwapEndian_32(x)
+ 105:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define be16_to_cpu(x)           (x)
+ 106:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define be32_to_cpu(x)           (x)
+ 107:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_le16(x)           SwapEndian_16(x)
+ 108:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_le32(x)           SwapEndian_32(x)
+ 109:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_be16(x)           (x)
+ 110:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_be32(x)           (x)
+ 111:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define LE16_TO_CPU(x)           SWAPENDIAN_16(x)
+ 112:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define LE32_TO_CPU(x)           SWAPENDIAN_32(x)
+ 113:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define BE16_TO_CPU(x)           (x)
+ 114:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define BE32_TO_CPU(x)           (x)
+ 115:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_LE16(x)           SWAPENDIAN_16(x)
+ 116:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_LE32(x)           SWAPENDIAN_32(x)
+ 117:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_BE16(x)           (x)
+ 118:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_BE32(x)           (x)			
+ 119:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#elif !defined(le16_to_cpu)
+ 120:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** \name Run-time endianness conversion */
+ 121:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				//@{
+ 122:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			
+ 123:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 16-bit piece of data and the
+ 124:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 125:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 126:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 127:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 128:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 129:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref LE16_TO_CPU instead.
+ 130:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 131:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 132:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 133:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 134:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 135:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 136:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 137:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define le16_to_cpu(x)           (x)
+ 138:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 139:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 32-bit piece of data and the
+ 140:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 141:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 142:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 143:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 144:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 145:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref LE32_TO_CPU instead.
+ 146:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 147:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 148:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 149:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 150:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 151:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 152:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 153:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define le32_to_cpu(x)           (x)
+ 154:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 155:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 16-bit piece of data and the
+ 156:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 157:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 158:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 159:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 160:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 161:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref BE16_TO_CPU instead.
+ 162:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 163:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 164:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 165:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 166:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 167:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 168:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 169:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define be16_to_cpu(x)           SwapEndian_16(x)
+ 170:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 171:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 32-bit piece of data and the
+ 172:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 173:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 174:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 175:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 176:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 177:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref BE32_TO_CPU instead.
+ 178:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 179:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 180:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 181:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 182:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 183:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 184:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 185:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define be32_to_cpu(x)           SwapEndian_32(x)
+ 186:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 187:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 188:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 189:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 190:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 191:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 192:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 193:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_LE16 instead.
+ 194:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 195:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 196:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 197:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 198:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 199:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 200:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 201:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_le16(x)           (x)
+ 202:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 203:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 204:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 205:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 206:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 207:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 208:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 209:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_LE32 instead.
+ 210:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 211:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 212:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 213:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 214:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 215:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 216:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 217:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_le32(x)           (x)
+ 218:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 219:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 220:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 221:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 222:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 223:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 224:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 225:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_BE16 instead.
+ 226:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 227:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 228:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 229:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 230:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 231:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 232:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 233:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_be16(x)           SwapEndian_16(x)
+ 234:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 235:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 236:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 237:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 238:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 239:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 240:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 241:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_BE32 instead.
+ 242:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 243:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 244:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 245:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 246:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 247:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 248:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 249:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_be32(x)           SwapEndian_32(x)
+ 250:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 251:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				//@}
+ 252:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 253:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** \name Compile-time endianness conversion */
+ 254:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				//@{
+ 255:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 256:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 16-bit piece of data and the
+ 257:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 258:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 259:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 260:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 261:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run time endianness
+ 262:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref le16_to_cpu instead.
+ 263:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 264:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 265:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 266:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 267:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 268:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 269:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 270:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define LE16_TO_CPU(x)           (x)
+ 271:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 272:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 32-bit piece of data and the
+ 273:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 274:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 275:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 276:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 277:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run time endianness
+ 278:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref le32_to_cpu instead.
+ 279:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 280:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 281:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 282:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 283:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 284:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 285:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 286:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define LE32_TO_CPU(x)           (x)
+ 287:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 288:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 16-bit piece of data and the
+ 289:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 290:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 291:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 292:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 293:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 294:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref be16_to_cpu instead.
+ 295:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 296:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 297:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 298:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 299:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 300:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 301:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 302:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define BE16_TO_CPU(x)           SWAPENDIAN_16(x)
+ 303:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 304:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 32-bit piece of data and the
+ 305:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 306:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 307:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 308:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 309:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 310:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref be32_to_cpu instead.
+ 311:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 312:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 313:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 314:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 315:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 316:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 317:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 318:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define BE32_TO_CPU(x)           SWAPENDIAN_32(x)
+ 319:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 320:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 321:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 322:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 323:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 324:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 325:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 326:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_le16 instead.
+ 327:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 328:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 329:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 330:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 331:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 332:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 333:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 334:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_LE16(x)           (x)
+ 335:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 336:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 337:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 338:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 339:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 340:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 341:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 342:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_le32 instead.
+ 343:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 344:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 345:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 346:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 347:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 348:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 349:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 350:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_LE32(x)           (x)
+ 351:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 352:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 353:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 354:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 355:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 356:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 357:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 358:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_be16 instead.
+ 359:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 360:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 361:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 362:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 363:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 364:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 365:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 366:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_BE16(x)           SWAPENDIAN_16(x)
+ 367:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 368:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 369:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 370:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 371:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 372:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 373:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 374:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_be32 instead.
+ 375:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 376:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 377:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 378:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 379:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 380:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 381:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 382:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_BE32(x)           SWAPENDIAN_32(x)
+ 383:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 384:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				//! @}
+ 385:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#endif
+ 386:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 387:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		/* Inline Functions: */
+ 388:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			/** Function to reverse the byte ordering of the individual bytes in a 16 bit value.
+ 389:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+ 390:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+ 391:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+ 392:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \param[in] Word  Word of data whose bytes are to be swapped.
+ 393:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+ 394:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \return Input data with the individual bytes reversed.
+ 395:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 */
+ 396:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			static inline uint16_t SwapEndian_16(const uint16_t Word) ATTR_WARN_UNUSED_RESULT ATTR_CONST;
+ 397:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			static inline uint16_t SwapEndian_16(const uint16_t Word)
+ 398:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			{
+ 399:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				if (GCC_IS_COMPILE_CONST(Word))
+ 400:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				  return SWAPENDIAN_16(Word);
+ 401:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			
+ 402:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				uint8_t Temp;
+ 403:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 404:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				union
+ 405:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				{
+ 406:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 					uint16_t Word;
+ 407:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 					uint8_t  Bytes[2];
+ 408:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				} Data;
+ 409:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 410:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.Word = Word;
+ 411:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 412:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Temp = Data.Bytes[0];
+ 413:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.Bytes[0] = Data.Bytes[1];
+ 414:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.Bytes[1] = Temp;
+ 415:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 416:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				return Data.Word;
+  50               		.loc 2 416 0
+  51 0010 8B81      		ldd r24,Y+3
+  52 0012 9A81      		ldd r25,Y+2
+  53               	.LVL2:
+  54               	.LBE17:
+  55               	.LBE16:
+  56               	.LBE15:
+  57               	.LBE14:
+  53:Lib/ARP.c     **** 
+  54:Lib/ARP.c     **** 	ARP_Header_t* ARPHeaderIN  = (ARP_Header_t*)InDataStart;
+  55:Lib/ARP.c     **** 	ARP_Header_t* ARPHeaderOUT = (ARP_Header_t*)OutDataStart;
+  56:Lib/ARP.c     **** 
+  57:Lib/ARP.c     **** 	/* Ensure that the ARP request is a IPv4 request packet */
+  58:Lib/ARP.c     **** 	if ((SwapEndian_16(ARPHeaderIN->ProtocolType) == ETHERTYPE_IPV4) &&
+  58               		.loc 1 58 0
+  59 0014 8115      		cp r24,__zero_reg__
+  60 0016 9840      		sbci r25,8
+  61 0018 01F0      		breq .L2
+  62               	.L4:
+  59:Lib/ARP.c     **** 	    (SwapEndian_16(ARPHeaderIN->Operation) == ARP_OPERATION_REQUEST))
+  60:Lib/ARP.c     **** 	{
+  61:Lib/ARP.c     **** 		/* If the ARP packet is requesting the MAC or IP of the virtual webserver, return the response */
+  62:Lib/ARP.c     **** 		if (IP_COMPARE(&ARPHeaderIN->TPA, &ServerIPAddress) ||
+  63:Lib/ARP.c     **** 		    MAC_COMPARE(&ARPHeaderIN->THA, &ServerMACAddress))
+  64:Lib/ARP.c     **** 		{
+  65:Lib/ARP.c     **** 			/* Fill out the ARP response header */
+  66:Lib/ARP.c     **** 			ARPHeaderOUT->HardwareType = ARPHeaderIN->HardwareType;
+  67:Lib/ARP.c     **** 			ARPHeaderOUT->ProtocolType = ARPHeaderIN->ProtocolType;
+  68:Lib/ARP.c     **** 			ARPHeaderOUT->HLEN         = ARPHeaderIN->HLEN;
+  69:Lib/ARP.c     **** 			ARPHeaderOUT->PLEN         = ARPHeaderIN->PLEN;
+  70:Lib/ARP.c     **** 			ARPHeaderOUT->Operation    = SwapEndian_16(ARP_OPERATION_REPLY);
+  71:Lib/ARP.c     **** 
+  72:Lib/ARP.c     **** 			/* Copy over the sender MAC/IP to the target fields for the response */
+  73:Lib/ARP.c     **** 			ARPHeaderOUT->THA = ARPHeaderIN->SHA;
+  74:Lib/ARP.c     **** 			ARPHeaderOUT->TPA = ARPHeaderIN->SPA;
+  75:Lib/ARP.c     **** 
+  76:Lib/ARP.c     **** 			/* Copy over the new sender MAC/IP - MAC and IP addresses of the virtual webserver */
+  77:Lib/ARP.c     **** 			ARPHeaderOUT->SHA = ServerMACAddress;
+  78:Lib/ARP.c     **** 			ARPHeaderOUT->SPA = ServerIPAddress;
+  79:Lib/ARP.c     **** 
+  80:Lib/ARP.c     **** 			/* Return the size of the response so far */
+  81:Lib/ARP.c     **** 			return sizeof(ARP_Header_t);
+  82:Lib/ARP.c     **** 		}
+  83:Lib/ARP.c     **** 	}
+  84:Lib/ARP.c     **** 
+  85:Lib/ARP.c     **** 	return NO_RESPONSE;
+  63               		.loc 1 85 0
+  64 001a 80E0      		ldi r24,0
+  65 001c 90E0      		ldi r25,0
+  66 001e 00C0      		rjmp .L3
+  67               	.L2:
+  68               	.LVL3:
+  69               	.LBB18:
+  70               	.LBB19:
+  71               	.LBB20:
+  72               	.LBB21:
+  73               		.loc 2 416 0 discriminator 1
+  74 0020 8F81      		ldd r24,Y+7
+  75 0022 9E81      		ldd r25,Y+6
+  76               	.LVL4:
+  77               	.LBE21:
+  78               	.LBE20:
+  79               	.LBE19:
+  80               	.LBE18:
+  58:Lib/ARP.c     **** 	    (SwapEndian_16(ARPHeaderIN->Operation) == ARP_OPERATION_REQUEST))
+  81               		.loc 1 58 0 discriminator 1
+  82 0024 0197      		sbiw r24,1
+  83 0026 01F4      		brne .L4
+  62:Lib/ARP.c     **** 		    MAC_COMPARE(&ARPHeaderIN->THA, &ServerMACAddress))
+  84               		.loc 1 62 0
+  85 0028 44E0      		ldi r20,lo8(4)
+  86 002a 50E0      		ldi r21,0
+  87 002c 60E0      		ldi r22,lo8(ServerIPAddress)
+  88 002e 70E0      		ldi r23,hi8(ServerIPAddress)
+  89 0030 CE01      		movw r24,r28
+  90 0032 4896      		adiw r24,24
+  91 0034 0E94 0000 		call memcmp
+  92               	.LVL5:
+  93 0038 892B      		or r24,r25
+  94 003a 01F0      		breq .L5
+  63:Lib/ARP.c     **** 		{
+  95               		.loc 1 63 0 discriminator 1
+  96 003c 46E0      		ldi r20,lo8(6)
+  97 003e 50E0      		ldi r21,0
+  98 0040 60E0      		ldi r22,lo8(ServerMACAddress)
+  99 0042 70E0      		ldi r23,hi8(ServerMACAddress)
+ 100 0044 CE01      		movw r24,r28
+ 101 0046 4296      		adiw r24,18
+ 102 0048 0E94 0000 		call memcmp
+ 103               	.LVL6:
+  62:Lib/ARP.c     **** 		    MAC_COMPARE(&ARPHeaderIN->THA, &ServerMACAddress))
+ 104               		.loc 1 62 0 discriminator 1
+ 105 004c 892B      		or r24,r25
+ 106 004e 01F4      		brne .L4
+ 107               	.L5:
+  66:Lib/ARP.c     **** 			ARPHeaderOUT->ProtocolType = ARPHeaderIN->ProtocolType;
+ 108               		.loc 1 66 0
+ 109 0050 8881      		ld r24,Y
+ 110 0052 9981      		ldd r25,Y+1
+ 111 0054 F801      		movw r30,r16
+ 112 0056 9183      		std Z+1,r25
+ 113 0058 8083      		st Z,r24
+  67:Lib/ARP.c     **** 			ARPHeaderOUT->HLEN         = ARPHeaderIN->HLEN;
+ 114               		.loc 1 67 0
+ 115 005a 8A81      		ldd r24,Y+2
+ 116 005c 9B81      		ldd r25,Y+3
+ 117 005e 9383      		std Z+3,r25
+ 118 0060 8283      		std Z+2,r24
+  68:Lib/ARP.c     **** 			ARPHeaderOUT->PLEN         = ARPHeaderIN->PLEN;
+ 119               		.loc 1 68 0
+ 120 0062 8C81      		ldd r24,Y+4
+ 121 0064 8483      		std Z+4,r24
+  69:Lib/ARP.c     **** 			ARPHeaderOUT->Operation    = SwapEndian_16(ARP_OPERATION_REPLY);
+ 122               		.loc 1 69 0
+ 123 0066 8D81      		ldd r24,Y+5
+ 124 0068 8583      		std Z+5,r24
+  70:Lib/ARP.c     **** 
+ 125               		.loc 1 70 0
+ 126 006a 80E0      		ldi r24,0
+ 127 006c 92E0      		ldi r25,lo8(2)
+ 128 006e 9783      		std Z+7,r25
+ 129 0070 8683      		std Z+6,r24
+  73:Lib/ARP.c     **** 			ARPHeaderOUT->TPA = ARPHeaderIN->SPA;
+ 130               		.loc 1 73 0
+ 131 0072 86E0      		ldi r24,lo8(6)
+ 132 0074 FE01      		movw r30,r28
+ 133 0076 3896      		adiw r30,8
+ 134 0078 D801      		movw r26,r16
+ 135 007a 5296      		adiw r26,18
+ 136               		0:
+ 137 007c 0190      		ld r0,Z+
+ 138 007e 0D92      		st X+,r0
+ 139 0080 8A95      		dec r24
+ 140 0082 01F4      		brne 0b
+  74:Lib/ARP.c     **** 
+ 141               		.loc 1 74 0
+ 142 0084 8E85      		ldd r24,Y+14
+ 143 0086 9F85      		ldd r25,Y+15
+ 144 0088 A889      		ldd r26,Y+16
+ 145 008a B989      		ldd r27,Y+17
+ 146 008c F801      		movw r30,r16
+ 147 008e 808F      		std Z+24,r24
+ 148 0090 918F      		std Z+25,r25
+ 149 0092 A28F      		std Z+26,r26
+ 150 0094 B38F      		std Z+27,r27
+  77:Lib/ARP.c     **** 			ARPHeaderOUT->SPA = ServerIPAddress;
+ 151               		.loc 1 77 0
+ 152 0096 86E0      		ldi r24,lo8(6)
+ 153 0098 E0E0      		ldi r30,lo8(ServerMACAddress)
+ 154 009a F0E0      		ldi r31,hi8(ServerMACAddress)
+ 155 009c D801      		movw r26,r16
+ 156 009e 1896      		adiw r26,8
+ 157               		0:
+ 158 00a0 0190      		ld r0,Z+
+ 159 00a2 0D92      		st X+,r0
+ 160 00a4 8A95      		dec r24
+ 161 00a6 01F4      		brne 0b
+  78:Lib/ARP.c     **** 
+ 162               		.loc 1 78 0
+ 163 00a8 8091 0000 		lds r24,ServerIPAddress
+ 164 00ac 9091 0000 		lds r25,ServerIPAddress+1
+ 165 00b0 A091 0000 		lds r26,ServerIPAddress+2
+ 166 00b4 B091 0000 		lds r27,ServerIPAddress+3
+ 167 00b8 F801      		movw r30,r16
+ 168 00ba 8687      		std Z+14,r24
+ 169 00bc 9787      		std Z+15,r25
+ 170 00be A08B      		std Z+16,r26
+ 171 00c0 B18B      		std Z+17,r27
+  81:Lib/ARP.c     **** 		}
+ 172               		.loc 1 81 0
+ 173 00c2 8CE1      		ldi r24,lo8(28)
+ 174 00c4 90E0      		ldi r25,0
+ 175               	.L3:
+ 176               	/* epilogue start */
+  86:Lib/ARP.c     **** }
+ 177               		.loc 1 86 0
+ 178 00c6 DF91      		pop r29
+ 179 00c8 CF91      		pop r28
+ 180               	.LVL7:
+ 181 00ca 1F91      		pop r17
+ 182 00cc 0F91      		pop r16
+ 183               	.LVL8:
+ 184 00ce 0895      		ret
+ 185               		.cfi_endproc
+ 186               	.LFE104:
+ 188               		.text
+ 189               	.Letext0:
+ 190               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 191               		.file 4 "/usr/lib/avr/include/stdio.h"
+ 192               		.file 5 "../../../../LUFA/Drivers/USB/Class/Device/../Common/RNDIS.h"
+ 193               		.file 6 "Lib/EthernetProtocols.h"
+ 194               		.file 7 "Lib/ARP.h"
+ 195               		.file 8 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+ 196               		.file 9 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 197               		.file 10 "Lib/Ethernet.h"
+ 198               		.file 11 "Lib/ProtocolDecoders.h"
+ 199               		.file 12 "/usr/lib/avr/include/string.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ARP.c
+     /tmp/ccMfMbtd.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccMfMbtd.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccMfMbtd.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccMfMbtd.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccMfMbtd.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccMfMbtd.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccMfMbtd.s:14     .text.ARP_ProcessARPPacket:0000000000000000 ARP_ProcessARPPacket
+
+UNDEFINED SYMBOLS
+DecodeARPHeader
+ServerIPAddress
+memcmp
+ServerMACAddress

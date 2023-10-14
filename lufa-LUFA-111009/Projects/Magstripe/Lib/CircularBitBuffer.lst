@@ -1,0 +1,352 @@
+   1               		.file	"CircularBitBuffer.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.BitBuffer_Init,"ax",@progbits
+  12               	.global	BitBuffer_Init
+  14               	BitBuffer_Init:
+  15               	.LFB16:
+  16               		.file 1 "Lib/CircularBitBuffer.c"
+   1:Lib/CircularBitBuffer.c **** /*
+   2:Lib/CircularBitBuffer.c ****              LUFA Library
+   3:Lib/CircularBitBuffer.c ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/CircularBitBuffer.c **** 
+   5:Lib/CircularBitBuffer.c ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/CircularBitBuffer.c ****            www.lufa-lib.org
+   7:Lib/CircularBitBuffer.c **** */
+   8:Lib/CircularBitBuffer.c **** 
+   9:Lib/CircularBitBuffer.c **** /*
+  10:Lib/CircularBitBuffer.c ****   Copyright 2010  Denver Gingerich (denver [at] ossguy [dot] com)
+  11:Lib/CircularBitBuffer.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  12:Lib/CircularBitBuffer.c **** 
+  13:Lib/CircularBitBuffer.c ****   Permission to use, copy, modify, distribute, and sell this
+  14:Lib/CircularBitBuffer.c ****   software and its documentation for any purpose is hereby granted
+  15:Lib/CircularBitBuffer.c ****   without fee, provided that the above copyright notice appear in
+  16:Lib/CircularBitBuffer.c ****   all copies and that both that the copyright notice and this
+  17:Lib/CircularBitBuffer.c ****   permission notice and warranty disclaimer appear in supporting
+  18:Lib/CircularBitBuffer.c ****   documentation, and that the name of the author not be used in
+  19:Lib/CircularBitBuffer.c ****   advertising or publicity pertaining to distribution of the
+  20:Lib/CircularBitBuffer.c ****   software without specific, written prior permission.
+  21:Lib/CircularBitBuffer.c **** 
+  22:Lib/CircularBitBuffer.c ****   The author disclaim all warranties with regard to this
+  23:Lib/CircularBitBuffer.c ****   software, including all implied warranties of merchantability
+  24:Lib/CircularBitBuffer.c ****   and fitness.  In no event shall the author be liable for any
+  25:Lib/CircularBitBuffer.c ****   special, indirect or consequential damages or any damages
+  26:Lib/CircularBitBuffer.c ****   whatsoever resulting from loss of use, data or profits, whether
+  27:Lib/CircularBitBuffer.c ****   in an action of contract, negligence or other tortious action,
+  28:Lib/CircularBitBuffer.c ****   arising out of or in connection with the use or performance of
+  29:Lib/CircularBitBuffer.c ****   this software.
+  30:Lib/CircularBitBuffer.c **** */
+  31:Lib/CircularBitBuffer.c **** 
+  32:Lib/CircularBitBuffer.c **** /** Circular bit buffer library. This will allow for individual bits
+  33:Lib/CircularBitBuffer.c ****  *  to be stored in packed form inside circular buffers, to reduce
+  34:Lib/CircularBitBuffer.c ****  *  overall RAM usage.
+  35:Lib/CircularBitBuffer.c ****  */
+  36:Lib/CircularBitBuffer.c **** 
+  37:Lib/CircularBitBuffer.c **** #include "CircularBitBuffer.h"
+  38:Lib/CircularBitBuffer.c **** 
+  39:Lib/CircularBitBuffer.c **** /** Function to initialize or reset a bit buffer, ready for data to be stored into it. */
+  40:Lib/CircularBitBuffer.c **** void BitBuffer_Init(BitBuffer_t* const Buffer)
+  41:Lib/CircularBitBuffer.c **** {
+  17               		.loc 1 41 0
+  18               		.cfi_startproc
+  19               	.LVL0:
+  20               	/* prologue: function */
+  21               	/* frame size = 0 */
+  22               	/* stack size = 0 */
+  23               	.L__stack_usage = 0
+  42:Lib/CircularBitBuffer.c **** 	/* Reset the number of stored bits in the buffer */
+  43:Lib/CircularBitBuffer.c **** 	Buffer->Elements        = 0;
+  24               		.loc 1 43 0
+  25 0000 FC01      		movw r30,r24
+  26 0002 FC5F      		subi r31,-4
+  27 0004 1182      		std Z+1,__zero_reg__
+  28 0006 1082      		st Z,__zero_reg__
+  44:Lib/CircularBitBuffer.c **** 
+  45:Lib/CircularBitBuffer.c **** 	/* Reset the data in and out pointer structures in the buffer to the first buffer bit */
+  46:Lib/CircularBitBuffer.c **** 	Buffer->In.CurrentByte  = Buffer->Data;
+  29               		.loc 1 46 0
+  30 0008 3296      		adiw r30,2
+  31 000a 9183      		std Z+1,r25
+  32 000c 8083      		st Z,r24
+  47:Lib/CircularBitBuffer.c **** 	Buffer->In.ByteMask     = (1 << 0);
+  33               		.loc 1 47 0
+  34 000e 3296      		adiw r30,2
+  35 0010 21E0      		ldi r18,lo8(1)
+  36 0012 2083      		st Z,r18
+  48:Lib/CircularBitBuffer.c **** 	Buffer->Out.CurrentByte = Buffer->Data;
+  37               		.loc 1 48 0
+  38 0014 3196      		adiw r30,1
+  39 0016 9183      		std Z+1,r25
+  40 0018 8083      		st Z,r24
+  49:Lib/CircularBitBuffer.c **** 	Buffer->Out.ByteMask    = (1 << 0);
+  41               		.loc 1 49 0
+  42 001a 3296      		adiw r30,2
+  43 001c 2083      		st Z,r18
+  44 001e 0895      		ret
+  45               		.cfi_endproc
+  46               	.LFE16:
+  48               		.section	.text.BitBuffer_StoreNextBit,"ax",@progbits
+  49               	.global	BitBuffer_StoreNextBit
+  51               	BitBuffer_StoreNextBit:
+  52               	.LFB17:
+  50:Lib/CircularBitBuffer.c **** }
+  51:Lib/CircularBitBuffer.c **** 
+  52:Lib/CircularBitBuffer.c **** /** Function to store the given bit into the given bit buffer. */
+  53:Lib/CircularBitBuffer.c **** void BitBuffer_StoreNextBit(BitBuffer_t* const Buffer,
+  54:Lib/CircularBitBuffer.c ****                             const bool Bit)
+  55:Lib/CircularBitBuffer.c **** {
+  53               		.loc 1 55 0
+  54               		.cfi_startproc
+  55               	.LVL1:
+  56               	/* prologue: function */
+  57               	/* frame size = 0 */
+  58               	/* stack size = 0 */
+  59               	.L__stack_usage = 0
+  60 0000 FC01      		movw r30,r24
+  61 0002 EC5F      		subi r30,-4
+  62 0004 FB4F      		sbci r31,-5
+  56:Lib/CircularBitBuffer.c **** 	/* If the bit to store is true, set the next bit in the buffer */
+  57:Lib/CircularBitBuffer.c **** 	if (Bit)
+  63               		.loc 1 57 0
+  64 0006 6623      		tst r22
+  65 0008 01F0      		breq .L3
+  58:Lib/CircularBitBuffer.c **** 	  *Buffer->In.CurrentByte |= Buffer->In.ByteMask;
+  66               		.loc 1 58 0
+  67 000a DC01      		movw r26,r24
+  68 000c AE5F      		subi r26,-2
+  69 000e BB4F      		sbci r27,-5
+  70 0010 0D90      		ld __tmp_reg__,X+
+  71 0012 BC91      		ld r27,X
+  72 0014 A02D      		mov r26,__tmp_reg__
+  73 0016 3C91      		ld r19,X
+  74 0018 2081      		ld r18,Z
+  75 001a 232B      		or r18,r19
+  76 001c 2C93      		st X,r18
+  77               	.L3:
+  59:Lib/CircularBitBuffer.c **** 
+  60:Lib/CircularBitBuffer.c **** 	/* Increment the number of stored bits in the buffer counter */
+  61:Lib/CircularBitBuffer.c **** 	Buffer->Elements++;
+  78               		.loc 1 61 0
+  79 001e DC01      		movw r26,r24
+  80 0020 BC5F      		subi r27,-4
+  81 0022 2D91      		ld r18,X+
+  82 0024 3C91      		ld r19,X
+  83 0026 1197      		sbiw r26,1
+  84 0028 2F5F      		subi r18,-1
+  85 002a 3F4F      		sbci r19,-1
+  86 002c 1196      		adiw r26,1
+  87 002e 3C93      		st X,r19
+  88 0030 2E93      		st -X,r18
+  62:Lib/CircularBitBuffer.c **** 
+  63:Lib/CircularBitBuffer.c **** 	/* Check if the current buffer byte is full of stored bits */
+  64:Lib/CircularBitBuffer.c **** 	if (Buffer->In.ByteMask == (1 << 7))
+  89               		.loc 1 64 0
+  90 0032 2081      		ld r18,Z
+  91 0034 2038      		cpi r18,lo8(-128)
+  92 0036 01F4      		brne .L4
+  65:Lib/CircularBitBuffer.c **** 	{
+  66:Lib/CircularBitBuffer.c **** 		/* Check if the end of the buffer has been reached, if so reset to start of buffer, otherwise adv
+  67:Lib/CircularBitBuffer.c **** 		if (Buffer->In.CurrentByte != &Buffer->Data[sizeof(Buffer->Data) - 1])
+  93               		.loc 1 67 0
+  94 0038 1296      		adiw r26,2
+  95 003a 2D91      		ld r18,X+
+  96 003c 3C91      		ld r19,X
+  97 003e 1197      		sbiw r26,1
+  98 0040 AC01      		movw r20,r24
+  99 0042 4150      		subi r20,1
+ 100 0044 5C4F      		sbci r21,-4
+ 101 0046 2417      		cp r18,r20
+ 102 0048 3507      		cpc r19,r21
+ 103 004a 01F0      		breq .L5
+  68:Lib/CircularBitBuffer.c **** 		  Buffer->In.CurrentByte++;
+ 104               		.loc 1 68 0
+ 105 004c 2F5F      		subi r18,-1
+ 106 004e 3F4F      		sbci r19,-1
+ 107 0050 2D93      		st X+,r18
+ 108 0052 3C93      		st X,r19
+ 109 0054 00C0      		rjmp .L6
+ 110               	.L5:
+  69:Lib/CircularBitBuffer.c **** 		else
+  70:Lib/CircularBitBuffer.c **** 		  Buffer->In.CurrentByte = Buffer->Data;
+ 111               		.loc 1 70 0
+ 112 0056 8D93      		st X+,r24
+ 113 0058 9C93      		st X,r25
+ 114               	.L6:
+  71:Lib/CircularBitBuffer.c **** 
+  72:Lib/CircularBitBuffer.c **** 		/* Reset the storage bit mask in the current buffer byte to the first bit */
+  73:Lib/CircularBitBuffer.c **** 		Buffer->In.ByteMask = (1 << 0);
+ 115               		.loc 1 73 0
+ 116 005a 81E0      		ldi r24,lo8(1)
+ 117               	.LVL2:
+ 118 005c 8083      		st Z,r24
+ 119 005e 0895      		ret
+ 120               	.LVL3:
+ 121               	.L4:
+  74:Lib/CircularBitBuffer.c **** 	}
+  75:Lib/CircularBitBuffer.c **** 	else
+  76:Lib/CircularBitBuffer.c **** 	{
+  77:Lib/CircularBitBuffer.c **** 		/* Shift the current storage bit mask to the next bit in the current byte */
+  78:Lib/CircularBitBuffer.c **** 		Buffer->In.ByteMask <<= 1;
+ 122               		.loc 1 78 0
+ 123 0060 220F      		lsl r18
+ 124 0062 2083      		st Z,r18
+ 125 0064 0895      		ret
+ 126               		.cfi_endproc
+ 127               	.LFE17:
+ 129               		.section	.text.BitBuffer_GetNextBit,"ax",@progbits
+ 130               	.global	BitBuffer_GetNextBit
+ 132               	BitBuffer_GetNextBit:
+ 133               	.LFB18:
+  79:Lib/CircularBitBuffer.c **** 	}
+  80:Lib/CircularBitBuffer.c **** }
+  81:Lib/CircularBitBuffer.c **** 
+  82:Lib/CircularBitBuffer.c **** /** Function to retrieve the next bit stored in the given bit buffer. */
+  83:Lib/CircularBitBuffer.c **** bool BitBuffer_GetNextBit(BitBuffer_t* const Buffer)
+  84:Lib/CircularBitBuffer.c **** {
+ 134               		.loc 1 84 0
+ 135               		.cfi_startproc
+ 136               	.LVL4:
+ 137 0000 CF93      		push r28
+ 138               	.LCFI0:
+ 139               		.cfi_def_cfa_offset 3
+ 140               		.cfi_offset 28, -2
+ 141 0002 DF93      		push r29
+ 142               	.LCFI1:
+ 143               		.cfi_def_cfa_offset 4
+ 144               		.cfi_offset 29, -3
+ 145               	/* prologue: function */
+ 146               	/* frame size = 0 */
+ 147               	/* stack size = 2 */
+ 148               	.L__stack_usage = 2
+  85:Lib/CircularBitBuffer.c **** 	/* Retrieve the value of the next bit stored in the buffer */
+  86:Lib/CircularBitBuffer.c **** 	bool Bit = ((*Buffer->Out.CurrentByte & Buffer->Out.ByteMask) != 0);
+ 149               		.loc 1 86 0
+ 150 0004 DC01      		movw r26,r24
+ 151 0006 AB5F      		subi r26,-5
+ 152 0008 BB4F      		sbci r27,-5
+ 153 000a CD91      		ld r28,X+
+ 154 000c DC91      		ld r29,X
+ 155 000e 1197      		sbiw r26,1
+ 156 0010 2881      		ld r18,Y
+ 157 0012 FC01      		movw r30,r24
+ 158 0014 E95F      		subi r30,-7
+ 159 0016 FB4F      		sbci r31,-5
+ 160 0018 3081      		ld r19,Z
+ 161 001a 522F      		mov r21,r18
+ 162 001c 5323      		and r21,r19
+ 163 001e 41E0      		ldi r20,lo8(1)
+ 164 0020 01F4      		brne .L13
+ 165 0022 40E0      		ldi r20,0
+ 166               	.L13:
+ 167               	.LVL5:
+  87:Lib/CircularBitBuffer.c **** 
+  88:Lib/CircularBitBuffer.c **** 	/* Clear the buffer bit */
+  89:Lib/CircularBitBuffer.c **** 	*Buffer->Out.CurrentByte &= ~Buffer->Out.ByteMask;
+ 168               		.loc 1 89 0
+ 169 0024 3095      		com r19
+ 170 0026 2323      		and r18,r19
+ 171 0028 2883      		st Y,r18
+  90:Lib/CircularBitBuffer.c **** 
+  91:Lib/CircularBitBuffer.c **** 	/* Decrement the number of stored bits in the buffer counter */
+  92:Lib/CircularBitBuffer.c **** 	Buffer->Elements--;
+ 172               		.loc 1 92 0
+ 173 002a EC01      		movw r28,r24
+ 174 002c DC5F      		subi r29,-4
+ 175 002e 2881      		ld r18,Y
+ 176 0030 3981      		ldd r19,Y+1
+ 177 0032 2150      		subi r18,1
+ 178 0034 3109      		sbc r19,__zero_reg__
+ 179 0036 3983      		std Y+1,r19
+ 180 0038 2883      		st Y,r18
+  93:Lib/CircularBitBuffer.c **** 
+  94:Lib/CircularBitBuffer.c **** 	/* Check if the current buffer byte is empty of stored bits */
+  95:Lib/CircularBitBuffer.c **** 	if (Buffer->Out.ByteMask == (1 << 7))
+ 181               		.loc 1 95 0
+ 182 003a 2081      		ld r18,Z
+ 183 003c 2038      		cpi r18,lo8(-128)
+ 184 003e 01F4      		brne .L14
+  96:Lib/CircularBitBuffer.c **** 	{
+  97:Lib/CircularBitBuffer.c **** 		/* Check if the end of the buffer has been reached, if so reset to start of buffer, otherwise adv
+  98:Lib/CircularBitBuffer.c **** 		if (Buffer->Out.CurrentByte != &Buffer->Data[sizeof(Buffer->Data) - 1])
+ 185               		.loc 1 98 0
+ 186 0040 2D91      		ld r18,X+
+ 187 0042 3C91      		ld r19,X
+ 188 0044 1197      		sbiw r26,1
+ 189 0046 BC01      		movw r22,r24
+ 190 0048 6150      		subi r22,1
+ 191 004a 7C4F      		sbci r23,-4
+ 192 004c 2617      		cp r18,r22
+ 193 004e 3707      		cpc r19,r23
+ 194 0050 01F0      		breq .L15
+  99:Lib/CircularBitBuffer.c **** 		  Buffer->Out.CurrentByte++;
+ 195               		.loc 1 99 0
+ 196 0052 2F5F      		subi r18,-1
+ 197 0054 3F4F      		sbci r19,-1
+ 198 0056 2D93      		st X+,r18
+ 199 0058 3C93      		st X,r19
+ 200 005a 00C0      		rjmp .L16
+ 201               	.L15:
+ 100:Lib/CircularBitBuffer.c **** 		else
+ 101:Lib/CircularBitBuffer.c **** 		  Buffer->Out.CurrentByte = Buffer->Data;
+ 202               		.loc 1 101 0
+ 203 005c 8D93      		st X+,r24
+ 204 005e 9C93      		st X,r25
+ 205               	.L16:
+ 102:Lib/CircularBitBuffer.c **** 
+ 103:Lib/CircularBitBuffer.c **** 		/* Reset the retrieval bit mask in the current buffer byte to the first bit */
+ 104:Lib/CircularBitBuffer.c **** 		Buffer->Out.ByteMask = (1 << 0);
+ 206               		.loc 1 104 0
+ 207 0060 81E0      		ldi r24,lo8(1)
+ 208               	.LVL6:
+ 209 0062 8083      		st Z,r24
+ 210 0064 00C0      		rjmp .L17
+ 211               	.LVL7:
+ 212               	.L14:
+ 105:Lib/CircularBitBuffer.c **** 	}
+ 106:Lib/CircularBitBuffer.c **** 	else
+ 107:Lib/CircularBitBuffer.c **** 	{
+ 108:Lib/CircularBitBuffer.c **** 		/* Shift the current retrieval bit mask to the next bit in the current byte */
+ 109:Lib/CircularBitBuffer.c **** 		Buffer->Out.ByteMask <<= 1;
+ 213               		.loc 1 109 0
+ 214 0066 220F      		lsl r18
+ 215 0068 2083      		st Z,r18
+ 216               	.LVL8:
+ 217               	.L17:
+ 110:Lib/CircularBitBuffer.c **** 	}
+ 111:Lib/CircularBitBuffer.c **** 
+ 112:Lib/CircularBitBuffer.c **** 	/* Return the retrieved bit from the buffer */
+ 113:Lib/CircularBitBuffer.c **** 	return Bit;
+ 114:Lib/CircularBitBuffer.c **** }
+ 218               		.loc 1 114 0
+ 219 006a 842F      		mov r24,r20
+ 220               	/* epilogue start */
+ 221 006c DF91      		pop r29
+ 222 006e CF91      		pop r28
+ 223               	.LVL9:
+ 224 0070 0895      		ret
+ 225               		.cfi_endproc
+ 226               	.LFE18:
+ 228               		.text
+ 229               	.Letext0:
+ 230               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 231               		.file 3 "Lib/CircularBitBuffer.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 CircularBitBuffer.c
+     /tmp/ccAwvgJ7.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccAwvgJ7.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccAwvgJ7.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccAwvgJ7.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccAwvgJ7.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccAwvgJ7.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccAwvgJ7.s:14     .text.BitBuffer_Init:0000000000000000 BitBuffer_Init
+     /tmp/ccAwvgJ7.s:51     .text.BitBuffer_StoreNextBit:0000000000000000 BitBuffer_StoreNextBit
+     /tmp/ccAwvgJ7.s:132    .text.BitBuffer_GetNextBit:0000000000000000 BitBuffer_GetNextBit
+
+NO UNDEFINED SYMBOLS

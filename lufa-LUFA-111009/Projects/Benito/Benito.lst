@@ -1,0 +1,2599 @@
+   1               		.file	"Benito.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               		.section	.text.LEDs_SetAllLEDs,"ax",@progbits
+  12               	LEDs_SetAllLEDs:
+  13               	.LFB97:
+  14               		.file 1 "../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h"
+   1:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** /*
+   2:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****              LUFA Library
+   3:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+   5:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****            www.lufa-lib.org
+   7:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** */
+   8:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+   9:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** /*
+  10:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  12:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   software and its documentation for any purpose is hereby granted
+  14:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   without fee, provided that the above copyright notice appear in
+  15:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   all copies and that both that the copyright notice and this
+  16:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   documentation, and that the name of the author not be used in
+  18:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   advertising or publicity pertaining to distribution of the
+  19:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   software without specific, written prior permission.
+  20:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  21:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   The author disclaim all warranties with regard to this
+  22:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   software, including all implied warranties of merchantability
+  23:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   special, indirect or consequential damages or any damages
+  25:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   in an action of contract, negligence or other tortious action,
+  27:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   arising out of or in connection with the use or performance of
+  28:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****   this software.
+  29:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** */
+  30:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  31:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** /** \file
+  32:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****  *  \brief Board specific LED driver header for the Tempusdictum Benito.
+  33:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****  *  \copydetails Group_LEDs_BENITO
+  34:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****  *
+  35:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  36:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****  *        dispatch header located in LUFA/Drivers/Board/LEDs.h.
+  37:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****  */
+  38:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  39:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** /** \ingroup Group_LEDs
+  40:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****  *  \defgroup Group_LEDs_BENITO BENITO
+  41:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****  *  \brief Board specific LED driver header for the Tempusdictum Benito.
+  42:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****  *
+  43:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****  *  Board specific LED driver header for the Tempusdictum Benito (http://dorkbotpdx.org/wiki/benito
+  44:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****  *
+  45:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****  *  @{
+  46:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h ****  */
+  47:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  48:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** #ifndef __LEDS_BENITO_H__
+  49:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** #define __LEDS_BENITO_H__
+  50:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  51:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 	/* Includes: */
+  52:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 		#include "../../../../Common/Common.h"
+  53:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  54:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 	/* Enable C linkage for C++ Compilers: */
+  55:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 		#if defined(__cplusplus)
+  56:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			extern "C" {
+  57:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 		#endif
+  58:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  59:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 	/* Preprocessor Checks: */
+  60:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 		#if !defined(__INCLUDE_FROM_LEDS_H)
+  61:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			#error Do not include this file directly. Include LUFA/Drivers/Board/LEDS.h instead.
+  62:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 		#endif
+  63:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  64:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 	/* Public Interface - May be used in end-application: */
+  65:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 		/* Macros: */
+  66:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			/** LED mask for the first LED on the board. */
+  67:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			#define LEDS_LED1        (1 << 7)
+  68:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  69:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			/** LED mask for the second LED on the board. */
+  70:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			#define LEDS_LED2        (1 << 6)
+  71:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  72:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			/** LED mask for all the LEDs on the board. */
+  73:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			#define LEDS_ALL_LEDS    (LEDS_LED1 | LEDS_LED2)
+  74:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  75:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			/** LED mask for none of the board LEDs. */
+  76:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			#define LEDS_NO_LEDS     0
+  77:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  78:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 		/* Inline Functions: */
+  79:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 		#if !defined(__DOXYGEN__)
+  80:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			static inline void LEDs_Init(void)
+  81:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			{
+  82:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 				DDRC  |= LEDS_ALL_LEDS;
+  83:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 				PORTC |= LEDS_ALL_LEDS;
+  84:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			}
+  85:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  86:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			static inline void LEDs_TurnOnLEDs(const uint8_t LEDMask)
+  87:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			{
+  88:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 				PORTC &= ~LEDMask;
+  89:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			}
+  90:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  91:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			static inline void LEDs_TurnOffLEDs(const uint8_t LEDMask)
+  92:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			{
+  93:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 				PORTC |= LEDMask;
+  94:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			}
+  95:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+  96:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			static inline void LEDs_SetAllLEDs(const uint8_t LEDMask)
+  97:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			{
+  15               		.loc 1 97 0
+  16               		.cfi_startproc
+  17               	.LVL0:
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+  98:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 				PORTC = ((PORTC | LEDS_ALL_LEDS) & ~LEDMask);
+  22               		.loc 1 98 0
+  23 0000 98B1      		in r25,0x8
+  24 0002 906C      		ori r25,lo8(-64)
+  25 0004 8095      		com r24
+  26               	.LVL1:
+  27 0006 8923      		and r24,r25
+  28               	.LVL2:
+  29 0008 88B9      		out 0x8,r24
+  30 000a 0895      		ret
+  31               		.cfi_endproc
+  32               	.LFE97:
+  34               		.section	.text.SetupHardware,"ax",@progbits
+  35               	.global	SetupHardware
+  37               	SetupHardware:
+  38               	.LFB117:
+  39               		.file 2 "Benito.c"
+   1:Benito.c      **** /*
+   2:Benito.c      ****              LUFA Library
+   3:Benito.c      ****      Copyright (C) Dean Camera, 2011.
+   4:Benito.c      **** 
+   5:Benito.c      ****   dean [at] fourwalledcubicle [dot] com
+   6:Benito.c      ****            www.lufa-lib.org
+   7:Benito.c      **** */
+   8:Benito.c      **** 
+   9:Benito.c      **** /*
+  10:Benito.c      ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Benito.c      **** 
+  12:Benito.c      ****   Permission to use, copy, modify, distribute, and sell this
+  13:Benito.c      ****   software and its documentation for any purpose is hereby granted
+  14:Benito.c      ****   without fee, provided that the above copyright notice appear in
+  15:Benito.c      ****   all copies and that both that the copyright notice and this
+  16:Benito.c      ****   permission notice and warranty disclaimer appear in supporting
+  17:Benito.c      ****   documentation, and that the name of the author not be used in
+  18:Benito.c      ****   advertising or publicity pertaining to distribution of the
+  19:Benito.c      ****   software without specific, written prior permission.
+  20:Benito.c      **** 
+  21:Benito.c      ****   The author disclaim all warranties with regard to this
+  22:Benito.c      ****   software, including all implied warranties of merchantability
+  23:Benito.c      ****   and fitness.  In no event shall the author be liable for any
+  24:Benito.c      ****   special, indirect or consequential damages or any damages
+  25:Benito.c      ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Benito.c      ****   in an action of contract, negligence or other tortious action,
+  27:Benito.c      ****   arising out of or in connection with the use or performance of
+  28:Benito.c      ****   this software.
+  29:Benito.c      **** */
+  30:Benito.c      **** 
+  31:Benito.c      **** /** \file
+  32:Benito.c      ****  *
+  33:Benito.c      ****  *  Main source file for the Benito project. This file contains the main tasks of
+  34:Benito.c      ****  *  the project and is responsible for the initial application hardware configuration.
+  35:Benito.c      ****  */
+  36:Benito.c      **** 
+  37:Benito.c      **** #include "Benito.h"
+  38:Benito.c      **** 
+  39:Benito.c      **** /** Circular buffer to hold data from the serial port before it is sent to the host. */
+  40:Benito.c      **** static RingBuffer_t USARTtoUSB_Buffer;
+  41:Benito.c      **** 
+  42:Benito.c      **** /** Underlying data buffer for \ref USARTtoUSB_Buffer, where the stored bytes are located. */
+  43:Benito.c      **** static uint8_t      USARTtoUSB_Buffer_Data[128];
+  44:Benito.c      **** 
+  45:Benito.c      **** /** Pulse generation counters to keep track of the number of milliseconds remaining for each pulse 
+  46:Benito.c      **** volatile struct
+  47:Benito.c      **** {
+  48:Benito.c      **** 	uint8_t ResetPulse; /**< Milliseconds remaining for target /RESET pulse */
+  49:Benito.c      **** 	uint8_t TxLEDPulse; /**< Milliseconds remaining for data Tx LED pulse */
+  50:Benito.c      **** 	uint8_t RxLEDPulse; /**< Milliseconds remaining for data Rx LED pulse */
+  51:Benito.c      **** 	uint8_t PingPongLEDPulse; /**< Milliseconds remaining for enumeration Tx/Rx ping-pong LED pulse */
+  52:Benito.c      **** } PulseMSRemaining;
+  53:Benito.c      **** 
+  54:Benito.c      **** /** Milliseconds remaining until the receive buffer is flushed to the USB host */
+  55:Benito.c      **** uint8_t FlushPeriodRemaining = RECEIVE_BUFFER_FLUSH_MS;
+  56:Benito.c      **** 
+  57:Benito.c      **** /** LUFA CDC Class driver interface configuration and state information. This structure is
+  58:Benito.c      ****  *  passed to all CDC Class driver functions, so that multiple instances of the same class
+  59:Benito.c      ****  *  within a device can be differentiated from one another.
+  60:Benito.c      ****  */
+  61:Benito.c      **** USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
+  62:Benito.c      **** 	{
+  63:Benito.c      **** 		.Config =
+  64:Benito.c      **** 			{
+  65:Benito.c      **** 				.ControlInterfaceNumber         = 0,
+  66:Benito.c      **** 
+  67:Benito.c      **** 				.DataINEndpointNumber           = CDC_TX_EPNUM,
+  68:Benito.c      **** 				.DataINEndpointSize             = CDC_TXRX_EPSIZE,
+  69:Benito.c      **** 				.DataINEndpointDoubleBank       = false,
+  70:Benito.c      **** 
+  71:Benito.c      **** 				.DataOUTEndpointNumber          = CDC_RX_EPNUM,
+  72:Benito.c      **** 				.DataOUTEndpointSize            = CDC_TXRX_EPSIZE,
+  73:Benito.c      **** 				.DataOUTEndpointDoubleBank      = false,
+  74:Benito.c      **** 
+  75:Benito.c      **** 				.NotificationEndpointNumber     = CDC_NOTIFICATION_EPNUM,
+  76:Benito.c      **** 				.NotificationEndpointSize       = CDC_NOTIFICATION_EPSIZE,
+  77:Benito.c      **** 				.NotificationEndpointDoubleBank = false,
+  78:Benito.c      **** 			},
+  79:Benito.c      **** 	};
+  80:Benito.c      **** 
+  81:Benito.c      **** /** Main program entry point. This routine contains the overall program flow, including initial
+  82:Benito.c      ****  *  setup of all components and the main program loop.
+  83:Benito.c      ****  */
+  84:Benito.c      **** int main(void)
+  85:Benito.c      **** {
+  86:Benito.c      **** 	SetupHardware();
+  87:Benito.c      **** 
+  88:Benito.c      **** 	RingBuffer_InitBuffer(&USARTtoUSB_Buffer, USARTtoUSB_Buffer_Data, sizeof(USARTtoUSB_Buffer_Data));
+  89:Benito.c      **** 
+  90:Benito.c      **** 	sei();
+  91:Benito.c      **** 
+  92:Benito.c      **** 	for (;;)
+  93:Benito.c      **** 	{
+  94:Benito.c      **** 		/* Echo bytes from the host to the target via the hardware USART */
+  95:Benito.c      **** 		if ((UCSR1A & (1 << UDRE1)) && CDC_Device_BytesReceived(&VirtualSerial_CDC_Interface))
+  96:Benito.c      **** 		{
+  97:Benito.c      **** 			UDR1 = CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
+  98:Benito.c      **** 
+  99:Benito.c      **** 			LEDs_TurnOnLEDs(LEDMASK_TX);
+ 100:Benito.c      **** 			PulseMSRemaining.TxLEDPulse = TX_RX_LED_PULSE_MS;
+ 101:Benito.c      **** 		}
+ 102:Benito.c      **** 
+ 103:Benito.c      **** 		/* Check if the millisecond timer has elapsed */
+ 104:Benito.c      **** 		if (TIFR0 & (1 << OCF0A))
+ 105:Benito.c      **** 		{
+ 106:Benito.c      **** 			/* Clear flush timer expiry flag */
+ 107:Benito.c      **** 			TIFR0 |= (1 << TOV0);
+ 108:Benito.c      **** 
+ 109:Benito.c      **** 			/* Check if the reset pulse period has elapsed, if so tristate the target reset line */
+ 110:Benito.c      **** 			if (PulseMSRemaining.ResetPulse && !(--PulseMSRemaining.ResetPulse))
+ 111:Benito.c      **** 			{
+ 112:Benito.c      **** 				LEDs_TurnOffLEDs(LEDMASK_BUSY);
+ 113:Benito.c      **** 				AVR_RESET_LINE_DDR &= ~AVR_RESET_LINE_MASK;
+ 114:Benito.c      **** 			}
+ 115:Benito.c      **** 
+ 116:Benito.c      **** 			/* Check if the LEDs should be ping-ponging (during enumeration) */
+ 117:Benito.c      **** 			if (PulseMSRemaining.PingPongLEDPulse && !(--PulseMSRemaining.PingPongLEDPulse))
+ 118:Benito.c      **** 			{
+ 119:Benito.c      **** 				LEDs_ToggleLEDs(LEDMASK_TX | LEDMASK_RX);
+ 120:Benito.c      **** 				PulseMSRemaining.PingPongLEDPulse = PING_PONG_LED_PULSE_MS;
+ 121:Benito.c      **** 			}
+ 122:Benito.c      **** 
+ 123:Benito.c      **** 			/* Turn off TX LED(s) once the TX pulse period has elapsed */
+ 124:Benito.c      **** 			if (PulseMSRemaining.TxLEDPulse && !(--PulseMSRemaining.TxLEDPulse))
+ 125:Benito.c      **** 			  LEDs_TurnOffLEDs(LEDMASK_TX);
+ 126:Benito.c      **** 
+ 127:Benito.c      **** 			/* Turn off RX LED(s) once the RX pulse period has elapsed */
+ 128:Benito.c      **** 			if (PulseMSRemaining.RxLEDPulse && !(--PulseMSRemaining.RxLEDPulse))
+ 129:Benito.c      **** 			  LEDs_TurnOffLEDs(LEDMASK_RX);
+ 130:Benito.c      **** 
+ 131:Benito.c      **** 			/* Check if the receive buffer flush period has expired */
+ 132:Benito.c      **** 			uint16_t BufferCount = RingBuffer_GetCount(&USARTtoUSB_Buffer);
+ 133:Benito.c      **** 			if (!(--FlushPeriodRemaining) || (BufferCount > 200))
+ 134:Benito.c      **** 			{
+ 135:Benito.c      **** 				FlushPeriodRemaining = RECEIVE_BUFFER_FLUSH_MS;
+ 136:Benito.c      **** 
+ 137:Benito.c      **** 				/* Start RX LED indicator pulse */
+ 138:Benito.c      **** 				if (BufferCount)
+ 139:Benito.c      **** 				{
+ 140:Benito.c      **** 					LEDs_TurnOnLEDs(LEDMASK_RX);
+ 141:Benito.c      **** 					PulseMSRemaining.RxLEDPulse = TX_RX_LED_PULSE_MS;
+ 142:Benito.c      **** 				}
+ 143:Benito.c      **** 
+ 144:Benito.c      **** 				/* Echo bytes from the target to the host via the virtual serial port */
+ 145:Benito.c      **** 				while (BufferCount--)
+ 146:Benito.c      **** 				{
+ 147:Benito.c      **** 					/* Try to send the next byte of data to the host, abort if there is an error without dequeuing
+ 148:Benito.c      **** 					if (CDC_Device_SendByte(&VirtualSerial_CDC_Interface,
+ 149:Benito.c      **** 											RingBuffer_Peek(&USARTtoUSB_Buffer)) != ENDPOINT_READYWAIT_NoError)
+ 150:Benito.c      **** 					{
+ 151:Benito.c      **** 						break;
+ 152:Benito.c      **** 					}
+ 153:Benito.c      **** 					
+ 154:Benito.c      **** 					/* Dequeue the already sent byte from the buffer now we have confirmed that no transmission er
+ 155:Benito.c      **** 					RingBuffer_Remove(&USARTtoUSB_Buffer);
+ 156:Benito.c      **** 				}
+ 157:Benito.c      **** 			}
+ 158:Benito.c      **** 		}
+ 159:Benito.c      **** 
+ 160:Benito.c      **** 		CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
+ 161:Benito.c      **** 		USB_USBTask();
+ 162:Benito.c      **** 	}
+ 163:Benito.c      **** }
+ 164:Benito.c      **** 
+ 165:Benito.c      **** /** Configures the board hardware and chip peripherals for the demo's functionality. */
+ 166:Benito.c      **** void SetupHardware(void)
+ 167:Benito.c      **** {
+  40               		.loc 2 167 0
+  41               		.cfi_startproc
+  42               	/* prologue: function */
+  43               	/* frame size = 0 */
+  44               	/* stack size = 0 */
+  45               	.L__stack_usage = 0
+ 168:Benito.c      **** 	/* Disable watchdog if enabled by bootloader/fuses */
+ 169:Benito.c      **** 	MCUSR &= ~(1 << WDRF);
+  46               		.loc 2 169 0
+  47 0000 84B7      		in r24,0x34
+  48 0002 877F      		andi r24,lo8(-9)
+  49 0004 84BF      		out 0x34,r24
+  50               	.LBB60:
+  51               	.LBB61:
+  52               		.file 3 "/usr/lib/avr/include/avr/wdt.h"
+   1:/usr/lib/avr/include/avr/wdt.h **** /* Copyright (c) 2002, 2004 Marek Michalkiewicz
+   2:/usr/lib/avr/include/avr/wdt.h ****    Copyright (c) 2005, 2006, 2007 Eric B. Weddington
+   3:/usr/lib/avr/include/avr/wdt.h ****    All rights reserved.
+   4:/usr/lib/avr/include/avr/wdt.h **** 
+   5:/usr/lib/avr/include/avr/wdt.h ****    Redistribution and use in source and binary forms, with or without
+   6:/usr/lib/avr/include/avr/wdt.h ****    modification, are permitted provided that the following conditions are met:
+   7:/usr/lib/avr/include/avr/wdt.h **** 
+   8:/usr/lib/avr/include/avr/wdt.h ****    * Redistributions of source code must retain the above copyright
+   9:/usr/lib/avr/include/avr/wdt.h ****      notice, this list of conditions and the following disclaimer.
+  10:/usr/lib/avr/include/avr/wdt.h **** 
+  11:/usr/lib/avr/include/avr/wdt.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:/usr/lib/avr/include/avr/wdt.h ****      notice, this list of conditions and the following disclaimer in
+  13:/usr/lib/avr/include/avr/wdt.h ****      the documentation and/or other materials provided with the
+  14:/usr/lib/avr/include/avr/wdt.h ****      distribution.
+  15:/usr/lib/avr/include/avr/wdt.h **** 
+  16:/usr/lib/avr/include/avr/wdt.h ****    * Neither the name of the copyright holders nor the names of
+  17:/usr/lib/avr/include/avr/wdt.h ****      contributors may be used to endorse or promote products derived
+  18:/usr/lib/avr/include/avr/wdt.h ****      from this software without specific prior written permission.
+  19:/usr/lib/avr/include/avr/wdt.h **** 
+  20:/usr/lib/avr/include/avr/wdt.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:/usr/lib/avr/include/avr/wdt.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:/usr/lib/avr/include/avr/wdt.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:/usr/lib/avr/include/avr/wdt.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:/usr/lib/avr/include/avr/wdt.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:/usr/lib/avr/include/avr/wdt.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:/usr/lib/avr/include/avr/wdt.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:/usr/lib/avr/include/avr/wdt.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:/usr/lib/avr/include/avr/wdt.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:/usr/lib/avr/include/avr/wdt.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:/usr/lib/avr/include/avr/wdt.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:/usr/lib/avr/include/avr/wdt.h **** 
+  32:/usr/lib/avr/include/avr/wdt.h **** /* $Id$ */
+  33:/usr/lib/avr/include/avr/wdt.h **** 
+  34:/usr/lib/avr/include/avr/wdt.h **** /*
+  35:/usr/lib/avr/include/avr/wdt.h ****    avr/wdt.h - macros for AVR watchdog timer
+  36:/usr/lib/avr/include/avr/wdt.h ****  */
+  37:/usr/lib/avr/include/avr/wdt.h **** 
+  38:/usr/lib/avr/include/avr/wdt.h **** #ifndef _AVR_WDT_H_
+  39:/usr/lib/avr/include/avr/wdt.h **** #define _AVR_WDT_H_
+  40:/usr/lib/avr/include/avr/wdt.h **** 
+  41:/usr/lib/avr/include/avr/wdt.h **** #include <avr/io.h>
+  42:/usr/lib/avr/include/avr/wdt.h **** #include <stdint.h>
+  43:/usr/lib/avr/include/avr/wdt.h **** 
+  44:/usr/lib/avr/include/avr/wdt.h **** /** \file */
+  45:/usr/lib/avr/include/avr/wdt.h **** /** \defgroup avr_watchdog <avr/wdt.h>: Watchdog timer handling
+  46:/usr/lib/avr/include/avr/wdt.h ****     \code #include <avr/wdt.h> \endcode
+  47:/usr/lib/avr/include/avr/wdt.h **** 
+  48:/usr/lib/avr/include/avr/wdt.h ****     This header file declares the interface to some inline macros
+  49:/usr/lib/avr/include/avr/wdt.h ****     handling the watchdog timer present in many AVR devices.  In order
+  50:/usr/lib/avr/include/avr/wdt.h ****     to prevent the watchdog timer configuration from being
+  51:/usr/lib/avr/include/avr/wdt.h ****     accidentally altered by a crashing application, a special timed
+  52:/usr/lib/avr/include/avr/wdt.h ****     sequence is required in order to change it.  The macros within
+  53:/usr/lib/avr/include/avr/wdt.h ****     this header file handle the required sequence automatically
+  54:/usr/lib/avr/include/avr/wdt.h ****     before changing any value.  Interrupts will be disabled during
+  55:/usr/lib/avr/include/avr/wdt.h ****     the manipulation.
+  56:/usr/lib/avr/include/avr/wdt.h **** 
+  57:/usr/lib/avr/include/avr/wdt.h ****     \note Depending on the fuse configuration of the particular
+  58:/usr/lib/avr/include/avr/wdt.h ****     device, further restrictions might apply, in particular it might
+  59:/usr/lib/avr/include/avr/wdt.h ****     be disallowed to turn off the watchdog timer.
+  60:/usr/lib/avr/include/avr/wdt.h **** 
+  61:/usr/lib/avr/include/avr/wdt.h ****     Note that for newer devices (ATmega88 and newer, effectively any
+  62:/usr/lib/avr/include/avr/wdt.h ****     AVR that has the option to also generate interrupts), the watchdog
+  63:/usr/lib/avr/include/avr/wdt.h ****     timer remains active even after a system reset (except a power-on
+  64:/usr/lib/avr/include/avr/wdt.h ****     condition), using the fastest prescaler value (approximately 15
+  65:/usr/lib/avr/include/avr/wdt.h ****     ms).  It is therefore required to turn off the watchdog early
+  66:/usr/lib/avr/include/avr/wdt.h ****     during program startup, the datasheet recommends a sequence like
+  67:/usr/lib/avr/include/avr/wdt.h ****     the following:
+  68:/usr/lib/avr/include/avr/wdt.h **** 
+  69:/usr/lib/avr/include/avr/wdt.h ****     \code
+  70:/usr/lib/avr/include/avr/wdt.h ****     #include <stdint.h>
+  71:/usr/lib/avr/include/avr/wdt.h ****     #include <avr/wdt.h>
+  72:/usr/lib/avr/include/avr/wdt.h **** 
+  73:/usr/lib/avr/include/avr/wdt.h ****     uint8_t mcusr_mirror __attribute__ ((section (".noinit")));
+  74:/usr/lib/avr/include/avr/wdt.h **** 
+  75:/usr/lib/avr/include/avr/wdt.h ****     void get_mcusr(void) \
+  76:/usr/lib/avr/include/avr/wdt.h ****       __attribute__((naked)) \
+  77:/usr/lib/avr/include/avr/wdt.h ****       __attribute__((section(".init3")));
+  78:/usr/lib/avr/include/avr/wdt.h ****     void get_mcusr(void)
+  79:/usr/lib/avr/include/avr/wdt.h ****     {
+  80:/usr/lib/avr/include/avr/wdt.h ****       mcusr_mirror = MCUSR;
+  81:/usr/lib/avr/include/avr/wdt.h ****       MCUSR = 0;
+  82:/usr/lib/avr/include/avr/wdt.h ****       wdt_disable();
+  83:/usr/lib/avr/include/avr/wdt.h ****     }
+  84:/usr/lib/avr/include/avr/wdt.h ****     \endcode
+  85:/usr/lib/avr/include/avr/wdt.h **** 
+  86:/usr/lib/avr/include/avr/wdt.h ****     Saving the value of MCUSR in \c mcusr_mirror is only needed if the
+  87:/usr/lib/avr/include/avr/wdt.h ****     application later wants to examine the reset source, but in particular, 
+  88:/usr/lib/avr/include/avr/wdt.h ****     clearing the watchdog reset flag before disabling the
+  89:/usr/lib/avr/include/avr/wdt.h ****     watchdog is required, according to the datasheet.
+  90:/usr/lib/avr/include/avr/wdt.h **** */
+  91:/usr/lib/avr/include/avr/wdt.h **** 
+  92:/usr/lib/avr/include/avr/wdt.h **** /**
+  93:/usr/lib/avr/include/avr/wdt.h ****    \ingroup avr_watchdog
+  94:/usr/lib/avr/include/avr/wdt.h ****    Reset the watchdog timer.  When the watchdog timer is enabled,
+  95:/usr/lib/avr/include/avr/wdt.h ****    a call to this instruction is required before the timer expires,
+  96:/usr/lib/avr/include/avr/wdt.h ****    otherwise a watchdog-initiated device reset will occur. 
+  97:/usr/lib/avr/include/avr/wdt.h **** */
+  98:/usr/lib/avr/include/avr/wdt.h **** 
+  99:/usr/lib/avr/include/avr/wdt.h **** #define wdt_reset() __asm__ __volatile__ ("wdr")
+ 100:/usr/lib/avr/include/avr/wdt.h **** 
+ 101:/usr/lib/avr/include/avr/wdt.h **** #ifndef __DOXYGEN__
+ 102:/usr/lib/avr/include/avr/wdt.h **** 
+ 103:/usr/lib/avr/include/avr/wdt.h **** #if defined(WDP3)
+ 104:/usr/lib/avr/include/avr/wdt.h **** # define _WD_PS3_MASK       _BV(WDP3)
+ 105:/usr/lib/avr/include/avr/wdt.h **** #else
+ 106:/usr/lib/avr/include/avr/wdt.h **** # define _WD_PS3_MASK       0x00
+ 107:/usr/lib/avr/include/avr/wdt.h **** #endif
+ 108:/usr/lib/avr/include/avr/wdt.h **** 
+ 109:/usr/lib/avr/include/avr/wdt.h **** #if defined(WDTCSR)
+ 110:/usr/lib/avr/include/avr/wdt.h **** #  define _WD_CONTROL_REG     WDTCSR
+ 111:/usr/lib/avr/include/avr/wdt.h **** #elif defined(WDTCR)
+ 112:/usr/lib/avr/include/avr/wdt.h **** #  define _WD_CONTROL_REG     WDTCR
+ 113:/usr/lib/avr/include/avr/wdt.h **** #else
+ 114:/usr/lib/avr/include/avr/wdt.h **** #  define _WD_CONTROL_REG     WDT
+ 115:/usr/lib/avr/include/avr/wdt.h **** #endif
+ 116:/usr/lib/avr/include/avr/wdt.h **** 
+ 117:/usr/lib/avr/include/avr/wdt.h **** #if defined(WDTOE)
+ 118:/usr/lib/avr/include/avr/wdt.h **** #define _WD_CHANGE_BIT      WDTOE
+ 119:/usr/lib/avr/include/avr/wdt.h **** #else
+ 120:/usr/lib/avr/include/avr/wdt.h **** #define _WD_CHANGE_BIT      WDCE
+ 121:/usr/lib/avr/include/avr/wdt.h **** #endif
+ 122:/usr/lib/avr/include/avr/wdt.h **** 
+ 123:/usr/lib/avr/include/avr/wdt.h **** #endif	/* !__DOXYGEN__ */
+ 124:/usr/lib/avr/include/avr/wdt.h **** 
+ 125:/usr/lib/avr/include/avr/wdt.h **** 
+ 126:/usr/lib/avr/include/avr/wdt.h **** /**
+ 127:/usr/lib/avr/include/avr/wdt.h ****    \ingroup avr_watchdog
+ 128:/usr/lib/avr/include/avr/wdt.h ****    Enable the watchdog timer, configuring it for expiry after
+ 129:/usr/lib/avr/include/avr/wdt.h ****    \c timeout (which is a combination of the \c WDP0 through
+ 130:/usr/lib/avr/include/avr/wdt.h ****    \c WDP2 bits to write into the \c WDTCR register; For those devices 
+ 131:/usr/lib/avr/include/avr/wdt.h ****    that have a \c WDTCSR register, it uses the combination of the \c WDP0 
+ 132:/usr/lib/avr/include/avr/wdt.h ****    through \c WDP3 bits).
+ 133:/usr/lib/avr/include/avr/wdt.h **** 
+ 134:/usr/lib/avr/include/avr/wdt.h ****    See also the symbolic constants \c WDTO_15MS et al.
+ 135:/usr/lib/avr/include/avr/wdt.h **** */
+ 136:/usr/lib/avr/include/avr/wdt.h **** 
+ 137:/usr/lib/avr/include/avr/wdt.h **** 
+ 138:/usr/lib/avr/include/avr/wdt.h **** #if defined(__AVR_XMEGA__)
+ 139:/usr/lib/avr/include/avr/wdt.h **** 
+ 140:/usr/lib/avr/include/avr/wdt.h **** #if defined (WDT_CTRLA) && !defined(RAMPD)
+ 141:/usr/lib/avr/include/avr/wdt.h **** 
+ 142:/usr/lib/avr/include/avr/wdt.h **** #define wdt_enable(timeout) \
+ 143:/usr/lib/avr/include/avr/wdt.h **** do { \
+ 144:/usr/lib/avr/include/avr/wdt.h **** uint8_t temp; \
+ 145:/usr/lib/avr/include/avr/wdt.h **** __asm__ __volatile__ ( \
+ 146:/usr/lib/avr/include/avr/wdt.h **** 	"wdr"									"\n\t" \
+ 147:/usr/lib/avr/include/avr/wdt.h **** 	"out %[ccp_reg], %[ioreg_cen_mask]"		"\n\t" \
+ 148:/usr/lib/avr/include/avr/wdt.h **** 	"lds %[tmp], %[wdt_reg]"				"\n\t" \
+ 149:/usr/lib/avr/include/avr/wdt.h **** 	"sbr %[tmp], %[wdt_enable_timeout]"		"\n\t" \
+ 150:/usr/lib/avr/include/avr/wdt.h **** 	"sts %[wdt_reg], %[tmp]"				"\n\t" \
+ 151:/usr/lib/avr/include/avr/wdt.h **** 	"1:lds %[tmp], %[wdt_status_reg]"		"\n\t" \
+ 152:/usr/lib/avr/include/avr/wdt.h **** 	"sbrc %[tmp], %[wdt_syncbusy_bit]"		"\n\t" \
+ 153:/usr/lib/avr/include/avr/wdt.h **** 	"rjmp 1b"								"\n\t" \
+ 154:/usr/lib/avr/include/avr/wdt.h **** 	: [tmp]					"=r" (temp) \
+ 155:/usr/lib/avr/include/avr/wdt.h **** 	: [ccp_reg]				"I"  (_SFR_IO_ADDR(CCP)), \
+ 156:/usr/lib/avr/include/avr/wdt.h **** 	  [ioreg_cen_mask]		"r"  ((uint8_t)CCP_IOREG_gc), \
+ 157:/usr/lib/avr/include/avr/wdt.h **** 	  [wdt_reg]				"n"  (_SFR_MEM_ADDR(WDT_CTRLA)), \
+ 158:/usr/lib/avr/include/avr/wdt.h **** 	  [wdt_enable_timeout]	"M"  (timeout), \
+ 159:/usr/lib/avr/include/avr/wdt.h **** 	  [wdt_status_reg]		"n"  (_SFR_MEM_ADDR(WDT_STATUS)), \
+ 160:/usr/lib/avr/include/avr/wdt.h **** 	  [wdt_syncbusy_bit]	"I"  (WDT_SYNCBUSY_bm) \
+ 161:/usr/lib/avr/include/avr/wdt.h **** ); \
+ 162:/usr/lib/avr/include/avr/wdt.h **** } while(0)
+ 163:/usr/lib/avr/include/avr/wdt.h **** 
+ 164:/usr/lib/avr/include/avr/wdt.h **** #define wdt_disable() \
+ 165:/usr/lib/avr/include/avr/wdt.h **** do { \
+ 166:/usr/lib/avr/include/avr/wdt.h **** uint8_t temp; \
+ 167:/usr/lib/avr/include/avr/wdt.h **** __asm__ __volatile__ (  \
+ 168:/usr/lib/avr/include/avr/wdt.h **** 	"wdr"								"\n\t" \
+ 169:/usr/lib/avr/include/avr/wdt.h **** 	"out %[ccp_reg], %[ioreg_cen_mask]" "\n\t" \
+ 170:/usr/lib/avr/include/avr/wdt.h **** 	"lds %[tmp], %[wdt_reg]"			"\n\t" \
+ 171:/usr/lib/avr/include/avr/wdt.h **** 	"cbr %[tmp], %[timeout_mask]"       "\n\t" \
+ 172:/usr/lib/avr/include/avr/wdt.h **** 	"sts %[wdt_reg], %[tmp]"			"\n\t" \
+ 173:/usr/lib/avr/include/avr/wdt.h ****     : [tmp]            "=r" (temp) \
+ 174:/usr/lib/avr/include/avr/wdt.h ****     : [ccp_reg]        "I" (_SFR_IO_ADDR(CCP)),       \
+ 175:/usr/lib/avr/include/avr/wdt.h ****       [ioreg_cen_mask] "r" ((uint8_t)CCP_IOREG_gc),   \
+ 176:/usr/lib/avr/include/avr/wdt.h ****       [wdt_reg]        "n" (_SFR_MEM_ADDR(WDT_CTRLA)),\
+ 177:/usr/lib/avr/include/avr/wdt.h ****       [timeout_mask]   "I" (WDT_PERIOD_gm) \
+ 178:/usr/lib/avr/include/avr/wdt.h **** ); \
+ 179:/usr/lib/avr/include/avr/wdt.h **** } while(0)
+ 180:/usr/lib/avr/include/avr/wdt.h **** 
+ 181:/usr/lib/avr/include/avr/wdt.h **** #else // defined (WDT_CTRLA) && !defined(RAMPD)
+ 182:/usr/lib/avr/include/avr/wdt.h **** 
+ 183:/usr/lib/avr/include/avr/wdt.h **** /*
+ 184:/usr/lib/avr/include/avr/wdt.h ****    wdt_enable(timeout) for xmega devices
+ 185:/usr/lib/avr/include/avr/wdt.h **** ** write signature (CCP_IOREG_gc) that enables change of protected I/O
+ 186:/usr/lib/avr/include/avr/wdt.h ****    registers to the CCP register
+ 187:/usr/lib/avr/include/avr/wdt.h **** ** At the same time,
+ 188:/usr/lib/avr/include/avr/wdt.h ****    1) set WDT change enable (WDT_CEN_bm)
+ 189:/usr/lib/avr/include/avr/wdt.h ****    2) enable WDT (WDT_ENABLE_bm)
+ 190:/usr/lib/avr/include/avr/wdt.h ****    3) set timeout (timeout)
+ 191:/usr/lib/avr/include/avr/wdt.h **** ** Synchronization starts when ENABLE bit of WDT is set. So, wait till it
+ 192:/usr/lib/avr/include/avr/wdt.h ****    finishes (SYNCBUSY of STATUS register is automatically cleared after the
+ 193:/usr/lib/avr/include/avr/wdt.h ****    sync is finished).
+ 194:/usr/lib/avr/include/avr/wdt.h **** */
+ 195:/usr/lib/avr/include/avr/wdt.h **** #define wdt_enable(timeout) \
+ 196:/usr/lib/avr/include/avr/wdt.h **** do { \
+ 197:/usr/lib/avr/include/avr/wdt.h **** uint8_t temp; \
+ 198:/usr/lib/avr/include/avr/wdt.h **** __asm__ __volatile__ (         \
+ 199:/usr/lib/avr/include/avr/wdt.h ****     "in __tmp_reg__, %[rampd]"              "\n\t" \
+ 200:/usr/lib/avr/include/avr/wdt.h ****     "out %[rampd], __zero_reg__"            "\n\t" \
+ 201:/usr/lib/avr/include/avr/wdt.h ****     "out %[ccp_reg], %[ioreg_cen_mask]"     "\n\t" \
+ 202:/usr/lib/avr/include/avr/wdt.h ****     "sts %[wdt_reg], %[wdt_enable_timeout]" "\n\t" \
+ 203:/usr/lib/avr/include/avr/wdt.h ****     "1:lds %[tmp], %[wdt_status_reg]"       "\n\t" \
+ 204:/usr/lib/avr/include/avr/wdt.h ****     "sbrc %[tmp], %[wdt_syncbusy_bit]"      "\n\t" \
+ 205:/usr/lib/avr/include/avr/wdt.h ****     "rjmp 1b"                               "\n\t" \
+ 206:/usr/lib/avr/include/avr/wdt.h ****     "out %[rampd], __tmp_reg__"             "\n\t" \
+ 207:/usr/lib/avr/include/avr/wdt.h ****     : [tmp]                "=r" (temp) \
+ 208:/usr/lib/avr/include/avr/wdt.h ****     : [rampd]              "I" (_SFR_IO_ADDR(RAMPD)),      \
+ 209:/usr/lib/avr/include/avr/wdt.h ****       [ccp_reg]            "I" (_SFR_IO_ADDR(CCP)),        \
+ 210:/usr/lib/avr/include/avr/wdt.h ****       [ioreg_cen_mask]     "r" ((uint8_t)CCP_IOREG_gc),     \
+ 211:/usr/lib/avr/include/avr/wdt.h ****       [wdt_reg]            "n" (_SFR_MEM_ADDR(WDT_CTRL)),   \
+ 212:/usr/lib/avr/include/avr/wdt.h ****       [wdt_enable_timeout] "r" ((uint8_t)(WDT_CEN_bm | WDT_ENABLE_bm | timeout)), \
+ 213:/usr/lib/avr/include/avr/wdt.h ****       [wdt_status_reg]     "n" (_SFR_MEM_ADDR(WDT_STATUS)), \
+ 214:/usr/lib/avr/include/avr/wdt.h ****       [wdt_syncbusy_bit]   "I" (WDT_SYNCBUSY_bm)            \
+ 215:/usr/lib/avr/include/avr/wdt.h ****     : "r0" \
+ 216:/usr/lib/avr/include/avr/wdt.h **** ); \
+ 217:/usr/lib/avr/include/avr/wdt.h **** } while(0)
+ 218:/usr/lib/avr/include/avr/wdt.h **** 
+ 219:/usr/lib/avr/include/avr/wdt.h **** #define wdt_disable() \
+ 220:/usr/lib/avr/include/avr/wdt.h **** __asm__ __volatile__ (  \
+ 221:/usr/lib/avr/include/avr/wdt.h ****     "in __tmp_reg__, %[rampd]"          "\n\t" \
+ 222:/usr/lib/avr/include/avr/wdt.h ****     "out %[rampd], __zero_reg__"        "\n\t" \
+ 223:/usr/lib/avr/include/avr/wdt.h ****     "out %[ccp_reg], %[ioreg_cen_mask]" "\n\t" \
+ 224:/usr/lib/avr/include/avr/wdt.h ****     "sts %[wdt_reg], %[disable_mask]"   "\n\t" \
+ 225:/usr/lib/avr/include/avr/wdt.h ****     "out %[rampd], __tmp_reg__"         "\n\t" \
+ 226:/usr/lib/avr/include/avr/wdt.h ****     : \
+ 227:/usr/lib/avr/include/avr/wdt.h ****     : [rampd]             "I" (_SFR_IO_ADDR(RAMPD)),    \
+ 228:/usr/lib/avr/include/avr/wdt.h ****       [ccp_reg]           "I" (_SFR_IO_ADDR(CCP)),      \
+ 229:/usr/lib/avr/include/avr/wdt.h ****       [ioreg_cen_mask]    "r" ((uint8_t)CCP_IOREG_gc),   \
+ 230:/usr/lib/avr/include/avr/wdt.h ****       [wdt_reg]           "n" (_SFR_MEM_ADDR(WDT_CTRL)), \
+ 231:/usr/lib/avr/include/avr/wdt.h ****       [disable_mask]      "r" ((uint8_t)((~WDT_ENABLE_bm) | WDT_CEN_bm)) \
+ 232:/usr/lib/avr/include/avr/wdt.h ****     : "r0" \
+ 233:/usr/lib/avr/include/avr/wdt.h **** );
+ 234:/usr/lib/avr/include/avr/wdt.h **** 
+ 235:/usr/lib/avr/include/avr/wdt.h **** #endif // defined (WDT_CTRLA) && !defined(RAMPD)
+ 236:/usr/lib/avr/include/avr/wdt.h **** 
+ 237:/usr/lib/avr/include/avr/wdt.h **** #elif defined(__AVR_TINY__)
+ 238:/usr/lib/avr/include/avr/wdt.h **** 
+ 239:/usr/lib/avr/include/avr/wdt.h **** #define wdt_enable(value) \
+ 240:/usr/lib/avr/include/avr/wdt.h **** __asm__ __volatile__ ( \
+ 241:/usr/lib/avr/include/avr/wdt.h ****     "in __tmp_reg__,__SREG__" "\n\t"  \
+ 242:/usr/lib/avr/include/avr/wdt.h ****     "cli" "\n\t"  \
+ 243:/usr/lib/avr/include/avr/wdt.h ****     "wdr" "\n\t"  \
+ 244:/usr/lib/avr/include/avr/wdt.h ****     "out %[CCPADDRESS],%[SIGNATURE]" "\n\t"  \
+ 245:/usr/lib/avr/include/avr/wdt.h ****     "out %[WDTREG],%[WDVALUE]" "\n\t"  \
+ 246:/usr/lib/avr/include/avr/wdt.h ****     "out __SREG__,__tmp_reg__" "\n\t"  \
+ 247:/usr/lib/avr/include/avr/wdt.h ****     : /* no outputs */  \
+ 248:/usr/lib/avr/include/avr/wdt.h ****     : [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),  \
+ 249:/usr/lib/avr/include/avr/wdt.h ****       [SIGNATURE] "r" ((uint8_t)0xD8), \
+ 250:/usr/lib/avr/include/avr/wdt.h ****       [WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)), \
+ 251:/usr/lib/avr/include/avr/wdt.h ****       [WDVALUE] "r" ((uint8_t)((value & 0x08 ? _WD_PS3_MASK : 0x00) \
+ 252:/usr/lib/avr/include/avr/wdt.h ****       | _BV(WDE) | (value & 0x07) )) \
+ 253:/usr/lib/avr/include/avr/wdt.h ****     : "r16" \
+ 254:/usr/lib/avr/include/avr/wdt.h **** )
+ 255:/usr/lib/avr/include/avr/wdt.h **** 
+ 256:/usr/lib/avr/include/avr/wdt.h **** #define wdt_disable() \
+ 257:/usr/lib/avr/include/avr/wdt.h **** do { \
+ 258:/usr/lib/avr/include/avr/wdt.h **** uint8_t temp_wd; \
+ 259:/usr/lib/avr/include/avr/wdt.h **** __asm__ __volatile__ ( \
+ 260:/usr/lib/avr/include/avr/wdt.h ****     "in __tmp_reg__,__SREG__" "\n\t"  \
+ 261:/usr/lib/avr/include/avr/wdt.h ****     "cli" "\n\t"  \
+ 262:/usr/lib/avr/include/avr/wdt.h ****     "wdr" "\n\t"  \
+ 263:/usr/lib/avr/include/avr/wdt.h ****     "out %[CCPADDRESS],%[SIGNATURE]" "\n\t"  \
+ 264:/usr/lib/avr/include/avr/wdt.h ****     "in  %[TEMP_WD],%[WDTREG]" "\n\t" \
+ 265:/usr/lib/avr/include/avr/wdt.h ****     "cbr %[TEMP_WD],%[WDVALUE]" "\n\t" \
+ 266:/usr/lib/avr/include/avr/wdt.h ****     "out %[WDTREG],%[TEMP_WD]" "\n\t" \
+ 267:/usr/lib/avr/include/avr/wdt.h ****     "out __SREG__,__tmp_reg__" "\n\t" \
+ 268:/usr/lib/avr/include/avr/wdt.h ****     : /*no output */ \
+ 269:/usr/lib/avr/include/avr/wdt.h ****     : [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)), \
+ 270:/usr/lib/avr/include/avr/wdt.h ****       [SIGNATURE] "r" ((uint8_t)0xD8), \
+ 271:/usr/lib/avr/include/avr/wdt.h ****       [WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)), \
+ 272:/usr/lib/avr/include/avr/wdt.h ****       [TEMP_WD] "d" (temp_wd), \
+ 273:/usr/lib/avr/include/avr/wdt.h ****       [WDVALUE] "n" (1 << WDE) \
+ 274:/usr/lib/avr/include/avr/wdt.h ****     : "r16" \
+ 275:/usr/lib/avr/include/avr/wdt.h **** ); \
+ 276:/usr/lib/avr/include/avr/wdt.h **** }while(0)
+ 277:/usr/lib/avr/include/avr/wdt.h **** 
+ 278:/usr/lib/avr/include/avr/wdt.h **** #elif defined(CCP)
+ 279:/usr/lib/avr/include/avr/wdt.h **** 
+ 280:/usr/lib/avr/include/avr/wdt.h **** static __inline__
+ 281:/usr/lib/avr/include/avr/wdt.h **** __attribute__ ((__always_inline__))
+ 282:/usr/lib/avr/include/avr/wdt.h **** void wdt_enable (const uint8_t value)
+ 283:/usr/lib/avr/include/avr/wdt.h **** {
+ 284:/usr/lib/avr/include/avr/wdt.h **** 	if (!_SFR_IO_REG_P (CCP) && !_SFR_IO_REG_P (_WD_CONTROL_REG))
+ 285:/usr/lib/avr/include/avr/wdt.h **** 	{
+ 286:/usr/lib/avr/include/avr/wdt.h **** 		__asm__ __volatile__ (
+ 287:/usr/lib/avr/include/avr/wdt.h **** 			"in __tmp_reg__,__SREG__" "\n\t"
+ 288:/usr/lib/avr/include/avr/wdt.h **** 			"cli" "\n\t"
+ 289:/usr/lib/avr/include/avr/wdt.h **** 			"wdr" "\n\t"
+ 290:/usr/lib/avr/include/avr/wdt.h **** 			"sts %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 291:/usr/lib/avr/include/avr/wdt.h **** 			"sts %[WDTREG],%[WDVALUE]" "\n\t"
+ 292:/usr/lib/avr/include/avr/wdt.h **** 			"out __SREG__,__tmp_reg__" "\n\t"
+ 293:/usr/lib/avr/include/avr/wdt.h **** 			: /* no outputs */
+ 294:/usr/lib/avr/include/avr/wdt.h **** 			: [CCPADDRESS] "n" (_SFR_MEM_ADDR(CCP)),
+ 295:/usr/lib/avr/include/avr/wdt.h **** 			[SIGNATURE] "r" ((uint8_t)0xD8),
+ 296:/usr/lib/avr/include/avr/wdt.h **** 			[WDTREG] "n" (_SFR_MEM_ADDR(_WD_CONTROL_REG)),
+ 297:/usr/lib/avr/include/avr/wdt.h **** 			[WDVALUE] "r" ((uint8_t)((value & 0x08 ? _WD_PS3_MASK : 0x00)
+ 298:/usr/lib/avr/include/avr/wdt.h **** 				| _BV(WDE) | (value & 0x07) ))
+ 299:/usr/lib/avr/include/avr/wdt.h **** 			: "r0"
+ 300:/usr/lib/avr/include/avr/wdt.h **** 			);
+ 301:/usr/lib/avr/include/avr/wdt.h **** 	}
+ 302:/usr/lib/avr/include/avr/wdt.h **** 	else if (!_SFR_IO_REG_P (CCP) && _SFR_IO_REG_P (_WD_CONTROL_REG))
+ 303:/usr/lib/avr/include/avr/wdt.h **** 	{
+ 304:/usr/lib/avr/include/avr/wdt.h **** 		__asm__ __volatile__ (
+ 305:/usr/lib/avr/include/avr/wdt.h **** 			"in __tmp_reg__,__SREG__" "\n\t"
+ 306:/usr/lib/avr/include/avr/wdt.h **** 			"cli" "\n\t"
+ 307:/usr/lib/avr/include/avr/wdt.h **** 			"wdr" "\n\t"
+ 308:/usr/lib/avr/include/avr/wdt.h **** 			"sts %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 309:/usr/lib/avr/include/avr/wdt.h **** 			"out %[WDTREG],%[WDVALUE]" "\n\t"
+ 310:/usr/lib/avr/include/avr/wdt.h **** 			"out __SREG__,__tmp_reg__" "\n\t"
+ 311:/usr/lib/avr/include/avr/wdt.h **** 			: /* no outputs */
+ 312:/usr/lib/avr/include/avr/wdt.h **** 			: [CCPADDRESS] "n" (_SFR_MEM_ADDR(CCP)),
+ 313:/usr/lib/avr/include/avr/wdt.h **** 			[SIGNATURE] "r" ((uint8_t)0xD8),
+ 314:/usr/lib/avr/include/avr/wdt.h **** 			[WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
+ 315:/usr/lib/avr/include/avr/wdt.h **** 			[WDVALUE] "r" ((uint8_t)((value & 0x08 ? _WD_PS3_MASK : 0x00)
+ 316:/usr/lib/avr/include/avr/wdt.h **** 				| _BV(WDE) | (value & 0x07) ))
+ 317:/usr/lib/avr/include/avr/wdt.h **** 			: "r0"
+ 318:/usr/lib/avr/include/avr/wdt.h **** 			);
+ 319:/usr/lib/avr/include/avr/wdt.h **** 	}
+ 320:/usr/lib/avr/include/avr/wdt.h **** 	else if (_SFR_IO_REG_P (CCP) && !_SFR_IO_REG_P (_WD_CONTROL_REG))
+ 321:/usr/lib/avr/include/avr/wdt.h **** 	{
+ 322:/usr/lib/avr/include/avr/wdt.h **** 		__asm__ __volatile__ (
+ 323:/usr/lib/avr/include/avr/wdt.h **** 			"in __tmp_reg__,__SREG__" "\n\t"
+ 324:/usr/lib/avr/include/avr/wdt.h **** 			"cli" "\n\t"
+ 325:/usr/lib/avr/include/avr/wdt.h **** 			"wdr" "\n\t"
+ 326:/usr/lib/avr/include/avr/wdt.h **** 			"out %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 327:/usr/lib/avr/include/avr/wdt.h **** 			"sts %[WDTREG],%[WDVALUE]" "\n\t"
+ 328:/usr/lib/avr/include/avr/wdt.h **** 			"out __SREG__,__tmp_reg__" "\n\t"
+ 329:/usr/lib/avr/include/avr/wdt.h **** 			: /* no outputs */
+ 330:/usr/lib/avr/include/avr/wdt.h **** 			: [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),
+ 331:/usr/lib/avr/include/avr/wdt.h **** 			[SIGNATURE] "r" ((uint8_t)0xD8),
+ 332:/usr/lib/avr/include/avr/wdt.h **** 			[WDTREG] "n" (_SFR_MEM_ADDR(_WD_CONTROL_REG)),
+ 333:/usr/lib/avr/include/avr/wdt.h **** 			[WDVALUE] "r" ((uint8_t)((value & 0x08 ? _WD_PS3_MASK : 0x00)
+ 334:/usr/lib/avr/include/avr/wdt.h **** 				| _BV(WDE) | (value & 0x07) ))
+ 335:/usr/lib/avr/include/avr/wdt.h **** 			: "r0"
+ 336:/usr/lib/avr/include/avr/wdt.h **** 			);
+ 337:/usr/lib/avr/include/avr/wdt.h **** 	}
+ 338:/usr/lib/avr/include/avr/wdt.h **** 	else
+ 339:/usr/lib/avr/include/avr/wdt.h ****  	{
+ 340:/usr/lib/avr/include/avr/wdt.h **** 		__asm__ __volatile__ (
+ 341:/usr/lib/avr/include/avr/wdt.h **** 			"in __tmp_reg__,__SREG__" "\n\t"
+ 342:/usr/lib/avr/include/avr/wdt.h **** 			"cli" "\n\t"
+ 343:/usr/lib/avr/include/avr/wdt.h **** 			"wdr" "\n\t"
+ 344:/usr/lib/avr/include/avr/wdt.h **** 			"out %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 345:/usr/lib/avr/include/avr/wdt.h **** 			"out %[WDTREG],%[WDVALUE]" "\n\t"
+ 346:/usr/lib/avr/include/avr/wdt.h **** 			"out __SREG__,__tmp_reg__" "\n\t"
+ 347:/usr/lib/avr/include/avr/wdt.h **** 			: /* no outputs */
+ 348:/usr/lib/avr/include/avr/wdt.h **** 			: [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),
+ 349:/usr/lib/avr/include/avr/wdt.h **** 			[SIGNATURE] "r" ((uint8_t)0xD8),
+ 350:/usr/lib/avr/include/avr/wdt.h **** 			[WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
+ 351:/usr/lib/avr/include/avr/wdt.h **** 			[WDVALUE] "r" ((uint8_t)((value & 0x08 ? _WD_PS3_MASK : 0x00)
+ 352:/usr/lib/avr/include/avr/wdt.h **** 				| _BV(WDE) | (value & 0x07) ))
+ 353:/usr/lib/avr/include/avr/wdt.h **** 			: "r0"
+ 354:/usr/lib/avr/include/avr/wdt.h **** 			);
+ 355:/usr/lib/avr/include/avr/wdt.h **** 	}
+ 356:/usr/lib/avr/include/avr/wdt.h **** }
+ 357:/usr/lib/avr/include/avr/wdt.h **** 
+ 358:/usr/lib/avr/include/avr/wdt.h **** static __inline__
+ 359:/usr/lib/avr/include/avr/wdt.h **** __attribute__ ((__always_inline__))
+ 360:/usr/lib/avr/include/avr/wdt.h **** void wdt_disable (void)
+ 361:/usr/lib/avr/include/avr/wdt.h **** {
+ 362:/usr/lib/avr/include/avr/wdt.h **** 	if (!_SFR_IO_REG_P (CCP) && !_SFR_IO_REG_P(_WD_CONTROL_REG))
+ 363:/usr/lib/avr/include/avr/wdt.h **** 	{
+ 364:/usr/lib/avr/include/avr/wdt.h ****         uint8_t temp_wd;
+ 365:/usr/lib/avr/include/avr/wdt.h ****         __asm__ __volatile__ (
+ 366:/usr/lib/avr/include/avr/wdt.h **** 				"in __tmp_reg__,__SREG__" "\n\t"
+ 367:/usr/lib/avr/include/avr/wdt.h **** 				"cli" "\n\t"
+ 368:/usr/lib/avr/include/avr/wdt.h **** 				"wdr" "\n\t"
+ 369:/usr/lib/avr/include/avr/wdt.h **** 				"sts %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 370:/usr/lib/avr/include/avr/wdt.h **** 				"lds %[TEMP_WD],%[WDTREG]" "\n\t"
+ 371:/usr/lib/avr/include/avr/wdt.h **** 				"cbr %[TEMP_WD],%[WDVALUE]" "\n\t"
+ 372:/usr/lib/avr/include/avr/wdt.h **** 				"sts %[WDTREG],%[TEMP_WD]" "\n\t"
+ 373:/usr/lib/avr/include/avr/wdt.h **** 				"out __SREG__,__tmp_reg__" "\n\t"
+ 374:/usr/lib/avr/include/avr/wdt.h **** 				: /*no output */
+ 375:/usr/lib/avr/include/avr/wdt.h **** 				: [CCPADDRESS] "n" (_SFR_MEM_ADDR(CCP)),
+ 376:/usr/lib/avr/include/avr/wdt.h **** 				[SIGNATURE] "r" ((uint8_t)0xD8),
+ 377:/usr/lib/avr/include/avr/wdt.h **** 				[WDTREG] "n" (_SFR_MEM_ADDR(_WD_CONTROL_REG)),
+ 378:/usr/lib/avr/include/avr/wdt.h **** 				[TEMP_WD] "d" (temp_wd),
+ 379:/usr/lib/avr/include/avr/wdt.h **** 				[WDVALUE] "n" (1 << WDE)
+ 380:/usr/lib/avr/include/avr/wdt.h **** 				: "r0"
+ 381:/usr/lib/avr/include/avr/wdt.h **** 				);
+ 382:/usr/lib/avr/include/avr/wdt.h **** 	}
+ 383:/usr/lib/avr/include/avr/wdt.h **** 	else if (!_SFR_IO_REG_P (CCP) && _SFR_IO_REG_P(_WD_CONTROL_REG))
+ 384:/usr/lib/avr/include/avr/wdt.h **** 	{
+ 385:/usr/lib/avr/include/avr/wdt.h ****         uint8_t temp_wd;
+ 386:/usr/lib/avr/include/avr/wdt.h ****         __asm__ __volatile__ (
+ 387:/usr/lib/avr/include/avr/wdt.h **** 				"in __tmp_reg__,__SREG__" "\n\t"
+ 388:/usr/lib/avr/include/avr/wdt.h **** 				"cli" "\n\t"
+ 389:/usr/lib/avr/include/avr/wdt.h **** 				"wdr" "\n\t"
+ 390:/usr/lib/avr/include/avr/wdt.h **** 				"sts %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 391:/usr/lib/avr/include/avr/wdt.h **** 				"in %[TEMP_WD],%[WDTREG]" "\n\t"
+ 392:/usr/lib/avr/include/avr/wdt.h **** 				"cbr %[TEMP_WD],%[WDVALUE]" "\n\t"
+ 393:/usr/lib/avr/include/avr/wdt.h **** 				"out %[WDTREG],%[TEMP_WD]" "\n\t"
+ 394:/usr/lib/avr/include/avr/wdt.h **** 				"out __SREG__,__tmp_reg__" "\n\t"
+ 395:/usr/lib/avr/include/avr/wdt.h **** 				: /*no output */
+ 396:/usr/lib/avr/include/avr/wdt.h **** 				: [CCPADDRESS] "n" (_SFR_MEM_ADDR(CCP)),
+ 397:/usr/lib/avr/include/avr/wdt.h **** 				[SIGNATURE] "r" ((uint8_t)0xD8),
+ 398:/usr/lib/avr/include/avr/wdt.h **** 				[WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
+ 399:/usr/lib/avr/include/avr/wdt.h **** 				[TEMP_WD] "d" (temp_wd),
+ 400:/usr/lib/avr/include/avr/wdt.h **** 				[WDVALUE] "n" (1 << WDE)
+ 401:/usr/lib/avr/include/avr/wdt.h **** 				: "r0"
+ 402:/usr/lib/avr/include/avr/wdt.h **** 				);
+ 403:/usr/lib/avr/include/avr/wdt.h **** 	}
+ 404:/usr/lib/avr/include/avr/wdt.h **** 	else if (_SFR_IO_REG_P (CCP) && !_SFR_IO_REG_P(_WD_CONTROL_REG))
+ 405:/usr/lib/avr/include/avr/wdt.h **** 	{
+ 406:/usr/lib/avr/include/avr/wdt.h ****         uint8_t temp_wd;
+ 407:/usr/lib/avr/include/avr/wdt.h ****         __asm__ __volatile__ (
+ 408:/usr/lib/avr/include/avr/wdt.h **** 				"in __tmp_reg__,__SREG__" "\n\t"
+ 409:/usr/lib/avr/include/avr/wdt.h **** 				"cli" "\n\t"
+ 410:/usr/lib/avr/include/avr/wdt.h **** 				"wdr" "\n\t"
+ 411:/usr/lib/avr/include/avr/wdt.h **** 				"out %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 412:/usr/lib/avr/include/avr/wdt.h **** 				"lds %[TEMP_WD],%[WDTREG]" "\n\t"
+ 413:/usr/lib/avr/include/avr/wdt.h **** 				"cbr %[TEMP_WD],%[WDVALUE]" "\n\t"
+ 414:/usr/lib/avr/include/avr/wdt.h **** 				"sts %[WDTREG],%[TEMP_WD]" "\n\t"
+ 415:/usr/lib/avr/include/avr/wdt.h **** 				"out __SREG__,__tmp_reg__" "\n\t"
+ 416:/usr/lib/avr/include/avr/wdt.h **** 				: /*no output */
+ 417:/usr/lib/avr/include/avr/wdt.h **** 				: [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),
+ 418:/usr/lib/avr/include/avr/wdt.h **** 				[SIGNATURE] "r" ((uint8_t)0xD8),
+ 419:/usr/lib/avr/include/avr/wdt.h **** 				[WDTREG] "n" (_SFR_MEM_ADDR(_WD_CONTROL_REG)),
+ 420:/usr/lib/avr/include/avr/wdt.h **** 				[TEMP_WD] "d" (temp_wd),
+ 421:/usr/lib/avr/include/avr/wdt.h **** 				[WDVALUE] "n" (1 << WDE)
+ 422:/usr/lib/avr/include/avr/wdt.h **** 				: "r0"
+ 423:/usr/lib/avr/include/avr/wdt.h **** 				);
+ 424:/usr/lib/avr/include/avr/wdt.h **** 	}
+ 425:/usr/lib/avr/include/avr/wdt.h **** 	else
+ 426:/usr/lib/avr/include/avr/wdt.h **** 	{
+ 427:/usr/lib/avr/include/avr/wdt.h ****         uint8_t temp_wd;
+ 428:/usr/lib/avr/include/avr/wdt.h ****         __asm__ __volatile__ (
+ 429:/usr/lib/avr/include/avr/wdt.h **** 				"in __tmp_reg__,__SREG__" "\n\t"
+ 430:/usr/lib/avr/include/avr/wdt.h **** 				"cli" "\n\t"
+ 431:/usr/lib/avr/include/avr/wdt.h **** 				"wdr" "\n\t"
+ 432:/usr/lib/avr/include/avr/wdt.h **** 				"out %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 433:/usr/lib/avr/include/avr/wdt.h **** 				"in %[TEMP_WD],%[WDTREG]" "\n\t"
+ 434:/usr/lib/avr/include/avr/wdt.h **** 				"cbr %[TEMP_WD],%[WDVALUE]" "\n\t"
+ 435:/usr/lib/avr/include/avr/wdt.h **** 				"out %[WDTREG],%[TEMP_WD]" "\n\t"
+ 436:/usr/lib/avr/include/avr/wdt.h **** 				"out __SREG__,__tmp_reg__" "\n\t"
+ 437:/usr/lib/avr/include/avr/wdt.h **** 				: /*no output */
+ 438:/usr/lib/avr/include/avr/wdt.h **** 				: [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),
+ 439:/usr/lib/avr/include/avr/wdt.h **** 				[SIGNATURE] "r" ((uint8_t)0xD8),
+ 440:/usr/lib/avr/include/avr/wdt.h **** 				[WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
+ 441:/usr/lib/avr/include/avr/wdt.h **** 				[TEMP_WD] "d" (temp_wd),
+ 442:/usr/lib/avr/include/avr/wdt.h **** 				[WDVALUE] "n" (1 << WDE)
+ 443:/usr/lib/avr/include/avr/wdt.h **** 				: "r0"
+ 444:/usr/lib/avr/include/avr/wdt.h **** 				);
+ 445:/usr/lib/avr/include/avr/wdt.h **** 	}
+ 446:/usr/lib/avr/include/avr/wdt.h **** }
+ 447:/usr/lib/avr/include/avr/wdt.h **** 
+ 448:/usr/lib/avr/include/avr/wdt.h **** #else
+ 449:/usr/lib/avr/include/avr/wdt.h **** 
+ 450:/usr/lib/avr/include/avr/wdt.h **** static __inline__
+ 451:/usr/lib/avr/include/avr/wdt.h **** __attribute__ ((__always_inline__))
+ 452:/usr/lib/avr/include/avr/wdt.h **** void wdt_enable (const uint8_t value)
+ 453:/usr/lib/avr/include/avr/wdt.h **** {
+ 454:/usr/lib/avr/include/avr/wdt.h **** 	if (_SFR_IO_REG_P (_WD_CONTROL_REG))
+ 455:/usr/lib/avr/include/avr/wdt.h **** 	{
+ 456:/usr/lib/avr/include/avr/wdt.h **** 		__asm__ __volatile__ (
+ 457:/usr/lib/avr/include/avr/wdt.h **** 				"in __tmp_reg__,__SREG__" "\n\t"
+ 458:/usr/lib/avr/include/avr/wdt.h **** 				"cli" "\n\t"
+ 459:/usr/lib/avr/include/avr/wdt.h **** 				"wdr" "\n\t"
+ 460:/usr/lib/avr/include/avr/wdt.h **** 				"out %0, %1" "\n\t"
+ 461:/usr/lib/avr/include/avr/wdt.h **** 				"out __SREG__,__tmp_reg__" "\n\t"
+ 462:/usr/lib/avr/include/avr/wdt.h **** 				"out %0, %2" "\n \t"
+ 463:/usr/lib/avr/include/avr/wdt.h **** 				: /* no outputs */
+ 464:/usr/lib/avr/include/avr/wdt.h **** 				: "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
+ 465:/usr/lib/avr/include/avr/wdt.h **** 				"r" ((uint8_t)(_BV(_WD_CHANGE_BIT) | _BV(WDE))),
+ 466:/usr/lib/avr/include/avr/wdt.h **** 				"r" ((uint8_t) ((value & 0x08 ? _WD_PS3_MASK : 0x00) |
+ 467:/usr/lib/avr/include/avr/wdt.h **** 						_BV(WDE) | (value & 0x07)) )
+ 468:/usr/lib/avr/include/avr/wdt.h **** 				: "r0"
+ 469:/usr/lib/avr/include/avr/wdt.h **** 		);
+ 470:/usr/lib/avr/include/avr/wdt.h **** 	}
+ 471:/usr/lib/avr/include/avr/wdt.h **** 	else
+ 472:/usr/lib/avr/include/avr/wdt.h **** 	{
+ 473:/usr/lib/avr/include/avr/wdt.h **** 		__asm__ __volatile__ (
+ 474:/usr/lib/avr/include/avr/wdt.h **** 				"in __tmp_reg__,__SREG__" "\n\t"
+ 475:/usr/lib/avr/include/avr/wdt.h **** 				"cli" "\n\t"
+ 476:/usr/lib/avr/include/avr/wdt.h **** 				"wdr" "\n\t"
+ 477:/usr/lib/avr/include/avr/wdt.h **** 				"sts %0, %1" "\n\t"
+ 478:/usr/lib/avr/include/avr/wdt.h **** 				"out __SREG__,__tmp_reg__" "\n\t"
+ 479:/usr/lib/avr/include/avr/wdt.h **** 				"sts %0, %2" "\n \t"
+ 480:/usr/lib/avr/include/avr/wdt.h **** 				: /* no outputs */
+ 481:/usr/lib/avr/include/avr/wdt.h **** 				: "n" (_SFR_MEM_ADDR(_WD_CONTROL_REG)),
+ 482:/usr/lib/avr/include/avr/wdt.h **** 				"r" ((uint8_t)(_BV(_WD_CHANGE_BIT) | _BV(WDE))),
+ 483:/usr/lib/avr/include/avr/wdt.h **** 				"r" ((uint8_t) ((value & 0x08 ? _WD_PS3_MASK : 0x00) |
+ 484:/usr/lib/avr/include/avr/wdt.h **** 						_BV(WDE) | (value & 0x07)) )
+ 485:/usr/lib/avr/include/avr/wdt.h **** 				: "r0"
+ 486:/usr/lib/avr/include/avr/wdt.h **** 		);
+ 487:/usr/lib/avr/include/avr/wdt.h **** 	}
+ 488:/usr/lib/avr/include/avr/wdt.h **** }
+ 489:/usr/lib/avr/include/avr/wdt.h **** 
+ 490:/usr/lib/avr/include/avr/wdt.h **** static __inline__
+ 491:/usr/lib/avr/include/avr/wdt.h **** __attribute__ ((__always_inline__))
+ 492:/usr/lib/avr/include/avr/wdt.h **** void wdt_disable (void)
+ 493:/usr/lib/avr/include/avr/wdt.h **** {
+ 494:/usr/lib/avr/include/avr/wdt.h **** 	if (_SFR_IO_REG_P (_WD_CONTROL_REG))
+ 495:/usr/lib/avr/include/avr/wdt.h **** 	{
+ 496:/usr/lib/avr/include/avr/wdt.h ****         uint8_t register temp_reg;
+ 497:/usr/lib/avr/include/avr/wdt.h **** 		__asm__ __volatile__ (
+ 498:/usr/lib/avr/include/avr/wdt.h **** 				"in __tmp_reg__,__SREG__"    "\n\t"
+ 499:/usr/lib/avr/include/avr/wdt.h **** 				"cli"                        "\n\t"
+ 500:/usr/lib/avr/include/avr/wdt.h **** 				"wdr"                        "\n\t"
+ 501:/usr/lib/avr/include/avr/wdt.h **** 				"in  %[TEMPREG],%[WDTREG]"   "\n\t"
+ 502:/usr/lib/avr/include/avr/wdt.h **** 				"ori %[TEMPREG],%[WDCE_WDE]" "\n\t"
+ 503:/usr/lib/avr/include/avr/wdt.h **** 				"out %[WDTREG],%[TEMPREG]"   "\n\t"
+ 504:/usr/lib/avr/include/avr/wdt.h **** 				"out %[WDTREG],__zero_reg__" "\n\t"
+ 505:/usr/lib/avr/include/avr/wdt.h **** 				"out __SREG__,__tmp_reg__"   "\n\t"
+ 506:/usr/lib/avr/include/avr/wdt.h **** 				: [TEMPREG] "=d" (temp_reg)
+ 507:/usr/lib/avr/include/avr/wdt.h **** 				: [WDTREG]  "I"  (_SFR_IO_ADDR(_WD_CONTROL_REG)),
+ 508:/usr/lib/avr/include/avr/wdt.h **** 				[WDCE_WDE]  "n"  ((uint8_t)(_BV(_WD_CHANGE_BIT) | _BV(WDE)))
+ 509:/usr/lib/avr/include/avr/wdt.h **** 				: "r0"
+ 510:/usr/lib/avr/include/avr/wdt.h **** 		);
+ 511:/usr/lib/avr/include/avr/wdt.h **** 	}
+ 512:/usr/lib/avr/include/avr/wdt.h **** 	else
+ 513:/usr/lib/avr/include/avr/wdt.h **** 	{
+ 514:/usr/lib/avr/include/avr/wdt.h ****         uint8_t register temp_reg;
+ 515:/usr/lib/avr/include/avr/wdt.h **** 		__asm__ __volatile__ (
+  53               		.loc 3 515 0
+  54               	/* #APP */
+  55               	 ;  515 "/usr/lib/avr/include/avr/wdt.h" 1
+  56 0006 0FB6      		in __tmp_reg__,__SREG__
+  57 0008 F894      		cli
+  58 000a A895      		wdr
+  59 000c 8091 6000 		lds r24,96
+  60 0010 8861      		ori r24,24
+  61 0012 8093 6000 		sts 96,r24
+  62 0016 1092 6000 		sts 96,__zero_reg__
+  63 001a 0FBE      		out __SREG__,__tmp_reg__
+  64               		
+  65               	 ;  0 "" 2
+  66               	/* #NOAPP */
+  67               	.LBE61:
+  68               	.LBE60:
+  69               	.LBB62:
+  70               	.LBB63:
+  82:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 				PORTC |= LEDS_ALL_LEDS;
+  71               		.loc 1 82 0
+  72 001c 87B1      		in r24,0x7
+  73 001e 806C      		ori r24,lo8(-64)
+  74 0020 87B9      		out 0x7,r24
+  83:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			}
+  75               		.loc 1 83 0
+  76 0022 88B1      		in r24,0x8
+  77 0024 806C      		ori r24,lo8(-64)
+  78 0026 88B9      		out 0x8,r24
+  79               	.LBE63:
+  80               	.LBE62:
+ 170:Benito.c      **** 	wdt_disable();
+ 171:Benito.c      **** 
+ 172:Benito.c      **** 	/* Hardware Initialization */
+ 173:Benito.c      **** 	LEDs_Init();
+ 174:Benito.c      **** 	USB_Init();
+  81               		.loc 2 174 0
+  82 0028 0E94 0000 		call USB_Init
+  83               	.LVL3:
+ 175:Benito.c      **** 
+ 176:Benito.c      **** 	/* Millisecond Timer Interrupt */
+ 177:Benito.c      **** 	OCR0A  = (F_CPU / 64 / 1000);
+  84               		.loc 2 177 0
+  85 002c 8DE7      		ldi r24,lo8(125)
+  86 002e 87BD      		out 0x27,r24
+ 178:Benito.c      **** 	TCCR0A = (1 << WGM01);
+  87               		.loc 2 178 0
+  88 0030 82E0      		ldi r24,lo8(2)
+  89 0032 84BD      		out 0x24,r24
+ 179:Benito.c      **** 	TCCR0B = ((1 << CS01) | (1 << CS00));
+  90               		.loc 2 179 0
+  91 0034 83E0      		ldi r24,lo8(3)
+  92 0036 85BD      		out 0x25,r24
+ 180:Benito.c      **** 
+ 181:Benito.c      **** 	/* Tristate target /RESET Line */
+ 182:Benito.c      **** 	AVR_RESET_LINE_PORT &= ~AVR_RESET_LINE_MASK;
+  93               		.loc 2 182 0
+  94 0038 5C98      		cbi 0xb,4
+ 183:Benito.c      **** 	AVR_RESET_LINE_DDR  &= ~AVR_RESET_LINE_MASK;
+  95               		.loc 2 183 0
+  96 003a 5498      		cbi 0xa,4
+  97 003c 0895      		ret
+  98               		.cfi_endproc
+  99               	.LFE117:
+ 101               		.section	.text.startup.main,"ax",@progbits
+ 102               	.global	main
+ 104               	main:
+ 105               	.LFB116:
+  85:Benito.c      **** 	SetupHardware();
+ 106               		.loc 2 85 0
+ 107               		.cfi_startproc
+ 108               	/* prologue: function */
+ 109               	/* frame size = 0 */
+ 110               	/* stack size = 0 */
+ 111               	.L__stack_usage = 0
+  86:Benito.c      **** 
+ 112               		.loc 2 86 0
+ 113 0000 0E94 0000 		call SetupHardware
+ 114               	.LVL4:
+ 115               	.LBB103:
+ 116               	.LBB104:
+ 117               		.file 4 "../../LUFA/Drivers/Misc/RingBuffer.h"
+   1:../../LUFA/Drivers/Misc/RingBuffer.h **** /*
+   2:../../LUFA/Drivers/Misc/RingBuffer.h ****              LUFA Library
+   3:../../LUFA/Drivers/Misc/RingBuffer.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+   5:../../LUFA/Drivers/Misc/RingBuffer.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../LUFA/Drivers/Misc/RingBuffer.h ****            www.lufa-lib.org
+   7:../../LUFA/Drivers/Misc/RingBuffer.h **** */
+   8:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+   9:../../LUFA/Drivers/Misc/RingBuffer.h **** /*
+  10:../../LUFA/Drivers/Misc/RingBuffer.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+  12:../../LUFA/Drivers/Misc/RingBuffer.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../LUFA/Drivers/Misc/RingBuffer.h ****   software and its documentation for any purpose is hereby granted
+  14:../../LUFA/Drivers/Misc/RingBuffer.h ****   without fee, provided that the above copyright notice appear in
+  15:../../LUFA/Drivers/Misc/RingBuffer.h ****   all copies and that both that the copyright notice and this
+  16:../../LUFA/Drivers/Misc/RingBuffer.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../LUFA/Drivers/Misc/RingBuffer.h ****   documentation, and that the name of the author not be used in
+  18:../../LUFA/Drivers/Misc/RingBuffer.h ****   advertising or publicity pertaining to distribution of the
+  19:../../LUFA/Drivers/Misc/RingBuffer.h ****   software without specific, written prior permission.
+  20:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+  21:../../LUFA/Drivers/Misc/RingBuffer.h ****   The author disclaim all warranties with regard to this
+  22:../../LUFA/Drivers/Misc/RingBuffer.h ****   software, including all implied warranties of merchantability
+  23:../../LUFA/Drivers/Misc/RingBuffer.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../LUFA/Drivers/Misc/RingBuffer.h ****   special, indirect or consequential damages or any damages
+  25:../../LUFA/Drivers/Misc/RingBuffer.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../LUFA/Drivers/Misc/RingBuffer.h ****   in an action of contract, negligence or other tortious action,
+  27:../../LUFA/Drivers/Misc/RingBuffer.h ****   arising out of or in connection with the use or performance of
+  28:../../LUFA/Drivers/Misc/RingBuffer.h ****   this software.
+  29:../../LUFA/Drivers/Misc/RingBuffer.h **** */
+  30:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+  31:../../LUFA/Drivers/Misc/RingBuffer.h **** /** \file
+  32:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  \brief Lightweight ring (circular) buffer, for fast insertion/deletion of bytes.
+  33:../../LUFA/Drivers/Misc/RingBuffer.h ****  *
+  34:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  Lightweight ring buffer, for fast insertion/deletion. Multiple buffers can be created of
+  35:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  different sizes to suit different needs.
+  36:../../LUFA/Drivers/Misc/RingBuffer.h ****  *
+  37:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  Note that for each buffer, insertion and removal operations may occur at the same time (via
+  38:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  a multi-threaded ISR based system) however the same kind of operation (two or more insertions
+  39:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  or deletions) must not overlap. If there is possibility of two or more of the same kind of
+  40:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  operating occurring at the same point in time, atomic (mutex) locking should be used.
+  41:../../LUFA/Drivers/Misc/RingBuffer.h ****  */
+  42:../../LUFA/Drivers/Misc/RingBuffer.h ****  
+  43:../../LUFA/Drivers/Misc/RingBuffer.h **** /** \ingroup Group_MiscDrivers
+  44:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  \defgroup Group_RingBuff Generic Byte Ring Buffer - LUFA/Drivers/Misc/RingBuffer.h
+  45:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  \brief Lightweight ring buffer, for fast insertion/deletion of bytes.
+  46:../../LUFA/Drivers/Misc/RingBuffer.h ****  *
+  47:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  \section Sec_Dependencies Module Source Dependencies
+  48:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  The following files must be built with any user project that uses this module:
+  49:../../LUFA/Drivers/Misc/RingBuffer.h ****  *    - None
+  50:../../LUFA/Drivers/Misc/RingBuffer.h ****  *
+  51:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  \section Sec_ModDescription Module Description
+  52:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  Lightweight ring buffer, for fast insertion/deletion. Multiple buffers can be created of
+  53:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  different sizes to suit different needs.
+  54:../../LUFA/Drivers/Misc/RingBuffer.h ****  *
+  55:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  Note that for each buffer, insertion and removal operations may occur at the same time (via
+  56:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  a multi-threaded ISR based system) however the same kind of operation (two or more insertions
+  57:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  or deletions) must not overlap. If there is possibility of two or more of the same kind of
+  58:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  operating occurring at the same point in time, atomic (mutex) locking should be used.
+  59:../../LUFA/Drivers/Misc/RingBuffer.h ****  *
+  60:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  \section Sec_ExampleUsage Example Usage
+  61:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  The following snippet is an example of how this module may be used within a typical
+  62:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  application.
+  63:../../LUFA/Drivers/Misc/RingBuffer.h ****  *
+  64:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  \code
+  65:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      // Create the buffer structure and its underlying storage array
+  66:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      RingBuffer_t Buffer;
+  67:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      uint8_t      BufferData[128];
+  68:../../LUFA/Drivers/Misc/RingBuffer.h ****  *
+  69:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      // Initialize the buffer with the created storage array
+  70:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      RingBuffer_InitBuffer(&Buffer, BufferData, sizeof(BufferData));
+  71:../../LUFA/Drivers/Misc/RingBuffer.h ****  *
+  72:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      // Insert some data into the buffer
+  73:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      RingBuffer_Insert(Buffer, 'H');
+  74:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      RingBuffer_Insert(Buffer, 'E');
+  75:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      RingBuffer_Insert(Buffer, 'L');
+  76:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      RingBuffer_Insert(Buffer, 'L');
+  77:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      RingBuffer_Insert(Buffer, 'O');
+  78:../../LUFA/Drivers/Misc/RingBuffer.h ****  *
+  79:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      // Cache the number of stored bytes in the buffer
+  80:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      uint16_t BufferCount = RingBuffer_GetCount(&Buffer);
+  81:../../LUFA/Drivers/Misc/RingBuffer.h ****  *
+  82:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      // Printer stored data length
+  83:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      printf("Buffer Length: %d, Buffer Data: \r\n", BufferCount);
+  84:../../LUFA/Drivers/Misc/RingBuffer.h ****  *
+  85:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      // Print contents of the buffer one character at a time
+  86:../../LUFA/Drivers/Misc/RingBuffer.h ****  *      while (BufferCount--)
+  87:../../LUFA/Drivers/Misc/RingBuffer.h ****  *        putc(RingBuffer_Remove(&Buffer));
+  88:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  \endcode
+  89:../../LUFA/Drivers/Misc/RingBuffer.h ****  *
+  90:../../LUFA/Drivers/Misc/RingBuffer.h ****  *  @{
+  91:../../LUFA/Drivers/Misc/RingBuffer.h ****  */
+  92:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+  93:../../LUFA/Drivers/Misc/RingBuffer.h **** #ifndef __RING_BUFFER_H__
+  94:../../LUFA/Drivers/Misc/RingBuffer.h **** #define __RING_BUFFER_H__
+  95:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+  96:../../LUFA/Drivers/Misc/RingBuffer.h **** 	/* Includes: */
+  97:../../LUFA/Drivers/Misc/RingBuffer.h **** 		#include "../../Common/Common.h"
+  98:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+  99:../../LUFA/Drivers/Misc/RingBuffer.h **** 	/* Enable C linkage for C++ Compilers: */
+ 100:../../LUFA/Drivers/Misc/RingBuffer.h **** 		#if defined(__cplusplus)
+ 101:../../LUFA/Drivers/Misc/RingBuffer.h **** 			extern "C" {
+ 102:../../LUFA/Drivers/Misc/RingBuffer.h **** 		#endif
+ 103:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 104:../../LUFA/Drivers/Misc/RingBuffer.h **** 	/* Type Defines: */
+ 105:../../LUFA/Drivers/Misc/RingBuffer.h **** 		/** \brief Ring Buffer Management Structure.
+ 106:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 107:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  Type define for a new ring buffer object. Buffers should be initialized via a call to
+ 108:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \ref RingBuffer_InitBuffer() before use.
+ 109:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 */
+ 110:../../LUFA/Drivers/Misc/RingBuffer.h **** 		typedef struct
+ 111:../../LUFA/Drivers/Misc/RingBuffer.h **** 		{
+ 112:../../LUFA/Drivers/Misc/RingBuffer.h **** 			uint8_t* In; /**< Current storage location in the circular buffer. */
+ 113:../../LUFA/Drivers/Misc/RingBuffer.h **** 			uint8_t* Out; /**< Current retrieval location in the circular buffer. */
+ 114:../../LUFA/Drivers/Misc/RingBuffer.h **** 			uint8_t* Start; /**< Pointer to the start of the buffer's underlying storage array. */
+ 115:../../LUFA/Drivers/Misc/RingBuffer.h **** 			uint8_t* End; /**< Pointer to the end of the buffer's underlying storage array. */
+ 116:../../LUFA/Drivers/Misc/RingBuffer.h **** 			uint8_t  Size; /**< Size of the buffer's underlying storage array. */
+ 117:../../LUFA/Drivers/Misc/RingBuffer.h **** 			uint16_t Count; /**< Number of bytes currently stored in the buffer. */
+ 118:../../LUFA/Drivers/Misc/RingBuffer.h **** 		} RingBuffer_t;
+ 119:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 120:../../LUFA/Drivers/Misc/RingBuffer.h **** 	/* Inline Functions: */
+ 121:../../LUFA/Drivers/Misc/RingBuffer.h **** 		/** Initializes a ring buffer ready for use. Buffers must be initialized via this function
+ 122:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  before any operations are called upon them. Already initialized buffers may be reset
+ 123:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  by re-initializing them using this function.
+ 124:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 125:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \param[out] Buffer   Pointer to a ring buffer structure to initialize.
+ 126:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \param[out] DataPtr  Pointer to a global array that will hold the data stored into the ring b
+ 127:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \param[out] Size     Maximum number of bytes that can be stored in the underlying data array.
+ 128:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 */
+ 129:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer, uint8_t* const DataPtr, const uint
+ 130:../../LUFA/Drivers/Misc/RingBuffer.h **** 		                                         ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
+ 131:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer, uint8_t* const DataPtr, const uint
+ 132:../../LUFA/Drivers/Misc/RingBuffer.h **** 		{
+ 133:../../LUFA/Drivers/Misc/RingBuffer.h **** 			GCC_FORCE_POINTER_ACCESS(Buffer);
+ 118               		.loc 4 133 0
+ 119 0004 E0E0      		ldi r30,lo8(USARTtoUSB_Buffer)
+ 120 0006 F0E0      		ldi r31,hi8(USARTtoUSB_Buffer)
+ 121               	.LVL5:
+ 122               	.LBB105:
+ 123               	.LBB106:
+ 124               		.file 5 "../../LUFA/Drivers/USB/../../Common/Common.h"
+   1:../../LUFA/Drivers/USB/../../Common/Common.h **** /*
+   2:../../LUFA/Drivers/USB/../../Common/Common.h ****              LUFA Library
+   3:../../LUFA/Drivers/USB/../../Common/Common.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+   5:../../LUFA/Drivers/USB/../../Common/Common.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../LUFA/Drivers/USB/../../Common/Common.h ****            www.lufa-lib.org
+   7:../../LUFA/Drivers/USB/../../Common/Common.h **** */
+   8:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+   9:../../LUFA/Drivers/USB/../../Common/Common.h **** /*
+  10:../../LUFA/Drivers/USB/../../Common/Common.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+  12:../../LUFA/Drivers/USB/../../Common/Common.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../LUFA/Drivers/USB/../../Common/Common.h ****   software and its documentation for any purpose is hereby granted
+  14:../../LUFA/Drivers/USB/../../Common/Common.h ****   without fee, provided that the above copyright notice appear in
+  15:../../LUFA/Drivers/USB/../../Common/Common.h ****   all copies and that both that the copyright notice and this
+  16:../../LUFA/Drivers/USB/../../Common/Common.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../LUFA/Drivers/USB/../../Common/Common.h ****   documentation, and that the name of the author not be used in
+  18:../../LUFA/Drivers/USB/../../Common/Common.h ****   advertising or publicity pertaining to distribution of the
+  19:../../LUFA/Drivers/USB/../../Common/Common.h ****   software without specific, written prior permission.
+  20:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+  21:../../LUFA/Drivers/USB/../../Common/Common.h ****   The author disclaim all warranties with regard to this
+  22:../../LUFA/Drivers/USB/../../Common/Common.h ****   software, including all implied warranties of merchantability
+  23:../../LUFA/Drivers/USB/../../Common/Common.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../LUFA/Drivers/USB/../../Common/Common.h ****   special, indirect or consequential damages or any damages
+  25:../../LUFA/Drivers/USB/../../Common/Common.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../LUFA/Drivers/USB/../../Common/Common.h ****   in an action of contract, negligence or other tortious action,
+  27:../../LUFA/Drivers/USB/../../Common/Common.h ****   arising out of or in connection with the use or performance of
+  28:../../LUFA/Drivers/USB/../../Common/Common.h ****   this software.
+  29:../../LUFA/Drivers/USB/../../Common/Common.h **** */
+  30:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+  31:../../LUFA/Drivers/USB/../../Common/Common.h **** /** \file
+  32:../../LUFA/Drivers/USB/../../Common/Common.h ****  *  \brief Common library convenience headers, macros and functions.
+  33:../../LUFA/Drivers/USB/../../Common/Common.h ****  *
+  34:../../LUFA/Drivers/USB/../../Common/Common.h ****  *  \copydetails Group_Common
+  35:../../LUFA/Drivers/USB/../../Common/Common.h ****  */
+  36:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+  37:../../LUFA/Drivers/USB/../../Common/Common.h **** /** \defgroup Group_Common Common Utility Headers - LUFA/Drivers/Common/Common.h
+  38:../../LUFA/Drivers/USB/../../Common/Common.h ****  *  \brief Common library convenience headers, macros and functions.
+  39:../../LUFA/Drivers/USB/../../Common/Common.h ****  *
+  40:../../LUFA/Drivers/USB/../../Common/Common.h ****  *  Common utility headers containing macros, functions, enums and types which are common to all
+  41:../../LUFA/Drivers/USB/../../Common/Common.h ****  *  aspects of the library.
+  42:../../LUFA/Drivers/USB/../../Common/Common.h ****  *
+  43:../../LUFA/Drivers/USB/../../Common/Common.h ****  *  @{
+  44:../../LUFA/Drivers/USB/../../Common/Common.h ****  */
+  45:../../LUFA/Drivers/USB/../../Common/Common.h ****  
+  46:../../LUFA/Drivers/USB/../../Common/Common.h **** /** \defgroup Group_GlobalInt Global Interrupt Macros
+  47:../../LUFA/Drivers/USB/../../Common/Common.h ****  *  \brief Convenience macros for the management of interrupts globally within the device.
+  48:../../LUFA/Drivers/USB/../../Common/Common.h ****  *
+  49:../../LUFA/Drivers/USB/../../Common/Common.h ****  *  Macros and functions to create and control global interrupts within the device.
+  50:../../LUFA/Drivers/USB/../../Common/Common.h ****  */
+  51:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+  52:../../LUFA/Drivers/USB/../../Common/Common.h **** #ifndef __LUFA_COMMON_H__
+  53:../../LUFA/Drivers/USB/../../Common/Common.h **** #define __LUFA_COMMON_H__
+  54:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+  55:../../LUFA/Drivers/USB/../../Common/Common.h **** 	/* Macros: */
+  56:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#define __INCLUDE_FROM_COMMON_H
+  57:../../LUFA/Drivers/USB/../../Common/Common.h **** 		
+  58:../../LUFA/Drivers/USB/../../Common/Common.h **** 	/* Includes: */
+  59:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#include <stdint.h>
+  60:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#include <stdbool.h>
+  61:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#include <string.h>
+  62:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#include <stddef.h>
+  63:../../LUFA/Drivers/USB/../../Common/Common.h **** 		
+  64:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#if defined(USE_LUFA_CONFIG_HEADER)
+  65:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include "LUFAConfig.h"
+  66:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#endif
+  67:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+  68:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#include "ArchitectureSpecific.h"
+  69:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#include "CompilerSpecific.h"
+  70:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#include "Architectures.h"
+  71:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#include "Attributes.h"
+  72:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#include "BoardTypes.h"
+  73:../../LUFA/Drivers/USB/../../Common/Common.h **** 		
+  74:../../LUFA/Drivers/USB/../../Common/Common.h **** 	/* Enable C linkage for C++ Compilers: */
+  75:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#if defined(__cplusplus)
+  76:../../LUFA/Drivers/USB/../../Common/Common.h **** 			extern "C" {
+  77:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#endif
+  78:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+  79:../../LUFA/Drivers/USB/../../Common/Common.h **** 	/* Architecture specific utility includes: */
+  80:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#if defined(__DOXYGEN__)
+  81:../../LUFA/Drivers/USB/../../Common/Common.h **** 			/** Type define for an unsigned integer the same width as the selected architecture's machine re
+  82:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  This is distinct from the non-specific standard int data type, whose width is machine depend
+  83:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  which may not reflect the actual machine register width on some targets (e.g. AVR8).
+  84:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 */
+  85:../../LUFA/Drivers/USB/../../Common/Common.h **** 			typedef MACHINE_REG_t uint_reg_t;
+  86:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#elif (ARCH == ARCH_AVR8)
+  87:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include <avr/io.h>
+  88:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include <avr/interrupt.h>
+  89:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include <avr/pgmspace.h>
+  90:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include <avr/eeprom.h>
+  91:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include <avr/boot.h>
+  92:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include <util/delay.h>
+  93:../../LUFA/Drivers/USB/../../Common/Common.h **** 			
+  94:../../LUFA/Drivers/USB/../../Common/Common.h **** 			typedef uint8_t uint_reg_t;
+  95:../../LUFA/Drivers/USB/../../Common/Common.h **** 			
+  96:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define ARCH_HAS_EEPROM_ADDRESS_SPACE
+  97:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define ARCH_HAS_FLASH_ADDRESS_SPACE
+  98:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define ARCH_HAS_MULTI_ADDRESS_SPACE
+  99:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define ARCH_LITTLE_ENDIAN
+ 100:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 101:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include "Endianness.h"
+ 102:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#elif (ARCH == ARCH_UC3)
+ 103:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include <avr32/io.h>
+ 104:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 105:../../LUFA/Drivers/USB/../../Common/Common.h **** 			// === TODO: Find abstracted way to handle these ===
+ 106:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define PROGMEM                  const
+ 107:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define pgm_read_byte(x)         *x
+ 108:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define memcmp_P(...)            memcmp(__VA_ARGS__)
+ 109:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define memcpy_P(...)            memcpy(__VA_ARGS__)
+ 110:../../LUFA/Drivers/USB/../../Common/Common.h **** 			// =================================================
+ 111:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 112:../../LUFA/Drivers/USB/../../Common/Common.h **** 			typedef uint32_t uint_reg_t;
+ 113:../../LUFA/Drivers/USB/../../Common/Common.h **** 			
+ 114:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define ARCH_BIG_ENDIAN
+ 115:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 116:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include "Endianness.h"
+ 117:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#elif (ARCH == ARCH_XMEGA)
+ 118:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include <avr/io.h>
+ 119:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include <avr/interrupt.h>
+ 120:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include <avr/pgmspace.h>
+ 121:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include <avr/eeprom.h>
+ 122:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include <util/delay.h>
+ 123:../../LUFA/Drivers/USB/../../Common/Common.h **** 			
+ 124:../../LUFA/Drivers/USB/../../Common/Common.h **** 			typedef uint8_t uint_reg_t;
+ 125:../../LUFA/Drivers/USB/../../Common/Common.h **** 			
+ 126:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define ARCH_HAS_EEPROM_ADDRESS_SPACE
+ 127:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define ARCH_HAS_FLASH_ADDRESS_SPACE
+ 128:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define ARCH_HAS_MULTI_ADDRESS_SPACE
+ 129:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define ARCH_LITTLE_ENDIAN
+ 130:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 131:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#include "Endianness.h"		
+ 132:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#else
+ 133:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#error Unknown device architecture specified.
+ 134:../../LUFA/Drivers/USB/../../Common/Common.h **** 		#endif
+ 135:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 136:../../LUFA/Drivers/USB/../../Common/Common.h **** 	/* Public Interface - May be used in end-application: */
+ 137:../../LUFA/Drivers/USB/../../Common/Common.h **** 		/* Macros: */
+ 138:../../LUFA/Drivers/USB/../../Common/Common.h **** 			/** Macro for encasing other multi-statement macros. This should be used along with an opening b
+ 139:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  before the start of any multi-statement macro, so that the macros contents as a whole are tr
+ 140:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  as a discrete block and not as a list of separate statements which may cause problems when u
+ 141:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  a block (such as inline \c if statements).
+ 142:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 */
+ 143:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define MACROS                  do
+ 144:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 145:../../LUFA/Drivers/USB/../../Common/Common.h **** 			/** Macro for encasing other multi-statement macros. This should be used along with a preceding 
+ 146:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  brace at the end of any multi-statement macro, so that the macros contents as a whole are tr
+ 147:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  as a discrete block and not as a list of separate statements which may cause problems when u
+ 148:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  a block (such as inline \c if statements).
+ 149:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 */
+ 150:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#define MACROE                  while (0)
+ 151:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 152:../../LUFA/Drivers/USB/../../Common/Common.h **** 			/** Convenience macro to determine the larger of two values.
+ 153:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 154:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \note This macro should only be used with operands that do not have side effects from being 
+ 155:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *        multiple times.
+ 156:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 157:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \param[in] x  First value to compare
+ 158:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \param[in] y  First value to compare
+ 159:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 160:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \return The larger of the two input parameters
+ 161:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 */
+ 162:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#if !defined(MAX) || defined(__DOXYGEN__)
+ 163:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#define MAX(x, y)               (((x) > (y)) ? (x) : (y))
+ 164:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#endif
+ 165:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 166:../../LUFA/Drivers/USB/../../Common/Common.h **** 			/** Convenience macro to determine the smaller of two values.
+ 167:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 168:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \note This macro should only be used with operands that do not have side effects from being 
+ 169:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *        multiple times.
+ 170:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 171:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \param[in] x  First value to compare
+ 172:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \param[in] y  First value to compare
+ 173:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 174:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \return The smaller of the two input parameters
+ 175:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 */
+ 176:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#if !defined(MIN) || defined(__DOXYGEN__)
+ 177:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#define MIN(x, y)               (((x) < (y)) ? (x) : (y))
+ 178:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#endif
+ 179:../../LUFA/Drivers/USB/../../Common/Common.h **** 			
+ 180:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#if !defined(STRINGIFY) || defined(__DOXYGEN__)
+ 181:../../LUFA/Drivers/USB/../../Common/Common.h **** 				/** Converts the given input into a string, via the C Preprocessor. This macro puts literal quo
+ 182:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *  marks around the input, converting the source into a string literal.
+ 183:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *
+ 184:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *  \param[in] x  Input to convert into a string literal.
+ 185:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *
+ 186:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *  \return String version of the input.
+ 187:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 */
+ 188:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#define STRINGIFY(x)            #x
+ 189:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 190:../../LUFA/Drivers/USB/../../Common/Common.h **** 				/** Converts the given input into a string after macro expansion, via the C Preprocessor. This 
+ 191:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *  literal quotation marks around the expanded input, converting the source into a string lite
+ 192:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *
+ 193:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *  \param[in] x  Input to expand and convert into a string literal.
+ 194:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *
+ 195:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *  \return String version of the expanded input.
+ 196:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 */
+ 197:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#define STRINGIFY_EXPANDED(x)   STRINGIFY(x)
+ 198:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#endif
+ 199:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 200:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#if !defined(ISR) || defined(__DOXYGEN__)
+ 201:../../LUFA/Drivers/USB/../../Common/Common.h **** 				/** Macro for the definition of interrupt service routines, so that the compiler can insert the
+ 202:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *  prologue and epilogue code to properly manage the interrupt routine without affecting the m
+ 203:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *  state with unintentional side-effects.
+ 204:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *
+ 205:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *  Interrupt handlers written using this macro may still need to be registered with the microc
+ 206:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *  Interrupt Controller (if present) before they will properly handle incoming interrupt event
+ 207:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *
+ 208:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *  \note This macro is only supplied on some architectures, where the standard library does no
+ 209:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *        definition. If an existing definition exists, the alternative definition here will be
+ 210:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *
+ 211:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *  \ingroup Group_GlobalInt
+ 212:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *
+ 213:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 *  \param Name  Unique name of the interrupt service routine.
+ 214:../../LUFA/Drivers/USB/../../Common/Common.h **** 				 */
+ 215:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#define ISR(Name, ...)                  void Name (void) __attribute__((__interrupt__)) __VA_AR
+ 216:../../LUFA/Drivers/USB/../../Common/Common.h **** 			#endif
+ 217:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 218:../../LUFA/Drivers/USB/../../Common/Common.h **** 		/* Inline Functions: */
+ 219:../../LUFA/Drivers/USB/../../Common/Common.h **** 			/** Function to reverse the individual bits in a byte - i.e. bit 7 is moved to bit 0, bit 6 to b
+ 220:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  etc.
+ 221:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 222:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \param[in] Byte  Byte of data whose bits are to be reversed.
+ 223:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 224:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \return Input data with the individual bits reversed (mirrored).
+ 225:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 */
+ 226:../../LUFA/Drivers/USB/../../Common/Common.h **** 			static inline uint8_t BitReverse(uint8_t Byte) ATTR_WARN_UNUSED_RESULT ATTR_CONST;
+ 227:../../LUFA/Drivers/USB/../../Common/Common.h **** 			static inline uint8_t BitReverse(uint8_t Byte)
+ 228:../../LUFA/Drivers/USB/../../Common/Common.h **** 			{
+ 229:../../LUFA/Drivers/USB/../../Common/Common.h **** 				Byte = (((Byte & 0xF0) >> 4) | ((Byte & 0x0F) << 4));
+ 230:../../LUFA/Drivers/USB/../../Common/Common.h **** 				Byte = (((Byte & 0xCC) >> 2) | ((Byte & 0x33) << 2));
+ 231:../../LUFA/Drivers/USB/../../Common/Common.h **** 				Byte = (((Byte & 0xAA) >> 1) | ((Byte & 0x55) << 1));
+ 232:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 233:../../LUFA/Drivers/USB/../../Common/Common.h **** 				return Byte;
+ 234:../../LUFA/Drivers/USB/../../Common/Common.h **** 			}
+ 235:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 236:../../LUFA/Drivers/USB/../../Common/Common.h **** 			/** Function to perform a blocking delay for a specified number of milliseconds. The actual dela
+ 237:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  at a minimum the specified number of milliseconds, however due to loop overhead and internal
+ 238:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  may be slightly higher.
+ 239:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 240:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \param[in] Milliseconds  Number of milliseconds to delay
+ 241:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 */
+ 242:../../LUFA/Drivers/USB/../../Common/Common.h **** 			static inline void Delay_MS(uint16_t Milliseconds) ATTR_ALWAYS_INLINE;
+ 243:../../LUFA/Drivers/USB/../../Common/Common.h **** 			static inline void Delay_MS(uint16_t Milliseconds)
+ 244:../../LUFA/Drivers/USB/../../Common/Common.h **** 			{
+ 245:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#if (ARCH == ARCH_AVR8)
+ 246:../../LUFA/Drivers/USB/../../Common/Common.h **** 				if (GCC_IS_COMPILE_CONST(Milliseconds))
+ 247:../../LUFA/Drivers/USB/../../Common/Common.h **** 				{
+ 248:../../LUFA/Drivers/USB/../../Common/Common.h **** 					_delay_ms(Milliseconds);
+ 249:../../LUFA/Drivers/USB/../../Common/Common.h **** 				}
+ 250:../../LUFA/Drivers/USB/../../Common/Common.h **** 				else
+ 251:../../LUFA/Drivers/USB/../../Common/Common.h **** 				{
+ 252:../../LUFA/Drivers/USB/../../Common/Common.h **** 					while (Milliseconds--)
+ 253:../../LUFA/Drivers/USB/../../Common/Common.h **** 					  _delay_ms(1);
+ 254:../../LUFA/Drivers/USB/../../Common/Common.h **** 				}
+ 255:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 256:../../LUFA/Drivers/USB/../../Common/Common.h **** 				while (Milliseconds--)
+ 257:../../LUFA/Drivers/USB/../../Common/Common.h **** 				{
+ 258:../../LUFA/Drivers/USB/../../Common/Common.h **** 					__builtin_mtsr(AVR32_COUNT, 0);
+ 259:../../LUFA/Drivers/USB/../../Common/Common.h **** 					while (__builtin_mfsr(AVR32_COUNT) < (F_CPU / 1000));				
+ 260:../../LUFA/Drivers/USB/../../Common/Common.h **** 				}
+ 261:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_XMEGA)
+ 262:../../LUFA/Drivers/USB/../../Common/Common.h **** 				if (GCC_IS_COMPILE_CONST(Milliseconds))
+ 263:../../LUFA/Drivers/USB/../../Common/Common.h **** 				{
+ 264:../../LUFA/Drivers/USB/../../Common/Common.h **** 					_delay_ms(Milliseconds);
+ 265:../../LUFA/Drivers/USB/../../Common/Common.h **** 				}
+ 266:../../LUFA/Drivers/USB/../../Common/Common.h **** 				else
+ 267:../../LUFA/Drivers/USB/../../Common/Common.h **** 				{
+ 268:../../LUFA/Drivers/USB/../../Common/Common.h **** 					while (Milliseconds--)
+ 269:../../LUFA/Drivers/USB/../../Common/Common.h **** 					  _delay_ms(1);
+ 270:../../LUFA/Drivers/USB/../../Common/Common.h **** 				}				
+ 271:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#endif
+ 272:../../LUFA/Drivers/USB/../../Common/Common.h **** 			}
+ 273:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 274:../../LUFA/Drivers/USB/../../Common/Common.h **** 			/** Retrieves a mask which contains the current state of the global interrupts for the device. T
+ 275:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  value can be stored before altering the global interrupt enable state, before restoring the
+ 276:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  flag(s) back to their previous values after a critical section using \ref SetGlobalInterrupt
+ 277:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 278:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \ingroup Group_GlobalInt
+ 279:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 280:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \return  Mask containing the current Global Interrupt Enable Mask bit(s).
+ 281:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 */
+ 282:../../LUFA/Drivers/USB/../../Common/Common.h **** 			static inline uint_reg_t GetGlobalInterruptMask(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT
+ 283:../../LUFA/Drivers/USB/../../Common/Common.h **** 			static inline uint_reg_t GetGlobalInterruptMask(void)
+ 284:../../LUFA/Drivers/USB/../../Common/Common.h **** 			{
+ 285:../../LUFA/Drivers/USB/../../Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 125               		.loc 5 285 0
+ 286:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 287:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#if (ARCH == ARCH_AVR8)
+ 288:../../LUFA/Drivers/USB/../../Common/Common.h **** 				return SREG;
+ 126               		.loc 5 288 0
+ 127 0008 2FB7      		in r18,__SREG__
+ 128               	.LBE106:
+ 129               	.LBE105:
+ 130               	.LBB107:
+ 131               	.LBB108:
+ 289:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 290:../../LUFA/Drivers/USB/../../Common/Common.h **** 				return __builtin_mfsr(AVR32_SR);
+ 291:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_XMEGA)
+ 292:../../LUFA/Drivers/USB/../../Common/Common.h **** 				return SREG;
+ 293:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#endif
+ 294:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 295:../../LUFA/Drivers/USB/../../Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 296:../../LUFA/Drivers/USB/../../Common/Common.h **** 			}
+ 297:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 298:../../LUFA/Drivers/USB/../../Common/Common.h **** 			/** Sets the global interrupt enable state of the microcontroller to the mask passed into the fu
+ 299:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  This can be combined with \ref GetGlobalInterruptMask() to save and restore the Global Inter
+ 300:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  Mask bit(s) of the device after a critical section has completed.
+ 301:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 302:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \ingroup Group_GlobalInt
+ 303:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 304:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \param[in] GlobalIntState  Global Interrupt Enable Mask value to use
+ 305:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 */
+ 306:../../LUFA/Drivers/USB/../../Common/Common.h **** 			static inline void SetGlobalInterruptMask(const uint_reg_t GlobalIntState) ATTR_ALWAYS_INLINE;
+ 307:../../LUFA/Drivers/USB/../../Common/Common.h **** 			static inline void SetGlobalInterruptMask(const uint_reg_t GlobalIntState)
+ 308:../../LUFA/Drivers/USB/../../Common/Common.h **** 			{
+ 309:../../LUFA/Drivers/USB/../../Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 310:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 311:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#if (ARCH == ARCH_AVR8)
+ 312:../../LUFA/Drivers/USB/../../Common/Common.h **** 				SREG = GlobalIntState;
+ 313:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 314:../../LUFA/Drivers/USB/../../Common/Common.h **** 				if (GlobalIntState & AVR32_SR_GM)
+ 315:../../LUFA/Drivers/USB/../../Common/Common.h **** 				  __builtin_ssrf(AVR32_SR_GM_OFFSET);
+ 316:../../LUFA/Drivers/USB/../../Common/Common.h **** 				else
+ 317:../../LUFA/Drivers/USB/../../Common/Common.h **** 				  __builtin_csrf(AVR32_SR_GM_OFFSET);
+ 318:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_XMEGA)
+ 319:../../LUFA/Drivers/USB/../../Common/Common.h **** 				SREG = GlobalIntState;				
+ 320:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#endif
+ 321:../../LUFA/Drivers/USB/../../Common/Common.h **** 				
+ 322:../../LUFA/Drivers/USB/../../Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 323:../../LUFA/Drivers/USB/../../Common/Common.h **** 			}
+ 324:../../LUFA/Drivers/USB/../../Common/Common.h **** 		
+ 325:../../LUFA/Drivers/USB/../../Common/Common.h **** 			/** Enables global interrupt handling for the device, allowing interrupts to be handled.
+ 326:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 327:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \ingroup Group_GlobalInt
+ 328:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 */
+ 329:../../LUFA/Drivers/USB/../../Common/Common.h **** 			static inline void GlobalInterruptEnable(void) ATTR_ALWAYS_INLINE;
+ 330:../../LUFA/Drivers/USB/../../Common/Common.h **** 			static inline void GlobalInterruptEnable(void)
+ 331:../../LUFA/Drivers/USB/../../Common/Common.h **** 			{
+ 332:../../LUFA/Drivers/USB/../../Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 333:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 334:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#if (ARCH == ARCH_AVR8)
+ 335:../../LUFA/Drivers/USB/../../Common/Common.h **** 				sei();
+ 336:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 337:../../LUFA/Drivers/USB/../../Common/Common.h **** 				__builtin_csrf(AVR32_SR_GM_OFFSET);
+ 338:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_XMEGA)
+ 339:../../LUFA/Drivers/USB/../../Common/Common.h **** 				sei();
+ 340:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#endif
+ 341:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 342:../../LUFA/Drivers/USB/../../Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 343:../../LUFA/Drivers/USB/../../Common/Common.h **** 			}		
+ 344:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 345:../../LUFA/Drivers/USB/../../Common/Common.h **** 			/** Disabled global interrupt handling for the device, preventing interrupts from being handled.
+ 346:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *
+ 347:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 *  \ingroup Group_GlobalInt
+ 348:../../LUFA/Drivers/USB/../../Common/Common.h **** 			 */
+ 349:../../LUFA/Drivers/USB/../../Common/Common.h **** 			static inline void GlobalInterruptDisable(void) ATTR_ALWAYS_INLINE;
+ 350:../../LUFA/Drivers/USB/../../Common/Common.h **** 			static inline void GlobalInterruptDisable(void)
+ 351:../../LUFA/Drivers/USB/../../Common/Common.h **** 			{
+ 352:../../LUFA/Drivers/USB/../../Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 132               		.loc 5 352 0
+ 353:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 354:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#if (ARCH == ARCH_AVR8)
+ 355:../../LUFA/Drivers/USB/../../Common/Common.h **** 				cli();
+ 133               		.loc 5 355 0
+ 134               	/* #APP */
+ 135               	 ;  355 "../../LUFA/Drivers/USB/../../Common/Common.h" 1
+ 136 000a F894      		cli
+ 137               	 ;  0 "" 2
+ 356:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 357:../../LUFA/Drivers/USB/../../Common/Common.h **** 				__builtin_ssrf(AVR32_SR_GM_OFFSET);
+ 358:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_XMEGA)
+ 359:../../LUFA/Drivers/USB/../../Common/Common.h **** 				cli();
+ 360:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#endif
+ 361:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 362:../../LUFA/Drivers/USB/../../Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 138               		.loc 5 362 0
+ 139               	/* #NOAPP */
+ 140               	.LBE108:
+ 141               	.LBE107:
+ 134:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 135:../../LUFA/Drivers/Misc/RingBuffer.h **** 			uint_reg_t CurrentGlobalInt = GetGlobalInterruptMask();
+ 136:../../LUFA/Drivers/Misc/RingBuffer.h **** 			GlobalInterruptDisable();
+ 137:../../LUFA/Drivers/Misc/RingBuffer.h **** 	
+ 138:../../LUFA/Drivers/Misc/RingBuffer.h **** 			Buffer->In     = DataPtr;
+ 142               		.loc 4 138 0
+ 143 000c 80E0      		ldi r24,lo8(USARTtoUSB_Buffer_Data)
+ 144 000e 90E0      		ldi r25,hi8(USARTtoUSB_Buffer_Data)
+ 145 0010 9183      		std Z+1,r25
+ 146 0012 8083      		st Z,r24
+ 139:../../LUFA/Drivers/Misc/RingBuffer.h **** 			Buffer->Out    = DataPtr;
+ 147               		.loc 4 139 0
+ 148 0014 9383      		std Z+3,r25
+ 149 0016 8283      		std Z+2,r24
+ 140:../../LUFA/Drivers/Misc/RingBuffer.h **** 			Buffer->Start  = &DataPtr[0];
+ 150               		.loc 4 140 0
+ 151 0018 9583      		std Z+5,r25
+ 152 001a 8483      		std Z+4,r24
+ 141:../../LUFA/Drivers/Misc/RingBuffer.h **** 			Buffer->End    = &DataPtr[Size];
+ 153               		.loc 4 141 0
+ 154 001c 80E0      		ldi r24,lo8(USARTtoUSB_Buffer_Data+128)
+ 155 001e 90E0      		ldi r25,hi8(USARTtoUSB_Buffer_Data+128)
+ 156 0020 9783      		std Z+7,r25
+ 157 0022 8683      		std Z+6,r24
+ 142:../../LUFA/Drivers/Misc/RingBuffer.h **** 			Buffer->Size   = Size;
+ 158               		.loc 4 142 0
+ 159 0024 80E8      		ldi r24,lo8(-128)
+ 160 0026 8087      		std Z+8,r24
+ 143:../../LUFA/Drivers/Misc/RingBuffer.h **** 			Buffer->Count  = 0;
+ 161               		.loc 4 143 0
+ 162 0028 1286      		std Z+10,__zero_reg__
+ 163 002a 1186      		std Z+9,__zero_reg__
+ 164               	.LBB109:
+ 165               	.LBB110:
+ 309:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 166               		.loc 5 309 0
+ 312:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 167               		.loc 5 312 0
+ 168 002c 2FBF      		out __SREG__,r18
+ 322:../../LUFA/Drivers/USB/../../Common/Common.h **** 			}
+ 169               		.loc 5 322 0
+ 170               	.LVL6:
+ 171               	.LBE110:
+ 172               	.LBE109:
+ 173               	.LBE104:
+ 174               	.LBE103:
+  90:Benito.c      **** 
+ 175               		.loc 2 90 0
+ 176               	/* #APP */
+ 177               	 ;  90 "Benito.c" 1
+ 178 002e 7894      		sei
+ 179               	 ;  0 "" 2
+ 100:Benito.c      **** 		}
+ 180               		.loc 2 100 0
+ 181               	/* #NOAPP */
+ 182 0030 8EE1      		ldi r24,lo8(30)
+ 183 0032 F82E      		mov r15,r24
+ 184               	.LBB111:
+ 135:Benito.c      **** 
+ 185               		.loc 2 135 0
+ 186 0034 9AE0      		ldi r25,lo8(10)
+ 187 0036 E92E      		mov r14,r25
+ 188               	.LBB112:
+ 189               	.LBB113:
+ 144:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 145:../../LUFA/Drivers/Misc/RingBuffer.h **** 			SetGlobalInterruptMask(CurrentGlobalInt);
+ 146:../../LUFA/Drivers/Misc/RingBuffer.h **** 		}
+ 147:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 148:../../LUFA/Drivers/Misc/RingBuffer.h **** 		/** Retrieves the current number of bytes stored in a particular buffer. This value is computed
+ 149:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  by entering an atomic lock on the buffer, so that the buffer cannot be modified while the
+ 150:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  computation takes place. This value should be cached when reading out the contents of the buf
+ 151:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  so that as small a time as possible is spent in an atomic lock.
+ 152:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 153:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \note The value returned by this function is guaranteed to only be the minimum number of byte
+ 154:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *        stored in the given buffer; this value may change as other threads write new data, thus
+ 155:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *        the returned number should be used only to determine how many successive reads may safe
+ 156:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *        be performed on the buffer.
+ 157:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 158:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \param[in] Buffer  Pointer to a ring buffer structure whose count is to be computed.
+ 159:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 160:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \return Number of bytes currently stored in the buffer.
+ 161:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 */
+ 162:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESULT AT
+ 163:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer)
+ 164:../../LUFA/Drivers/Misc/RingBuffer.h **** 		{
+ 165:../../LUFA/Drivers/Misc/RingBuffer.h **** 			uint16_t Count;
+ 166:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 167:../../LUFA/Drivers/Misc/RingBuffer.h **** 			uint_reg_t CurrentGlobalInt = GetGlobalInterruptMask();
+ 168:../../LUFA/Drivers/Misc/RingBuffer.h **** 			GlobalInterruptDisable();
+ 169:../../LUFA/Drivers/Misc/RingBuffer.h **** 			
+ 170:../../LUFA/Drivers/Misc/RingBuffer.h **** 			Count = Buffer->Count;
+ 171:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 172:../../LUFA/Drivers/Misc/RingBuffer.h **** 			SetGlobalInterruptMask(CurrentGlobalInt);
+ 173:../../LUFA/Drivers/Misc/RingBuffer.h **** 			return Count;
+ 174:../../LUFA/Drivers/Misc/RingBuffer.h **** 		}
+ 175:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 176:../../LUFA/Drivers/Misc/RingBuffer.h **** 		/** Retrieves the free space in a particular buffer. This value is computed by entering an atomic
+ 177:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  on the buffer, so that the buffer cannot be modified while the computation takes place.
+ 178:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 179:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \note The value returned by this function is guaranteed to only be the maximum number of byte
+ 180:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *        free in the given buffer; this value may change as other threads write new data, thus
+ 181:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *        the returned number should be used only to determine how many successive writes may saf
+ 182:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *        be performed on the buffer when there is a single writer thread.
+ 183:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 184:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \param[in] Buffer  Pointer to a ring buffer structure whose free count is to be computed.
+ 185:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 186:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \return Number of free bytes in the buffer.
+ 187:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 */
+ 188:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline uint16_t RingBuffer_GetFreeCount(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESUL
+ 189:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline uint16_t RingBuffer_GetFreeCount(RingBuffer_t* const Buffer)
+ 190:../../LUFA/Drivers/Misc/RingBuffer.h **** 		{
+ 191:../../LUFA/Drivers/Misc/RingBuffer.h **** 			return (Buffer->Size - RingBuffer_GetCount(Buffer));
+ 192:../../LUFA/Drivers/Misc/RingBuffer.h **** 		}
+ 193:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 194:../../LUFA/Drivers/Misc/RingBuffer.h **** 		/** Atomically determines if the specified ring buffer contains any data. This should
+ 195:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  be tested before removing data from the buffer, to ensure that the buffer does not
+ 196:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  underflow.
+ 197:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 198:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  If the data is to be removed in a loop, store the total number of bytes stored in the
+ 199:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  buffer (via a call to the \ref RingBuffer_GetCount() function) in a temporary variable
+ 200:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  to reduce the time spent in atomicity locks.
+ 201:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 202:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \param[in,out] Buffer  Pointer to a ring buffer structure to insert into.
+ 203:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 204:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \return Boolean \c true if the buffer contains no free space, false otherwise.
+ 205:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 */
+ 206:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline bool RingBuffer_IsEmpty(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESULT ATTR_NO
+ 207:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline bool RingBuffer_IsEmpty(RingBuffer_t* const Buffer)
+ 208:../../LUFA/Drivers/Misc/RingBuffer.h **** 		{
+ 209:../../LUFA/Drivers/Misc/RingBuffer.h **** 			return (RingBuffer_GetCount(Buffer) == 0);
+ 210:../../LUFA/Drivers/Misc/RingBuffer.h **** 		}
+ 211:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 212:../../LUFA/Drivers/Misc/RingBuffer.h **** 		/** Atomically determines if the specified ring buffer contains any free space. This should
+ 213:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  be tested before storing data to the buffer, to ensure that no data is lost due to a
+ 214:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  buffer overrun.
+ 215:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 216:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \param[in,out] Buffer  Pointer to a ring buffer structure to insert into.
+ 217:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 218:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \return Boolean \c true if the buffer contains no free space, false otherwise.
+ 219:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 */
+ 220:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline bool RingBuffer_IsFull(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESULT ATTR_NON
+ 221:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline bool RingBuffer_IsFull(RingBuffer_t* const Buffer)
+ 222:../../LUFA/Drivers/Misc/RingBuffer.h **** 		{
+ 223:../../LUFA/Drivers/Misc/RingBuffer.h **** 			return (RingBuffer_GetCount(Buffer) == Buffer->Size);
+ 224:../../LUFA/Drivers/Misc/RingBuffer.h **** 		}
+ 225:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 226:../../LUFA/Drivers/Misc/RingBuffer.h **** 		/** Inserts an element into the ring buffer.
+ 227:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 228:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \note Only one execution thread (main program thread or an ISR) may insert into a single buff
+ 229:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *        otherwise data corruption may occur. Insertion and removal may occur from different exe
+ 230:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *        threads.
+ 231:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 232:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \param[in,out] Buffer  Pointer to a ring buffer structure to insert into.
+ 233:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \param[in]     Data    Data element to insert into the buffer.
+ 234:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 */
+ 235:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data) ATTR_NON_NULL_PTR_
+ 236:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data)
+ 237:../../LUFA/Drivers/Misc/RingBuffer.h **** 		{
+ 238:../../LUFA/Drivers/Misc/RingBuffer.h **** 			GCC_FORCE_POINTER_ACCESS(Buffer);
+ 239:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 240:../../LUFA/Drivers/Misc/RingBuffer.h **** 			*Buffer->In = Data;
+ 241:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 242:../../LUFA/Drivers/Misc/RingBuffer.h **** 			if (++Buffer->In == Buffer->End)
+ 243:../../LUFA/Drivers/Misc/RingBuffer.h **** 			  Buffer->In = Buffer->Start;
+ 244:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 245:../../LUFA/Drivers/Misc/RingBuffer.h **** 			uint_reg_t CurrentGlobalInt = GetGlobalInterruptMask();
+ 246:../../LUFA/Drivers/Misc/RingBuffer.h **** 			GlobalInterruptDisable();
+ 247:../../LUFA/Drivers/Misc/RingBuffer.h **** 			
+ 248:../../LUFA/Drivers/Misc/RingBuffer.h **** 			Buffer->Count++;
+ 249:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 250:../../LUFA/Drivers/Misc/RingBuffer.h **** 			SetGlobalInterruptMask(CurrentGlobalInt);
+ 251:../../LUFA/Drivers/Misc/RingBuffer.h **** 		}
+ 252:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 253:../../LUFA/Drivers/Misc/RingBuffer.h **** 		/** Removes an element from the ring buffer.
+ 254:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 255:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \note Only one execution thread (main program thread or an ISR) may remove from a single buff
+ 256:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *        otherwise data corruption may occur. Insertion and removal may occur from different exe
+ 257:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *        threads.
+ 258:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 259:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \param[in,out] Buffer  Pointer to a ring buffer structure to retrieve from.
+ 260:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 261:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \return Next data element stored in the buffer.
+ 262:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 */
+ 263:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer) ATTR_NON_NULL_PTR_ARG(1);
+ 264:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer)
+ 265:../../LUFA/Drivers/Misc/RingBuffer.h **** 		{
+ 266:../../LUFA/Drivers/Misc/RingBuffer.h **** 			GCC_FORCE_POINTER_ACCESS(Buffer);
+ 267:../../LUFA/Drivers/Misc/RingBuffer.h **** 		
+ 268:../../LUFA/Drivers/Misc/RingBuffer.h **** 			uint8_t Data = *Buffer->Out;
+ 269:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 270:../../LUFA/Drivers/Misc/RingBuffer.h **** 			if (++Buffer->Out == Buffer->End)
+ 271:../../LUFA/Drivers/Misc/RingBuffer.h **** 			  Buffer->Out = Buffer->Start;
+ 272:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 273:../../LUFA/Drivers/Misc/RingBuffer.h **** 			uint_reg_t CurrentGlobalInt = GetGlobalInterruptMask();
+ 274:../../LUFA/Drivers/Misc/RingBuffer.h **** 			GlobalInterruptDisable();
+ 275:../../LUFA/Drivers/Misc/RingBuffer.h **** 			
+ 276:../../LUFA/Drivers/Misc/RingBuffer.h **** 			Buffer->Count--;
+ 277:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 278:../../LUFA/Drivers/Misc/RingBuffer.h **** 			SetGlobalInterruptMask(CurrentGlobalInt);
+ 279:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 280:../../LUFA/Drivers/Misc/RingBuffer.h **** 			return Data;
+ 281:../../LUFA/Drivers/Misc/RingBuffer.h **** 		}
+ 282:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 283:../../LUFA/Drivers/Misc/RingBuffer.h **** 		/** Returns the next element stored in the ring buffer, without removing it.
+ 284:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 285:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \param[in,out] Buffer  Pointer to a ring buffer structure to retrieve from.
+ 286:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *
+ 287:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 *  \return Next data element stored in the buffer.
+ 288:../../LUFA/Drivers/Misc/RingBuffer.h **** 		 */
+ 289:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESULT ATTR_NO
+ 290:../../LUFA/Drivers/Misc/RingBuffer.h **** 		static inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer)
+ 291:../../LUFA/Drivers/Misc/RingBuffer.h **** 		{
+ 292:../../LUFA/Drivers/Misc/RingBuffer.h **** 			return *Buffer->Out;
+ 190               		.loc 4 292 0
+ 191 0038 00E0      		ldi r16,lo8(USARTtoUSB_Buffer)
+ 192 003a 10E0      		ldi r17,hi8(USARTtoUSB_Buffer)
+ 193               	.LBE113:
+ 194               	.LBE112:
+ 195               	.LBB115:
+ 196               	.LBB116:
+  99:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			}
+ 100:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+ 101:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			static inline void LEDs_ChangeLEDs(const uint8_t LEDMask,
+ 102:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			                                   const uint8_t ActiveMask)
+ 103:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			{
+ 104:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 				PORTC = ((PORTC | LEDMask) & ~ActiveMask);
+ 105:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			}
+ 106:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 
+ 107:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			static inline void LEDs_ToggleLEDs(const uint8_t LEDMask)
+ 108:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			{
+ 109:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 				PORTC ^= LEDMask;
+ 197               		.loc 1 109 0
+ 198 003c 20EC      		ldi r18,lo8(-64)
+ 199 003e D22E      		mov r13,r18
+ 200               	.LBE116:
+ 201               	.LBE115:
+ 120:Benito.c      **** 			}
+ 202               		.loc 2 120 0
+ 203 0040 34E6      		ldi r19,lo8(100)
+ 204 0042 C32E      		mov r12,r19
+ 205               	.L8:
+ 206               	.LBE111:
+  95:Benito.c      **** 		{
+ 207               		.loc 2 95 0
+ 208 0044 8091 C800 		lds r24,200
+ 209 0048 85FF      		sbrs r24,5
+ 210 004a 00C0      		rjmp .L5
+  95:Benito.c      **** 		{
+ 211               		.loc 2 95 0 is_stmt 0 discriminator 1
+ 212 004c 80E0      		ldi r24,lo8(VirtualSerial_CDC_Interface)
+ 213 004e 90E0      		ldi r25,hi8(VirtualSerial_CDC_Interface)
+ 214 0050 0E94 0000 		call CDC_Device_BytesReceived
+ 215               	.LVL7:
+ 216 0054 892B      		or r24,r25
+ 217 0056 01F0      		breq .L5
+  97:Benito.c      **** 
+ 218               		.loc 2 97 0 is_stmt 1
+ 219 0058 80E0      		ldi r24,lo8(VirtualSerial_CDC_Interface)
+ 220 005a 90E0      		ldi r25,hi8(VirtualSerial_CDC_Interface)
+ 221 005c 0E94 0000 		call CDC_Device_ReceiveByte
+ 222               	.LVL8:
+ 223 0060 8093 CE00 		sts 206,r24
+ 224               	.LVL9:
+ 225               	.LBB144:
+ 226               	.LBB145:
+  88:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			}
+ 227               		.loc 1 88 0
+ 228 0064 4798      		cbi 0x8,7
+ 229               	.LVL10:
+ 230               	.LBE145:
+ 231               	.LBE144:
+ 100:Benito.c      **** 		}
+ 232               		.loc 2 100 0
+ 233 0066 F092 0000 		sts PulseMSRemaining+1,r15
+ 234               	.L5:
+ 104:Benito.c      **** 		{
+ 235               		.loc 2 104 0
+ 236 006a A999      		sbic 0x15,1
+ 237 006c 00C0      		rjmp .L7
+ 238               	.L22:
+ 160:Benito.c      **** 		USB_USBTask();
+ 239               		.loc 2 160 0
+ 240 006e 80E0      		ldi r24,lo8(VirtualSerial_CDC_Interface)
+ 241 0070 90E0      		ldi r25,hi8(VirtualSerial_CDC_Interface)
+ 242 0072 0E94 0000 		call CDC_Device_USBTask
+ 243               	.LVL11:
+ 161:Benito.c      **** 	}
+ 244               		.loc 2 161 0
+ 245 0076 0E94 0000 		call USB_USBTask
+ 246               	.LVL12:
+ 162:Benito.c      **** }
+ 247               		.loc 2 162 0
+ 248 007a 00C0      		rjmp .L8
+ 249               	.L7:
+ 250               	.LBB146:
+ 107:Benito.c      **** 
+ 251               		.loc 2 107 0
+ 252 007c A89A      		sbi 0x15,0
+ 110:Benito.c      **** 			{
+ 253               		.loc 2 110 0
+ 254 007e 8091 0000 		lds r24,PulseMSRemaining
+ 255 0082 8823      		tst r24
+ 256 0084 01F0      		breq .L10
+ 110:Benito.c      **** 			{
+ 257               		.loc 2 110 0 is_stmt 0 discriminator 1
+ 258 0086 8091 0000 		lds r24,PulseMSRemaining
+ 259 008a 8150      		subi r24,lo8(-(-1))
+ 260 008c 8093 0000 		sts PulseMSRemaining,r24
+ 261 0090 8111      		cpse r24,__zero_reg__
+ 262 0092 00C0      		rjmp .L10
+ 263               	.LVL13:
+ 264               	.LBB118:
+ 265               	.LBB119:
+  93:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			}
+ 266               		.loc 1 93 0 is_stmt 1
+ 267 0094 88B1      		in r24,0x8
+ 268 0096 806C      		ori r24,lo8(-64)
+ 269 0098 88B9      		out 0x8,r24
+ 270               	.LVL14:
+ 271               	.LBE119:
+ 272               	.LBE118:
+ 113:Benito.c      **** 			}
+ 273               		.loc 2 113 0
+ 274 009a 5498      		cbi 0xa,4
+ 275               	.L10:
+ 117:Benito.c      **** 			{
+ 276               		.loc 2 117 0
+ 277 009c 8091 0000 		lds r24,PulseMSRemaining+3
+ 278 00a0 8823      		tst r24
+ 279 00a2 01F0      		breq .L13
+ 117:Benito.c      **** 			{
+ 280               		.loc 2 117 0 is_stmt 0 discriminator 1
+ 281 00a4 8091 0000 		lds r24,PulseMSRemaining+3
+ 282 00a8 8150      		subi r24,lo8(-(-1))
+ 283 00aa 8093 0000 		sts PulseMSRemaining+3,r24
+ 284 00ae 8111      		cpse r24,__zero_reg__
+ 285 00b0 00C0      		rjmp .L13
+ 286               	.LVL15:
+ 287               	.LBB120:
+ 288               	.LBB117:
+ 289               		.loc 1 109 0 is_stmt 1
+ 290 00b2 88B1      		in r24,0x8
+ 291 00b4 8D25      		eor r24,r13
+ 292 00b6 88B9      		out 0x8,r24
+ 293               	.LVL16:
+ 294               	.LBE117:
+ 295               	.LBE120:
+ 120:Benito.c      **** 			}
+ 296               		.loc 2 120 0
+ 297 00b8 C092 0000 		sts PulseMSRemaining+3,r12
+ 298               	.L13:
+ 124:Benito.c      **** 			  LEDs_TurnOffLEDs(LEDMASK_TX);
+ 299               		.loc 2 124 0
+ 300 00bc 8091 0000 		lds r24,PulseMSRemaining+1
+ 301 00c0 8823      		tst r24
+ 302 00c2 01F0      		breq .L16
+ 124:Benito.c      **** 			  LEDs_TurnOffLEDs(LEDMASK_TX);
+ 303               		.loc 2 124 0 is_stmt 0 discriminator 1
+ 304 00c4 8091 0000 		lds r24,PulseMSRemaining+1
+ 305 00c8 8150      		subi r24,lo8(-(-1))
+ 306 00ca 8093 0000 		sts PulseMSRemaining+1,r24
+ 307 00ce 8111      		cpse r24,__zero_reg__
+ 308 00d0 00C0      		rjmp .L16
+ 309               	.LVL17:
+ 310               	.LBB121:
+ 311               	.LBB122:
+  93:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			}
+ 312               		.loc 1 93 0 is_stmt 1
+ 313 00d2 479A      		sbi 0x8,7
+ 314               	.LVL18:
+ 315               	.L16:
+ 316               	.LBE122:
+ 317               	.LBE121:
+ 128:Benito.c      **** 			  LEDs_TurnOffLEDs(LEDMASK_RX);
+ 318               		.loc 2 128 0
+ 319 00d4 8091 0000 		lds r24,PulseMSRemaining+2
+ 320 00d8 8823      		tst r24
+ 321 00da 01F0      		breq .L19
+ 128:Benito.c      **** 			  LEDs_TurnOffLEDs(LEDMASK_RX);
+ 322               		.loc 2 128 0 is_stmt 0 discriminator 1
+ 323 00dc 8091 0000 		lds r24,PulseMSRemaining+2
+ 324 00e0 8150      		subi r24,lo8(-(-1))
+ 325 00e2 8093 0000 		sts PulseMSRemaining+2,r24
+ 326 00e6 8111      		cpse r24,__zero_reg__
+ 327 00e8 00C0      		rjmp .L19
+ 328               	.LVL19:
+ 329               	.LBB123:
+ 330               	.LBB124:
+  93:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			}
+ 331               		.loc 1 93 0 is_stmt 1
+ 332 00ea 469A      		sbi 0x8,6
+ 333               	.LVL20:
+ 334               	.L19:
+ 335               	.LBE124:
+ 336               	.LBE123:
+ 337               	.LBB125:
+ 338               	.LBB126:
+ 339               	.LBB127:
+ 340               	.LBB128:
+ 285:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 341               		.loc 5 285 0
+ 288:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 342               		.loc 5 288 0
+ 343 00ec 8FB7      		in r24,__SREG__
+ 344               	.LBE128:
+ 345               	.LBE127:
+ 346               	.LBB129:
+ 347               	.LBB130:
+ 352:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 348               		.loc 5 352 0
+ 355:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 349               		.loc 5 355 0
+ 350               	/* #APP */
+ 351               	 ;  355 "../../LUFA/Drivers/USB/../../Common/Common.h" 1
+ 352 00ee F894      		cli
+ 353               	 ;  0 "" 2
+ 354               		.loc 5 362 0
+ 355               	/* #NOAPP */
+ 356               	.LBE130:
+ 357               	.LBE129:
+ 170:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 358               		.loc 4 170 0
+ 359 00f0 C091 0000 		lds r28,USARTtoUSB_Buffer+9
+ 360 00f4 D091 0000 		lds r29,USARTtoUSB_Buffer+9+1
+ 361               	.LVL21:
+ 362               	.LBB131:
+ 363               	.LBB132:
+ 309:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 364               		.loc 5 309 0
+ 312:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 365               		.loc 5 312 0
+ 366 00f8 8FBF      		out __SREG__,r24
+ 322:../../LUFA/Drivers/USB/../../Common/Common.h **** 			}
+ 367               		.loc 5 322 0
+ 368               	.LVL22:
+ 369               	.LBE132:
+ 370               	.LBE131:
+ 371               	.LBE126:
+ 372               	.LBE125:
+ 133:Benito.c      **** 			{
+ 373               		.loc 2 133 0
+ 374 00fa 8091 0000 		lds r24,FlushPeriodRemaining
+ 375 00fe 8150      		subi r24,lo8(-(-1))
+ 376 0100 01F0      		breq .L21
+ 133:Benito.c      **** 			{
+ 377               		.loc 2 133 0 is_stmt 0 discriminator 1
+ 378 0102 C93C      		cpi r28,-55
+ 379 0104 D105      		cpc r29,__zero_reg__
+ 380 0106 00F4      		brsh .L21
+ 133:Benito.c      **** 			{
+ 381               		.loc 2 133 0
+ 382 0108 8093 0000 		sts FlushPeriodRemaining,r24
+ 383 010c 00C0      		rjmp .L22
+ 384               	.L21:
+ 135:Benito.c      **** 
+ 385               		.loc 2 135 0 is_stmt 1
+ 386 010e E092 0000 		sts FlushPeriodRemaining,r14
+ 138:Benito.c      **** 				{
+ 387               		.loc 2 138 0
+ 388 0112 2097      		sbiw r28,0
+ 389 0114 01F4      		brne .+2
+ 390 0116 00C0      		rjmp .L22
+ 391               	.LVL23:
+ 392               	.LBB133:
+ 393               	.LBB134:
+  88:../../LUFA/Drivers/Board/AVR8/BENITO/LEDs.h **** 			}
+ 394               		.loc 1 88 0
+ 395 0118 4698      		cbi 0x8,6
+ 396               	.LVL24:
+ 397               	.LBE134:
+ 398               	.LBE133:
+ 141:Benito.c      **** 				}
+ 399               		.loc 2 141 0
+ 400 011a F092 0000 		sts PulseMSRemaining+2,r15
+ 401               	.LVL25:
+ 402               	.L24:
+ 403               	.LBB135:
+ 404               	.LBB114:
+ 405               		.loc 4 292 0
+ 406 011e E091 0000 		lds r30,USARTtoUSB_Buffer+2
+ 407 0122 F091 0000 		lds r31,USARTtoUSB_Buffer+2+1
+ 408               	.LBE114:
+ 409               	.LBE135:
+ 148:Benito.c      **** 											RingBuffer_Peek(&USARTtoUSB_Buffer)) != ENDPOINT_READYWAIT_NoError)
+ 410               		.loc 2 148 0
+ 411 0126 6081      		ld r22,Z
+ 412 0128 80E0      		ldi r24,lo8(VirtualSerial_CDC_Interface)
+ 413 012a 90E0      		ldi r25,hi8(VirtualSerial_CDC_Interface)
+ 414 012c 0E94 0000 		call CDC_Device_SendByte
+ 415               	.LVL26:
+ 416 0130 8111      		cpse r24,__zero_reg__
+ 417 0132 00C0      		rjmp .L22
+ 418               	.LVL27:
+ 419               	.LBB136:
+ 420               	.LBB137:
+ 266:../../LUFA/Drivers/Misc/RingBuffer.h **** 		
+ 421               		.loc 4 266 0
+ 422 0134 F801      		movw r30,r16
+ 423               	.LVL28:
+ 270:../../LUFA/Drivers/Misc/RingBuffer.h **** 			  Buffer->Out = Buffer->Start;
+ 424               		.loc 4 270 0
+ 425 0136 8281      		ldd r24,Z+2
+ 426 0138 9381      		ldd r25,Z+3
+ 427 013a 0196      		adiw r24,1
+ 428 013c 9383      		std Z+3,r25
+ 429 013e 8283      		std Z+2,r24
+ 430               	.LVL29:
+ 431 0140 2681      		ldd r18,Z+6
+ 432 0142 3781      		ldd r19,Z+7
+ 433 0144 8217      		cp r24,r18
+ 434 0146 9307      		cpc r25,r19
+ 435 0148 01F4      		brne .L23
+ 271:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 436               		.loc 4 271 0
+ 437 014a 8481      		ldd r24,Z+4
+ 438 014c 9581      		ldd r25,Z+5
+ 439 014e 9383      		std Z+3,r25
+ 440 0150 8283      		std Z+2,r24
+ 441               	.L23:
+ 442               	.LBB138:
+ 443               	.LBB139:
+ 285:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 444               		.loc 5 285 0
+ 288:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 445               		.loc 5 288 0
+ 446 0152 2FB7      		in r18,__SREG__
+ 447               	.LBE139:
+ 448               	.LBE138:
+ 449               	.LBB140:
+ 450               	.LBB141:
+ 352:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 451               		.loc 5 352 0
+ 355:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 452               		.loc 5 355 0
+ 453               	/* #APP */
+ 454               	 ;  355 "../../LUFA/Drivers/USB/../../Common/Common.h" 1
+ 455 0154 F894      		cli
+ 456               	 ;  0 "" 2
+ 457               		.loc 5 362 0
+ 458               	/* #NOAPP */
+ 459               	.LBE141:
+ 460               	.LBE140:
+ 276:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 461               		.loc 4 276 0
+ 462 0156 8185      		ldd r24,Z+9
+ 463 0158 9285      		ldd r25,Z+10
+ 464 015a 0197      		sbiw r24,1
+ 465 015c 9287      		std Z+10,r25
+ 466 015e 8187      		std Z+9,r24
+ 467               	.LBB142:
+ 468               	.LBB143:
+ 309:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 469               		.loc 5 309 0
+ 312:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 470               		.loc 5 312 0
+ 471 0160 2FBF      		out __SREG__,r18
+ 322:../../LUFA/Drivers/USB/../../Common/Common.h **** 			}
+ 472               		.loc 5 322 0
+ 473 0162 2197      		sbiw r28,1
+ 474               	.LVL30:
+ 475               	.LBE143:
+ 476               	.LBE142:
+ 477               	.LBE137:
+ 478               	.LBE136:
+ 145:Benito.c      **** 				{
+ 479               		.loc 2 145 0
+ 480 0164 01F4      		brne .L24
+ 481 0166 00C0      		rjmp .L22
+ 482               	.LBE146:
+ 483               		.cfi_endproc
+ 484               	.LFE116:
+ 486               		.section	.text.EVENT_USB_Device_Connect,"ax",@progbits
+ 487               	.global	EVENT_USB_Device_Connect
+ 489               	EVENT_USB_Device_Connect:
+ 490               	.LFB118:
+ 184:Benito.c      **** }
+ 185:Benito.c      **** 
+ 186:Benito.c      **** /** Event handler for the library USB Connection event. */
+ 187:Benito.c      **** void EVENT_USB_Device_Connect(void)
+ 188:Benito.c      **** {
+ 491               		.loc 2 188 0
+ 492               		.cfi_startproc
+ 493               	/* prologue: function */
+ 494               	/* frame size = 0 */
+ 495               	/* stack size = 0 */
+ 496               	.L__stack_usage = 0
+ 189:Benito.c      **** 	PulseMSRemaining.PingPongLEDPulse = PING_PONG_LED_PULSE_MS;
+ 497               		.loc 2 189 0
+ 498 0000 84E6      		ldi r24,lo8(100)
+ 499 0002 8093 0000 		sts PulseMSRemaining+3,r24
+ 190:Benito.c      **** 	LEDs_SetAllLEDs(LEDMASK_TX);
+ 500               		.loc 2 190 0
+ 501 0006 80E8      		ldi r24,lo8(-128)
+ 502 0008 0C94 0000 		jmp LEDs_SetAllLEDs
+ 503               	.LVL31:
+ 504               		.cfi_endproc
+ 505               	.LFE118:
+ 507               		.section	.text.EVENT_USB_Device_Disconnect,"ax",@progbits
+ 508               	.global	EVENT_USB_Device_Disconnect
+ 510               	EVENT_USB_Device_Disconnect:
+ 511               	.LFB119:
+ 191:Benito.c      **** }
+ 192:Benito.c      **** 
+ 193:Benito.c      **** /** Event handler for the library USB Disconnection event. */
+ 194:Benito.c      **** void EVENT_USB_Device_Disconnect(void)
+ 195:Benito.c      **** {
+ 512               		.loc 2 195 0
+ 513               		.cfi_startproc
+ 514               	/* prologue: function */
+ 515               	/* frame size = 0 */
+ 516               	/* stack size = 0 */
+ 517               	.L__stack_usage = 0
+ 196:Benito.c      **** 	PulseMSRemaining.PingPongLEDPulse = 0;
+ 518               		.loc 2 196 0
+ 519 0000 1092 0000 		sts PulseMSRemaining+3,__zero_reg__
+ 197:Benito.c      **** 	LEDs_SetAllLEDs(LEDS_NO_LEDS);
+ 520               		.loc 2 197 0
+ 521 0004 80E0      		ldi r24,0
+ 522 0006 0C94 0000 		jmp LEDs_SetAllLEDs
+ 523               	.LVL32:
+ 524               		.cfi_endproc
+ 525               	.LFE119:
+ 527               		.section	.text.EVENT_USB_Device_ConfigurationChanged,"ax",@progbits
+ 528               	.global	EVENT_USB_Device_ConfigurationChanged
+ 530               	EVENT_USB_Device_ConfigurationChanged:
+ 531               	.LFB120:
+ 198:Benito.c      **** }
+ 199:Benito.c      **** 
+ 200:Benito.c      **** /** Event handler for the library USB Configuration Changed event. */
+ 201:Benito.c      **** void EVENT_USB_Device_ConfigurationChanged(void)
+ 202:Benito.c      **** {
+ 532               		.loc 2 202 0
+ 533               		.cfi_startproc
+ 534               	/* prologue: function */
+ 535               	/* frame size = 0 */
+ 536               	/* stack size = 0 */
+ 537               	.L__stack_usage = 0
+ 538               	.LVL33:
+ 203:Benito.c      **** 	bool ConfigSuccess = true;
+ 204:Benito.c      **** 
+ 205:Benito.c      **** 	ConfigSuccess &= CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface);
+ 539               		.loc 2 205 0
+ 540 0000 80E0      		ldi r24,lo8(VirtualSerial_CDC_Interface)
+ 541 0002 90E0      		ldi r25,hi8(VirtualSerial_CDC_Interface)
+ 542 0004 0E94 0000 		call CDC_Device_ConfigureEndpoints
+ 543               	.LVL34:
+ 206:Benito.c      **** 
+ 207:Benito.c      **** 	PulseMSRemaining.PingPongLEDPulse = 0;
+ 544               		.loc 2 207 0
+ 545 0008 1092 0000 		sts PulseMSRemaining+3,__zero_reg__
+ 208:Benito.c      **** 
+ 209:Benito.c      **** 	LEDs_SetAllLEDs(ConfigSuccess ? LEDS_NO_LEDS : LEDMASK_ERROR);
+ 546               		.loc 2 209 0
+ 547 000c 8111      		cpse r24,__zero_reg__
+ 548 000e 00C0      		rjmp .L40
+ 549 0010 80EC      		ldi r24,lo8(-64)
+ 550               	.LVL35:
+ 551 0012 00C0      		rjmp .L39
+ 552               	.LVL36:
+ 553               	.L40:
+ 554 0014 80E0      		ldi r24,0
+ 555               	.LVL37:
+ 556               	.L39:
+ 557               		.loc 2 209 0 is_stmt 0 discriminator 4
+ 558 0016 0C94 0000 		jmp LEDs_SetAllLEDs
+ 559               	.LVL38:
+ 560               		.cfi_endproc
+ 561               	.LFE120:
+ 563               		.section	.text.EVENT_USB_Device_ControlRequest,"ax",@progbits
+ 564               	.global	EVENT_USB_Device_ControlRequest
+ 566               	EVENT_USB_Device_ControlRequest:
+ 567               	.LFB121:
+ 210:Benito.c      **** }
+ 211:Benito.c      **** 
+ 212:Benito.c      **** /** Event handler for the USB_ControlRequest event. This is used to catch and process control reque
+ 213:Benito.c      ****  *  the device from the USB host before passing along unhandled control requests to the library for
+ 214:Benito.c      ****  *  internally.
+ 215:Benito.c      ****  */
+ 216:Benito.c      **** void EVENT_USB_Device_ControlRequest(void)
+ 217:Benito.c      **** {
+ 568               		.loc 2 217 0 is_stmt 1
+ 569               		.cfi_startproc
+ 570               	/* prologue: function */
+ 571               	/* frame size = 0 */
+ 572               	/* stack size = 0 */
+ 573               	.L__stack_usage = 0
+ 218:Benito.c      **** 	CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
+ 574               		.loc 2 218 0
+ 575 0000 80E0      		ldi r24,lo8(VirtualSerial_CDC_Interface)
+ 576 0002 90E0      		ldi r25,hi8(VirtualSerial_CDC_Interface)
+ 577 0004 0C94 0000 		jmp CDC_Device_ProcessControlRequest
+ 578               	.LVL39:
+ 579               		.cfi_endproc
+ 580               	.LFE121:
+ 582               		.section	.text.EVENT_CDC_Device_LineEncodingChanged,"ax",@progbits
+ 583               	.global	EVENT_CDC_Device_LineEncodingChanged
+ 585               	EVENT_CDC_Device_LineEncodingChanged:
+ 586               	.LFB122:
+ 219:Benito.c      **** }
+ 220:Benito.c      **** 
+ 221:Benito.c      **** /** Event handler for the CDC Class driver Line Encoding Changed event.
+ 222:Benito.c      ****  *
+ 223:Benito.c      ****  *  \param[in] CDCInterfaceInfo  Pointer to the CDC class interface configuration structure being r
+ 224:Benito.c      ****  */
+ 225:Benito.c      **** void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+ 226:Benito.c      **** {
+ 587               		.loc 2 226 0
+ 588               		.cfi_startproc
+ 589               	.LVL40:
+ 590 0000 CF93      		push r28
+ 591               	.LCFI0:
+ 592               		.cfi_def_cfa_offset 3
+ 593               		.cfi_offset 28, -2
+ 594               	/* prologue: function */
+ 595               	/* frame size = 0 */
+ 596               	/* stack size = 1 */
+ 597               	.L__stack_usage = 1
+ 598 0002 FC01      		movw r30,r24
+ 599               	.LVL41:
+ 227:Benito.c      **** 	uint8_t ConfigMask = 0;
+ 228:Benito.c      **** 
+ 229:Benito.c      **** 	switch (CDCInterfaceInfo->State.LineEncoding.ParityType)
+ 600               		.loc 2 229 0
+ 601 0004 8489      		ldd r24,Z+20
+ 602               	.LVL42:
+ 603 0006 8130      		cpi r24,lo8(1)
+ 604 0008 01F0      		breq .L44
+ 605 000a 8230      		cpi r24,lo8(2)
+ 606 000c 01F4      		brne .L53
+ 607               	.LVL43:
+ 230:Benito.c      **** 	{
+ 231:Benito.c      **** 		case CDC_PARITY_Odd:
+ 232:Benito.c      **** 			ConfigMask = ((1 << UPM11) | (1 << UPM10));
+ 233:Benito.c      **** 			break;
+ 234:Benito.c      **** 		case CDC_PARITY_Even:
+ 235:Benito.c      **** 			ConfigMask = (1 << UPM11);
+ 608               		.loc 2 235 0
+ 609 000e C0E2      		ldi r28,lo8(32)
+ 236:Benito.c      **** 			break;
+ 610               		.loc 2 236 0
+ 611 0010 00C0      		rjmp .L43
+ 612               	.LVL44:
+ 613               	.L44:
+ 232:Benito.c      **** 			break;
+ 614               		.loc 2 232 0
+ 615 0012 C0E3      		ldi r28,lo8(48)
+ 616 0014 00C0      		rjmp .L43
+ 617               	.L53:
+ 227:Benito.c      **** 
+ 618               		.loc 2 227 0
+ 619 0016 C0E0      		ldi r28,0
+ 620               	.LVL45:
+ 621               	.L43:
+ 237:Benito.c      **** 	}
+ 238:Benito.c      **** 
+ 239:Benito.c      **** 	if (CDCInterfaceInfo->State.LineEncoding.CharFormat == CDC_LINEENCODING_TwoStopBits)
+ 622               		.loc 2 239 0
+ 623 0018 8389      		ldd r24,Z+19
+ 624 001a 8230      		cpi r24,lo8(2)
+ 625 001c 01F4      		brne .L46
+ 240:Benito.c      **** 	  ConfigMask |= (1 << USBS1);
+ 626               		.loc 2 240 0
+ 627 001e C860      		ori r28,lo8(8)
+ 628               	.LVL46:
+ 629               	.L46:
+ 241:Benito.c      **** 
+ 242:Benito.c      **** 	switch (CDCInterfaceInfo->State.LineEncoding.DataBits)
+ 630               		.loc 2 242 0
+ 631 0020 8589      		ldd r24,Z+21
+ 632 0022 8730      		cpi r24,lo8(7)
+ 633 0024 01F0      		breq .L48
+ 634 0026 8830      		cpi r24,lo8(8)
+ 635 0028 01F0      		breq .L49
+ 636 002a 8630      		cpi r24,lo8(6)
+ 637 002c 01F4      		brne .L47
+ 243:Benito.c      **** 	{
+ 244:Benito.c      **** 		case 6:
+ 245:Benito.c      **** 			ConfigMask |= (1 << UCSZ10);
+ 638               		.loc 2 245 0
+ 639 002e C260      		ori r28,lo8(2)
+ 640               	.LVL47:
+ 246:Benito.c      **** 			break;
+ 641               		.loc 2 246 0
+ 642 0030 00C0      		rjmp .L47
+ 643               	.L48:
+ 247:Benito.c      **** 		case 7:
+ 248:Benito.c      **** 			ConfigMask |= (1 << UCSZ11);
+ 644               		.loc 2 248 0
+ 645 0032 C460      		ori r28,lo8(4)
+ 646               	.LVL48:
+ 249:Benito.c      **** 			break;
+ 647               		.loc 2 249 0
+ 648 0034 00C0      		rjmp .L47
+ 649               	.L49:
+ 250:Benito.c      **** 		case 8:
+ 251:Benito.c      **** 			ConfigMask |= ((1 << UCSZ11) | (1 << UCSZ10));
+ 650               		.loc 2 251 0
+ 651 0036 C660      		ori r28,lo8(6)
+ 652               	.LVL49:
+ 653               	.L47:
+ 252:Benito.c      **** 			break;
+ 253:Benito.c      **** 	}
+ 254:Benito.c      **** 
+ 255:Benito.c      **** 	/* Must turn off USART before reconfiguring it, otherwise incorrect operation may occur */
+ 256:Benito.c      **** 	UCSR1B = 0;
+ 654               		.loc 2 256 0
+ 655 0038 1092 C900 		sts 201,__zero_reg__
+ 257:Benito.c      **** 	UCSR1A = 0;
+ 656               		.loc 2 257 0
+ 657 003c 1092 C800 		sts 200,__zero_reg__
+ 258:Benito.c      **** 	UCSR1C = 0;
+ 658               		.loc 2 258 0
+ 659 0040 1092 CA00 		sts 202,__zero_reg__
+ 259:Benito.c      **** 
+ 260:Benito.c      **** 	/* Set the new baud rate before configuring the USART */
+ 261:Benito.c      **** 	UBRR1  = SERIAL_2X_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
+ 660               		.loc 2 261 0
+ 661 0044 2785      		ldd r18,Z+15
+ 662 0046 3089      		ldd r19,Z+16
+ 663 0048 4189      		ldd r20,Z+17
+ 664 004a 5289      		ldd r21,Z+18
+ 665 004c DA01      		movw r26,r20
+ 666 004e C901      		movw r24,r18
+ 667 0050 B695      		lsr r27
+ 668 0052 A795      		ror r26
+ 669 0054 9795      		ror r25
+ 670 0056 8795      		ror r24
+ 671 0058 BC01      		movw r22,r24
+ 672 005a CD01      		movw r24,r26
+ 673 005c 605C      		subi r22,-64
+ 674 005e 7D4B      		sbci r23,-67
+ 675 0060 804F      		sbci r24,-16
+ 676 0062 9F4F      		sbci r25,-1
+ 677 0064 0E94 0000 		call __udivmodsi4
+ 678               	.LVL50:
+ 679 0068 2150      		subi r18,1
+ 680 006a 3109      		sbc r19,__zero_reg__
+ 681 006c 3093 CD00 		sts 204+1,r19
+ 682 0070 2093 CC00 		sts 204,r18
+ 262:Benito.c      **** 
+ 263:Benito.c      **** 	/* Reconfigure the USART in double speed mode for a wider baud rate range at the expense of accura
+ 264:Benito.c      **** 	UCSR1C = ConfigMask;
+ 683               		.loc 2 264 0
+ 684 0074 C093 CA00 		sts 202,r28
+ 265:Benito.c      **** 	UCSR1A = (1 << U2X1);
+ 685               		.loc 2 265 0
+ 686 0078 82E0      		ldi r24,lo8(2)
+ 687 007a 8093 C800 		sts 200,r24
+ 266:Benito.c      **** 	UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
+ 688               		.loc 2 266 0
+ 689 007e 88E9      		ldi r24,lo8(-104)
+ 690 0080 8093 C900 		sts 201,r24
+ 691               	/* epilogue start */
+ 267:Benito.c      **** }
+ 692               		.loc 2 267 0
+ 693 0084 CF91      		pop r28
+ 694               	.LVL51:
+ 695 0086 0895      		ret
+ 696               		.cfi_endproc
+ 697               	.LFE122:
+ 699               		.section	.text.__vector_23,"ax",@progbits
+ 700               	.global	__vector_23
+ 702               	__vector_23:
+ 703               	.LFB123:
+ 268:Benito.c      **** 
+ 269:Benito.c      **** /** ISR to manage the reception of data from the serial port, placing received bytes into a circula
+ 270:Benito.c      ****  *  for later transmission to the host.
+ 271:Benito.c      ****  */
+ 272:Benito.c      **** ISR(USART1_RX_vect, ISR_BLOCK)
+ 273:Benito.c      **** {
+ 704               		.loc 2 273 0
+ 705               		.cfi_startproc
+ 706 0000 1F92      		push r1
+ 707               	.LCFI1:
+ 708               		.cfi_def_cfa_offset 3
+ 709               		.cfi_offset 1, -2
+ 710 0002 0F92      		push r0
+ 711               	.LCFI2:
+ 712               		.cfi_def_cfa_offset 4
+ 713               		.cfi_offset 0, -3
+ 714 0004 0FB6      		in r0,__SREG__
+ 715 0006 0F92      		push r0
+ 716 0008 1124      		clr __zero_reg__
+ 717 000a 2F93      		push r18
+ 718               	.LCFI3:
+ 719               		.cfi_def_cfa_offset 5
+ 720               		.cfi_offset 18, -4
+ 721 000c 3F93      		push r19
+ 722               	.LCFI4:
+ 723               		.cfi_def_cfa_offset 6
+ 724               		.cfi_offset 19, -5
+ 725 000e 8F93      		push r24
+ 726               	.LCFI5:
+ 727               		.cfi_def_cfa_offset 7
+ 728               		.cfi_offset 24, -6
+ 729 0010 9F93      		push r25
+ 730               	.LCFI6:
+ 731               		.cfi_def_cfa_offset 8
+ 732               		.cfi_offset 25, -7
+ 733 0012 AF93      		push r26
+ 734               	.LCFI7:
+ 735               		.cfi_def_cfa_offset 9
+ 736               		.cfi_offset 26, -8
+ 737 0014 BF93      		push r27
+ 738               	.LCFI8:
+ 739               		.cfi_def_cfa_offset 10
+ 740               		.cfi_offset 27, -9
+ 741 0016 EF93      		push r30
+ 742               	.LCFI9:
+ 743               		.cfi_def_cfa_offset 11
+ 744               		.cfi_offset 30, -10
+ 745 0018 FF93      		push r31
+ 746               	.LCFI10:
+ 747               		.cfi_def_cfa_offset 12
+ 748               		.cfi_offset 31, -11
+ 749               	/* prologue: Signal */
+ 750               	/* frame size = 0 */
+ 751               	/* stack size = 11 */
+ 752               	.L__stack_usage = 11
+ 274:Benito.c      **** 	uint8_t ReceivedByte = UDR1;
+ 753               		.loc 2 274 0
+ 754 001a 8091 CE00 		lds r24,206
+ 755               	.LVL52:
+ 275:Benito.c      **** 
+ 276:Benito.c      **** 	if (USB_DeviceState == DEVICE_STATE_Configured)
+ 756               		.loc 2 276 0
+ 757 001e 9EB3      		in r25,0x1e
+ 758 0020 9430      		cpi r25,lo8(4)
+ 759 0022 01F4      		brne .L54
+ 760               	.LVL53:
+ 761               	.LBB155:
+ 762               	.LBB156:
+ 238:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 763               		.loc 4 238 0
+ 764 0024 E0E0      		ldi r30,lo8(USARTtoUSB_Buffer)
+ 765 0026 F0E0      		ldi r31,hi8(USARTtoUSB_Buffer)
+ 766               	.LVL54:
+ 240:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 767               		.loc 4 240 0
+ 768 0028 A081      		ld r26,Z
+ 769 002a B181      		ldd r27,Z+1
+ 770 002c 8C93      		st X,r24
+ 242:../../LUFA/Drivers/Misc/RingBuffer.h **** 			  Buffer->In = Buffer->Start;
+ 771               		.loc 4 242 0
+ 772 002e 8081      		ld r24,Z
+ 773 0030 9181      		ldd r25,Z+1
+ 774               	.LVL55:
+ 775 0032 0196      		adiw r24,1
+ 776 0034 9183      		std Z+1,r25
+ 777 0036 8083      		st Z,r24
+ 778               	.LVL56:
+ 779 0038 2681      		ldd r18,Z+6
+ 780 003a 3781      		ldd r19,Z+7
+ 781 003c 8217      		cp r24,r18
+ 782 003e 9307      		cpc r25,r19
+ 783 0040 01F4      		brne .L56
+ 243:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 784               		.loc 4 243 0
+ 785 0042 8481      		ldd r24,Z+4
+ 786 0044 9581      		ldd r25,Z+5
+ 787 0046 9183      		std Z+1,r25
+ 788 0048 8083      		st Z,r24
+ 789               	.L56:
+ 790               	.LBB157:
+ 791               	.LBB158:
+ 285:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 792               		.loc 5 285 0
+ 288:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 793               		.loc 5 288 0
+ 794 004a 2FB7      		in r18,__SREG__
+ 795               	.LBE158:
+ 796               	.LBE157:
+ 797               	.LBB159:
+ 798               	.LBB160:
+ 352:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 799               		.loc 5 352 0
+ 355:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 800               		.loc 5 355 0
+ 801               	/* #APP */
+ 802               	 ;  355 "../../LUFA/Drivers/USB/../../Common/Common.h" 1
+ 803 004c F894      		cli
+ 804               	 ;  0 "" 2
+ 805               		.loc 5 362 0
+ 806               	/* #NOAPP */
+ 807               	.LBE160:
+ 808               	.LBE159:
+ 248:../../LUFA/Drivers/Misc/RingBuffer.h **** 
+ 809               		.loc 4 248 0
+ 810 004e 8185      		ldd r24,Z+9
+ 811 0050 9285      		ldd r25,Z+10
+ 812 0052 0196      		adiw r24,1
+ 813 0054 9287      		std Z+10,r25
+ 814 0056 8187      		std Z+9,r24
+ 815               	.LBB161:
+ 816               	.LBB162:
+ 309:../../LUFA/Drivers/USB/../../Common/Common.h **** 
+ 817               		.loc 5 309 0
+ 312:../../LUFA/Drivers/USB/../../Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 818               		.loc 5 312 0
+ 819 0058 2FBF      		out __SREG__,r18
+ 322:../../LUFA/Drivers/USB/../../Common/Common.h **** 			}
+ 820               		.loc 5 322 0
+ 821               	.LVL57:
+ 822               	.L54:
+ 823               	/* epilogue start */
+ 824               	.LBE162:
+ 825               	.LBE161:
+ 826               	.LBE156:
+ 827               	.LBE155:
+ 277:Benito.c      **** 	  RingBuffer_Insert(&USARTtoUSB_Buffer, ReceivedByte);
+ 278:Benito.c      **** }
+ 828               		.loc 2 278 0
+ 829 005a FF91      		pop r31
+ 830 005c EF91      		pop r30
+ 831 005e BF91      		pop r27
+ 832 0060 AF91      		pop r26
+ 833 0062 9F91      		pop r25
+ 834 0064 8F91      		pop r24
+ 835 0066 3F91      		pop r19
+ 836 0068 2F91      		pop r18
+ 837 006a 0F90      		pop r0
+ 838 006c 0FBE      		out __SREG__,r0
+ 839 006e 0F90      		pop r0
+ 840 0070 1F90      		pop r1
+ 841 0072 1895      		reti
+ 842               		.cfi_endproc
+ 843               	.LFE123:
+ 845               		.section	.text.EVENT_CDC_Device_ControLineStateChanged,"ax",@progbits
+ 846               	.global	EVENT_CDC_Device_ControLineStateChanged
+ 848               	EVENT_CDC_Device_ControLineStateChanged:
+ 849               	.LFB124:
+ 279:Benito.c      **** 
+ 280:Benito.c      **** /** Event handler for the CDC Class driver Host-to-Device Line Encoding Changed event.
+ 281:Benito.c      ****  *
+ 282:Benito.c      ****  *  \param[in] CDCInterfaceInfo  Pointer to the CDC class interface configuration structure being r
+ 283:Benito.c      ****  */
+ 284:Benito.c      **** void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+ 285:Benito.c      **** {
+ 850               		.loc 2 285 0
+ 851               		.cfi_startproc
+ 852               	.LVL58:
+ 853 0000 CF93      		push r28
+ 854               	.LCFI11:
+ 855               		.cfi_def_cfa_offset 3
+ 856               		.cfi_offset 28, -2
+ 857               	/* prologue: function */
+ 858               	/* frame size = 0 */
+ 859               	/* stack size = 1 */
+ 860               	.L__stack_usage = 1
+ 286:Benito.c      **** 	static bool PreviousDTRState = false;
+ 287:Benito.c      **** 	bool        CurrentDTRState  = (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTR
+ 861               		.loc 2 287 0
+ 862 0002 FC01      		movw r30,r24
+ 863 0004 C585      		ldd r28,Z+13
+ 864 0006 C170      		andi r28,lo8(1)
+ 865               	.LVL59:
+ 288:Benito.c      **** 
+ 289:Benito.c      **** 	/* Check if the DTR line has been asserted - if so, start the target AVR's reset pulse */
+ 290:Benito.c      **** 	if (!(PreviousDTRState) && CurrentDTRState)
+ 866               		.loc 2 290 0
+ 867 0008 8091 0000 		lds r24,PreviousDTRState.4178
+ 868               	.LVL60:
+ 869 000c 8111      		cpse r24,__zero_reg__
+ 870 000e 00C0      		rjmp .L58
+ 871               		.loc 2 290 0 is_stmt 0 discriminator 1
+ 872 0010 CC23      		tst r28
+ 873 0012 01F0      		breq .L58
+ 291:Benito.c      **** 	{
+ 292:Benito.c      **** 		LEDs_SetAllLEDs(LEDMASK_BUSY);
+ 874               		.loc 2 292 0 is_stmt 1
+ 875 0014 80EC      		ldi r24,lo8(-64)
+ 876 0016 0E94 0000 		call LEDs_SetAllLEDs
+ 877               	.LVL61:
+ 293:Benito.c      **** 
+ 294:Benito.c      **** 		AVR_RESET_LINE_DDR |= AVR_RESET_LINE_MASK;
+ 878               		.loc 2 294 0
+ 879 001a 549A      		sbi 0xa,4
+ 295:Benito.c      **** 		PulseMSRemaining.ResetPulse = AVR_RESET_PULSE_MS;
+ 880               		.loc 2 295 0
+ 881 001c 8AE0      		ldi r24,lo8(10)
+ 882 001e 8093 0000 		sts PulseMSRemaining,r24
+ 883               	.L58:
+ 296:Benito.c      **** 	}
+ 297:Benito.c      **** 
+ 298:Benito.c      **** 	PreviousDTRState = CurrentDTRState;
+ 884               		.loc 2 298 0
+ 885 0022 C093 0000 		sts PreviousDTRState.4178,r28
+ 886               	/* epilogue start */
+ 299:Benito.c      **** }
+ 887               		.loc 2 299 0
+ 888 0026 CF91      		pop r28
+ 889               	.LVL62:
+ 890 0028 0895      		ret
+ 891               		.cfi_endproc
+ 892               	.LFE124:
+ 894               		.local	PreviousDTRState.4178
+ 895               		.comm	PreviousDTRState.4178,1,1
+ 896               	.global	VirtualSerial_CDC_Interface
+ 897               		.data
+ 900               	VirtualSerial_CDC_Interface:
+ 901 0000 00        		.byte	0
+ 902 0001 03        		.byte	3
+ 903 0002 1000      		.word	16
+ 904 0004 00        		.byte	0
+ 905 0005 04        		.byte	4
+ 906 0006 1000      		.word	16
+ 907 0008 00        		.byte	0
+ 908 0009 02        		.byte	2
+ 909 000a 0800      		.word	8
+ 910 000c 00        		.byte	0
+ 911 000d 0000 0000 		.zero	9
+ 911      0000 0000 
+ 911      00
+ 912               	.global	FlushPeriodRemaining
+ 915               	FlushPeriodRemaining:
+ 916 0016 0A        		.byte	10
+ 917               		.comm	PulseMSRemaining,4,1
+ 918               		.local	USARTtoUSB_Buffer_Data
+ 919               		.comm	USARTtoUSB_Buffer_Data,128,1
+ 920               		.local	USARTtoUSB_Buffer
+ 921               		.comm	USARTtoUSB_Buffer,11,1
+ 922               		.text
+ 923               	.Letext0:
+ 924               		.file 6 "/usr/lib/avr/include/stdint.h"
+ 925               		.file 7 "../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
+ 926               		.file 8 "../../LUFA/Drivers/USB/Core/AVR8/../Device.h"
+ 927               		.file 9 "../../LUFA/Drivers/USB/Class/Device/../Common/CDC.h"
+ 928               		.file 10 "/usr/lib/avr/include/stdio.h"
+ 929               		.file 11 "../../LUFA/Drivers/USB/Class/Device/CDC.h"
+ 930               		.file 12 "../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 931               		.file 13 "../../LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"
+ 932               		.file 14 "../../LUFA/Drivers/USB/Core/USBTask.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 Benito.c
+     /tmp/ccswUCz9.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccswUCz9.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccswUCz9.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccswUCz9.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccswUCz9.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccswUCz9.s:12     .text.LEDs_SetAllLEDs:0000000000000000 LEDs_SetAllLEDs
+     /tmp/ccswUCz9.s:37     .text.SetupHardware:0000000000000000 SetupHardware
+     /tmp/ccswUCz9.s:104    .text.startup.main:0000000000000000 main
+     /tmp/ccswUCz9.s:919    .bss:0000000000000081 USARTtoUSB_Buffer
+     /tmp/ccswUCz9.s:895    .bss:0000000000000001 USARTtoUSB_Buffer_Data
+     /tmp/ccswUCz9.s:900    .data:0000000000000000 VirtualSerial_CDC_Interface
+                            *COM*:0000000000000004 PulseMSRemaining
+     /tmp/ccswUCz9.s:915    .data:0000000000000016 FlushPeriodRemaining
+     /tmp/ccswUCz9.s:489    .text.EVENT_USB_Device_Connect:0000000000000000 EVENT_USB_Device_Connect
+     /tmp/ccswUCz9.s:510    .text.EVENT_USB_Device_Disconnect:0000000000000000 EVENT_USB_Device_Disconnect
+     /tmp/ccswUCz9.s:530    .text.EVENT_USB_Device_ConfigurationChanged:0000000000000000 EVENT_USB_Device_ConfigurationChanged
+     /tmp/ccswUCz9.s:566    .text.EVENT_USB_Device_ControlRequest:0000000000000000 EVENT_USB_Device_ControlRequest
+     /tmp/ccswUCz9.s:585    .text.EVENT_CDC_Device_LineEncodingChanged:0000000000000000 EVENT_CDC_Device_LineEncodingChanged
+     /tmp/ccswUCz9.s:702    .text.__vector_23:0000000000000000 __vector_23
+     /tmp/ccswUCz9.s:848    .text.EVENT_CDC_Device_ControLineStateChanged:0000000000000000 EVENT_CDC_Device_ControLineStateChanged
+                             .bss:0000000000000000 PreviousDTRState.4178
+
+UNDEFINED SYMBOLS
+USB_Init
+CDC_Device_BytesReceived
+CDC_Device_ReceiveByte
+CDC_Device_USBTask
+USB_USBTask
+CDC_Device_SendByte
+CDC_Device_ConfigureEndpoints
+CDC_Device_ProcessControlRequest
+__udivmodsi4
+__do_copy_data
+__do_clear_bss

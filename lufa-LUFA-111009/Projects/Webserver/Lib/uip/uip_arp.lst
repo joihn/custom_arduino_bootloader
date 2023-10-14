@@ -1,0 +1,1291 @@
+   1               		.file	"uip_arp.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.uip_arp_update.constprop.0,"ax",@progbits
+  13               	uip_arp_update.constprop.0:
+  14               	.LFB10:
+  15               		.file 1 "Lib/uip/uip_arp.c"
+   1:Lib/uip/uip_arp.c **** /**
+   2:Lib/uip/uip_arp.c ****  * \addtogroup uip
+   3:Lib/uip/uip_arp.c ****  * @{
+   4:Lib/uip/uip_arp.c ****  */
+   5:Lib/uip/uip_arp.c **** 
+   6:Lib/uip/uip_arp.c **** /**
+   7:Lib/uip/uip_arp.c ****  * \defgroup uiparp uIP Address Resolution Protocol
+   8:Lib/uip/uip_arp.c ****  * @{
+   9:Lib/uip/uip_arp.c ****  *
+  10:Lib/uip/uip_arp.c ****  * The Address Resolution Protocol ARP is used for mapping between IP
+  11:Lib/uip/uip_arp.c ****  * addresses and link level addresses such as the Ethernet MAC
+  12:Lib/uip/uip_arp.c ****  * addresses. ARP uses broadcast queries to ask for the link level
+  13:Lib/uip/uip_arp.c ****  * address of a known IP address and the host which is configured with
+  14:Lib/uip/uip_arp.c ****  * the IP address for which the query was meant, will respond with its
+  15:Lib/uip/uip_arp.c ****  * link level address.
+  16:Lib/uip/uip_arp.c ****  *
+  17:Lib/uip/uip_arp.c ****  * \note This ARP implementation only supports Ethernet.
+  18:Lib/uip/uip_arp.c ****  */
+  19:Lib/uip/uip_arp.c **** 
+  20:Lib/uip/uip_arp.c **** /**
+  21:Lib/uip/uip_arp.c ****  * \file
+  22:Lib/uip/uip_arp.c ****  * Implementation of the ARP Address Resolution Protocol.
+  23:Lib/uip/uip_arp.c ****  * \author Adam Dunkels <adam@dunkels.com>
+  24:Lib/uip/uip_arp.c ****  *
+  25:Lib/uip/uip_arp.c ****  */
+  26:Lib/uip/uip_arp.c **** 
+  27:Lib/uip/uip_arp.c **** /*
+  28:Lib/uip/uip_arp.c ****  * Copyright (c) 2001-2003, Adam Dunkels.
+  29:Lib/uip/uip_arp.c ****  * All rights reserved.
+  30:Lib/uip/uip_arp.c ****  *
+  31:Lib/uip/uip_arp.c ****  * Redistribution and use in source and binary forms, with or without
+  32:Lib/uip/uip_arp.c ****  * modification, are permitted provided that the following conditions
+  33:Lib/uip/uip_arp.c ****  * are met:
+  34:Lib/uip/uip_arp.c ****  * 1. Redistributions of source code must retain the above copyright
+  35:Lib/uip/uip_arp.c ****  *    notice, this list of conditions and the following disclaimer.
+  36:Lib/uip/uip_arp.c ****  * 2. Redistributions in binary form must reproduce the above copyright
+  37:Lib/uip/uip_arp.c ****  *    notice, this list of conditions and the following disclaimer in the
+  38:Lib/uip/uip_arp.c ****  *    documentation and/or other materials provided with the distribution.
+  39:Lib/uip/uip_arp.c ****  * 3. The name of the author may not be used to endorse or promote
+  40:Lib/uip/uip_arp.c ****  *    products derived from this software without specific prior
+  41:Lib/uip/uip_arp.c ****  *    written permission.
+  42:Lib/uip/uip_arp.c ****  *
+  43:Lib/uip/uip_arp.c ****  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS
+  44:Lib/uip/uip_arp.c ****  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  45:Lib/uip/uip_arp.c ****  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  46:Lib/uip/uip_arp.c ****  * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+  47:Lib/uip/uip_arp.c ****  * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  48:Lib/uip/uip_arp.c ****  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+  49:Lib/uip/uip_arp.c ****  * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  50:Lib/uip/uip_arp.c ****  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+  51:Lib/uip/uip_arp.c ****  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+  52:Lib/uip/uip_arp.c ****  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  53:Lib/uip/uip_arp.c ****  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  54:Lib/uip/uip_arp.c ****  *
+  55:Lib/uip/uip_arp.c ****  * This file is part of the uIP TCP/IP stack.
+  56:Lib/uip/uip_arp.c ****  *
+  57:Lib/uip/uip_arp.c ****  * $Id: uip_arp.c,v 1.5 2008/02/07 01:35:00 adamdunkels Exp $
+  58:Lib/uip/uip_arp.c ****  *
+  59:Lib/uip/uip_arp.c ****  */
+  60:Lib/uip/uip_arp.c **** 
+  61:Lib/uip/uip_arp.c **** 
+  62:Lib/uip/uip_arp.c **** #include "uip_arp.h"
+  63:Lib/uip/uip_arp.c **** 
+  64:Lib/uip/uip_arp.c **** #include <string.h>
+  65:Lib/uip/uip_arp.c **** 
+  66:Lib/uip/uip_arp.c **** struct arp_hdr {
+  67:Lib/uip/uip_arp.c ****   struct uip_eth_hdr ethhdr;
+  68:Lib/uip/uip_arp.c ****   u16_t hwtype;
+  69:Lib/uip/uip_arp.c ****   u16_t protocol;
+  70:Lib/uip/uip_arp.c ****   u8_t hwlen;
+  71:Lib/uip/uip_arp.c ****   u8_t protolen;
+  72:Lib/uip/uip_arp.c ****   u16_t opcode;
+  73:Lib/uip/uip_arp.c ****   struct uip_eth_addr shwaddr;
+  74:Lib/uip/uip_arp.c ****   uip_ipaddr_t sipaddr;
+  75:Lib/uip/uip_arp.c ****   struct uip_eth_addr dhwaddr;
+  76:Lib/uip/uip_arp.c ****   uip_ipaddr_t dipaddr;
+  77:Lib/uip/uip_arp.c **** };
+  78:Lib/uip/uip_arp.c **** 
+  79:Lib/uip/uip_arp.c **** struct ethip_hdr {
+  80:Lib/uip/uip_arp.c ****   struct uip_eth_hdr ethhdr;
+  81:Lib/uip/uip_arp.c ****   /* IP header. */
+  82:Lib/uip/uip_arp.c ****   u8_t vhl,
+  83:Lib/uip/uip_arp.c ****     tos,
+  84:Lib/uip/uip_arp.c ****     len[2],
+  85:Lib/uip/uip_arp.c ****     ipid[2],
+  86:Lib/uip/uip_arp.c ****     ipoffset[2],
+  87:Lib/uip/uip_arp.c ****     ttl,
+  88:Lib/uip/uip_arp.c ****     proto;
+  89:Lib/uip/uip_arp.c ****   u16_t ipchksum;
+  90:Lib/uip/uip_arp.c ****   uip_ipaddr_t srcipaddr, destipaddr;
+  91:Lib/uip/uip_arp.c **** };
+  92:Lib/uip/uip_arp.c **** 
+  93:Lib/uip/uip_arp.c **** #define ARP_REQUEST 1
+  94:Lib/uip/uip_arp.c **** #define ARP_REPLY   2
+  95:Lib/uip/uip_arp.c **** 
+  96:Lib/uip/uip_arp.c **** #define ARP_HWTYPE_ETH 1
+  97:Lib/uip/uip_arp.c **** 
+  98:Lib/uip/uip_arp.c **** struct arp_entry {
+  99:Lib/uip/uip_arp.c ****   uip_ipaddr_t ipaddr;
+ 100:Lib/uip/uip_arp.c ****   struct uip_eth_addr ethaddr;
+ 101:Lib/uip/uip_arp.c ****   u8_t time;
+ 102:Lib/uip/uip_arp.c **** };
+ 103:Lib/uip/uip_arp.c **** 
+ 104:Lib/uip/uip_arp.c **** static const struct uip_eth_addr broadcast_ethaddr =
+ 105:Lib/uip/uip_arp.c ****   {{0xff,0xff,0xff,0xff,0xff,0xff}};
+ 106:Lib/uip/uip_arp.c **** static const u16_t broadcast_ipaddr[2] = {0xffff,0xffff};
+ 107:Lib/uip/uip_arp.c **** 
+ 108:Lib/uip/uip_arp.c **** static struct arp_entry arp_table[UIP_ARPTAB_SIZE];
+ 109:Lib/uip/uip_arp.c **** static uip_ipaddr_t ipaddr;
+ 110:Lib/uip/uip_arp.c **** static u8_t i, c;
+ 111:Lib/uip/uip_arp.c **** 
+ 112:Lib/uip/uip_arp.c **** static u8_t arptime;
+ 113:Lib/uip/uip_arp.c **** static u8_t tmpage;
+ 114:Lib/uip/uip_arp.c **** 
+ 115:Lib/uip/uip_arp.c **** #define BUF   ((struct arp_hdr *)&uip_buf[0])
+ 116:Lib/uip/uip_arp.c **** #define IPBUF ((struct ethip_hdr *)&uip_buf[0])
+ 117:Lib/uip/uip_arp.c **** 
+ 118:Lib/uip/uip_arp.c **** #define DEBUG 0
+ 119:Lib/uip/uip_arp.c **** #if DEBUG
+ 120:Lib/uip/uip_arp.c **** #include <stdio.h>
+ 121:Lib/uip/uip_arp.c **** #define PRINTF(...) printf(__VA_ARGS__)
+ 122:Lib/uip/uip_arp.c **** #else
+ 123:Lib/uip/uip_arp.c **** #define PRINTF(...)
+ 124:Lib/uip/uip_arp.c **** #endif
+ 125:Lib/uip/uip_arp.c **** 
+ 126:Lib/uip/uip_arp.c **** /*-----------------------------------------------------------------------------------*/
+ 127:Lib/uip/uip_arp.c **** /**
+ 128:Lib/uip/uip_arp.c ****  * Initialize the ARP module.
+ 129:Lib/uip/uip_arp.c ****  *
+ 130:Lib/uip/uip_arp.c ****  */
+ 131:Lib/uip/uip_arp.c **** /*-----------------------------------------------------------------------------------*/
+ 132:Lib/uip/uip_arp.c **** void
+ 133:Lib/uip/uip_arp.c **** uip_arp_init(void)
+ 134:Lib/uip/uip_arp.c **** {
+ 135:Lib/uip/uip_arp.c ****   for(i = 0; i < UIP_ARPTAB_SIZE; ++i) {
+ 136:Lib/uip/uip_arp.c ****     memset(&arp_table[i].ipaddr, 0, 4);
+ 137:Lib/uip/uip_arp.c ****   }
+ 138:Lib/uip/uip_arp.c **** }
+ 139:Lib/uip/uip_arp.c **** /*-----------------------------------------------------------------------------------*/
+ 140:Lib/uip/uip_arp.c **** /**
+ 141:Lib/uip/uip_arp.c ****  * Periodic ARP processing function.
+ 142:Lib/uip/uip_arp.c ****  *
+ 143:Lib/uip/uip_arp.c ****  * This function performs periodic timer processing in the ARP module
+ 144:Lib/uip/uip_arp.c ****  * and should be called at regular intervals. The recommended interval
+ 145:Lib/uip/uip_arp.c ****  * is 10 seconds between the calls.
+ 146:Lib/uip/uip_arp.c ****  *
+ 147:Lib/uip/uip_arp.c ****  */
+ 148:Lib/uip/uip_arp.c **** /*-----------------------------------------------------------------------------------*/
+ 149:Lib/uip/uip_arp.c **** void
+ 150:Lib/uip/uip_arp.c **** uip_arp_timer(void)
+ 151:Lib/uip/uip_arp.c **** {
+ 152:Lib/uip/uip_arp.c ****   struct arp_entry *tabptr = NULL;
+ 153:Lib/uip/uip_arp.c **** 
+ 154:Lib/uip/uip_arp.c ****   ++arptime;
+ 155:Lib/uip/uip_arp.c ****   for(i = 0; i < UIP_ARPTAB_SIZE; ++i) {
+ 156:Lib/uip/uip_arp.c ****     tabptr = &arp_table[i];
+ 157:Lib/uip/uip_arp.c ****     if(uip_ipaddr_cmp(&tabptr->ipaddr, &uip_all_zeroes_addr) &&
+ 158:Lib/uip/uip_arp.c ****        arptime - tabptr->time >= UIP_ARP_MAXAGE) {
+ 159:Lib/uip/uip_arp.c ****       memset(&tabptr->ipaddr, 0, 4);
+ 160:Lib/uip/uip_arp.c ****     }
+ 161:Lib/uip/uip_arp.c ****   }
+ 162:Lib/uip/uip_arp.c **** 
+ 163:Lib/uip/uip_arp.c **** }
+ 164:Lib/uip/uip_arp.c **** /*-----------------------------------------------------------------------------------*/
+ 165:Lib/uip/uip_arp.c **** static void
+ 166:Lib/uip/uip_arp.c **** uip_arp_update(uip_ipaddr_t *ipaddr, struct uip_eth_addr *ethaddr)
+  16               		.loc 1 166 0
+  17               		.cfi_startproc
+  18 0000 EF92      		push r14
+  19               	.LCFI0:
+  20               		.cfi_def_cfa_offset 3
+  21               		.cfi_offset 14, -2
+  22 0002 FF92      		push r15
+  23               	.LCFI1:
+  24               		.cfi_def_cfa_offset 4
+  25               		.cfi_offset 15, -3
+  26 0004 0F93      		push r16
+  27               	.LCFI2:
+  28               		.cfi_def_cfa_offset 5
+  29               		.cfi_offset 16, -4
+  30 0006 1F93      		push r17
+  31               	.LCFI3:
+  32               		.cfi_def_cfa_offset 6
+  33               		.cfi_offset 17, -5
+  34 0008 CF93      		push r28
+  35               	.LCFI4:
+  36               		.cfi_def_cfa_offset 7
+  37               		.cfi_offset 28, -6
+  38 000a DF93      		push r29
+  39               	.LCFI5:
+  40               		.cfi_def_cfa_offset 8
+  41               		.cfi_offset 29, -7
+  42               	/* prologue: function */
+  43               	/* frame size = 0 */
+  44               	/* stack size = 6 */
+  45               	.L__stack_usage = 6
+  46               	.LVL0:
+ 167:Lib/uip/uip_arp.c **** {
+ 168:Lib/uip/uip_arp.c ****   register struct arp_entry *tabptr = NULL;
+ 169:Lib/uip/uip_arp.c ****   /* Walk through the ARP mapping table and try to find an entry to
+ 170:Lib/uip/uip_arp.c ****      update. If none is found, the IP -> MAC address mapping is
+ 171:Lib/uip/uip_arp.c ****      inserted in the ARP table. */
+ 172:Lib/uip/uip_arp.c ****   for(i = 0; i < UIP_ARPTAB_SIZE; ++i) {
+ 173:Lib/uip/uip_arp.c **** 
+ 174:Lib/uip/uip_arp.c ****     tabptr = &arp_table[i];
+ 175:Lib/uip/uip_arp.c ****     /* Only check those entries that are actually in use. */
+ 176:Lib/uip/uip_arp.c ****     if(!uip_ipaddr_cmp(&tabptr->ipaddr, &uip_all_zeroes_addr)) {
+  47               		.loc 1 176 0
+  48 000c 2091 0000 		lds r18,uip_all_zeroes_addr
+  49 0010 3091 0000 		lds r19,uip_all_zeroes_addr+1
+  50 0014 4091 0000 		lds r20,uip_all_zeroes_addr+2
+  51 0018 5091 0000 		lds r21,uip_all_zeroes_addr+2+1
+ 177:Lib/uip/uip_arp.c **** 
+ 178:Lib/uip/uip_arp.c ****       /* Check if the source IP address of the incoming packet matches
+ 179:Lib/uip/uip_arp.c ****          the IP address in this ARP table entry. */
+ 180:Lib/uip/uip_arp.c ****       if(uip_ipaddr_cmp(ipaddr, &tabptr->ipaddr)) {
+  52               		.loc 1 180 0
+  53 001c 0091 0000 		lds r16,uip_buf+28
+  54 0020 1091 0000 		lds r17,uip_buf+28+1
+  55 0024 E090 0000 		lds r14,uip_buf+30
+  56 0028 F090 0000 		lds r15,uip_buf+30+1
+  57 002c 80E0      		ldi r24,0
+ 176:Lib/uip/uip_arp.c **** 
+  58               		.loc 1 176 0
+  59 002e 9BE0      		ldi r25,lo8(11)
+  60               	.LVL1:
+  61               	.L2:
+ 172:Lib/uip/uip_arp.c **** 
+  62               		.loc 1 172 0
+  63 0030 8830      		cpi r24,lo8(8)
+  64 0032 01F0      		breq .L16
+ 174:Lib/uip/uip_arp.c ****     /* Only check those entries that are actually in use. */
+  65               		.loc 1 174 0
+  66 0034 682F      		mov r22,r24
+  67 0036 70E0      		ldi r23,0
+  68               	.LVL2:
+ 176:Lib/uip/uip_arp.c **** 
+  69               		.loc 1 176 0
+  70 0038 969F      		mul r25,r22
+  71 003a F001      		movw r30,r0
+  72 003c 979F      		mul r25,r23
+  73 003e F00D      		add r31,r0
+  74 0040 1124      		clr __zero_reg__
+  75 0042 E050      		subi r30,lo8(-(arp_table))
+  76 0044 F040      		sbci r31,hi8(-(arp_table))
+  77 0046 A081      		ld r26,Z
+  78 0048 B181      		ldd r27,Z+1
+  79 004a A217      		cp r26,r18
+  80 004c B307      		cpc r27,r19
+  81 004e 01F4      		brne .L3
+  82 0050 0280      		ldd __tmp_reg__,Z+2
+  83 0052 F381      		ldd r31,Z+3
+  84 0054 E02D      		mov r30,__tmp_reg__
+  85 0056 E417      		cp r30,r20
+  86 0058 F507      		cpc r31,r21
+  87 005a 01F0      		breq .L4
+  88               	.L3:
+  89               		.loc 1 180 0
+  90 005c A017      		cp r26,r16
+  91 005e B107      		cpc r27,r17
+  92 0060 01F4      		brne .L4
+  93 0062 969F      		mul r25,r22
+  94 0064 D001      		movw r26,r0
+  95 0066 979F      		mul r25,r23
+  96 0068 B00D      		add r27,r0
+  97 006a 1124      		clr __zero_reg__
+  98 006c ED01      		movw r28,r26
+  99 006e C050      		subi r28,lo8(-(arp_table))
+ 100 0070 D040      		sbci r29,hi8(-(arp_table))
+ 101 0072 6A81      		ldd r22,Y+2
+ 102 0074 7B81      		ldd r23,Y+3
+ 103               	.LVL3:
+ 104 0076 E616      		cp r14,r22
+ 105 0078 F706      		cpc r15,r23
+ 106 007a 01F4      		brne .L4
+ 107 007c 8093 0000 		sts i,r24
+ 181:Lib/uip/uip_arp.c **** 
+ 182:Lib/uip/uip_arp.c **** 	/* An old entry found, update this and return. */
+ 183:Lib/uip/uip_arp.c **** 	memcpy(tabptr->ethaddr.addr, ethaddr->addr, 6);
+ 108               		.loc 1 183 0
+ 109 0080 A050      		subi r26,lo8(-(arp_table+4))
+ 110 0082 B040      		sbci r27,hi8(-(arp_table+4))
+ 111 0084 00C0      		rjmp .L14
+ 112               	.L4:
+ 113 0086 8F5F      		subi r24,lo8(-(1))
+ 114 0088 00C0      		rjmp .L2
+ 115               	.L16:
+ 184:Lib/uip/uip_arp.c **** 	tabptr->time = arptime;
+ 185:Lib/uip/uip_arp.c **** 
+ 186:Lib/uip/uip_arp.c **** 	return;
+ 187:Lib/uip/uip_arp.c ****       }
+ 188:Lib/uip/uip_arp.c ****     }
+ 189:Lib/uip/uip_arp.c ****   }
+ 190:Lib/uip/uip_arp.c **** 
+ 191:Lib/uip/uip_arp.c ****   /* If we get here, no existing ARP table entry was found, so we
+ 192:Lib/uip/uip_arp.c ****      create one. */
+ 193:Lib/uip/uip_arp.c **** 
+ 194:Lib/uip/uip_arp.c ****   /* First, we try to find an unused entry in the ARP table. */
+ 195:Lib/uip/uip_arp.c ****   for(i = 0; i < UIP_ARPTAB_SIZE; ++i) {
+ 116               		.loc 1 195 0
+ 117 008a 80E0      		ldi r24,0
+ 196:Lib/uip/uip_arp.c ****     tabptr = &arp_table[i];
+ 118               		.loc 1 196 0
+ 119 008c 9BE0      		ldi r25,lo8(11)
+ 120               	.L7:
+ 195:Lib/uip/uip_arp.c ****     tabptr = &arp_table[i];
+ 121               		.loc 1 195 0
+ 122 008e 8830      		cpi r24,lo8(8)
+ 123 0090 01F0      		breq .L17
+ 124               		.loc 1 196 0
+ 125 0092 989F      		mul r25,r24
+ 126 0094 E001      		movw r28,r0
+ 127 0096 1124      		clr __zero_reg__
+ 128 0098 C050      		subi r28,lo8(-(arp_table))
+ 129 009a D040      		sbci r29,hi8(-(arp_table))
+ 130               	.LVL4:
+ 197:Lib/uip/uip_arp.c ****     if(uip_ipaddr_cmp(&tabptr->ipaddr, &uip_all_zeroes_addr)) {
+ 131               		.loc 1 197 0
+ 132 009c 6881      		ld r22,Y
+ 133 009e 7981      		ldd r23,Y+1
+ 134 00a0 2617      		cp r18,r22
+ 135 00a2 3707      		cpc r19,r23
+ 136 00a4 01F4      		brne .L8
+ 137 00a6 6A81      		ldd r22,Y+2
+ 138 00a8 7B81      		ldd r23,Y+3
+ 139 00aa 4617      		cp r20,r22
+ 140 00ac 5707      		cpc r21,r23
+ 141 00ae 01F4      		brne .L8
+ 142 00b0 8093 0000 		sts i,r24
+ 143 00b4 00C0      		rjmp .L9
+ 144               	.L8:
+ 145 00b6 8F5F      		subi r24,lo8(-(1))
+ 146 00b8 00C0      		rjmp .L7
+ 147               	.LVL5:
+ 148               	.L17:
+ 198:Lib/uip/uip_arp.c ****       break;
+ 199:Lib/uip/uip_arp.c ****     }
+ 200:Lib/uip/uip_arp.c ****   }
+ 201:Lib/uip/uip_arp.c **** 
+ 202:Lib/uip/uip_arp.c ****   /* If no unused entry is found, we try to find the oldest entry and
+ 203:Lib/uip/uip_arp.c ****      throw it away. */
+ 204:Lib/uip/uip_arp.c ****   if(i == UIP_ARPTAB_SIZE) {
+ 205:Lib/uip/uip_arp.c ****     tmpage = 0;
+ 206:Lib/uip/uip_arp.c ****     c = 0;
+ 207:Lib/uip/uip_arp.c ****     for(i = 0; i < UIP_ARPTAB_SIZE; ++i) {
+ 208:Lib/uip/uip_arp.c ****       tabptr = &arp_table[i];
+ 209:Lib/uip/uip_arp.c ****       if(arptime - tabptr->time > tmpage) {
+ 149               		.loc 1 209 0
+ 150 00ba 2091 0000 		lds r18,arptime
+ 151 00be 422F      		mov r20,r18
+ 152 00c0 50E0      		ldi r21,0
+ 153 00c2 80E0      		ldi r24,0
+ 154 00c4 C0E0      		ldi r28,0
+ 155 00c6 90E0      		ldi r25,0
+ 156 00c8 6BE0      		ldi r22,lo8(11)
+ 157               	.L11:
+ 207:Lib/uip/uip_arp.c ****       tabptr = &arp_table[i];
+ 158               		.loc 1 207 0
+ 159 00ca 8830      		cpi r24,lo8(8)
+ 160 00cc 01F0      		breq .L18
+ 161               	.LVL6:
+ 162               		.loc 1 209 0
+ 163 00ce 689F      		mul r22,r24
+ 164 00d0 F001      		movw r30,r0
+ 165 00d2 1124      		clr __zero_reg__
+ 166 00d4 E050      		subi r30,lo8(-(arp_table))
+ 167 00d6 F040      		sbci r31,hi8(-(arp_table))
+ 168 00d8 3285      		ldd r19,Z+10
+ 169 00da DA01      		movw r26,r20
+ 170 00dc A31B      		sub r26,r19
+ 171 00de B109      		sbc r27,__zero_reg__
+ 172 00e0 E92F      		mov r30,r25
+ 173 00e2 F0E0      		ldi r31,0
+ 174 00e4 EA17      		cp r30,r26
+ 175 00e6 FB07      		cpc r31,r27
+ 176 00e8 04F4      		brge .L12
+ 210:Lib/uip/uip_arp.c **** 	tmpage = arptime - tabptr->time;
+ 177               		.loc 1 210 0
+ 178 00ea 922F      		mov r25,r18
+ 179 00ec 931B      		sub r25,r19
+ 180 00ee C82F      		mov r28,r24
+ 181               	.L12:
+ 182 00f0 8F5F      		subi r24,lo8(-(1))
+ 183               	.LVL7:
+ 184 00f2 00C0      		rjmp .L11
+ 185               	.LVL8:
+ 186               	.L18:
+ 187 00f4 9093 0000 		sts tmpage,r25
+ 188 00f8 C093 0000 		sts c,r28
+ 211:Lib/uip/uip_arp.c **** 	c = i;
+ 212:Lib/uip/uip_arp.c ****       }
+ 213:Lib/uip/uip_arp.c ****     }
+ 214:Lib/uip/uip_arp.c ****     i = c;
+ 189               		.loc 1 214 0
+ 190 00fc C093 0000 		sts i,r28
+ 215:Lib/uip/uip_arp.c ****     tabptr = &arp_table[i];
+ 191               		.loc 1 215 0
+ 192 0100 8BE0      		ldi r24,lo8(11)
+ 193 0102 C89F      		mul r28,r24
+ 194 0104 E001      		movw r28,r0
+ 195 0106 1124      		clr __zero_reg__
+ 196 0108 C050      		subi r28,lo8(-(arp_table))
+ 197 010a D040      		sbci r29,hi8(-(arp_table))
+ 198               	.LVL9:
+ 199               	.L9:
+ 216:Lib/uip/uip_arp.c ****   }
+ 217:Lib/uip/uip_arp.c **** 
+ 218:Lib/uip/uip_arp.c ****   /* Now, i is the ARP table entry which we will fill with the new
+ 219:Lib/uip/uip_arp.c ****      information. */
+ 220:Lib/uip/uip_arp.c ****   uip_ipaddr_copy(&tabptr->ipaddr, ipaddr);
+ 200               		.loc 1 220 0
+ 201 010c 4091 0000 		lds r20,uip_buf+28
+ 202 0110 5091 0000 		lds r21,uip_buf+28+1
+ 203 0114 6091 0000 		lds r22,uip_buf+28+2
+ 204 0118 7091 0000 		lds r23,uip_buf+28+3
+ 205 011c DE01      		movw r26,r28
+ 206 011e 4D93      		st X+,r20
+ 207 0120 5D93      		st X+,r21
+ 208 0122 6D93      		st X+,r22
+ 209 0124 7D93      		st X+,r23
+ 210               	.LVL10:
+ 211               	.L14:
+ 221:Lib/uip/uip_arp.c ****   memcpy(tabptr->ethaddr.addr, ethaddr->addr, 6);
+ 212               		.loc 1 221 0
+ 213 0126 86E0      		ldi r24,lo8(6)
+ 214 0128 E0E0      		ldi r30,lo8(uip_buf+22)
+ 215 012a F0E0      		ldi r31,hi8(uip_buf+22)
+ 216               	.LVL11:
+ 217               		0:
+ 218 012c 0190      		ld r0,Z+
+ 219 012e 0D92      		st X+,r0
+ 220 0130 8A95      		dec r24
+ 221 0132 01F4      		brne 0b
+ 222               	.LVL12:
+ 222:Lib/uip/uip_arp.c ****   tabptr->time = arptime;
+ 223               		.loc 1 222 0
+ 224 0134 8091 0000 		lds r24,arptime
+ 225 0138 8A87      		std Y+10,r24
+ 226               	/* epilogue start */
+ 223:Lib/uip/uip_arp.c **** }
+ 227               		.loc 1 223 0
+ 228 013a DF91      		pop r29
+ 229 013c CF91      		pop r28
+ 230 013e 1F91      		pop r17
+ 231 0140 0F91      		pop r16
+ 232 0142 FF90      		pop r15
+ 233 0144 EF90      		pop r14
+ 234 0146 0895      		ret
+ 235               		.cfi_endproc
+ 236               	.LFE10:
+ 238               		.section	.text.uip_arp_init,"ax",@progbits
+ 239               	.global	uip_arp_init
+ 241               	uip_arp_init:
+ 242               	.LFB5:
+ 134:Lib/uip/uip_arp.c ****   for(i = 0; i < UIP_ARPTAB_SIZE; ++i) {
+ 243               		.loc 1 134 0
+ 244               		.cfi_startproc
+ 245               	/* prologue: function */
+ 246               	/* frame size = 0 */
+ 247               	/* stack size = 0 */
+ 248               	.L__stack_usage = 0
+ 135:Lib/uip/uip_arp.c ****     memset(&arp_table[i].ipaddr, 0, 4);
+ 249               		.loc 1 135 0
+ 250 0000 1092 0000 		sts i,__zero_reg__
+ 136:Lib/uip/uip_arp.c ****   }
+ 251               		.loc 1 136 0
+ 252 0004 9BE0      		ldi r25,lo8(11)
+ 253 0006 24E0      		ldi r18,lo8(4)
+ 254               	.L20:
+ 135:Lib/uip/uip_arp.c ****     memset(&arp_table[i].ipaddr, 0, 4);
+ 255               		.loc 1 135 0 discriminator 1
+ 256 0008 8091 0000 		lds r24,i
+ 257 000c 8830      		cpi r24,lo8(8)
+ 258 000e 00F4      		brsh .L22
+ 136:Lib/uip/uip_arp.c ****   }
+ 259               		.loc 1 136 0 discriminator 3
+ 260 0010 989F      		mul r25,r24
+ 261 0012 F001      		movw r30,r0
+ 262 0014 1124      		clr __zero_reg__
+ 263 0016 E050      		subi r30,lo8(-(arp_table))
+ 264 0018 F040      		sbci r31,hi8(-(arp_table))
+ 265 001a DF01      		movw r26,r30
+ 266 001c 322F      		mov r19,r18
+ 267               		0:
+ 268 001e 1D92      		st X+,__zero_reg__
+ 269 0020 3A95      		dec r19
+ 270 0022 01F4      		brne 0b
+ 135:Lib/uip/uip_arp.c ****     memset(&arp_table[i].ipaddr, 0, 4);
+ 271               		.loc 1 135 0 discriminator 3
+ 272 0024 8F5F      		subi r24,lo8(-(1))
+ 273 0026 8093 0000 		sts i,r24
+ 274 002a 00C0      		rjmp .L20
+ 275               	.L22:
+ 276               	/* epilogue start */
+ 138:Lib/uip/uip_arp.c **** /*-----------------------------------------------------------------------------------*/
+ 277               		.loc 1 138 0
+ 278 002c 0895      		ret
+ 279               		.cfi_endproc
+ 280               	.LFE5:
+ 282               		.section	.text.uip_arp_timer,"ax",@progbits
+ 283               	.global	uip_arp_timer
+ 285               	uip_arp_timer:
+ 286               	.LFB6:
+ 151:Lib/uip/uip_arp.c ****   struct arp_entry *tabptr = NULL;
+ 287               		.loc 1 151 0
+ 288               		.cfi_startproc
+ 289 0000 CF93      		push r28
+ 290               	.LCFI6:
+ 291               		.cfi_def_cfa_offset 3
+ 292               		.cfi_offset 28, -2
+ 293 0002 DF93      		push r29
+ 294               	.LCFI7:
+ 295               		.cfi_def_cfa_offset 4
+ 296               		.cfi_offset 29, -3
+ 297               	/* prologue: function */
+ 298               	/* frame size = 0 */
+ 299               	/* stack size = 2 */
+ 300               	.L__stack_usage = 2
+ 301               	.LVL13:
+ 154:Lib/uip/uip_arp.c ****   for(i = 0; i < UIP_ARPTAB_SIZE; ++i) {
+ 302               		.loc 1 154 0
+ 303 0004 8091 0000 		lds r24,arptime
+ 304 0008 8F5F      		subi r24,lo8(-(1))
+ 305 000a 8093 0000 		sts arptime,r24
+ 155:Lib/uip/uip_arp.c ****     tabptr = &arp_table[i];
+ 306               		.loc 1 155 0
+ 307 000e 1092 0000 		sts i,__zero_reg__
+ 157:Lib/uip/uip_arp.c ****        arptime - tabptr->time >= UIP_ARP_MAXAGE) {
+ 308               		.loc 1 157 0
+ 309 0012 3BE0      		ldi r19,lo8(11)
+ 310 0014 4091 0000 		lds r20,uip_all_zeroes_addr
+ 311 0018 5091 0000 		lds r21,uip_all_zeroes_addr+1
+ 312 001c 6091 0000 		lds r22,uip_all_zeroes_addr+2
+ 313 0020 7091 0000 		lds r23,uip_all_zeroes_addr+2+1
+ 314 0024 90E0      		ldi r25,0
+ 159:Lib/uip/uip_arp.c ****     }
+ 315               		.loc 1 159 0
+ 316 0026 A4E0      		ldi r26,lo8(4)
+ 317               	.LVL14:
+ 318               	.L24:
+ 155:Lib/uip/uip_arp.c ****     tabptr = &arp_table[i];
+ 319               		.loc 1 155 0 discriminator 1
+ 320 0028 2091 0000 		lds r18,i
+ 321 002c 2830      		cpi r18,lo8(8)
+ 322 002e 00F4      		brsh .L27
+ 323               	.LVL15:
+ 157:Lib/uip/uip_arp.c ****        arptime - tabptr->time >= UIP_ARP_MAXAGE) {
+ 324               		.loc 1 157 0
+ 325 0030 329F      		mul r19,r18
+ 326 0032 F001      		movw r30,r0
+ 327 0034 1124      		clr __zero_reg__
+ 328 0036 E050      		subi r30,lo8(-(arp_table))
+ 329 0038 F040      		sbci r31,hi8(-(arp_table))
+ 330 003a C081      		ld r28,Z
+ 331 003c D181      		ldd r29,Z+1
+ 332 003e C417      		cp r28,r20
+ 333 0040 D507      		cpc r29,r21
+ 334 0042 01F4      		brne .L25
+ 157:Lib/uip/uip_arp.c ****        arptime - tabptr->time >= UIP_ARP_MAXAGE) {
+ 335               		.loc 1 157 0 is_stmt 0 discriminator 1
+ 336 0044 C281      		ldd r28,Z+2
+ 337 0046 D381      		ldd r29,Z+3
+ 338 0048 C617      		cp r28,r22
+ 339 004a D707      		cpc r29,r23
+ 340 004c 01F4      		brne .L25
+ 157:Lib/uip/uip_arp.c ****        arptime - tabptr->time >= UIP_ARP_MAXAGE) {
+ 341               		.loc 1 157 0 discriminator 2
+ 342 004e B285      		ldd r27,Z+10
+ 343 0050 EC01      		movw r28,r24
+ 344 0052 CB1B      		sub r28,r27
+ 345 0054 D109      		sbc r29,__zero_reg__
+ 346 0056 C837      		cpi r28,120
+ 347 0058 D105      		cpc r29,__zero_reg__
+ 348 005a 04F0      		brlt .L25
+ 159:Lib/uip/uip_arp.c ****     }
+ 349               		.loc 1 159 0 is_stmt 1
+ 350 005c EF01      		movw r28,r30
+ 351 005e BA2F      		mov r27,r26
+ 352               		0:
+ 353 0060 1992      		st Y+,__zero_reg__
+ 354 0062 BA95      		dec r27
+ 355 0064 01F4      		brne 0b
+ 356               	.L25:
+ 155:Lib/uip/uip_arp.c ****     tabptr = &arp_table[i];
+ 357               		.loc 1 155 0 discriminator 2
+ 358 0066 2F5F      		subi r18,lo8(-(1))
+ 359               	.LVL16:
+ 360 0068 2093 0000 		sts i,r18
+ 361               	.LVL17:
+ 362 006c 00C0      		rjmp .L24
+ 363               	.LVL18:
+ 364               	.L27:
+ 365               	/* epilogue start */
+ 163:Lib/uip/uip_arp.c **** /*-----------------------------------------------------------------------------------*/
+ 366               		.loc 1 163 0
+ 367 006e DF91      		pop r29
+ 368 0070 CF91      		pop r28
+ 369 0072 0895      		ret
+ 370               		.cfi_endproc
+ 371               	.LFE6:
+ 373               		.section	.text.uip_arp_arpin,"ax",@progbits
+ 374               	.global	uip_arp_arpin
+ 376               	uip_arp_arpin:
+ 377               	.LFB8:
+ 224:Lib/uip/uip_arp.c **** /*-----------------------------------------------------------------------------------*/
+ 225:Lib/uip/uip_arp.c **** /**
+ 226:Lib/uip/uip_arp.c ****  * ARP processing for incoming IP packets
+ 227:Lib/uip/uip_arp.c ****  *
+ 228:Lib/uip/uip_arp.c ****  * This function should be called by the device driver when an IP
+ 229:Lib/uip/uip_arp.c ****  * packet has been received. The function will check if the address is
+ 230:Lib/uip/uip_arp.c ****  * in the ARP cache, and if so the ARP cache entry will be
+ 231:Lib/uip/uip_arp.c ****  * refreshed. If no ARP cache entry was found, a new one is created.
+ 232:Lib/uip/uip_arp.c ****  *
+ 233:Lib/uip/uip_arp.c ****  * This function expects an IP packet with a prepended Ethernet header
+ 234:Lib/uip/uip_arp.c ****  * in the uip_buf[] buffer, and the length of the packet in the global
+ 235:Lib/uip/uip_arp.c ****  * variable uip_len.
+ 236:Lib/uip/uip_arp.c ****  */
+ 237:Lib/uip/uip_arp.c **** /*-----------------------------------------------------------------------------------*/
+ 238:Lib/uip/uip_arp.c **** #if 0
+ 239:Lib/uip/uip_arp.c **** void
+ 240:Lib/uip/uip_arp.c **** uip_arp_ipin(void)
+ 241:Lib/uip/uip_arp.c **** {
+ 242:Lib/uip/uip_arp.c ****   uip_len -= sizeof(struct uip_eth_hdr);
+ 243:Lib/uip/uip_arp.c **** 
+ 244:Lib/uip/uip_arp.c ****   /* Only insert/update an entry if the source IP address of the
+ 245:Lib/uip/uip_arp.c ****      incoming IP packet comes from a host on the local network. */
+ 246:Lib/uip/uip_arp.c ****   if((IPBUF->srcipaddr[0] & uip_netmask[0]) !=
+ 247:Lib/uip/uip_arp.c ****      (uip_hostaddr[0] & uip_netmask[0])) {
+ 248:Lib/uip/uip_arp.c ****     return;
+ 249:Lib/uip/uip_arp.c ****   }
+ 250:Lib/uip/uip_arp.c ****   if((IPBUF->srcipaddr[1] & uip_netmask[1]) !=
+ 251:Lib/uip/uip_arp.c ****      (uip_hostaddr[1] & uip_netmask[1])) {
+ 252:Lib/uip/uip_arp.c ****     return;
+ 253:Lib/uip/uip_arp.c ****   }
+ 254:Lib/uip/uip_arp.c ****   uip_arp_update(IPBUF->srcipaddr, &(IPBUF->ethhdr.src));
+ 255:Lib/uip/uip_arp.c **** 
+ 256:Lib/uip/uip_arp.c ****   return;
+ 257:Lib/uip/uip_arp.c **** }
+ 258:Lib/uip/uip_arp.c **** #endif /* 0 */
+ 259:Lib/uip/uip_arp.c **** /*-----------------------------------------------------------------------------------*/
+ 260:Lib/uip/uip_arp.c **** /**
+ 261:Lib/uip/uip_arp.c ****  * ARP processing for incoming ARP packets.
+ 262:Lib/uip/uip_arp.c ****  *
+ 263:Lib/uip/uip_arp.c ****  * This function should be called by the device driver when an ARP
+ 264:Lib/uip/uip_arp.c ****  * packet has been received. The function will act differently
+ 265:Lib/uip/uip_arp.c ****  * depending on the ARP packet type: if it is a reply for a request
+ 266:Lib/uip/uip_arp.c ****  * that we previously sent out, the ARP cache will be filled in with
+ 267:Lib/uip/uip_arp.c ****  * the values from the ARP reply. If the incoming ARP packet is an ARP
+ 268:Lib/uip/uip_arp.c ****  * request for our IP address, an ARP reply packet is created and put
+ 269:Lib/uip/uip_arp.c ****  * into the uip_buf[] buffer.
+ 270:Lib/uip/uip_arp.c ****  *
+ 271:Lib/uip/uip_arp.c ****  * When the function returns, the value of the global variable uip_len
+ 272:Lib/uip/uip_arp.c ****  * indicates whether the device driver should send out a packet or
+ 273:Lib/uip/uip_arp.c ****  * not. If uip_len is zero, no packet should be sent. If uip_len is
+ 274:Lib/uip/uip_arp.c ****  * non-zero, it contains the length of the outbound packet that is
+ 275:Lib/uip/uip_arp.c ****  * present in the uip_buf[] buffer.
+ 276:Lib/uip/uip_arp.c ****  *
+ 277:Lib/uip/uip_arp.c ****  * This function expects an ARP packet with a prepended Ethernet
+ 278:Lib/uip/uip_arp.c ****  * header in the uip_buf[] buffer, and the length of the packet in the
+ 279:Lib/uip/uip_arp.c ****  * global variable uip_len.
+ 280:Lib/uip/uip_arp.c ****  */
+ 281:Lib/uip/uip_arp.c **** /*-----------------------------------------------------------------------------------*/
+ 282:Lib/uip/uip_arp.c **** void
+ 283:Lib/uip/uip_arp.c **** uip_arp_arpin(void)
+ 284:Lib/uip/uip_arp.c **** {
+ 378               		.loc 1 284 0
+ 379               		.cfi_startproc
+ 380               	/* prologue: function */
+ 381               	/* frame size = 0 */
+ 382               	/* stack size = 0 */
+ 383               	.L__stack_usage = 0
+ 285:Lib/uip/uip_arp.c ****   if(uip_len < sizeof(struct arp_hdr)) {
+ 384               		.loc 1 285 0
+ 385 0000 8091 0000 		lds r24,uip_len
+ 386 0004 9091 0000 		lds r25,uip_len+1
+ 286:Lib/uip/uip_arp.c ****     uip_len = 0;
+ 387               		.loc 1 286 0
+ 388 0008 1092 0000 		sts uip_len+1,__zero_reg__
+ 389 000c 1092 0000 		sts uip_len,__zero_reg__
+ 285:Lib/uip/uip_arp.c ****   if(uip_len < sizeof(struct arp_hdr)) {
+ 390               		.loc 1 285 0
+ 391 0010 8A97      		sbiw r24,42
+ 392 0012 00F4      		brsh .L29
+ 287:Lib/uip/uip_arp.c ****     return;
+ 393               		.loc 1 287 0
+ 394 0014 0895      		ret
+ 395               	.L29:
+ 288:Lib/uip/uip_arp.c ****   }
+ 289:Lib/uip/uip_arp.c ****   uip_len = 0;
+ 290:Lib/uip/uip_arp.c **** 
+ 291:Lib/uip/uip_arp.c ****   switch(BUF->opcode) {
+ 396               		.loc 1 291 0
+ 397 0016 8091 0000 		lds r24,uip_buf+20
+ 398 001a 9091 0000 		lds r25,uip_buf+20+1
+ 399 001e 8115      		cp r24,__zero_reg__
+ 400 0020 21E0      		ldi r18,1
+ 401 0022 9207      		cpc r25,r18
+ 402 0024 01F0      		breq .L31
+ 403 0026 8115      		cp r24,__zero_reg__
+ 404 0028 9240      		sbci r25,2
+ 405 002a 01F4      		brne .+2
+ 406 002c 00C0      		rjmp .L32
+ 407 002e 0895      		ret
+ 408               	.L31:
+ 292:Lib/uip/uip_arp.c ****   case HTONS(ARP_REQUEST):
+ 293:Lib/uip/uip_arp.c ****     /* ARP request. If it asked for our address, we send out a
+ 294:Lib/uip/uip_arp.c ****        reply. */
+ 295:Lib/uip/uip_arp.c ****     /*    if(BUF->dipaddr[0] == uip_hostaddr[0] &&
+ 296:Lib/uip/uip_arp.c **** 	  BUF->dipaddr[1] == uip_hostaddr[1]) {*/
+ 297:Lib/uip/uip_arp.c ****     PRINTF("uip_arp_arpin: request for %d.%d.%d.%d (we are %d.%d.%d.%d)\n",
+ 298:Lib/uip/uip_arp.c **** 	   BUF->dipaddr.u8[0], BUF->dipaddr.u8[1],
+ 299:Lib/uip/uip_arp.c **** 	   BUF->dipaddr.u8[2], BUF->dipaddr.u8[3],
+ 300:Lib/uip/uip_arp.c **** 	   uip_hostaddr.u8[0], uip_hostaddr.u8[1],
+ 301:Lib/uip/uip_arp.c **** 	   uip_hostaddr.u8[2], uip_hostaddr.u8[3]);
+ 302:Lib/uip/uip_arp.c ****     if(uip_ipaddr_cmp(&BUF->dipaddr, &uip_hostaddr)) {
+ 409               		.loc 1 302 0
+ 410 0030 2091 0000 		lds r18,uip_buf+38
+ 411 0034 3091 0000 		lds r19,uip_buf+38+1
+ 412 0038 8091 0000 		lds r24,uip_hostaddr
+ 413 003c 9091 0000 		lds r25,uip_hostaddr+1
+ 414 0040 2817      		cp r18,r24
+ 415 0042 3907      		cpc r19,r25
+ 416 0044 01F0      		breq .+2
+ 417 0046 00C0      		rjmp .L28
+ 418               		.loc 1 302 0 is_stmt 0 discriminator 1
+ 419 0048 2091 0000 		lds r18,uip_buf+40
+ 420 004c 3091 0000 		lds r19,uip_buf+40+1
+ 421 0050 8091 0000 		lds r24,uip_hostaddr+2
+ 422 0054 9091 0000 		lds r25,uip_hostaddr+2+1
+ 423 0058 2817      		cp r18,r24
+ 424 005a 3907      		cpc r19,r25
+ 425 005c 01F0      		breq .+2
+ 426 005e 00C0      		rjmp .L28
+ 303:Lib/uip/uip_arp.c ****       /* First, we register the one who made the request in our ARP
+ 304:Lib/uip/uip_arp.c **** 	 table, since it is likely that we will do more communication
+ 305:Lib/uip/uip_arp.c **** 	 with this host in the future. */
+ 306:Lib/uip/uip_arp.c ****       uip_arp_update(&BUF->sipaddr, &BUF->shwaddr);
+ 427               		.loc 1 306 0 is_stmt 1
+ 428 0060 0E94 0000 		call uip_arp_update.constprop.0
+ 429               	.LVL19:
+ 307:Lib/uip/uip_arp.c **** 
+ 308:Lib/uip/uip_arp.c ****       BUF->opcode = HTONS(ARP_REPLY);
+ 430               		.loc 1 308 0
+ 431 0064 80E0      		ldi r24,0
+ 432 0066 92E0      		ldi r25,lo8(2)
+ 433 0068 9093 0000 		sts uip_buf+20+1,r25
+ 434 006c 8093 0000 		sts uip_buf+20,r24
+ 309:Lib/uip/uip_arp.c **** 
+ 310:Lib/uip/uip_arp.c ****       memcpy(BUF->dhwaddr.addr, BUF->shwaddr.addr, 6);
+ 435               		.loc 1 310 0
+ 436 0070 86E0      		ldi r24,lo8(6)
+ 437 0072 E0E0      		ldi r30,lo8(uip_buf+22)
+ 438 0074 F0E0      		ldi r31,hi8(uip_buf+22)
+ 439 0076 A0E0      		ldi r26,lo8(uip_buf+32)
+ 440 0078 B0E0      		ldi r27,hi8(uip_buf+32)
+ 441               		0:
+ 442 007a 0190      		ld r0,Z+
+ 443 007c 0D92      		st X+,r0
+ 444 007e 8A95      		dec r24
+ 445 0080 01F4      		brne 0b
+ 311:Lib/uip/uip_arp.c ****       memcpy(BUF->shwaddr.addr, uip_ethaddr.addr, 6);
+ 446               		.loc 1 311 0
+ 447 0082 86E0      		ldi r24,lo8(6)
+ 448 0084 E0E0      		ldi r30,lo8(uip_ethaddr)
+ 449 0086 F0E0      		ldi r31,hi8(uip_ethaddr)
+ 450 0088 A0E0      		ldi r26,lo8(uip_buf+22)
+ 451 008a B0E0      		ldi r27,hi8(uip_buf+22)
+ 452               		0:
+ 453 008c 0190      		ld r0,Z+
+ 454 008e 0D92      		st X+,r0
+ 455 0090 8A95      		dec r24
+ 456 0092 01F4      		brne 0b
+ 312:Lib/uip/uip_arp.c ****       memcpy(BUF->ethhdr.src.addr, uip_ethaddr.addr, 6);
+ 457               		.loc 1 312 0
+ 458 0094 86E0      		ldi r24,lo8(6)
+ 459 0096 E0E0      		ldi r30,lo8(uip_ethaddr)
+ 460 0098 F0E0      		ldi r31,hi8(uip_ethaddr)
+ 461 009a A0E0      		ldi r26,lo8(uip_buf+6)
+ 462 009c B0E0      		ldi r27,hi8(uip_buf+6)
+ 463               		0:
+ 464 009e 0190      		ld r0,Z+
+ 465 00a0 0D92      		st X+,r0
+ 466 00a2 8A95      		dec r24
+ 467 00a4 01F4      		brne 0b
+ 313:Lib/uip/uip_arp.c ****       memcpy(BUF->ethhdr.dest.addr, BUF->dhwaddr.addr, 6);
+ 468               		.loc 1 313 0
+ 469 00a6 86E0      		ldi r24,lo8(6)
+ 470 00a8 E0E0      		ldi r30,lo8(uip_buf+32)
+ 471 00aa F0E0      		ldi r31,hi8(uip_buf+32)
+ 472 00ac A0E0      		ldi r26,lo8(uip_buf)
+ 473 00ae B0E0      		ldi r27,hi8(uip_buf)
+ 474               		0:
+ 475 00b0 0190      		ld r0,Z+
+ 476 00b2 0D92      		st X+,r0
+ 477 00b4 8A95      		dec r24
+ 478 00b6 01F4      		brne 0b
+ 314:Lib/uip/uip_arp.c **** 
+ 315:Lib/uip/uip_arp.c ****       uip_ipaddr_copy(&BUF->dipaddr, &BUF->sipaddr);
+ 479               		.loc 1 315 0
+ 480 00b8 8091 0000 		lds r24,uip_buf+28
+ 481 00bc 9091 0000 		lds r25,uip_buf+28+1
+ 482 00c0 A091 0000 		lds r26,uip_buf+28+2
+ 483 00c4 B091 0000 		lds r27,uip_buf+28+3
+ 484 00c8 8093 0000 		sts uip_buf+38,r24
+ 485 00cc 9093 0000 		sts uip_buf+38+1,r25
+ 486 00d0 A093 0000 		sts uip_buf+38+2,r26
+ 487 00d4 B093 0000 		sts uip_buf+38+3,r27
+ 316:Lib/uip/uip_arp.c ****       uip_ipaddr_copy(&BUF->sipaddr, &uip_hostaddr);
+ 488               		.loc 1 316 0
+ 489 00d8 8091 0000 		lds r24,uip_hostaddr
+ 490 00dc 9091 0000 		lds r25,uip_hostaddr+1
+ 491 00e0 A091 0000 		lds r26,uip_hostaddr+2
+ 492 00e4 B091 0000 		lds r27,uip_hostaddr+3
+ 493 00e8 8093 0000 		sts uip_buf+28,r24
+ 494 00ec 9093 0000 		sts uip_buf+28+1,r25
+ 495 00f0 A093 0000 		sts uip_buf+28+2,r26
+ 496 00f4 B093 0000 		sts uip_buf+28+3,r27
+ 317:Lib/uip/uip_arp.c **** 
+ 318:Lib/uip/uip_arp.c ****       BUF->ethhdr.type = HTONS(UIP_ETHTYPE_ARP);
+ 497               		.loc 1 318 0
+ 498 00f8 88E0      		ldi r24,lo8(8)
+ 499 00fa 96E0      		ldi r25,lo8(6)
+ 500 00fc 9093 0000 		sts uip_buf+12+1,r25
+ 501 0100 8093 0000 		sts uip_buf+12,r24
+ 319:Lib/uip/uip_arp.c ****       uip_len = sizeof(struct arp_hdr);
+ 502               		.loc 1 319 0
+ 503 0104 8AE2      		ldi r24,lo8(42)
+ 504 0106 90E0      		ldi r25,0
+ 505 0108 9093 0000 		sts uip_len+1,r25
+ 506 010c 8093 0000 		sts uip_len,r24
+ 507 0110 0895      		ret
+ 508               	.L32:
+ 320:Lib/uip/uip_arp.c ****     }
+ 321:Lib/uip/uip_arp.c ****     break;
+ 322:Lib/uip/uip_arp.c ****   case HTONS(ARP_REPLY):
+ 323:Lib/uip/uip_arp.c ****     /* ARP reply. We insert or update the ARP table if it was meant
+ 324:Lib/uip/uip_arp.c ****        for us. */
+ 325:Lib/uip/uip_arp.c ****     if(uip_ipaddr_cmp(&BUF->dipaddr, &uip_hostaddr)) {
+ 509               		.loc 1 325 0
+ 510 0112 2091 0000 		lds r18,uip_buf+38
+ 511 0116 3091 0000 		lds r19,uip_buf+38+1
+ 512 011a 8091 0000 		lds r24,uip_hostaddr
+ 513 011e 9091 0000 		lds r25,uip_hostaddr+1
+ 514 0122 2817      		cp r18,r24
+ 515 0124 3907      		cpc r19,r25
+ 516 0126 01F4      		brne .L28
+ 517               		.loc 1 325 0 is_stmt 0 discriminator 1
+ 518 0128 2091 0000 		lds r18,uip_buf+40
+ 519 012c 3091 0000 		lds r19,uip_buf+40+1
+ 520 0130 8091 0000 		lds r24,uip_hostaddr+2
+ 521 0134 9091 0000 		lds r25,uip_hostaddr+2+1
+ 522 0138 2817      		cp r18,r24
+ 523 013a 3907      		cpc r19,r25
+ 524 013c 01F4      		brne .L28
+ 326:Lib/uip/uip_arp.c ****       uip_arp_update(&BUF->sipaddr, &BUF->shwaddr);
+ 525               		.loc 1 326 0 is_stmt 1
+ 526 013e 0C94 0000 		jmp uip_arp_update.constprop.0
+ 527               	.LVL20:
+ 528               	.L28:
+ 529 0142 0895      		ret
+ 530               		.cfi_endproc
+ 531               	.LFE8:
+ 533               		.section	.text.uip_arp_out,"ax",@progbits
+ 534               	.global	uip_arp_out
+ 536               	uip_arp_out:
+ 537               	.LFB9:
+ 327:Lib/uip/uip_arp.c ****     }
+ 328:Lib/uip/uip_arp.c ****     break;
+ 329:Lib/uip/uip_arp.c ****   }
+ 330:Lib/uip/uip_arp.c **** 
+ 331:Lib/uip/uip_arp.c ****   return;
+ 332:Lib/uip/uip_arp.c **** }
+ 333:Lib/uip/uip_arp.c **** /*-----------------------------------------------------------------------------------*/
+ 334:Lib/uip/uip_arp.c **** /**
+ 335:Lib/uip/uip_arp.c ****  * Prepend Ethernet header to an outbound IP packet and see if we need
+ 336:Lib/uip/uip_arp.c ****  * to send out an ARP request.
+ 337:Lib/uip/uip_arp.c ****  *
+ 338:Lib/uip/uip_arp.c ****  * This function should be called before sending out an IP packet. The
+ 339:Lib/uip/uip_arp.c ****  * function checks the destination IP address of the IP packet to see
+ 340:Lib/uip/uip_arp.c ****  * what Ethernet MAC address that should be used as a destination MAC
+ 341:Lib/uip/uip_arp.c ****  * address on the Ethernet.
+ 342:Lib/uip/uip_arp.c ****  *
+ 343:Lib/uip/uip_arp.c ****  * If the destination IP address is in the local network (determined
+ 344:Lib/uip/uip_arp.c ****  * by logical ANDing of netmask and our IP address), the function
+ 345:Lib/uip/uip_arp.c ****  * checks the ARP cache to see if an entry for the destination IP
+ 346:Lib/uip/uip_arp.c ****  * address is found. If so, an Ethernet header is prepended and the
+ 347:Lib/uip/uip_arp.c ****  * function returns. If no ARP cache entry is found for the
+ 348:Lib/uip/uip_arp.c ****  * destination IP address, the packet in the uip_buf[] is replaced by
+ 349:Lib/uip/uip_arp.c ****  * an ARP request packet for the IP address. The IP packet is dropped
+ 350:Lib/uip/uip_arp.c ****  * and it is assumed that they higher level protocols (e.g., TCP)
+ 351:Lib/uip/uip_arp.c ****  * eventually will retransmit the dropped packet.
+ 352:Lib/uip/uip_arp.c ****  *
+ 353:Lib/uip/uip_arp.c ****  * If the destination IP address is not on the local network, the IP
+ 354:Lib/uip/uip_arp.c ****  * address of the default router is used instead.
+ 355:Lib/uip/uip_arp.c ****  *
+ 356:Lib/uip/uip_arp.c ****  * When the function returns, a packet is present in the uip_buf[]
+ 357:Lib/uip/uip_arp.c ****  * buffer, and the length of the packet is in the global variable
+ 358:Lib/uip/uip_arp.c ****  * uip_len.
+ 359:Lib/uip/uip_arp.c ****  */
+ 360:Lib/uip/uip_arp.c **** /*-----------------------------------------------------------------------------------*/
+ 361:Lib/uip/uip_arp.c **** void
+ 362:Lib/uip/uip_arp.c **** uip_arp_out(void)
+ 363:Lib/uip/uip_arp.c **** {
+ 538               		.loc 1 363 0
+ 539               		.cfi_startproc
+ 540               	/* prologue: function */
+ 541               	/* frame size = 0 */
+ 542               	/* stack size = 0 */
+ 543               	.L__stack_usage = 0
+ 544               	.LVL21:
+ 364:Lib/uip/uip_arp.c ****   struct arp_entry *tabptr = NULL;
+ 365:Lib/uip/uip_arp.c **** 
+ 366:Lib/uip/uip_arp.c ****   /* Find the destination IP address in the ARP table and construct
+ 367:Lib/uip/uip_arp.c ****      the Ethernet header. If the destination IP address isn't on the
+ 368:Lib/uip/uip_arp.c ****      local network, we use the default router's IP address instead.
+ 369:Lib/uip/uip_arp.c **** 
+ 370:Lib/uip/uip_arp.c ****      If not ARP table entry is found, we overwrite the original IP
+ 371:Lib/uip/uip_arp.c ****      packet with an ARP request for the IP address. */
+ 372:Lib/uip/uip_arp.c **** 
+ 373:Lib/uip/uip_arp.c ****   /* First check if destination is a local broadcast. */
+ 374:Lib/uip/uip_arp.c ****   if(uip_ipaddr_cmp(&IPBUF->destipaddr, &uip_broadcast_addr)) {
+ 545               		.loc 1 374 0
+ 546 0000 2091 0000 		lds r18,uip_buf+30
+ 547 0004 3091 0000 		lds r19,uip_buf+30+1
+ 548 0008 8091 0000 		lds r24,uip_broadcast_addr
+ 549 000c 9091 0000 		lds r25,uip_broadcast_addr+1
+ 550 0010 2817      		cp r18,r24
+ 551 0012 3907      		cpc r19,r25
+ 552 0014 01F4      		brne .L34
+ 553               		.loc 1 374 0 is_stmt 0 discriminator 1
+ 554 0016 4091 0000 		lds r20,uip_buf+32
+ 555 001a 5091 0000 		lds r21,uip_buf+32+1
+ 556 001e 8091 0000 		lds r24,uip_broadcast_addr+2
+ 557 0022 9091 0000 		lds r25,uip_broadcast_addr+2+1
+ 558 0026 4817      		cp r20,r24
+ 559 0028 5907      		cpc r21,r25
+ 560 002a 01F4      		brne .L34
+ 375:Lib/uip/uip_arp.c ****     memcpy(IPBUF->ethhdr.dest.addr, broadcast_ethaddr.addr, 6);
+ 561               		.loc 1 375 0 is_stmt 1
+ 562 002c 86E0      		ldi r24,lo8(6)
+ 563 002e E0E0      		ldi r30,lo8(broadcast_ethaddr)
+ 564 0030 F0E0      		ldi r31,hi8(broadcast_ethaddr)
+ 565 0032 00C0      		rjmp .L45
+ 566               	.L34:
+ 376:Lib/uip/uip_arp.c ****   } else {
+ 377:Lib/uip/uip_arp.c ****     /* Check if the destination address is on the local network. */
+ 378:Lib/uip/uip_arp.c ****     if(!uip_ipaddr_maskcmp(&IPBUF->destipaddr, &uip_hostaddr, &uip_netmask)) {
+ 567               		.loc 1 378 0
+ 568 0034 8091 0000 		lds r24,uip_hostaddr
+ 569 0038 9091 0000 		lds r25,uip_hostaddr+1
+ 570 003c 8227      		eor r24,r18
+ 571 003e 9327      		eor r25,r19
+ 572 0040 2091 0000 		lds r18,uip_netmask
+ 573 0044 3091 0000 		lds r19,uip_netmask+1
+ 574 0048 8223      		and r24,r18
+ 575 004a 9323      		and r25,r19
+ 576 004c 892B      		or r24,r25
+ 577 004e 01F4      		brne .L36
+ 578               		.loc 1 378 0 is_stmt 0 discriminator 1
+ 579 0050 2091 0000 		lds r18,uip_buf+32
+ 580 0054 3091 0000 		lds r19,uip_buf+32+1
+ 581 0058 8091 0000 		lds r24,uip_hostaddr+2
+ 582 005c 9091 0000 		lds r25,uip_hostaddr+2+1
+ 583 0060 8227      		eor r24,r18
+ 584 0062 9327      		eor r25,r19
+ 585 0064 2091 0000 		lds r18,uip_netmask+2
+ 586 0068 3091 0000 		lds r19,uip_netmask+2+1
+ 587 006c 8223      		and r24,r18
+ 588 006e 9323      		and r25,r19
+ 589 0070 892B      		or r24,r25
+ 590 0072 01F0      		breq .L37
+ 591               	.L36:
+ 379:Lib/uip/uip_arp.c ****       /* Destination address was not on the local network, so we need to
+ 380:Lib/uip/uip_arp.c **** 	 use the default router's IP address instead of the destination
+ 381:Lib/uip/uip_arp.c **** 	 address when determining the MAC address. */
+ 382:Lib/uip/uip_arp.c ****       uip_ipaddr_copy(&ipaddr, &uip_draddr);
+ 592               		.loc 1 382 0 is_stmt 1
+ 593 0074 8091 0000 		lds r24,uip_draddr
+ 594 0078 9091 0000 		lds r25,uip_draddr+1
+ 595 007c A091 0000 		lds r26,uip_draddr+2
+ 596 0080 B091 0000 		lds r27,uip_draddr+3
+ 597 0084 00C0      		rjmp .L44
+ 598               	.L37:
+ 383:Lib/uip/uip_arp.c ****     } else {
+ 384:Lib/uip/uip_arp.c ****       /* Else, we use the destination IP address. */
+ 385:Lib/uip/uip_arp.c ****       uip_ipaddr_copy(&ipaddr, &IPBUF->destipaddr);
+ 599               		.loc 1 385 0
+ 600 0086 8091 0000 		lds r24,uip_buf+30
+ 601 008a 9091 0000 		lds r25,uip_buf+30+1
+ 602 008e A091 0000 		lds r26,uip_buf+30+2
+ 603 0092 B091 0000 		lds r27,uip_buf+30+3
+ 604               	.L44:
+ 605 0096 8093 0000 		sts ipaddr,r24
+ 606 009a 9093 0000 		sts ipaddr+1,r25
+ 607 009e A093 0000 		sts ipaddr+2,r26
+ 608 00a2 B093 0000 		sts ipaddr+3,r27
+ 386:Lib/uip/uip_arp.c ****     }
+ 387:Lib/uip/uip_arp.c **** 
+ 388:Lib/uip/uip_arp.c ****     for(i = 0; i < UIP_ARPTAB_SIZE; ++i) {
+ 389:Lib/uip/uip_arp.c ****       tabptr = &arp_table[i];
+ 390:Lib/uip/uip_arp.c ****       if(uip_ipaddr_cmp(&ipaddr, &tabptr->ipaddr)) {
+ 609               		.loc 1 390 0
+ 610 00a6 2091 0000 		lds r18,ipaddr
+ 611 00aa 3091 0000 		lds r19,ipaddr+1
+ 612 00ae 4091 0000 		lds r20,ipaddr+2
+ 613 00b2 5091 0000 		lds r21,ipaddr+2+1
+ 388:Lib/uip/uip_arp.c ****       tabptr = &arp_table[i];
+ 614               		.loc 1 388 0
+ 615 00b6 80E0      		ldi r24,0
+ 616               		.loc 1 390 0
+ 617 00b8 9BE0      		ldi r25,lo8(11)
+ 618               	.LVL22:
+ 619               	.L39:
+ 388:Lib/uip/uip_arp.c ****       tabptr = &arp_table[i];
+ 620               		.loc 1 388 0 discriminator 1
+ 621 00ba 8830      		cpi r24,lo8(8)
+ 622 00bc 01F0      		breq .L47
+ 623               	.LVL23:
+ 624               		.loc 1 390 0
+ 625 00be 989F      		mul r25,r24
+ 626 00c0 F001      		movw r30,r0
+ 627 00c2 1124      		clr __zero_reg__
+ 628 00c4 DF01      		movw r26,r30
+ 629 00c6 A050      		subi r26,lo8(-(arp_table))
+ 630 00c8 B040      		sbci r27,hi8(-(arp_table))
+ 631 00ca 6D91      		ld r22,X+
+ 632 00cc 7C91      		ld r23,X
+ 633 00ce 1197      		sbiw r26,1
+ 634 00d0 2617      		cp r18,r22
+ 635 00d2 3707      		cpc r19,r23
+ 636 00d4 01F4      		brne .L40
+ 637               		.loc 1 390 0 is_stmt 0 discriminator 1
+ 638 00d6 1296      		adiw r26,2
+ 639 00d8 6D91      		ld r22,X+
+ 640 00da 7C91      		ld r23,X
+ 641 00dc 1397      		sbiw r26,2+1
+ 642 00de 4617      		cp r20,r22
+ 643 00e0 5707      		cpc r21,r23
+ 644 00e2 01F4      		brne .+2
+ 645 00e4 00C0      		rjmp .L41
+ 646               	.L40:
+ 647 00e6 8F5F      		subi r24,lo8(-(1))
+ 648               	.LVL24:
+ 649 00e8 00C0      		rjmp .L39
+ 650               	.LVL25:
+ 651               	.L47:
+ 652 00ea 8093 0000 		sts i,r24
+ 391:Lib/uip/uip_arp.c **** 	break;
+ 392:Lib/uip/uip_arp.c ****       }
+ 393:Lib/uip/uip_arp.c ****     }
+ 394:Lib/uip/uip_arp.c **** 
+ 395:Lib/uip/uip_arp.c ****     if(i == UIP_ARPTAB_SIZE) {
+ 396:Lib/uip/uip_arp.c ****       /* The destination address was not in our ARP table, so we
+ 397:Lib/uip/uip_arp.c **** 	 overwrite the IP packet with an ARP request. */
+ 398:Lib/uip/uip_arp.c **** 
+ 399:Lib/uip/uip_arp.c ****       memset(BUF->ethhdr.dest.addr, 0xff, 6);
+ 653               		.loc 1 399 0 is_stmt 1
+ 654 00ee 46E0      		ldi r20,lo8(6)
+ 655 00f0 50E0      		ldi r21,0
+ 656 00f2 6FEF      		ldi r22,lo8(-1)
+ 657 00f4 70E0      		ldi r23,0
+ 658 00f6 80E0      		ldi r24,lo8(uip_buf)
+ 659 00f8 90E0      		ldi r25,hi8(uip_buf)
+ 660 00fa 0E94 0000 		call memset
+ 661               	.LVL26:
+ 400:Lib/uip/uip_arp.c ****       memset(BUF->dhwaddr.addr, 0x00, 6);
+ 662               		.loc 1 400 0
+ 663 00fe 86E0      		ldi r24,lo8(6)
+ 664 0100 E0E0      		ldi r30,lo8(uip_buf+32)
+ 665 0102 F0E0      		ldi r31,hi8(uip_buf+32)
+ 666 0104 DF01      		movw r26,r30
+ 667 0106 982F      		mov r25,r24
+ 668               		0:
+ 669 0108 1D92      		st X+,__zero_reg__
+ 670 010a 9A95      		dec r25
+ 671 010c 01F4      		brne 0b
+ 401:Lib/uip/uip_arp.c ****       memcpy(BUF->ethhdr.src.addr, uip_ethaddr.addr, 6);
+ 672               		.loc 1 401 0
+ 673 010e E0E0      		ldi r30,lo8(uip_ethaddr)
+ 674 0110 F0E0      		ldi r31,hi8(uip_ethaddr)
+ 675 0112 A0E0      		ldi r26,lo8(uip_buf+6)
+ 676 0114 B0E0      		ldi r27,hi8(uip_buf+6)
+ 677 0116 982F      		mov r25,r24
+ 678               		0:
+ 679 0118 0190      		ld r0,Z+
+ 680 011a 0D92      		st X+,r0
+ 681 011c 9A95      		dec r25
+ 682 011e 01F4      		brne 0b
+ 402:Lib/uip/uip_arp.c ****       memcpy(BUF->shwaddr.addr, uip_ethaddr.addr, 6);
+ 683               		.loc 1 402 0
+ 684 0120 E0E0      		ldi r30,lo8(uip_ethaddr)
+ 685 0122 F0E0      		ldi r31,hi8(uip_ethaddr)
+ 686 0124 A0E0      		ldi r26,lo8(uip_buf+22)
+ 687 0126 B0E0      		ldi r27,hi8(uip_buf+22)
+ 688 0128 982F      		mov r25,r24
+ 689               		0:
+ 690 012a 0190      		ld r0,Z+
+ 691 012c 0D92      		st X+,r0
+ 692 012e 9A95      		dec r25
+ 693 0130 01F4      		brne 0b
+ 403:Lib/uip/uip_arp.c **** 
+ 404:Lib/uip/uip_arp.c ****       uip_ipaddr_copy(&BUF->dipaddr, &ipaddr);
+ 694               		.loc 1 404 0
+ 695 0132 4091 0000 		lds r20,ipaddr
+ 696 0136 5091 0000 		lds r21,ipaddr+1
+ 697 013a 6091 0000 		lds r22,ipaddr+2
+ 698 013e 7091 0000 		lds r23,ipaddr+3
+ 699 0142 4093 0000 		sts uip_buf+38,r20
+ 700 0146 5093 0000 		sts uip_buf+38+1,r21
+ 701 014a 6093 0000 		sts uip_buf+38+2,r22
+ 702 014e 7093 0000 		sts uip_buf+38+3,r23
+ 405:Lib/uip/uip_arp.c ****       uip_ipaddr_copy(&BUF->sipaddr, &uip_hostaddr);
+ 703               		.loc 1 405 0
+ 704 0152 4091 0000 		lds r20,uip_hostaddr
+ 705 0156 5091 0000 		lds r21,uip_hostaddr+1
+ 706 015a 6091 0000 		lds r22,uip_hostaddr+2
+ 707 015e 7091 0000 		lds r23,uip_hostaddr+3
+ 708 0162 4093 0000 		sts uip_buf+28,r20
+ 709 0166 5093 0000 		sts uip_buf+28+1,r21
+ 710 016a 6093 0000 		sts uip_buf+28+2,r22
+ 711 016e 7093 0000 		sts uip_buf+28+3,r23
+ 406:Lib/uip/uip_arp.c ****       BUF->opcode = HTONS(ARP_REQUEST); /* ARP request. */
+ 712               		.loc 1 406 0
+ 713 0172 20E0      		ldi r18,0
+ 714 0174 31E0      		ldi r19,lo8(1)
+ 715 0176 3093 0000 		sts uip_buf+20+1,r19
+ 716 017a 2093 0000 		sts uip_buf+20,r18
+ 407:Lib/uip/uip_arp.c ****       BUF->hwtype = HTONS(ARP_HWTYPE_ETH);
+ 717               		.loc 1 407 0
+ 718 017e 3093 0000 		sts uip_buf+14+1,r19
+ 719 0182 2093 0000 		sts uip_buf+14,r18
+ 408:Lib/uip/uip_arp.c ****       BUF->protocol = HTONS(UIP_ETHTYPE_IP);
+ 720               		.loc 1 408 0
+ 721 0186 28E0      		ldi r18,lo8(8)
+ 722 0188 30E0      		ldi r19,0
+ 723 018a 3093 0000 		sts uip_buf+16+1,r19
+ 724 018e 2093 0000 		sts uip_buf+16,r18
+ 409:Lib/uip/uip_arp.c ****       BUF->hwlen = 6;
+ 725               		.loc 1 409 0
+ 726 0192 8093 0000 		sts uip_buf+18,r24
+ 410:Lib/uip/uip_arp.c ****       BUF->protolen = 4;
+ 727               		.loc 1 410 0
+ 728 0196 84E0      		ldi r24,lo8(4)
+ 729 0198 8093 0000 		sts uip_buf+19,r24
+ 411:Lib/uip/uip_arp.c ****       BUF->ethhdr.type = HTONS(UIP_ETHTYPE_ARP);
+ 730               		.loc 1 411 0
+ 731 019c 88E0      		ldi r24,lo8(8)
+ 732 019e 96E0      		ldi r25,lo8(6)
+ 733 01a0 9093 0000 		sts uip_buf+12+1,r25
+ 734 01a4 8093 0000 		sts uip_buf+12,r24
+ 412:Lib/uip/uip_arp.c **** 
+ 413:Lib/uip/uip_arp.c ****       uip_appdata = &uip_buf[UIP_TCPIP_HLEN + UIP_LLH_LEN];
+ 735               		.loc 1 413 0
+ 736 01a8 80E0      		ldi r24,lo8(uip_buf+54)
+ 737 01aa 90E0      		ldi r25,hi8(uip_buf+54)
+ 738 01ac 9093 0000 		sts uip_appdata+1,r25
+ 739 01b0 8093 0000 		sts uip_appdata,r24
+ 414:Lib/uip/uip_arp.c **** 
+ 415:Lib/uip/uip_arp.c ****       uip_len = sizeof(struct arp_hdr);
+ 740               		.loc 1 415 0
+ 741 01b4 8AE2      		ldi r24,lo8(42)
+ 742 01b6 90E0      		ldi r25,0
+ 743 01b8 00C0      		rjmp .L46
+ 744               	.LVL27:
+ 745               	.L41:
+ 746 01ba 8093 0000 		sts i,r24
+ 416:Lib/uip/uip_arp.c ****       return;
+ 417:Lib/uip/uip_arp.c ****     }
+ 418:Lib/uip/uip_arp.c **** 
+ 419:Lib/uip/uip_arp.c ****     /* Build an ethernet header. */
+ 420:Lib/uip/uip_arp.c ****     memcpy(IPBUF->ethhdr.dest.addr, tabptr->ethaddr.addr, 6);
+ 747               		.loc 1 420 0
+ 748 01be E050      		subi r30,lo8(-(arp_table+4))
+ 749 01c0 F040      		sbci r31,hi8(-(arp_table+4))
+ 750 01c2 86E0      		ldi r24,lo8(6)
+ 751               	.LVL28:
+ 752               	.L45:
+ 753 01c4 A0E0      		ldi r26,lo8(uip_buf)
+ 754 01c6 B0E0      		ldi r27,hi8(uip_buf)
+ 755               		0:
+ 756 01c8 0190      		ld r0,Z+
+ 757 01ca 0D92      		st X+,r0
+ 758 01cc 8A95      		dec r24
+ 759 01ce 01F4      		brne 0b
+ 421:Lib/uip/uip_arp.c ****   }
+ 422:Lib/uip/uip_arp.c ****   memcpy(IPBUF->ethhdr.src.addr, uip_ethaddr.addr, 6);
+ 760               		.loc 1 422 0
+ 761 01d0 86E0      		ldi r24,lo8(6)
+ 762 01d2 E0E0      		ldi r30,lo8(uip_ethaddr)
+ 763 01d4 F0E0      		ldi r31,hi8(uip_ethaddr)
+ 764 01d6 A0E0      		ldi r26,lo8(uip_buf+6)
+ 765 01d8 B0E0      		ldi r27,hi8(uip_buf+6)
+ 766               		0:
+ 767 01da 0190      		ld r0,Z+
+ 768 01dc 0D92      		st X+,r0
+ 769 01de 8A95      		dec r24
+ 770 01e0 01F4      		brne 0b
+ 423:Lib/uip/uip_arp.c **** 
+ 424:Lib/uip/uip_arp.c ****   IPBUF->ethhdr.type = HTONS(UIP_ETHTYPE_IP);
+ 771               		.loc 1 424 0
+ 772 01e2 88E0      		ldi r24,lo8(8)
+ 773 01e4 90E0      		ldi r25,0
+ 774 01e6 9093 0000 		sts uip_buf+12+1,r25
+ 775 01ea 8093 0000 		sts uip_buf+12,r24
+ 425:Lib/uip/uip_arp.c **** 
+ 426:Lib/uip/uip_arp.c ****   uip_len += sizeof(struct uip_eth_hdr);
+ 776               		.loc 1 426 0
+ 777 01ee 8091 0000 		lds r24,uip_len
+ 778 01f2 9091 0000 		lds r25,uip_len+1
+ 779 01f6 0E96      		adiw r24,14
+ 780               	.L46:
+ 781 01f8 9093 0000 		sts uip_len+1,r25
+ 782 01fc 8093 0000 		sts uip_len,r24
+ 783 0200 0895      		ret
+ 784               		.cfi_endproc
+ 785               	.LFE9:
+ 787               		.local	tmpage
+ 788               		.comm	tmpage,1,1
+ 789               		.local	arptime
+ 790               		.comm	arptime,1,1
+ 791               		.local	c
+ 792               		.comm	c,1,1
+ 793               		.local	i
+ 794               		.comm	i,1,1
+ 795               		.local	ipaddr
+ 796               		.comm	ipaddr,4,1
+ 797               		.local	arp_table
+ 798               		.comm	arp_table,88,1
+ 799               		.section	.rodata
+ 802               	broadcast_ethaddr:
+ 803 0000 FF        		.byte	-1
+ 804 0001 FF        		.byte	-1
+ 805 0002 FF        		.byte	-1
+ 806 0003 FF        		.byte	-1
+ 807 0004 FF        		.byte	-1
+ 808 0005 FF        		.byte	-1
+ 809               		.text
+ 810               	.Letext0:
+ 811               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 812               		.file 3 "Lib/uip/uipopt.h"
+ 813               		.file 4 "Lib/uip/uip.h"
+ 814               		.file 5 "Lib/uip/uip_arp.h"
+ 815               		.file 6 "/usr/lib/avr/include/string.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 uip_arp.c
+     /tmp/ccH88Efw.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccH88Efw.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccH88Efw.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccH88Efw.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccH88Efw.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccH88Efw.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccH88Efw.s:13     .text.uip_arp_update.constprop.0:0000000000000000 uip_arp_update.constprop.0
+     /tmp/ccH88Efw.s:796    .bss:0000000000000008 arp_table
+     /tmp/ccH88Efw.s:792    .bss:0000000000000003 i
+     /tmp/ccH88Efw.s:788    .bss:0000000000000001 arptime
+                             .bss:0000000000000000 tmpage
+     /tmp/ccH88Efw.s:790    .bss:0000000000000002 c
+     /tmp/ccH88Efw.s:241    .text.uip_arp_init:0000000000000000 uip_arp_init
+     /tmp/ccH88Efw.s:285    .text.uip_arp_timer:0000000000000000 uip_arp_timer
+     /tmp/ccH88Efw.s:376    .text.uip_arp_arpin:0000000000000000 uip_arp_arpin
+     /tmp/ccH88Efw.s:536    .text.uip_arp_out:0000000000000000 uip_arp_out
+     /tmp/ccH88Efw.s:802    .rodata:0000000000000000 broadcast_ethaddr
+     /tmp/ccH88Efw.s:794    .bss:0000000000000004 ipaddr
+
+UNDEFINED SYMBOLS
+uip_all_zeroes_addr
+uip_buf
+uip_len
+uip_hostaddr
+uip_ethaddr
+uip_broadcast_addr
+uip_netmask
+uip_draddr
+memset
+uip_appdata
+__do_copy_data
+__do_clear_bss

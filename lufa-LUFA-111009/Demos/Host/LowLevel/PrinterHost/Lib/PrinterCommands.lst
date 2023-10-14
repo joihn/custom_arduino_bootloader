@@ -1,0 +1,1467 @@
+   1               		.file	"PrinterCommands.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.Printer_SendData,"ax",@progbits
+  12               	.global	Printer_SendData
+  14               	Printer_SendData:
+  15               	.LFB147:
+  16               		.file 1 "Lib/PrinterCommands.c"
+   1:Lib/PrinterCommands.c **** /*
+   2:Lib/PrinterCommands.c ****              LUFA Library
+   3:Lib/PrinterCommands.c ****      Copyright (C) Dean Camera, 2011.
+   4:Lib/PrinterCommands.c **** 
+   5:Lib/PrinterCommands.c ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/PrinterCommands.c ****            www.lufa-lib.org
+   7:Lib/PrinterCommands.c **** */
+   8:Lib/PrinterCommands.c **** 
+   9:Lib/PrinterCommands.c **** /*
+  10:Lib/PrinterCommands.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/PrinterCommands.c **** 
+  12:Lib/PrinterCommands.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:Lib/PrinterCommands.c ****   software and its documentation for any purpose is hereby granted
+  14:Lib/PrinterCommands.c ****   without fee, provided that the above copyright notice appear in
+  15:Lib/PrinterCommands.c ****   all copies and that both that the copyright notice and this
+  16:Lib/PrinterCommands.c ****   permission notice and warranty disclaimer appear in supporting
+  17:Lib/PrinterCommands.c ****   documentation, and that the name of the author not be used in
+  18:Lib/PrinterCommands.c ****   advertising or publicity pertaining to distribution of the
+  19:Lib/PrinterCommands.c ****   software without specific, written prior permission.
+  20:Lib/PrinterCommands.c **** 
+  21:Lib/PrinterCommands.c ****   The author disclaim all warranties with regard to this
+  22:Lib/PrinterCommands.c ****   software, including all implied warranties of merchantability
+  23:Lib/PrinterCommands.c ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/PrinterCommands.c ****   special, indirect or consequential damages or any damages
+  25:Lib/PrinterCommands.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/PrinterCommands.c ****   in an action of contract, negligence or other tortious action,
+  27:Lib/PrinterCommands.c ****   arising out of or in connection with the use or performance of
+  28:Lib/PrinterCommands.c ****   this software.
+  29:Lib/PrinterCommands.c **** */
+  30:Lib/PrinterCommands.c **** 
+  31:Lib/PrinterCommands.c **** /** \file
+  32:Lib/PrinterCommands.c ****  *
+  33:Lib/PrinterCommands.c ****  *  Printer Device commands, to send/receive data to and from an attached USB
+  34:Lib/PrinterCommands.c ****  *  printer, and to send and receive Printer Class control requests.
+  35:Lib/PrinterCommands.c ****  */
+  36:Lib/PrinterCommands.c **** 
+  37:Lib/PrinterCommands.c **** #include "PrinterCommands.h"
+  38:Lib/PrinterCommands.c **** 
+  39:Lib/PrinterCommands.c **** /** Sends the given data directly to the printer via the data endpoints, for the sending of print c
+  40:Lib/PrinterCommands.c ****  *  languages accepted by the attached printer (e.g. PCL).
+  41:Lib/PrinterCommands.c ****  *
+  42:Lib/PrinterCommands.c ****  *  \param[in] PrinterCommands  Pointer to the data to send to the attached printer
+  43:Lib/PrinterCommands.c ****  *  \param[in] CommandSize  Size of the data to send to the attached printer
+  44:Lib/PrinterCommands.c ****  *
+  45:Lib/PrinterCommands.c ****  *  \return A value from the Pipe_Stream_RW_ErrorCodes_t enum
+  46:Lib/PrinterCommands.c ****  */
+  47:Lib/PrinterCommands.c **** uint8_t Printer_SendData(const void* const PrinterCommands,
+  48:Lib/PrinterCommands.c ****                          const uint16_t CommandSize)
+  49:Lib/PrinterCommands.c **** {
+  17               		.loc 1 49 0
+  18               		.cfi_startproc
+  19               	.LVL0:
+  20 0000 CF93      		push r28
+  21               	.LCFI0:
+  22               		.cfi_def_cfa_offset 3
+  23               		.cfi_offset 28, -2
+  24               	/* prologue: function */
+  25               	/* frame size = 0 */
+  26               	/* stack size = 1 */
+  27               	.L__stack_usage = 1
+  28               	.LVL1:
+  29               	.LBB16:
+  30               	.LBB17:
+  31               		.file 2 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h"
+   1:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /*
+   2:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+   5:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** */
+   8:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+   9:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /*
+  10:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  12:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  21:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****   this software.
+  29:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** */
+  30:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  31:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \file
+  32:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief USB Pipe definitions for the AVR8 microcontrollers.
+  33:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \copydetails Group_PipeManagement_AVR8
+  34:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  35:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  36:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *        dispatch header located in LUFA/Drivers/USB/USB.h.
+  37:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  38:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  39:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipeRW
+  40:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipeRW_AVR8 Pipe Data Reading and Writing (AVR8)
+  41:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe data read/write definitions for the Atmel AVR8 architecture.
+  42:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  43:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Functions, macros, variables, enums and types related to data reading and writing from and to p
+  44:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  45:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  46:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipePrimitiveRW
+  47:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipePrimitiveRW_AVR8 Read/Write of Primitive Data Types (AVR8)
+  48:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe primitive data read/write definitions for the Atmel AVR8 architecture.
+  49:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  50:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Functions, macros, variables, enums and types related to data reading and writing of primitive 
+  51:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  from and to pipes.
+  52:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  53:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  54:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipePacketManagement
+  55:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipePacketManagement_AVR8 Pipe Packet Management (AVR8)
+  56:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe packet management definitions for the Atmel AVR8 architecture.
+  57:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  58:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Functions, macros, variables, enums and types related to packet management of pipes.
+  59:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  60:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  61:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipeControlReq
+  62:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipeControlReq_AVR8 Pipe Control Request Management (AVR8)
+  63:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe control request management definitions for the Atmel AVR8 architecture.
+  64:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  65:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  Module for host mode request processing. This module allows for the transmission of standard, c
+  66:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  vendor control requests to the default control endpoint of an attached device while in host mod
+  67:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  68:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \see Chapter 9 of the USB 2.0 specification.
+  69:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  70:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  71:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** /** \ingroup Group_PipeManagement
+  72:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \defgroup Group_PipeManagement_AVR8 Pipe Management (AVR8)
+  73:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  \brief Pipe management definitions for the Atmel AVR8 architecture.
+  74:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  75:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  This module contains functions, macros and enums related to pipe management when in USB Host mo
+  76:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  module contains the pipe management macros, as well as pipe interrupt and data send/receive fun
+  77:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  for various data types.
+  78:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *
+  79:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  *  @{
+  80:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h ****  */
+  81:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  82:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** #ifndef __PIPE_AVR8_H__
+  83:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** #define __PIPE_AVR8_H__
+  84:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  85:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Includes: */
+  86:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#include "../../../../Common/Common.h"
+  87:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#include "../USBTask.h"
+  88:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  89:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Enable C linkage for C++ Compilers: */
+  90:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#if defined(__cplusplus)
+  91:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			extern "C" {
+  92:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#endif
+  93:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  94:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Preprocessor Checks: */
+  95:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#if !defined(__INCLUDE_FROM_USB_DRIVER)
+  96:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
+  97:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		#endif
+  98:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+  99:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 	/* Public Interface - May be used in end-application: */
+ 100:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		/* Macros: */
+ 101:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** \name Pipe Error Flag Masks */
+ 102:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@{
+ 103:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that an overflow error occurred in the pipe o
+ 104:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_OVERFLOW         (1 << 6)
+ 105:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 106:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that an underflow error occurred in the pipe 
+ 107:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_UNDERFLOW        (1 << 5)
+ 108:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 109:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a CRC error occurred in the pipe on the 
+ 110:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_CRC16            (1 << 4)
+ 111:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 112:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware timeout error occurred in the
+ 113:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_TIMEOUT          (1 << 3)
+ 114:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 115:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware PID error occurred in the pip
+ 116:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_PID              (1 << 2)
+ 117:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 118:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware data PID error occurred in th
+ 119:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_DATAPID          (1 << 1)
+ 120:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 121:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for \ref Pipe_GetErrorFlags(), indicating that a hardware data toggle error occurred in
+ 122:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_ERRORFLAG_DATATGL          (1 << 0)
+ 123:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@}
+ 124:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 125:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** \name Pipe Token Masks */
+ 126:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@{
+ 127:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Token mask for \ref Pipe_ConfigurePipe(). This sets the pipe as a SETUP token (for CONTROL t
+ 128:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  which will trigger a control request on the attached device when data is written to the pipe
+ 129:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 130:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOKEN_SETUP                (0 << PTOKEN0)
+ 131:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 132:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Token mask for \ref Pipe_ConfigurePipe(). This sets the pipe as a IN token (for non-CONTROL 
+ 133:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  indicating that the pipe data will flow from device to host.
+ 134:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 135:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOKEN_IN                   (1 << PTOKEN0)
+ 136:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 137:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Token mask for \ref Pipe_ConfigurePipe(). This sets the pipe as a OUT token (for non-CONTROL
+ 138:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  indicating that the pipe data will flow from host to device.
+ 139:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 140:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOKEN_OUT                  (2 << PTOKEN0)
+ 141:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@}
+ 142:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			
+ 143:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** \name Pipe Bank Mode Masks */
+ 144:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@{
+ 145:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for the bank mode selection for the \ref Pipe_ConfigurePipe() macro. This indicates tha
+ 146:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  should have one single bank, which requires less USB FIFO memory but results in slower trans
+ 147:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  only one USB device (the AVR or the attached device) can access the pipe's bank at the one t
+ 148:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 149:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_BANK_SINGLE                (0 << EPBK0)
+ 150:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 151:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Mask for the bank mode selection for the \ref Pipe_ConfigurePipe() macro. This indicates tha
+ 152:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  should have two banks, which requires more USB FIFO memory but results in faster transfers a
+ 153:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  USB device (the AVR or the attached device) can access one bank while the other accesses the
+ 154:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  bank.
+ 155:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 156:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_BANK_DOUBLE                (1 << EPBK0)
+ 157:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			//@}
+ 158:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 159:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Default size of the default control pipe's bank, until altered by the Endpoint0Size value
+ 160:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  in the device descriptor of the attached device.
+ 161:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 162:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_CONTROLPIPE_DEFAULT_SIZE   64
+ 163:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 164:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Total number of pipes (including the default control pipe at address 0) which may be used in
+ 165:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  the device. Different USB AVR models support different amounts of pipes, this value reflects
+ 166:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  the maximum number of pipes for the currently selected AVR model.
+ 167:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 168:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_TOTAL_PIPES                7
+ 169:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 170:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Size in bytes of the largest pipe bank size possible in the device. Not all banks on each AV
+ 171:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  model supports the largest bank size possible on the device; different pipe numbers support
+ 172:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  different maximum bank sizes. This value reflects the largest possible bank of any pipe on t
+ 173:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  currently selected USB AVR model.
+ 174:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 175:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			#define PIPE_MAX_SIZE                   256
+ 176:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 177:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		/* Enums: */
+ 178:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Enum for the possible error return codes of the \ref Pipe_WaitUntilReady() function.
+ 179:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 180:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipeRW_AVR8
+ 181:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 182:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			enum Pipe_WaitUntilReady_ErrorCodes_t
+ 183:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 184:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_NoError                 = 0, /**< Pipe ready for next packet, no error. */
+ 185:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_PipeStalled             = 1,	/**< The device stalled the pipe while waiting. */
+ 186:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_DeviceDisconnected      = 2,	/**< Device was disconnected from the host while wa
+ 187:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				PIPE_READYWAIT_Timeout                 = 3, /**< The device failed to accept or send the next p
+ 188:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                                             *   within the software timeout period set by the
+ 189:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                                             *   \ref USB_STREAM_TIMEOUT_MS macro.
+ 190:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                                             */
+ 191:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			};
+ 192:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 193:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 		/* Inline Functions: */
+ 194:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Indicates the number of bytes currently stored in the current pipes's selected bank.
+ 195:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 196:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \note The return width of this function may differ, depending on the maximum pipe bank size
+ 197:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *        of the selected AVR model.
+ 198:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 199:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipeRW_AVR8
+ 200:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 201:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Total number of bytes in the currently selected pipe's FIFO buffer.
+ 202:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 203:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint16_t Pipe_BytesInPipe(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 204:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint16_t Pipe_BytesInPipe(void)
+ 205:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 206:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return UPBCX;
+ 207:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 208:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 209:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Returns the pipe address of the currently selected pipe. This is typically used to save the
+ 210:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  currently selected pipe number so that it can be restored after another pipe has been manipu
+ 211:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 212:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Index of the currently selected pipe.
+ 213:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 214:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetCurrentPipe(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 215:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetCurrentPipe(void)
+ 216:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 217:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return (UPNUM & PIPE_PIPENUM_MASK);
+ 218:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 219:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 220:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Selects the given pipe number. Any pipe operations which do not require the pipe number to b
+ 221:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  indicated will operate on the currently selected pipe.
+ 222:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 223:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] PipeNumber  Index of the pipe to select.
+ 224:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 225:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SelectPipe(const uint8_t PipeNumber) ATTR_ALWAYS_INLINE;
+ 226:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SelectPipe(const uint8_t PipeNumber)
+ 227:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPNUM = PipeNumber;
+  32               		.loc 2 228 0
+  33 0002 22E0      		ldi r18,lo8(2)
+  34 0004 2093 A700 		sts 167,r18
+  35               	.LVL2:
+  36               	.LBE17:
+  37               	.LBE16:
+  38               	.LBB18:
+  39               	.LBB19:
+ 229:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 230:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 231:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Resets the desired pipe, including the pipe banks and flags.
+ 232:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 233:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] PipeNumber  Index of the pipe to reset.
+ 234:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 235:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ResetPipe(const uint8_t PipeNumber) ATTR_ALWAYS_INLINE;
+ 236:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ResetPipe(const uint8_t PipeNumber)
+ 237:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 238:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPRST = (1 << PipeNumber);
+ 239:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPRST = 0;
+ 240:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 241:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 242:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Enables the currently selected pipe so that data can be sent and received through it to and 
+ 243:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  an attached device.
+ 244:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 245:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \pre The currently selected pipe must first be configured properly via \ref Pipe_ConfigurePi
+ 246:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 247:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_EnablePipe(void) ATTR_ALWAYS_INLINE;
+ 248:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_EnablePipe(void)
+ 249:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 250:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX |= (1 << PEN);
+ 251:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 252:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 253:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Disables the currently selected pipe so that data cannot be sent and received through it to 
+ 254:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  from an attached device.
+ 255:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 256:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_DisablePipe(void) ATTR_ALWAYS_INLINE;
+ 257:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_DisablePipe(void)
+ 258:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 259:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX &= ~(1 << PEN);
+ 260:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 261:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 262:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the currently selected pipe is enabled, but not necessarily configured.
+ 263:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 264:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 * \return Boolean \c true if the currently selected pipe is enabled, \c false otherwise.
+ 265:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 266:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsEnabled(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 267:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsEnabled(void)
+ 268:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 269:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPCONX & (1 << PEN)) ? true : false);
+ 270:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 271:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 272:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Gets the current pipe token, indicating the pipe's data direction and type.
+ 273:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 274:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return The current pipe token, as a \c PIPE_TOKEN_* mask.
+ 275:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 276:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetPipeToken(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 277:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetPipeToken(void)
+ 278:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 279:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return (UPCFG0X & (0x03 << PTOKEN0));
+ 280:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 281:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 282:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Sets the token for the currently selected pipe to one of the tokens specified by the \c PIPE
+ 283:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  masks. This can be used on CONTROL type pipes, to allow for bidirectional transfer of data d
+ 284:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  control requests, or on regular pipes to allow for half-duplex bidirectional data transfer t
+ 285:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  which have two endpoints of opposite direction sharing the same endpoint address within the 
+ 286:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 287:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] Token  New pipe token to set the selected pipe to, as a \c PIPE_TOKEN_* mask.
+ 288:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 289:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetPipeToken(const uint8_t Token) ATTR_ALWAYS_INLINE;
+ 290:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetPipeToken(const uint8_t Token)
+ 291:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 292:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCFG0X = ((UPCFG0X & ~(0x03 << PTOKEN0)) | Token);
+ 293:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 294:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 295:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Configures the currently selected pipe to allow for an unlimited number of IN requests. */
+ 296:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetInfiniteINRequests(void) ATTR_ALWAYS_INLINE;
+ 297:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetInfiniteINRequests(void)
+ 298:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 299:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX |= (1 << INMODE);
+ 300:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 301:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 302:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Configures the currently selected pipe to only allow the specified number of IN requests to 
+ 303:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  accepted by the pipe before it is automatically frozen.
+ 304:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 305:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] TotalINRequests  Total number of IN requests that the pipe may receive before fre
+ 306:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 307:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetFiniteINRequests(const uint8_t TotalINRequests) ATTR_ALWAYS_INLINE;
+ 308:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetFiniteINRequests(const uint8_t TotalINRequests)
+ 309:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 310:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX &= ~(1 << INMODE);
+ 311:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPINRQX = TotalINRequests;
+ 312:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 313:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 314:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the currently selected pipe is configured.
+ 315:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 316:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the selected pipe is configured, \c false otherwise.
+ 317:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 318:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsConfigured(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 319:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsConfigured(void)
+ 320:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 321:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPSTAX & (1 << CFGOK)) ? true : false);
+ 322:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 323:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 324:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Retrieves the endpoint address of the endpoint within the attached device that the currently
+ 325:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  pipe is bound to.
+ 326:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 327:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Endpoint address the currently selected pipe is bound to.
+ 328:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 329:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetBoundEndpointAddress(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INL
+ 330:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetBoundEndpointAddress(void)
+ 331:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 332:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return (((UPCFG0X >> PEPNUM0) & PIPE_EPNUM_MASK) |
+ 333:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				        ((Pipe_GetPipeToken() == PIPE_TOKEN_IN) ? PIPE_EPDIR_MASK : 0));
+ 334:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 335:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 336:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Sets the period between interrupts for an INTERRUPT type pipe to a specified number of milli
+ 337:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 338:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] Milliseconds  Number of milliseconds between each pipe poll.
+ 339:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 340:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetInterruptPeriod(const uint8_t Milliseconds) ATTR_ALWAYS_INLINE;
+ 341:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_SetInterruptPeriod(const uint8_t Milliseconds)
+ 342:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 343:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCFG2X = Milliseconds;
+ 344:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 345:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 346:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Returns a mask indicating which pipe's interrupt periods have elapsed, indicating that the p
+ 347:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  be serviced.
+ 348:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 349:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Mask whose bits indicate which pipes have interrupted.
+ 350:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 351:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetPipeInterrupts(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 352:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetPipeInterrupts(void)
+ 353:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 354:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return UPINT;
+ 355:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 356:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 357:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the specified pipe number has interrupted (valid only for INTERRUPT type
+ 358:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  pipes).
+ 359:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 360:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \param[in] PipeNumber  Index of the pipe whose interrupt flag should be tested.
+ 361:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 362:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the specified pipe has interrupted, \c false otherwise.
+ 363:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 364:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_HasPipeInterrupted(const uint8_t PipeNumber) ATTR_WARN_UNUSED_RESULT ATT
+ 365:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_HasPipeInterrupted(const uint8_t PipeNumber)
+ 366:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 367:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINT & (1 << PipeNumber)) ? true : false);
+ 368:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 369:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 370:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Unfreezes the selected pipe, allowing it to communicate with an attached device. */
+ 371:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_Unfreeze(void) ATTR_ALWAYS_INLINE;
+ 372:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_Unfreeze(void)
+ 373:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 374:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX &= ~(1 << PFREEZE);
+  40               		.loc 2 374 0
+  41 0008 2091 A900 		lds r18,169
+  42 000c 2F7B      		andi r18,lo8(-65)
+  43 000e 2093 A900 		sts 169,r18
+  44               	.LBE19:
+  45               	.LBE18:
+  50:Lib/PrinterCommands.c **** 	uint8_t ErrorCode;
+  51:Lib/PrinterCommands.c **** 
+  52:Lib/PrinterCommands.c **** 	Pipe_SelectPipe(PRINTER_DATA_OUT_PIPE);
+  53:Lib/PrinterCommands.c **** 	Pipe_Unfreeze();
+  54:Lib/PrinterCommands.c **** 
+  55:Lib/PrinterCommands.c **** 	if ((ErrorCode = Pipe_Write_Stream_LE(PrinterCommands, CommandSize, NULL)) != PIPE_RWSTREAM_NoErro
+  46               		.loc 1 55 0
+  47 0012 40E0      		ldi r20,0
+  48 0014 50E0      		ldi r21,0
+  49 0016 0E94 0000 		call Pipe_Write_Stream_LE
+  50               	.LVL3:
+  51 001a C82F      		mov r28,r24
+  52               	.LVL4:
+  53 001c 8111      		cpse r24,__zero_reg__
+  54 001e 00C0      		rjmp .L2
+  55               	.LBB20:
+  56               	.LBB21:
+ 375:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 376:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 377:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Freezes the selected pipe, preventing it from communicating with an attached device. */
+ 378:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_Freeze(void) ATTR_ALWAYS_INLINE;
+ 379:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_Freeze(void)
+ 380:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 381:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPCONX |= (1 << PFREEZE);
+ 382:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 383:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 384:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the currently selected pipe is frozen, and not able to accept data.
+ 385:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 386:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the currently selected pipe is frozen, \c false otherwise.
+ 387:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 388:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsFrozen(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 389:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsFrozen(void)
+ 390:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 391:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPCONX & (1 << PFREEZE)) ? true : false);
+ 392:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 393:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 394:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Clears the error flags for the currently selected pipe. */
+ 395:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearError(void) ATTR_ALWAYS_INLINE;
+ 396:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearError(void)
+ 397:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 398:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPERRX = 0;
+ 399:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPINTX &= ~(1 << PERRI);
+ 400:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 401:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 402:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the master pipe error flag is set for the currently selected pipe, indicating 
+ 403:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  some sort of hardware error has occurred on the pipe.
+ 404:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 405:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \see \ref Pipe_GetErrorFlags() macro for information on retrieving the exact error flag.
+ 406:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 407:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if an error has occurred on the selected pipe, \c false otherwise.
+ 408:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 409:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsError(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 410:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsError(void)
+ 411:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 412:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINTX & (1 << PERRI)) ? true : false);
+ 413:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 414:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 415:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Gets a mask of the hardware error flags which have occurred on the currently selected pipe. 
+ 416:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  value can then be masked against the \c PIPE_ERRORFLAG_* masks to determine what error has o
+ 417:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 418:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return  Mask comprising of \c PIPE_ERRORFLAG_* bits indicating what error has occurred on t
+ 419:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 420:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetErrorFlags(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 421:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetErrorFlags(void)
+ 422:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 423:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPERRX & (PIPE_ERRORFLAG_CRC16 | PIPE_ERRORFLAG_TIMEOUT |
+ 424:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                   PIPE_ERRORFLAG_PID   | PIPE_ERRORFLAG_DATAPID |
+ 425:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				                   PIPE_ERRORFLAG_DATATGL)) |
+ 426:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				        (UPSTAX & (PIPE_ERRORFLAG_OVERFLOW | PIPE_ERRORFLAG_UNDERFLOW)));
+ 427:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 428:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			
+ 429:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Retrieves the number of busy banks in the currently selected pipe, which have been queued fo
+ 430:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  transmission via the \ref Pipe_ClearOUT() command, or are awaiting acknowledgement via the
+ 431:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ref Pipe_ClearIN() command.
+ 432:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 433:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 434:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 435:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Total number of busy banks in the selected pipe.
+ 436:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 437:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetBusyBanks(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 438:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline uint8_t Pipe_GetBusyBanks(void)
+ 439:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 440:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return (UPSTAX & (0x03 << NBUSYBK0));
+ 441:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 442:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 443:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the currently selected pipe may be read from (if data is waiting in the pipe
+ 444:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  bank and the pipe is an IN direction, or if the bank is not yet full if the pipe is an OUT
+ 445:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  direction). This function will return false if an error has occurred in the pipe, or if the 
+ 446:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  is an IN direction and no packet (or an empty packet) has been received, or if the pipe is a
+ 447:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  direction and the pipe bank is full.
+ 448:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 449:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \note This function is not valid on CONTROL type pipes.
+ 450:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 451:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 452:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 453:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the currently selected pipe may be read from or written to, depen
+ 454:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *          on its direction.
+ 455:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 456:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsReadWriteAllowed(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 457:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsReadWriteAllowed(void)
+ 458:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 459:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINTX & (1 << RWAL)) ? true : false);
+ 460:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 461:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 462:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if a packet has been received on the currently selected IN pipe from the attached
+ 463:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 464:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 465:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 466:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the current pipe has received an IN packet, \c false otherwise.
+ 467:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 468:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsINReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 469:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsINReceived(void)
+ 470:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 471:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINTX & (1 << RXINI)) ? true : false);
+ 472:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 473:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 474:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if the currently selected OUT pipe is ready to send an OUT packet to the attached
+ 475:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 476:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 477:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 478:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the current pipe is ready for an OUT packet, \c false otherwise.
+ 479:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 480:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsOUTReady(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 481:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsOUTReady(void)
+ 482:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 483:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINTX & (1 << TXOUTI)) ? true : false);
+ 484:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 485:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 486:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Determines if no SETUP request is currently being sent to the attached device on the selecte
+ 487:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  CONTROL type pipe.
+ 488:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 489:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 490:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 491:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \return Boolean \c true if the current pipe is ready for a SETUP packet, \c false otherwise.
+ 492:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 493:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsSETUPSent(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 494:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline bool Pipe_IsSETUPSent(void)
+ 495:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 496:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				return ((UPINTX & (1 << TXSTPI)) ? true : false);
+ 497:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 498:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 499:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Sends the currently selected CONTROL type pipe's contents to the device as a SETUP packet.
+ 500:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 501:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 502:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 503:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearSETUP(void) ATTR_ALWAYS_INLINE;
+ 504:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearSETUP(void)
+ 505:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 506:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPINTX &= ~((1 << TXSTPI) | (1 << FIFOCON));
+ 507:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 508:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 509:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Acknowledges the reception of a setup IN request from the attached device on the currently s
+ 510:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  pipe, freeing the bank ready for the next packet.
+ 511:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 512:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 513:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 514:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearIN(void) ATTR_ALWAYS_INLINE;
+ 515:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearIN(void)
+ 516:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 517:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPINTX &= ~((1 << RXINI) | (1 << FIFOCON));
+ 518:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 519:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 
+ 520:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			/** Sends the currently selected pipe's contents to the device as an OUT packet on the selected 
+ 521:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  the bank ready for the next packet.
+ 522:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *
+ 523:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 *  \ingroup Group_PipePacketManagement_AVR8
+ 524:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			 */
+ 525:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearOUT(void) ATTR_ALWAYS_INLINE;
+ 526:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			static inline void Pipe_ClearOUT(void)
+ 527:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			{
+ 528:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 				UPINTX &= ~((1 << TXOUTI) | (1 << FIFOCON));
+  57               		.loc 2 528 0
+  58 0020 8091 A600 		lds r24,166
+  59               	.LVL5:
+  60 0024 8B77      		andi r24,lo8(123)
+  61 0026 8093 A600 		sts 166,r24
+  62               	.LBE21:
+  63               	.LBE20:
+  56:Lib/PrinterCommands.c **** 	  return ErrorCode;
+  57:Lib/PrinterCommands.c **** 
+  58:Lib/PrinterCommands.c **** 	Pipe_ClearOUT();
+  59:Lib/PrinterCommands.c **** 
+  60:Lib/PrinterCommands.c **** 	Pipe_WaitUntilReady();
+  64               		.loc 1 60 0
+  65 002a 0E94 0000 		call Pipe_WaitUntilReady
+  66               	.LVL6:
+  67               	.LBB22:
+  68               	.LBB23:
+ 381:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+  69               		.loc 2 381 0
+  70 002e 8091 A900 		lds r24,169
+  71 0032 8064      		ori r24,lo8(64)
+  72 0034 8093 A900 		sts 169,r24
+  73               	.L2:
+  74               	.LBE23:
+  75               	.LBE22:
+  61:Lib/PrinterCommands.c **** 
+  62:Lib/PrinterCommands.c **** 	Pipe_Freeze();
+  63:Lib/PrinterCommands.c **** 
+  64:Lib/PrinterCommands.c **** 	return PIPE_RWSTREAM_NoError;
+  65:Lib/PrinterCommands.c **** }
+  76               		.loc 1 65 0
+  77 0038 8C2F      		mov r24,r28
+  78               	/* epilogue start */
+  79 003a CF91      		pop r28
+  80               	.LVL7:
+  81 003c 0895      		ret
+  82               		.cfi_endproc
+  83               	.LFE147:
+  85               		.section	.text.Printer_GetDeviceID,"ax",@progbits
+  86               	.global	Printer_GetDeviceID
+  88               	Printer_GetDeviceID:
+  89               	.LFB148:
+  66:Lib/PrinterCommands.c **** 
+  67:Lib/PrinterCommands.c **** /** Issues a Printer class Get Device ID command to the attached device, to retrieve the device ID 
+  68:Lib/PrinterCommands.c ****  *  the accepted printer languages, the printer's model and other pertinent information).
+  69:Lib/PrinterCommands.c ****  *
+  70:Lib/PrinterCommands.c ****  *  \param[out] DeviceIDString Pointer to the destination where the returned string should be store
+  71:Lib/PrinterCommands.c ****  *  \param[in] BufferSize  Size in bytes of the allocated buffer for the returned Device ID string
+  72:Lib/PrinterCommands.c ****  *
+  73:Lib/PrinterCommands.c ****  *  \return A value from the USB_Host_SendControlErrorCodes_t enum
+  74:Lib/PrinterCommands.c ****  */
+  75:Lib/PrinterCommands.c **** uint8_t Printer_GetDeviceID(char* DeviceIDString,
+  76:Lib/PrinterCommands.c ****                             const uint16_t BufferSize)
+  77:Lib/PrinterCommands.c **** {
+  90               		.loc 1 77 0
+  91               		.cfi_startproc
+  92               	.LVL8:
+  93 0000 EF92      		push r14
+  94               	.LCFI1:
+  95               		.cfi_def_cfa_offset 3
+  96               		.cfi_offset 14, -2
+  97 0002 FF92      		push r15
+  98               	.LCFI2:
+  99               		.cfi_def_cfa_offset 4
+ 100               		.cfi_offset 15, -3
+ 101 0004 0F93      		push r16
+ 102               	.LCFI3:
+ 103               		.cfi_def_cfa_offset 5
+ 104               		.cfi_offset 16, -4
+ 105 0006 1F93      		push r17
+ 106               	.LCFI4:
+ 107               		.cfi_def_cfa_offset 6
+ 108               		.cfi_offset 17, -5
+ 109 0008 CF93      		push r28
+ 110               	.LCFI5:
+ 111               		.cfi_def_cfa_offset 7
+ 112               		.cfi_offset 28, -6
+ 113 000a DF93      		push r29
+ 114               	.LCFI6:
+ 115               		.cfi_def_cfa_offset 8
+ 116               		.cfi_offset 29, -7
+ 117 000c 00D0      		rcall .
+ 118               	.LCFI7:
+ 119               		.cfi_def_cfa_offset 10
+ 120 000e CDB7      		in r28,__SP_L__
+ 121 0010 DEB7      		in r29,__SP_H__
+ 122               	.LCFI8:
+ 123               		.cfi_def_cfa_register 28
+ 124               	/* prologue: function */
+ 125               	/* frame size = 2 */
+ 126               	/* stack size = 8 */
+ 127               	.L__stack_usage = 8
+ 128 0012 7C01      		movw r14,r24
+ 129 0014 8B01      		movw r16,r22
+ 130               	.LVL9:
+  78:Lib/PrinterCommands.c **** 	uint8_t  ErrorCode = HOST_SENDCONTROL_Successful;
+  79:Lib/PrinterCommands.c **** 	uint16_t DeviceIDStringLength = 0;
+ 131               		.loc 1 79 0
+ 132 0016 1A82      		std Y+2,__zero_reg__
+ 133 0018 1982      		std Y+1,__zero_reg__
+  80:Lib/PrinterCommands.c **** 
+  81:Lib/PrinterCommands.c **** 	USB_ControlRequest = (USB_Request_Header_t)
+ 134               		.loc 1 81 0
+ 135 001a 8091 0000 		lds r24,PrinterInterfaceNumber
+ 136               	.LVL10:
+ 137 001e 90E0      		ldi r25,0
+ 138 0020 21EA      		ldi r18,lo8(-95)
+ 139 0022 2093 0000 		sts USB_ControlRequest,r18
+ 140 0026 1092 0000 		sts USB_ControlRequest+1,__zero_reg__
+ 141 002a 1092 0000 		sts USB_ControlRequest+2+1,__zero_reg__
+ 142 002e 1092 0000 		sts USB_ControlRequest+2,__zero_reg__
+ 143 0032 9093 0000 		sts USB_ControlRequest+4+1,r25
+ 144 0036 8093 0000 		sts USB_ControlRequest+4,r24
+ 145 003a 82E0      		ldi r24,lo8(2)
+ 146 003c 90E0      		ldi r25,0
+ 147 003e 9093 0000 		sts USB_ControlRequest+6+1,r25
+ 148 0042 8093 0000 		sts USB_ControlRequest+6,r24
+ 149               	.LVL11:
+ 150               	.LBB28:
+ 151               	.LBB29:
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 152               		.loc 2 228 0
+ 153 0046 1092 A700 		sts 167,__zero_reg__
+ 154               	.LVL12:
+ 155               	.LBE29:
+ 156               	.LBE28:
+  82:Lib/PrinterCommands.c **** 		{
+  83:Lib/PrinterCommands.c **** 			.bmRequestType = (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE),
+  84:Lib/PrinterCommands.c **** 			.bRequest      = PRNT_REQ_GetDeviceID,
+  85:Lib/PrinterCommands.c **** 			.wValue        = 0,
+  86:Lib/PrinterCommands.c **** 			.wIndex        = PrinterInterfaceNumber,
+  87:Lib/PrinterCommands.c **** 			.wLength       = sizeof(DeviceIDStringLength),
+  88:Lib/PrinterCommands.c **** 		};
+  89:Lib/PrinterCommands.c **** 
+  90:Lib/PrinterCommands.c **** 	Pipe_SelectPipe(PIPE_CONTROLPIPE);
+  91:Lib/PrinterCommands.c **** 
+  92:Lib/PrinterCommands.c **** 	if ((ErrorCode = USB_Host_SendControlRequest(&DeviceIDStringLength)) != HOST_SENDCONTROL_Successfu
+ 157               		.loc 1 92 0
+ 158 004a CE01      		movw r24,r28
+ 159 004c 0196      		adiw r24,1
+ 160 004e 0E94 0000 		call USB_Host_SendControlRequest
+ 161               	.LVL13:
+ 162 0052 8111      		cpse r24,__zero_reg__
+ 163 0054 00C0      		rjmp .L5
+  93:Lib/PrinterCommands.c **** 	  return ErrorCode;
+  94:Lib/PrinterCommands.c **** 
+  95:Lib/PrinterCommands.c **** 	if (!(DeviceIDStringLength))
+ 164               		.loc 1 95 0
+ 165 0056 2981      		ldd r18,Y+1
+ 166 0058 3A81      		ldd r19,Y+2
+ 167 005a 2115      		cp r18,__zero_reg__
+ 168 005c 3105      		cpc r19,__zero_reg__
+ 169 005e 01F4      		brne .L6
+  96:Lib/PrinterCommands.c **** 	{
+  97:Lib/PrinterCommands.c **** 		DeviceIDString[0] = 0x00;
+ 170               		.loc 1 97 0
+ 171 0060 F701      		movw r30,r14
+ 172 0062 1082      		st Z,__zero_reg__
+  98:Lib/PrinterCommands.c **** 		return HOST_SENDCONTROL_Successful;
+ 173               		.loc 1 98 0
+ 174 0064 00C0      		rjmp .L5
+ 175               	.L6:
+ 176               	.LVL14:
+ 177               	.LBB30:
+ 178               	.LBB31:
+ 179               		.file 3 "../../../../LUFA/Drivers/USB/../../Common/Endianness.h"
+   1:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /*
+   2:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+   5:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** */
+   8:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+   9:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /*
+  10:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  12:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  21:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****   this software.
+  29:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** */
+  30:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  31:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /** \file
+  32:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \brief Endianness and Byte Ordering macros and functions.
+  33:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *
+  34:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \copydetails Group_Endianness
+  35:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  */
+  36:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  37:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /** \ingroup Group_Endianness
+  38:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \defgroup Group_ByteSwapping Byte Reordering
+  39:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \brief Macros and functions for forced byte reordering.
+  40:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  */
+  41:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  42:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /** \ingroup Group_Endianness
+  43:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \defgroup Group_EndianConversion Endianness Conversion
+  44:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \brief Macros and functions for automatic endianness conversion.
+  45:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  */
+  46:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  47:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** /** \ingroup Group_Common
+  48:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \defgroup Group_Endianness Endianness and Byte Ordering
+  49:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  \brief Convenience macros and functions relating to byte (re-)ordering
+  50:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *
+  51:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  Common library convenience macros and functions relating to byte (re-)ordering.
+  52:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *
+  53:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  *  @{
+  54:../../../../LUFA/Drivers/USB/../../Common/Endianness.h ****  */
+  55:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  56:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** #ifndef __LUFA_ENDIANNESS_H__
+  57:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** #define __LUFA_ENDIANNESS_H__
+  58:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  59:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 	/* Enable C linkage for C++ Compilers: */
+  60:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#if defined(__cplusplus)
+  61:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			extern "C" {
+  62:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#endif
+  63:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  64:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 	/* Preprocessor Checks: */
+  65:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#if !defined(__INCLUDE_FROM_COMMON_H)
+  66:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#error Do not include this file directly. Include LUFA/Common/Common.h instead to gain this func
+  67:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#endif
+  68:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		
+  69:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#if !(defined(ARCH_BIG_ENDIAN) || defined(ARCH_LITTLE_ENDIAN))
+  70:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#error ARCH_BIG_ENDIAN or ARCH_LITTLE_ENDIAN not set for the specified architecture.
+  71:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		#endif
+  72:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  73:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 	/* Public Interface - May be used in end-application: */
+  74:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		/* Macros: */
+  75:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			/** Swaps the byte ordering of a 16-bit value at compile-time. Do not use this macro for swappin
+  76:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  of dynamic values computed at runtime, use \ref SwapEndian_16() instead. The result of this 
+  77:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  inside struct or other variable initializers outside of a function, something that is not po
+  78:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  inline function variant.
+  79:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  80:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+  81:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  82:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \param[in] x  16-bit value whose byte ordering is to be swapped.
+  83:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  84:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \return Input value with the byte ordering reversed.
+  85:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 */
+  86:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#define SWAPENDIAN_16(x)            (uint16_t)((((x) & 0xFF00) >> 8) | (((x) & 0x00FF) << 8))
+  87:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+  88:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			/** Swaps the byte ordering of a 32-bit value at compile-time. Do not use this macro for swappin
+  89:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  of dynamic values computed at runtime- use \ref SwapEndian_32() instead. The result of this 
+  90:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  inside struct or other variable initializers outside of a function, something that is not po
+  91:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  inline function variant.
+  92:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  93:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+  94:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  95:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \param[in] x  32-bit value whose byte ordering is to be swapped.
+  96:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+  97:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \return Input value with the byte ordering reversed.
+  98:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 */
+  99:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#define SWAPENDIAN_32(x)            (uint32_t)((((x) & 0xFF000000UL) >> 24UL) | (((x) & 0x00FF00
+ 100:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			                                               (((x) & 0x0000FF00UL) << 8UL)  | (((x) & 0x000000
+ 101:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 102:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#if defined(ARCH_BIG_ENDIAN) && !defined(le16_to_cpu)
+ 103:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define le16_to_cpu(x)           SwapEndian_16(x)
+ 104:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define le32_to_cpu(x)           SwapEndian_32(x)
+ 105:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define be16_to_cpu(x)           (x)
+ 106:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define be32_to_cpu(x)           (x)
+ 107:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_le16(x)           SwapEndian_16(x)
+ 108:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_le32(x)           SwapEndian_32(x)
+ 109:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_be16(x)           (x)
+ 110:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_be32(x)           (x)
+ 111:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define LE16_TO_CPU(x)           SWAPENDIAN_16(x)
+ 112:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define LE32_TO_CPU(x)           SWAPENDIAN_32(x)
+ 113:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define BE16_TO_CPU(x)           (x)
+ 114:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define BE32_TO_CPU(x)           (x)
+ 115:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_LE16(x)           SWAPENDIAN_16(x)
+ 116:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_LE32(x)           SWAPENDIAN_32(x)
+ 117:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_BE16(x)           (x)
+ 118:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_BE32(x)           (x)			
+ 119:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#elif !defined(le16_to_cpu)
+ 120:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** \name Run-time endianness conversion */
+ 121:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				//@{
+ 122:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			
+ 123:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 16-bit piece of data and the
+ 124:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 125:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 126:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 127:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 128:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 129:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref LE16_TO_CPU instead.
+ 130:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 131:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 132:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 133:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 134:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 135:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 136:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 137:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define le16_to_cpu(x)           (x)
+ 138:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 139:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 32-bit piece of data and the
+ 140:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 141:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 142:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 143:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 144:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 145:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref LE32_TO_CPU instead.
+ 146:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 147:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 148:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 149:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 150:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 151:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 152:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 153:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define le32_to_cpu(x)           (x)
+ 154:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 155:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 16-bit piece of data and the
+ 156:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 157:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 158:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 159:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 160:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 161:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref BE16_TO_CPU instead.
+ 162:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 163:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 164:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 165:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 166:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 167:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 168:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 169:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define be16_to_cpu(x)           SwapEndian_16(x)
+ 170:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 171:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 32-bit piece of data and the
+ 172:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 173:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 174:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 175:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 176:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 177:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref BE32_TO_CPU instead.
+ 178:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 179:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 180:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 181:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 182:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 183:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 184:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 185:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define be32_to_cpu(x)           SwapEndian_32(x)
+ 186:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 187:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 188:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 189:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 190:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 191:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 192:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 193:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_LE16 instead.
+ 194:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 195:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 196:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 197:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 198:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 199:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 200:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 201:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_le16(x)           (x)
+ 202:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 203:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 204:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 205:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 206:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 207:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 208:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 209:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_LE32 instead.
+ 210:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 211:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 212:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 213:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 214:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 215:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 216:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 217:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_le32(x)           (x)
+ 218:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 219:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 220:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 221:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 222:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 223:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 224:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 225:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_BE16 instead.
+ 226:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 227:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 228:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 229:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 230:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 231:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 232:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 233:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_be16(x)           SwapEndian_16(x)
+ 234:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 235:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 236:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 237:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 238:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 239:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 240:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for run-time conversion of data - for compile-time endianness
+ 241:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref CPU_TO_BE32 instead.
+ 242:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 243:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 244:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 245:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 246:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 247:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 248:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 249:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define cpu_to_be32(x)           SwapEndian_32(x)
+ 250:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 251:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				//@}
+ 252:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 253:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** \name Compile-time endianness conversion */
+ 254:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				//@{
+ 255:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 256:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 16-bit piece of data and the
+ 257:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 258:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 259:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 260:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 261:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run time endianness
+ 262:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref le16_to_cpu instead.
+ 263:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 264:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 265:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 266:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 267:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 268:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 269:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 270:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define LE16_TO_CPU(x)           (x)
+ 271:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 272:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Little Endian encoded 32-bit piece of data and the
+ 273:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 274:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 275:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 276:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 277:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run time endianness
+ 278:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref le32_to_cpu instead.
+ 279:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 280:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 281:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 282:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 283:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 284:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 285:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 286:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define LE32_TO_CPU(x)           (x)
+ 287:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 288:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 16-bit piece of data and the
+ 289:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 290:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 291:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 292:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 293:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 294:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref be16_to_cpu instead.
+ 295:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 296:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 297:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 298:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 299:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 300:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 301:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 302:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define BE16_TO_CPU(x)           SWAPENDIAN_16(x)
+ 303:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 304:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion between a Big Endian encoded 32-bit piece of data and the
+ 305:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  Endianness of the currently selected CPU architecture.
+ 306:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 307:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 308:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 309:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 310:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref be32_to_cpu instead.
+ 311:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 312:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 313:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 314:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 315:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 316:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 317:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 318:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define BE32_TO_CPU(x)           SWAPENDIAN_32(x)
+ 319:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 320:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 321:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 322:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 323:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 324:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 325:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 326:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_le16 instead.
+ 327:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 328:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 329:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 330:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 331:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 332:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 333:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 334:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_LE16(x)           (x)
+ 335:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 336:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 337:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Little Endian format regardless of the currently selected CPU architecture.
+ 338:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 339:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On little endian architectures, this macro does nothing.
+ 340:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 341:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 342:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_le32 instead.
+ 343:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 344:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 345:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 346:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 347:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 348:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 349:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 350:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_LE32(x)           (x)
+ 351:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 352:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
+ 353:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 354:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 355:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 356:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 357:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 358:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_be16 instead.
+ 359:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 360:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 361:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 362:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 363:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 364:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 365:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 366:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_BE16(x)           SWAPENDIAN_16(x)
+ 367:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 368:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
+ 369:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  is in Big Endian format regardless of the currently selected CPU architecture.
+ 370:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 371:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  On big endian architectures, this macro does nothing.
+ 372:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 373:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \note This macro is designed for compile-time conversion of data - for run-time endianness
+ 374:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *        conversion, use \ref cpu_to_be32 instead.
+ 375:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 376:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \ingroup Group_EndianConversion
+ 377:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 378:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \param[in] x  Data to perform the endianness conversion on.
+ 379:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *
+ 380:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 *  \return Endian corrected version of the input value.
+ 381:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				 */
+ 382:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				#define CPU_TO_BE32(x)           SWAPENDIAN_32(x)
+ 383:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 384:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				//! @}
+ 385:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			#endif
+ 386:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 387:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 		/* Inline Functions: */
+ 388:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			/** Function to reverse the byte ordering of the individual bytes in a 16 bit value.
+ 389:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+ 390:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \ingroup Group_ByteSwapping
+ 391:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+ 392:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \param[in] Word  Word of data whose bytes are to be swapped.
+ 393:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *
+ 394:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 *  \return Input data with the individual bytes reversed.
+ 395:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			 */
+ 396:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			static inline uint16_t SwapEndian_16(const uint16_t Word) ATTR_WARN_UNUSED_RESULT ATTR_CONST;
+ 397:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			static inline uint16_t SwapEndian_16(const uint16_t Word)
+ 398:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			{
+ 399:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				if (GCC_IS_COMPILE_CONST(Word))
+ 400:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				  return SWAPENDIAN_16(Word);
+ 401:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 			
+ 402:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				uint8_t Temp;
+ 403:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 404:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				union
+ 405:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				{
+ 406:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 					uint16_t Word;
+ 407:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 					uint8_t  Bytes[2];
+ 408:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				} Data;
+ 409:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 410:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.Word = Word;
+ 411:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 412:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Temp = Data.Bytes[0];
+ 413:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.Bytes[0] = Data.Bytes[1];
+ 414:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				Data.Bytes[1] = Temp;
+ 415:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 
+ 416:../../../../LUFA/Drivers/USB/../../Common/Endianness.h **** 				return Data.Word;
+ 180               		.loc 3 416 0
+ 181 0066 832F      		mov r24,r19
+ 182               	.LVL15:
+ 183 0068 922F      		mov r25,r18
+ 184               	.LVL16:
+ 185               	.LBE31:
+ 186               	.LBE30:
+  99:Lib/PrinterCommands.c **** 	}
+ 100:Lib/PrinterCommands.c **** 
+ 101:Lib/PrinterCommands.c **** 	DeviceIDStringLength = SwapEndian_16(DeviceIDStringLength);
+ 102:Lib/PrinterCommands.c **** 
+ 103:Lib/PrinterCommands.c **** 	if (DeviceIDStringLength > BufferSize)
+ 187               		.loc 1 103 0
+ 188 006a 0817      		cp r16,r24
+ 189 006c 1907      		cpc r17,r25
+ 190 006e 00F0      		brlo .L7
+ 101:Lib/PrinterCommands.c **** 
+ 191               		.loc 1 101 0
+ 192 0070 9A83      		std Y+2,r25
+ 193 0072 8983      		std Y+1,r24
+ 194 0074 00C0      		rjmp .L8
+ 195               	.L7:
+ 104:Lib/PrinterCommands.c **** 	  DeviceIDStringLength = BufferSize;
+ 196               		.loc 1 104 0
+ 197 0076 1A83      		std Y+2,r17
+ 198 0078 0983      		std Y+1,r16
+ 199               	.L8:
+ 105:Lib/PrinterCommands.c **** 
+ 106:Lib/PrinterCommands.c **** 	USB_ControlRequest.wLength = DeviceIDStringLength;
+ 200               		.loc 1 106 0
+ 201 007a 8981      		ldd r24,Y+1
+ 202 007c 9A81      		ldd r25,Y+2
+ 203 007e 9093 0000 		sts USB_ControlRequest+6+1,r25
+ 204 0082 8093 0000 		sts USB_ControlRequest+6,r24
+ 107:Lib/PrinterCommands.c **** 
+ 108:Lib/PrinterCommands.c **** 	if ((ErrorCode = USB_Host_SendControlRequest(DeviceIDString)) != HOST_SENDCONTROL_Successful)
+ 205               		.loc 1 108 0
+ 206 0086 C701      		movw r24,r14
+ 207 0088 0E94 0000 		call USB_Host_SendControlRequest
+ 208               	.LVL17:
+ 209 008c 8111      		cpse r24,__zero_reg__
+ 210 008e 00C0      		rjmp .L5
+ 109:Lib/PrinterCommands.c **** 	  return ErrorCode;
+ 110:Lib/PrinterCommands.c **** 
+ 111:Lib/PrinterCommands.c **** 	/* Move string back two characters to remove the string length value from the start of the array *
+ 112:Lib/PrinterCommands.c **** 	memmove(&DeviceIDString[0], &DeviceIDString[2], DeviceIDStringLength - 2);
+ 211               		.loc 1 112 0
+ 212 0090 8981      		ldd r24,Y+1
+ 213 0092 9A81      		ldd r25,Y+2
+ 214               	.LVL18:
+ 215 0094 8C01      		movw r16,r24
+ 216               	.LVL19:
+ 217 0096 0250      		subi r16,2
+ 218 0098 1109      		sbc r17,__zero_reg__
+ 219 009a B701      		movw r22,r14
+ 220 009c 6E5F      		subi r22,-2
+ 221 009e 7F4F      		sbci r23,-1
+ 222 00a0 A801      		movw r20,r16
+ 223 00a2 C701      		movw r24,r14
+ 224 00a4 0E94 0000 		call memmove
+ 225               	.LVL20:
+ 113:Lib/PrinterCommands.c **** 
+ 114:Lib/PrinterCommands.c **** 	DeviceIDString[DeviceIDStringLength - 2] = 0x00;
+ 226               		.loc 1 114 0
+ 227 00a8 F701      		movw r30,r14
+ 228 00aa E00F      		add r30,r16
+ 229 00ac F11F      		adc r31,r17
+ 230 00ae 1082      		st Z,__zero_reg__
+ 115:Lib/PrinterCommands.c **** 
+ 116:Lib/PrinterCommands.c **** 	return HOST_SENDCONTROL_Successful;
+ 231               		.loc 1 116 0
+ 232 00b0 80E0      		ldi r24,0
+ 233               	.L5:
+ 234               	/* epilogue start */
+ 117:Lib/PrinterCommands.c **** }
+ 235               		.loc 1 117 0
+ 236 00b2 0F90      		pop __tmp_reg__
+ 237 00b4 0F90      		pop __tmp_reg__
+ 238 00b6 DF91      		pop r29
+ 239 00b8 CF91      		pop r28
+ 240 00ba 1F91      		pop r17
+ 241 00bc 0F91      		pop r16
+ 242 00be FF90      		pop r15
+ 243 00c0 EF90      		pop r14
+ 244               	.LVL21:
+ 245 00c2 0895      		ret
+ 246               		.cfi_endproc
+ 247               	.LFE148:
+ 249               		.section	.text.Printer_GetPortStatus,"ax",@progbits
+ 250               	.global	Printer_GetPortStatus
+ 252               	Printer_GetPortStatus:
+ 253               	.LFB149:
+ 118:Lib/PrinterCommands.c **** 
+ 119:Lib/PrinterCommands.c **** /** Issues a Printer class Get Port Status command to the attached device, to retrieve the current 
+ 120:Lib/PrinterCommands.c ****  *  printer.
+ 121:Lib/PrinterCommands.c ****  *
+ 122:Lib/PrinterCommands.c ****  *  \param[out] PortStatus  Pointer to the destination where the printer's status flag values shoul
+ 123:Lib/PrinterCommands.c ****  *
+ 124:Lib/PrinterCommands.c ****  *  \return A value from the USB_Host_SendControlErrorCodes_t enum
+ 125:Lib/PrinterCommands.c ****  */
+ 126:Lib/PrinterCommands.c **** uint8_t Printer_GetPortStatus(uint8_t* const PortStatus)
+ 127:Lib/PrinterCommands.c **** {
+ 254               		.loc 1 127 0
+ 255               		.cfi_startproc
+ 256               	.LVL22:
+ 257               	/* prologue: function */
+ 258               	/* frame size = 0 */
+ 259               	/* stack size = 0 */
+ 260               	.L__stack_usage = 0
+ 128:Lib/PrinterCommands.c **** 	USB_ControlRequest = (USB_Request_Header_t)
+ 261               		.loc 1 128 0
+ 262 0000 2091 0000 		lds r18,PrinterInterfaceNumber
+ 263 0004 30E0      		ldi r19,0
+ 264 0006 E0E0      		ldi r30,lo8(USB_ControlRequest)
+ 265 0008 F0E0      		ldi r31,hi8(USB_ControlRequest)
+ 266 000a 41EA      		ldi r20,lo8(-95)
+ 267 000c 4083      		st Z,r20
+ 268 000e 41E0      		ldi r20,lo8(1)
+ 269 0010 4183      		std Z+1,r20
+ 270 0012 1382      		std Z+3,__zero_reg__
+ 271 0014 1282      		std Z+2,__zero_reg__
+ 272 0016 3583      		std Z+5,r19
+ 273 0018 2483      		std Z+4,r18
+ 274 001a 21E0      		ldi r18,lo8(1)
+ 275 001c 30E0      		ldi r19,0
+ 276 001e 3783      		std Z+7,r19
+ 277 0020 2683      		std Z+6,r18
+ 278               	.LVL23:
+ 279               	.LBB32:
+ 280               	.LBB33:
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 281               		.loc 2 228 0
+ 282 0022 1092 A700 		sts 167,__zero_reg__
+ 283               	.LVL24:
+ 284               	.LBE33:
+ 285               	.LBE32:
+ 129:Lib/PrinterCommands.c **** 		{
+ 130:Lib/PrinterCommands.c **** 			.bmRequestType = (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE),
+ 131:Lib/PrinterCommands.c **** 			.bRequest      = PRNT_REQ_GetPortStatus,
+ 132:Lib/PrinterCommands.c **** 			.wValue        = 0,
+ 133:Lib/PrinterCommands.c **** 			.wIndex        = PrinterInterfaceNumber,
+ 134:Lib/PrinterCommands.c **** 			.wLength       = sizeof(uint8_t),
+ 135:Lib/PrinterCommands.c **** 		};
+ 136:Lib/PrinterCommands.c **** 
+ 137:Lib/PrinterCommands.c **** 	Pipe_SelectPipe(PIPE_CONTROLPIPE);
+ 138:Lib/PrinterCommands.c **** 
+ 139:Lib/PrinterCommands.c **** 	return USB_Host_SendControlRequest(PortStatus);
+ 286               		.loc 1 139 0
+ 287 0026 0C94 0000 		jmp USB_Host_SendControlRequest
+ 288               	.LVL25:
+ 289               		.cfi_endproc
+ 290               	.LFE149:
+ 292               		.section	.text.Printer_SoftReset,"ax",@progbits
+ 293               	.global	Printer_SoftReset
+ 295               	Printer_SoftReset:
+ 296               	.LFB150:
+ 140:Lib/PrinterCommands.c **** }
+ 141:Lib/PrinterCommands.c **** 
+ 142:Lib/PrinterCommands.c **** /** Issues a Printer class Soft Reset command to the attached device, to reset the printer ready fo
+ 143:Lib/PrinterCommands.c ****  *  physically cycling the printer's power.
+ 144:Lib/PrinterCommands.c ****  *
+ 145:Lib/PrinterCommands.c ****  *  \return A value from the USB_Host_SendControlErrorCodes_t enum
+ 146:Lib/PrinterCommands.c ****  */
+ 147:Lib/PrinterCommands.c **** uint8_t Printer_SoftReset(void)
+ 148:Lib/PrinterCommands.c **** {
+ 297               		.loc 1 148 0
+ 298               		.cfi_startproc
+ 299               	/* prologue: function */
+ 300               	/* frame size = 0 */
+ 301               	/* stack size = 0 */
+ 302               	.L__stack_usage = 0
+ 149:Lib/PrinterCommands.c **** 	USB_ControlRequest = (USB_Request_Header_t)
+ 303               		.loc 1 149 0
+ 304 0000 8091 0000 		lds r24,PrinterInterfaceNumber
+ 305 0004 90E0      		ldi r25,0
+ 306 0006 E0E0      		ldi r30,lo8(USB_ControlRequest)
+ 307 0008 F0E0      		ldi r31,hi8(USB_ControlRequest)
+ 308 000a 21E2      		ldi r18,lo8(33)
+ 309 000c 2083      		st Z,r18
+ 310 000e 22E0      		ldi r18,lo8(2)
+ 311 0010 2183      		std Z+1,r18
+ 312 0012 1382      		std Z+3,__zero_reg__
+ 313 0014 1282      		std Z+2,__zero_reg__
+ 314 0016 9583      		std Z+5,r25
+ 315 0018 8483      		std Z+4,r24
+ 316 001a 1782      		std Z+7,__zero_reg__
+ 317 001c 1682      		std Z+6,__zero_reg__
+ 318               	.LVL26:
+ 319               	.LBB34:
+ 320               	.LBB35:
+ 228:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/../AVR8/Pipe_AVR8.h **** 			}
+ 321               		.loc 2 228 0
+ 322 001e 1092 A700 		sts 167,__zero_reg__
+ 323               	.LVL27:
+ 324               	.LBE35:
+ 325               	.LBE34:
+ 150:Lib/PrinterCommands.c **** 		{
+ 151:Lib/PrinterCommands.c **** 			.bmRequestType = (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE),
+ 152:Lib/PrinterCommands.c **** 			.bRequest      = PRNT_REQ_SoftReset,
+ 153:Lib/PrinterCommands.c **** 			.wValue        = 0,
+ 154:Lib/PrinterCommands.c **** 			.wIndex        = PrinterInterfaceNumber,
+ 155:Lib/PrinterCommands.c **** 			.wLength       = 0,
+ 156:Lib/PrinterCommands.c **** 		};
+ 157:Lib/PrinterCommands.c **** 
+ 158:Lib/PrinterCommands.c **** 	Pipe_SelectPipe(PIPE_CONTROLPIPE);
+ 159:Lib/PrinterCommands.c **** 
+ 160:Lib/PrinterCommands.c **** 	return USB_Host_SendControlRequest(NULL);
+ 326               		.loc 1 160 0
+ 327 0022 80E0      		ldi r24,0
+ 328 0024 90E0      		ldi r25,0
+ 329 0026 0C94 0000 		jmp USB_Host_SendControlRequest
+ 330               	.LVL28:
+ 331               		.cfi_endproc
+ 332               	.LFE150:
+ 334               		.text
+ 335               	.Letext0:
+ 336               		.file 4 "/usr/lib/avr/include/stdint.h"
+ 337               		.file 5 "../../../../LUFA/Drivers/USB/Core/AVR8/../StdRequestType.h"
+ 338               		.file 6 "../../../../LUFA/Drivers/USB/Core/AVR8/../HostStandardReq.h"
+ 339               		.file 7 "../../../../LUFA/Drivers/USB/Core/AVR8/../PipeStream.h"
+ 340               		.file 8 "/usr/lib/avr/include/stdio.h"
+ 341               		.file 9 "../../../../LUFA/Drivers/USB/Class/Host/../Common/Printer.h"
+ 342               		.file 10 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+ 343               		.file 11 "Lib/../PrinterHost.h"
+ 344               		.file 12 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 345               		.file 13 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/PipeStream_AVR8.h"
+ 346               		.file 14 "/usr/lib/avr/include/string.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 PrinterCommands.c
+     /tmp/cci7SPwr.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cci7SPwr.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cci7SPwr.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cci7SPwr.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cci7SPwr.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cci7SPwr.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cci7SPwr.s:14     .text.Printer_SendData:0000000000000000 Printer_SendData
+     /tmp/cci7SPwr.s:88     .text.Printer_GetDeviceID:0000000000000000 Printer_GetDeviceID
+     /tmp/cci7SPwr.s:252    .text.Printer_GetPortStatus:0000000000000000 Printer_GetPortStatus
+     /tmp/cci7SPwr.s:295    .text.Printer_SoftReset:0000000000000000 Printer_SoftReset
+
+UNDEFINED SYMBOLS
+Pipe_Write_Stream_LE
+Pipe_WaitUntilReady
+PrinterInterfaceNumber
+USB_ControlRequest
+USB_Host_SendControlRequest
+memmove

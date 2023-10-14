@@ -1,0 +1,548 @@
+   1               		.file	"clock.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.__vector_17,"ax",@progbits
+  12               	.global	__vector_17
+  14               	__vector_17:
+  15               	.LFB26:
+  16               		.file 1 "Lib/uip/clock.c"
+   1:Lib/uip/clock.c **** #include <stdint.h>
+   2:Lib/uip/clock.c **** #include <stdlib.h>
+   3:Lib/uip/clock.c **** #include <stdio.h>
+   4:Lib/uip/clock.c **** 
+   5:Lib/uip/clock.c **** #include <LUFA/Common/Common.h>
+   6:Lib/uip/clock.c **** 
+   7:Lib/uip/clock.c **** #include "clock.h"
+   8:Lib/uip/clock.c **** 
+   9:Lib/uip/clock.c **** //Counted time
+  10:Lib/uip/clock.c **** volatile clock_time_t clock_datetime = 0;
+  11:Lib/uip/clock.c **** 
+  12:Lib/uip/clock.c **** //Overflow interrupt
+  13:Lib/uip/clock.c **** ISR(TIMER1_COMPA_vect, ISR_BLOCK)
+  14:Lib/uip/clock.c **** {
+  17               		.loc 1 14 0
+  18               		.cfi_startproc
+  19 0000 1F92      		push r1
+  20               	.LCFI0:
+  21               		.cfi_def_cfa_offset 3
+  22               		.cfi_offset 1, -2
+  23 0002 0F92      		push r0
+  24               	.LCFI1:
+  25               		.cfi_def_cfa_offset 4
+  26               		.cfi_offset 0, -3
+  27 0004 0FB6      		in r0,__SREG__
+  28 0006 0F92      		push r0
+  29 0008 1124      		clr __zero_reg__
+  30 000a 8F93      		push r24
+  31               	.LCFI2:
+  32               		.cfi_def_cfa_offset 5
+  33               		.cfi_offset 24, -4
+  34 000c 9F93      		push r25
+  35               	.LCFI3:
+  36               		.cfi_def_cfa_offset 6
+  37               		.cfi_offset 25, -5
+  38               	/* prologue: Signal */
+  39               	/* frame size = 0 */
+  40               	/* stack size = 5 */
+  41               	.L__stack_usage = 5
+  15:Lib/uip/clock.c **** 	clock_datetime += 1;
+  42               		.loc 1 15 0
+  43 000e 8091 0000 		lds r24,clock_datetime
+  44 0012 9091 0000 		lds r25,clock_datetime+1
+  45 0016 0196      		adiw r24,1
+  46 0018 9093 0000 		sts clock_datetime+1,r25
+  47 001c 8093 0000 		sts clock_datetime,r24
+  48               	/* epilogue start */
+  16:Lib/uip/clock.c **** }
+  49               		.loc 1 16 0
+  50 0020 9F91      		pop r25
+  51 0022 8F91      		pop r24
+  52 0024 0F90      		pop r0
+  53 0026 0FBE      		out __SREG__,r0
+  54 0028 0F90      		pop r0
+  55 002a 1F90      		pop r1
+  56 002c 1895      		reti
+  57               		.cfi_endproc
+  58               	.LFE26:
+  60               		.section	.text.clock_init,"ax",@progbits
+  61               	.global	clock_init
+  63               	clock_init:
+  64               	.LFB27:
+  17:Lib/uip/clock.c **** 
+  18:Lib/uip/clock.c **** //Initialise the clock
+  19:Lib/uip/clock.c **** void clock_init()
+  20:Lib/uip/clock.c **** {
+  65               		.loc 1 20 0
+  66               		.cfi_startproc
+  67               	/* prologue: function */
+  68               	/* frame size = 0 */
+  69               	/* stack size = 0 */
+  70               	.L__stack_usage = 0
+  21:Lib/uip/clock.c **** 	OCR1A  = (((F_CPU / 1024) / 100) - 1);
+  71               		.loc 1 21 0
+  72 0000 8DE4      		ldi r24,lo8(77)
+  73 0002 90E0      		ldi r25,0
+  74 0004 9093 8900 		sts 136+1,r25
+  75 0008 8093 8800 		sts 136,r24
+  22:Lib/uip/clock.c **** 	TCCR1B = ((1 << WGM12) | (1 << CS12) | (1 << CS10));
+  76               		.loc 1 22 0
+  77 000c 8DE0      		ldi r24,lo8(13)
+  78 000e 8093 8100 		sts 129,r24
+  23:Lib/uip/clock.c **** 	TIMSK1 = (1 << OCIE1A);
+  79               		.loc 1 23 0
+  80 0012 82E0      		ldi r24,lo8(2)
+  81 0014 8093 6F00 		sts 111,r24
+  82 0018 0895      		ret
+  83               		.cfi_endproc
+  84               	.LFE27:
+  86               		.section	.text.clock_time,"ax",@progbits
+  87               	.global	clock_time
+  89               	clock_time:
+  90               	.LFB28:
+  24:Lib/uip/clock.c **** }
+  25:Lib/uip/clock.c **** 
+  26:Lib/uip/clock.c **** //Return time
+  27:Lib/uip/clock.c **** clock_time_t clock_time()
+  28:Lib/uip/clock.c **** {
+  91               		.loc 1 28 0
+  92               		.cfi_startproc
+  93               	/* prologue: function */
+  94               	/* frame size = 0 */
+  95               	/* stack size = 0 */
+  96               	.L__stack_usage = 0
+  97               	.LBB6:
+  98               	.LBB7:
+  99               		.file 2 "../../LUFA/Common/Common.h"
+   1:../../LUFA/Common/Common.h **** /*
+   2:../../LUFA/Common/Common.h ****              LUFA Library
+   3:../../LUFA/Common/Common.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../LUFA/Common/Common.h **** 
+   5:../../LUFA/Common/Common.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../LUFA/Common/Common.h ****            www.lufa-lib.org
+   7:../../LUFA/Common/Common.h **** */
+   8:../../LUFA/Common/Common.h **** 
+   9:../../LUFA/Common/Common.h **** /*
+  10:../../LUFA/Common/Common.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../LUFA/Common/Common.h **** 
+  12:../../LUFA/Common/Common.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../LUFA/Common/Common.h ****   software and its documentation for any purpose is hereby granted
+  14:../../LUFA/Common/Common.h ****   without fee, provided that the above copyright notice appear in
+  15:../../LUFA/Common/Common.h ****   all copies and that both that the copyright notice and this
+  16:../../LUFA/Common/Common.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../LUFA/Common/Common.h ****   documentation, and that the name of the author not be used in
+  18:../../LUFA/Common/Common.h ****   advertising or publicity pertaining to distribution of the
+  19:../../LUFA/Common/Common.h ****   software without specific, written prior permission.
+  20:../../LUFA/Common/Common.h **** 
+  21:../../LUFA/Common/Common.h ****   The author disclaim all warranties with regard to this
+  22:../../LUFA/Common/Common.h ****   software, including all implied warranties of merchantability
+  23:../../LUFA/Common/Common.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../LUFA/Common/Common.h ****   special, indirect or consequential damages or any damages
+  25:../../LUFA/Common/Common.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../LUFA/Common/Common.h ****   in an action of contract, negligence or other tortious action,
+  27:../../LUFA/Common/Common.h ****   arising out of or in connection with the use or performance of
+  28:../../LUFA/Common/Common.h ****   this software.
+  29:../../LUFA/Common/Common.h **** */
+  30:../../LUFA/Common/Common.h **** 
+  31:../../LUFA/Common/Common.h **** /** \file
+  32:../../LUFA/Common/Common.h ****  *  \brief Common library convenience headers, macros and functions.
+  33:../../LUFA/Common/Common.h ****  *
+  34:../../LUFA/Common/Common.h ****  *  \copydetails Group_Common
+  35:../../LUFA/Common/Common.h ****  */
+  36:../../LUFA/Common/Common.h **** 
+  37:../../LUFA/Common/Common.h **** /** \defgroup Group_Common Common Utility Headers - LUFA/Drivers/Common/Common.h
+  38:../../LUFA/Common/Common.h ****  *  \brief Common library convenience headers, macros and functions.
+  39:../../LUFA/Common/Common.h ****  *
+  40:../../LUFA/Common/Common.h ****  *  Common utility headers containing macros, functions, enums and types which are common to all
+  41:../../LUFA/Common/Common.h ****  *  aspects of the library.
+  42:../../LUFA/Common/Common.h ****  *
+  43:../../LUFA/Common/Common.h ****  *  @{
+  44:../../LUFA/Common/Common.h ****  */
+  45:../../LUFA/Common/Common.h ****  
+  46:../../LUFA/Common/Common.h **** /** \defgroup Group_GlobalInt Global Interrupt Macros
+  47:../../LUFA/Common/Common.h ****  *  \brief Convenience macros for the management of interrupts globally within the device.
+  48:../../LUFA/Common/Common.h ****  *
+  49:../../LUFA/Common/Common.h ****  *  Macros and functions to create and control global interrupts within the device.
+  50:../../LUFA/Common/Common.h ****  */
+  51:../../LUFA/Common/Common.h **** 
+  52:../../LUFA/Common/Common.h **** #ifndef __LUFA_COMMON_H__
+  53:../../LUFA/Common/Common.h **** #define __LUFA_COMMON_H__
+  54:../../LUFA/Common/Common.h **** 
+  55:../../LUFA/Common/Common.h **** 	/* Macros: */
+  56:../../LUFA/Common/Common.h **** 		#define __INCLUDE_FROM_COMMON_H
+  57:../../LUFA/Common/Common.h **** 		
+  58:../../LUFA/Common/Common.h **** 	/* Includes: */
+  59:../../LUFA/Common/Common.h **** 		#include <stdint.h>
+  60:../../LUFA/Common/Common.h **** 		#include <stdbool.h>
+  61:../../LUFA/Common/Common.h **** 		#include <string.h>
+  62:../../LUFA/Common/Common.h **** 		#include <stddef.h>
+  63:../../LUFA/Common/Common.h **** 		
+  64:../../LUFA/Common/Common.h **** 		#if defined(USE_LUFA_CONFIG_HEADER)
+  65:../../LUFA/Common/Common.h **** 			#include "LUFAConfig.h"
+  66:../../LUFA/Common/Common.h **** 		#endif
+  67:../../LUFA/Common/Common.h **** 
+  68:../../LUFA/Common/Common.h **** 		#include "ArchitectureSpecific.h"
+  69:../../LUFA/Common/Common.h **** 		#include "CompilerSpecific.h"
+  70:../../LUFA/Common/Common.h **** 		#include "Architectures.h"
+  71:../../LUFA/Common/Common.h **** 		#include "Attributes.h"
+  72:../../LUFA/Common/Common.h **** 		#include "BoardTypes.h"
+  73:../../LUFA/Common/Common.h **** 		
+  74:../../LUFA/Common/Common.h **** 	/* Enable C linkage for C++ Compilers: */
+  75:../../LUFA/Common/Common.h **** 		#if defined(__cplusplus)
+  76:../../LUFA/Common/Common.h **** 			extern "C" {
+  77:../../LUFA/Common/Common.h **** 		#endif
+  78:../../LUFA/Common/Common.h **** 
+  79:../../LUFA/Common/Common.h **** 	/* Architecture specific utility includes: */
+  80:../../LUFA/Common/Common.h **** 		#if defined(__DOXYGEN__)
+  81:../../LUFA/Common/Common.h **** 			/** Type define for an unsigned integer the same width as the selected architecture's machine re
+  82:../../LUFA/Common/Common.h **** 			 *  This is distinct from the non-specific standard int data type, whose width is machine depend
+  83:../../LUFA/Common/Common.h **** 			 *  which may not reflect the actual machine register width on some targets (e.g. AVR8).
+  84:../../LUFA/Common/Common.h **** 			 */
+  85:../../LUFA/Common/Common.h **** 			typedef MACHINE_REG_t uint_reg_t;
+  86:../../LUFA/Common/Common.h **** 		#elif (ARCH == ARCH_AVR8)
+  87:../../LUFA/Common/Common.h **** 			#include <avr/io.h>
+  88:../../LUFA/Common/Common.h **** 			#include <avr/interrupt.h>
+  89:../../LUFA/Common/Common.h **** 			#include <avr/pgmspace.h>
+  90:../../LUFA/Common/Common.h **** 			#include <avr/eeprom.h>
+  91:../../LUFA/Common/Common.h **** 			#include <avr/boot.h>
+  92:../../LUFA/Common/Common.h **** 			#include <util/delay.h>
+  93:../../LUFA/Common/Common.h **** 			
+  94:../../LUFA/Common/Common.h **** 			typedef uint8_t uint_reg_t;
+  95:../../LUFA/Common/Common.h **** 			
+  96:../../LUFA/Common/Common.h **** 			#define ARCH_HAS_EEPROM_ADDRESS_SPACE
+  97:../../LUFA/Common/Common.h **** 			#define ARCH_HAS_FLASH_ADDRESS_SPACE
+  98:../../LUFA/Common/Common.h **** 			#define ARCH_HAS_MULTI_ADDRESS_SPACE
+  99:../../LUFA/Common/Common.h **** 			#define ARCH_LITTLE_ENDIAN
+ 100:../../LUFA/Common/Common.h **** 
+ 101:../../LUFA/Common/Common.h **** 			#include "Endianness.h"
+ 102:../../LUFA/Common/Common.h **** 		#elif (ARCH == ARCH_UC3)
+ 103:../../LUFA/Common/Common.h **** 			#include <avr32/io.h>
+ 104:../../LUFA/Common/Common.h **** 
+ 105:../../LUFA/Common/Common.h **** 			// === TODO: Find abstracted way to handle these ===
+ 106:../../LUFA/Common/Common.h **** 			#define PROGMEM                  const
+ 107:../../LUFA/Common/Common.h **** 			#define pgm_read_byte(x)         *x
+ 108:../../LUFA/Common/Common.h **** 			#define memcmp_P(...)            memcmp(__VA_ARGS__)
+ 109:../../LUFA/Common/Common.h **** 			#define memcpy_P(...)            memcpy(__VA_ARGS__)
+ 110:../../LUFA/Common/Common.h **** 			// =================================================
+ 111:../../LUFA/Common/Common.h **** 
+ 112:../../LUFA/Common/Common.h **** 			typedef uint32_t uint_reg_t;
+ 113:../../LUFA/Common/Common.h **** 			
+ 114:../../LUFA/Common/Common.h **** 			#define ARCH_BIG_ENDIAN
+ 115:../../LUFA/Common/Common.h **** 
+ 116:../../LUFA/Common/Common.h **** 			#include "Endianness.h"
+ 117:../../LUFA/Common/Common.h **** 		#elif (ARCH == ARCH_XMEGA)
+ 118:../../LUFA/Common/Common.h **** 			#include <avr/io.h>
+ 119:../../LUFA/Common/Common.h **** 			#include <avr/interrupt.h>
+ 120:../../LUFA/Common/Common.h **** 			#include <avr/pgmspace.h>
+ 121:../../LUFA/Common/Common.h **** 			#include <avr/eeprom.h>
+ 122:../../LUFA/Common/Common.h **** 			#include <util/delay.h>
+ 123:../../LUFA/Common/Common.h **** 			
+ 124:../../LUFA/Common/Common.h **** 			typedef uint8_t uint_reg_t;
+ 125:../../LUFA/Common/Common.h **** 			
+ 126:../../LUFA/Common/Common.h **** 			#define ARCH_HAS_EEPROM_ADDRESS_SPACE
+ 127:../../LUFA/Common/Common.h **** 			#define ARCH_HAS_FLASH_ADDRESS_SPACE
+ 128:../../LUFA/Common/Common.h **** 			#define ARCH_HAS_MULTI_ADDRESS_SPACE
+ 129:../../LUFA/Common/Common.h **** 			#define ARCH_LITTLE_ENDIAN
+ 130:../../LUFA/Common/Common.h **** 
+ 131:../../LUFA/Common/Common.h **** 			#include "Endianness.h"		
+ 132:../../LUFA/Common/Common.h **** 		#else
+ 133:../../LUFA/Common/Common.h **** 			#error Unknown device architecture specified.
+ 134:../../LUFA/Common/Common.h **** 		#endif
+ 135:../../LUFA/Common/Common.h **** 
+ 136:../../LUFA/Common/Common.h **** 	/* Public Interface - May be used in end-application: */
+ 137:../../LUFA/Common/Common.h **** 		/* Macros: */
+ 138:../../LUFA/Common/Common.h **** 			/** Macro for encasing other multi-statement macros. This should be used along with an opening b
+ 139:../../LUFA/Common/Common.h **** 			 *  before the start of any multi-statement macro, so that the macros contents as a whole are tr
+ 140:../../LUFA/Common/Common.h **** 			 *  as a discrete block and not as a list of separate statements which may cause problems when u
+ 141:../../LUFA/Common/Common.h **** 			 *  a block (such as inline \c if statements).
+ 142:../../LUFA/Common/Common.h **** 			 */
+ 143:../../LUFA/Common/Common.h **** 			#define MACROS                  do
+ 144:../../LUFA/Common/Common.h **** 
+ 145:../../LUFA/Common/Common.h **** 			/** Macro for encasing other multi-statement macros. This should be used along with a preceding 
+ 146:../../LUFA/Common/Common.h **** 			 *  brace at the end of any multi-statement macro, so that the macros contents as a whole are tr
+ 147:../../LUFA/Common/Common.h **** 			 *  as a discrete block and not as a list of separate statements which may cause problems when u
+ 148:../../LUFA/Common/Common.h **** 			 *  a block (such as inline \c if statements).
+ 149:../../LUFA/Common/Common.h **** 			 */
+ 150:../../LUFA/Common/Common.h **** 			#define MACROE                  while (0)
+ 151:../../LUFA/Common/Common.h **** 
+ 152:../../LUFA/Common/Common.h **** 			/** Convenience macro to determine the larger of two values.
+ 153:../../LUFA/Common/Common.h **** 			 *
+ 154:../../LUFA/Common/Common.h **** 			 *  \note This macro should only be used with operands that do not have side effects from being 
+ 155:../../LUFA/Common/Common.h **** 			 *        multiple times.
+ 156:../../LUFA/Common/Common.h **** 			 *
+ 157:../../LUFA/Common/Common.h **** 			 *  \param[in] x  First value to compare
+ 158:../../LUFA/Common/Common.h **** 			 *  \param[in] y  First value to compare
+ 159:../../LUFA/Common/Common.h **** 			 *
+ 160:../../LUFA/Common/Common.h **** 			 *  \return The larger of the two input parameters
+ 161:../../LUFA/Common/Common.h **** 			 */
+ 162:../../LUFA/Common/Common.h **** 			#if !defined(MAX) || defined(__DOXYGEN__)
+ 163:../../LUFA/Common/Common.h **** 				#define MAX(x, y)               (((x) > (y)) ? (x) : (y))
+ 164:../../LUFA/Common/Common.h **** 			#endif
+ 165:../../LUFA/Common/Common.h **** 
+ 166:../../LUFA/Common/Common.h **** 			/** Convenience macro to determine the smaller of two values.
+ 167:../../LUFA/Common/Common.h **** 			 *
+ 168:../../LUFA/Common/Common.h **** 			 *  \note This macro should only be used with operands that do not have side effects from being 
+ 169:../../LUFA/Common/Common.h **** 			 *        multiple times.
+ 170:../../LUFA/Common/Common.h **** 			 *
+ 171:../../LUFA/Common/Common.h **** 			 *  \param[in] x  First value to compare
+ 172:../../LUFA/Common/Common.h **** 			 *  \param[in] y  First value to compare
+ 173:../../LUFA/Common/Common.h **** 			 *
+ 174:../../LUFA/Common/Common.h **** 			 *  \return The smaller of the two input parameters
+ 175:../../LUFA/Common/Common.h **** 			 */
+ 176:../../LUFA/Common/Common.h **** 			#if !defined(MIN) || defined(__DOXYGEN__)
+ 177:../../LUFA/Common/Common.h **** 				#define MIN(x, y)               (((x) < (y)) ? (x) : (y))
+ 178:../../LUFA/Common/Common.h **** 			#endif
+ 179:../../LUFA/Common/Common.h **** 			
+ 180:../../LUFA/Common/Common.h **** 			#if !defined(STRINGIFY) || defined(__DOXYGEN__)
+ 181:../../LUFA/Common/Common.h **** 				/** Converts the given input into a string, via the C Preprocessor. This macro puts literal quo
+ 182:../../LUFA/Common/Common.h **** 				 *  marks around the input, converting the source into a string literal.
+ 183:../../LUFA/Common/Common.h **** 				 *
+ 184:../../LUFA/Common/Common.h **** 				 *  \param[in] x  Input to convert into a string literal.
+ 185:../../LUFA/Common/Common.h **** 				 *
+ 186:../../LUFA/Common/Common.h **** 				 *  \return String version of the input.
+ 187:../../LUFA/Common/Common.h **** 				 */
+ 188:../../LUFA/Common/Common.h **** 				#define STRINGIFY(x)            #x
+ 189:../../LUFA/Common/Common.h **** 
+ 190:../../LUFA/Common/Common.h **** 				/** Converts the given input into a string after macro expansion, via the C Preprocessor. This 
+ 191:../../LUFA/Common/Common.h **** 				 *  literal quotation marks around the expanded input, converting the source into a string lite
+ 192:../../LUFA/Common/Common.h **** 				 *
+ 193:../../LUFA/Common/Common.h **** 				 *  \param[in] x  Input to expand and convert into a string literal.
+ 194:../../LUFA/Common/Common.h **** 				 *
+ 195:../../LUFA/Common/Common.h **** 				 *  \return String version of the expanded input.
+ 196:../../LUFA/Common/Common.h **** 				 */
+ 197:../../LUFA/Common/Common.h **** 				#define STRINGIFY_EXPANDED(x)   STRINGIFY(x)
+ 198:../../LUFA/Common/Common.h **** 			#endif
+ 199:../../LUFA/Common/Common.h **** 
+ 200:../../LUFA/Common/Common.h **** 			#if !defined(ISR) || defined(__DOXYGEN__)
+ 201:../../LUFA/Common/Common.h **** 				/** Macro for the definition of interrupt service routines, so that the compiler can insert the
+ 202:../../LUFA/Common/Common.h **** 				 *  prologue and epilogue code to properly manage the interrupt routine without affecting the m
+ 203:../../LUFA/Common/Common.h **** 				 *  state with unintentional side-effects.
+ 204:../../LUFA/Common/Common.h **** 				 *
+ 205:../../LUFA/Common/Common.h **** 				 *  Interrupt handlers written using this macro may still need to be registered with the microc
+ 206:../../LUFA/Common/Common.h **** 				 *  Interrupt Controller (if present) before they will properly handle incoming interrupt event
+ 207:../../LUFA/Common/Common.h **** 				 *
+ 208:../../LUFA/Common/Common.h **** 				 *  \note This macro is only supplied on some architectures, where the standard library does no
+ 209:../../LUFA/Common/Common.h **** 				 *        definition. If an existing definition exists, the alternative definition here will be
+ 210:../../LUFA/Common/Common.h **** 				 *
+ 211:../../LUFA/Common/Common.h **** 				 *  \ingroup Group_GlobalInt
+ 212:../../LUFA/Common/Common.h **** 				 *
+ 213:../../LUFA/Common/Common.h **** 				 *  \param Name  Unique name of the interrupt service routine.
+ 214:../../LUFA/Common/Common.h **** 				 */
+ 215:../../LUFA/Common/Common.h **** 				#define ISR(Name, ...)                  void Name (void) __attribute__((__interrupt__)) __VA_AR
+ 216:../../LUFA/Common/Common.h **** 			#endif
+ 217:../../LUFA/Common/Common.h **** 
+ 218:../../LUFA/Common/Common.h **** 		/* Inline Functions: */
+ 219:../../LUFA/Common/Common.h **** 			/** Function to reverse the individual bits in a byte - i.e. bit 7 is moved to bit 0, bit 6 to b
+ 220:../../LUFA/Common/Common.h **** 			 *  etc.
+ 221:../../LUFA/Common/Common.h **** 			 *
+ 222:../../LUFA/Common/Common.h **** 			 *  \param[in] Byte  Byte of data whose bits are to be reversed.
+ 223:../../LUFA/Common/Common.h **** 			 *
+ 224:../../LUFA/Common/Common.h **** 			 *  \return Input data with the individual bits reversed (mirrored).
+ 225:../../LUFA/Common/Common.h **** 			 */
+ 226:../../LUFA/Common/Common.h **** 			static inline uint8_t BitReverse(uint8_t Byte) ATTR_WARN_UNUSED_RESULT ATTR_CONST;
+ 227:../../LUFA/Common/Common.h **** 			static inline uint8_t BitReverse(uint8_t Byte)
+ 228:../../LUFA/Common/Common.h **** 			{
+ 229:../../LUFA/Common/Common.h **** 				Byte = (((Byte & 0xF0) >> 4) | ((Byte & 0x0F) << 4));
+ 230:../../LUFA/Common/Common.h **** 				Byte = (((Byte & 0xCC) >> 2) | ((Byte & 0x33) << 2));
+ 231:../../LUFA/Common/Common.h **** 				Byte = (((Byte & 0xAA) >> 1) | ((Byte & 0x55) << 1));
+ 232:../../LUFA/Common/Common.h **** 
+ 233:../../LUFA/Common/Common.h **** 				return Byte;
+ 234:../../LUFA/Common/Common.h **** 			}
+ 235:../../LUFA/Common/Common.h **** 
+ 236:../../LUFA/Common/Common.h **** 			/** Function to perform a blocking delay for a specified number of milliseconds. The actual dela
+ 237:../../LUFA/Common/Common.h **** 			 *  at a minimum the specified number of milliseconds, however due to loop overhead and internal
+ 238:../../LUFA/Common/Common.h **** 			 *  may be slightly higher.
+ 239:../../LUFA/Common/Common.h **** 			 *
+ 240:../../LUFA/Common/Common.h **** 			 *  \param[in] Milliseconds  Number of milliseconds to delay
+ 241:../../LUFA/Common/Common.h **** 			 */
+ 242:../../LUFA/Common/Common.h **** 			static inline void Delay_MS(uint16_t Milliseconds) ATTR_ALWAYS_INLINE;
+ 243:../../LUFA/Common/Common.h **** 			static inline void Delay_MS(uint16_t Milliseconds)
+ 244:../../LUFA/Common/Common.h **** 			{
+ 245:../../LUFA/Common/Common.h **** 				#if (ARCH == ARCH_AVR8)
+ 246:../../LUFA/Common/Common.h **** 				if (GCC_IS_COMPILE_CONST(Milliseconds))
+ 247:../../LUFA/Common/Common.h **** 				{
+ 248:../../LUFA/Common/Common.h **** 					_delay_ms(Milliseconds);
+ 249:../../LUFA/Common/Common.h **** 				}
+ 250:../../LUFA/Common/Common.h **** 				else
+ 251:../../LUFA/Common/Common.h **** 				{
+ 252:../../LUFA/Common/Common.h **** 					while (Milliseconds--)
+ 253:../../LUFA/Common/Common.h **** 					  _delay_ms(1);
+ 254:../../LUFA/Common/Common.h **** 				}
+ 255:../../LUFA/Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 256:../../LUFA/Common/Common.h **** 				while (Milliseconds--)
+ 257:../../LUFA/Common/Common.h **** 				{
+ 258:../../LUFA/Common/Common.h **** 					__builtin_mtsr(AVR32_COUNT, 0);
+ 259:../../LUFA/Common/Common.h **** 					while (__builtin_mfsr(AVR32_COUNT) < (F_CPU / 1000));				
+ 260:../../LUFA/Common/Common.h **** 				}
+ 261:../../LUFA/Common/Common.h **** 				#elif (ARCH == ARCH_XMEGA)
+ 262:../../LUFA/Common/Common.h **** 				if (GCC_IS_COMPILE_CONST(Milliseconds))
+ 263:../../LUFA/Common/Common.h **** 				{
+ 264:../../LUFA/Common/Common.h **** 					_delay_ms(Milliseconds);
+ 265:../../LUFA/Common/Common.h **** 				}
+ 266:../../LUFA/Common/Common.h **** 				else
+ 267:../../LUFA/Common/Common.h **** 				{
+ 268:../../LUFA/Common/Common.h **** 					while (Milliseconds--)
+ 269:../../LUFA/Common/Common.h **** 					  _delay_ms(1);
+ 270:../../LUFA/Common/Common.h **** 				}				
+ 271:../../LUFA/Common/Common.h **** 				#endif
+ 272:../../LUFA/Common/Common.h **** 			}
+ 273:../../LUFA/Common/Common.h **** 
+ 274:../../LUFA/Common/Common.h **** 			/** Retrieves a mask which contains the current state of the global interrupts for the device. T
+ 275:../../LUFA/Common/Common.h **** 			 *  value can be stored before altering the global interrupt enable state, before restoring the
+ 276:../../LUFA/Common/Common.h **** 			 *  flag(s) back to their previous values after a critical section using \ref SetGlobalInterrupt
+ 277:../../LUFA/Common/Common.h **** 			 *
+ 278:../../LUFA/Common/Common.h **** 			 *  \ingroup Group_GlobalInt
+ 279:../../LUFA/Common/Common.h **** 			 *
+ 280:../../LUFA/Common/Common.h **** 			 *  \return  Mask containing the current Global Interrupt Enable Mask bit(s).
+ 281:../../LUFA/Common/Common.h **** 			 */
+ 282:../../LUFA/Common/Common.h **** 			static inline uint_reg_t GetGlobalInterruptMask(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT
+ 283:../../LUFA/Common/Common.h **** 			static inline uint_reg_t GetGlobalInterruptMask(void)
+ 284:../../LUFA/Common/Common.h **** 			{
+ 285:../../LUFA/Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 286:../../LUFA/Common/Common.h **** 
+ 287:../../LUFA/Common/Common.h **** 				#if (ARCH == ARCH_AVR8)
+ 288:../../LUFA/Common/Common.h **** 				return SREG;
+ 289:../../LUFA/Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 290:../../LUFA/Common/Common.h **** 				return __builtin_mfsr(AVR32_SR);
+ 291:../../LUFA/Common/Common.h **** 				#elif (ARCH == ARCH_XMEGA)
+ 292:../../LUFA/Common/Common.h **** 				return SREG;
+ 293:../../LUFA/Common/Common.h **** 				#endif
+ 294:../../LUFA/Common/Common.h **** 
+ 295:../../LUFA/Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 296:../../LUFA/Common/Common.h **** 			}
+ 297:../../LUFA/Common/Common.h **** 
+ 298:../../LUFA/Common/Common.h **** 			/** Sets the global interrupt enable state of the microcontroller to the mask passed into the fu
+ 299:../../LUFA/Common/Common.h **** 			 *  This can be combined with \ref GetGlobalInterruptMask() to save and restore the Global Inter
+ 300:../../LUFA/Common/Common.h **** 			 *  Mask bit(s) of the device after a critical section has completed.
+ 301:../../LUFA/Common/Common.h **** 			 *
+ 302:../../LUFA/Common/Common.h **** 			 *  \ingroup Group_GlobalInt
+ 303:../../LUFA/Common/Common.h **** 			 *
+ 304:../../LUFA/Common/Common.h **** 			 *  \param[in] GlobalIntState  Global Interrupt Enable Mask value to use
+ 305:../../LUFA/Common/Common.h **** 			 */
+ 306:../../LUFA/Common/Common.h **** 			static inline void SetGlobalInterruptMask(const uint_reg_t GlobalIntState) ATTR_ALWAYS_INLINE;
+ 307:../../LUFA/Common/Common.h **** 			static inline void SetGlobalInterruptMask(const uint_reg_t GlobalIntState)
+ 308:../../LUFA/Common/Common.h **** 			{
+ 309:../../LUFA/Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 310:../../LUFA/Common/Common.h **** 
+ 311:../../LUFA/Common/Common.h **** 				#if (ARCH == ARCH_AVR8)
+ 312:../../LUFA/Common/Common.h **** 				SREG = GlobalIntState;
+ 313:../../LUFA/Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 314:../../LUFA/Common/Common.h **** 				if (GlobalIntState & AVR32_SR_GM)
+ 315:../../LUFA/Common/Common.h **** 				  __builtin_ssrf(AVR32_SR_GM_OFFSET);
+ 316:../../LUFA/Common/Common.h **** 				else
+ 317:../../LUFA/Common/Common.h **** 				  __builtin_csrf(AVR32_SR_GM_OFFSET);
+ 318:../../LUFA/Common/Common.h **** 				#elif (ARCH == ARCH_XMEGA)
+ 319:../../LUFA/Common/Common.h **** 				SREG = GlobalIntState;				
+ 320:../../LUFA/Common/Common.h **** 				#endif
+ 321:../../LUFA/Common/Common.h **** 				
+ 322:../../LUFA/Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 323:../../LUFA/Common/Common.h **** 			}
+ 324:../../LUFA/Common/Common.h **** 		
+ 325:../../LUFA/Common/Common.h **** 			/** Enables global interrupt handling for the device, allowing interrupts to be handled.
+ 326:../../LUFA/Common/Common.h **** 			 *
+ 327:../../LUFA/Common/Common.h **** 			 *  \ingroup Group_GlobalInt
+ 328:../../LUFA/Common/Common.h **** 			 */
+ 329:../../LUFA/Common/Common.h **** 			static inline void GlobalInterruptEnable(void) ATTR_ALWAYS_INLINE;
+ 330:../../LUFA/Common/Common.h **** 			static inline void GlobalInterruptEnable(void)
+ 331:../../LUFA/Common/Common.h **** 			{
+ 332:../../LUFA/Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 333:../../LUFA/Common/Common.h **** 
+ 334:../../LUFA/Common/Common.h **** 				#if (ARCH == ARCH_AVR8)
+ 335:../../LUFA/Common/Common.h **** 				sei();
+ 336:../../LUFA/Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 337:../../LUFA/Common/Common.h **** 				__builtin_csrf(AVR32_SR_GM_OFFSET);
+ 338:../../LUFA/Common/Common.h **** 				#elif (ARCH == ARCH_XMEGA)
+ 339:../../LUFA/Common/Common.h **** 				sei();
+ 340:../../LUFA/Common/Common.h **** 				#endif
+ 341:../../LUFA/Common/Common.h **** 
+ 342:../../LUFA/Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 343:../../LUFA/Common/Common.h **** 			}		
+ 344:../../LUFA/Common/Common.h **** 
+ 345:../../LUFA/Common/Common.h **** 			/** Disabled global interrupt handling for the device, preventing interrupts from being handled.
+ 346:../../LUFA/Common/Common.h **** 			 *
+ 347:../../LUFA/Common/Common.h **** 			 *  \ingroup Group_GlobalInt
+ 348:../../LUFA/Common/Common.h **** 			 */
+ 349:../../LUFA/Common/Common.h **** 			static inline void GlobalInterruptDisable(void) ATTR_ALWAYS_INLINE;
+ 350:../../LUFA/Common/Common.h **** 			static inline void GlobalInterruptDisable(void)
+ 351:../../LUFA/Common/Common.h **** 			{
+ 352:../../LUFA/Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 100               		.loc 2 352 0
+ 353:../../LUFA/Common/Common.h **** 
+ 354:../../LUFA/Common/Common.h **** 				#if (ARCH == ARCH_AVR8)
+ 355:../../LUFA/Common/Common.h **** 				cli();
+ 101               		.loc 2 355 0
+ 102               	/* #APP */
+ 103               	 ;  355 "../../LUFA/Common/Common.h" 1
+ 104 0000 F894      		cli
+ 105               	 ;  0 "" 2
+ 356:../../LUFA/Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 357:../../LUFA/Common/Common.h **** 				__builtin_ssrf(AVR32_SR_GM_OFFSET);
+ 358:../../LUFA/Common/Common.h **** 				#elif (ARCH == ARCH_XMEGA)
+ 359:../../LUFA/Common/Common.h **** 				cli();
+ 360:../../LUFA/Common/Common.h **** 				#endif
+ 361:../../LUFA/Common/Common.h **** 
+ 362:../../LUFA/Common/Common.h **** 				GCC_MEMORY_BARRIER();
+ 106               		.loc 2 362 0
+ 107               	/* #NOAPP */
+ 108               	.LBE7:
+ 109               	.LBE6:
+  29:Lib/uip/clock.c **** 	clock_time_t time;
+  30:Lib/uip/clock.c **** 
+  31:Lib/uip/clock.c **** 	GlobalInterruptDisable();
+  32:Lib/uip/clock.c **** 	time = clock_datetime;
+ 110               		.loc 1 32 0
+ 111 0002 8091 0000 		lds r24,clock_datetime
+ 112 0006 9091 0000 		lds r25,clock_datetime+1
+ 113               	.LVL0:
+ 114               	.LBB8:
+ 115               	.LBB9:
+ 332:../../LUFA/Common/Common.h **** 
+ 116               		.loc 2 332 0
+ 335:../../LUFA/Common/Common.h **** 				#elif (ARCH == ARCH_UC3)
+ 117               		.loc 2 335 0
+ 118               	/* #APP */
+ 119               	 ;  335 "../../LUFA/Common/Common.h" 1
+ 120 000a 7894      		sei
+ 121               	 ;  0 "" 2
+ 342:../../LUFA/Common/Common.h **** 			}		
+ 122               		.loc 2 342 0
+ 123               	/* #NOAPP */
+ 124               	.LBE9:
+ 125               	.LBE8:
+  33:Lib/uip/clock.c **** 	GlobalInterruptEnable();
+  34:Lib/uip/clock.c **** 
+  35:Lib/uip/clock.c **** 	return time;
+  36:Lib/uip/clock.c **** }
+ 126               		.loc 1 36 0
+ 127 000c 0895      		ret
+ 128               		.cfi_endproc
+ 129               	.LFE28:
+ 131               	.global	clock_datetime
+ 132               		.section .bss
+ 135               	clock_datetime:
+ 136 0000 0000      		.zero	2
+ 137               		.text
+ 138               	.Letext0:
+ 139               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 140               		.file 4 "Lib/uip/clock.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 clock.c
+     /tmp/ccdCA7Gd.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccdCA7Gd.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccdCA7Gd.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccdCA7Gd.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccdCA7Gd.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccdCA7Gd.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccdCA7Gd.s:14     .text.__vector_17:0000000000000000 __vector_17
+     /tmp/ccdCA7Gd.s:135    .bss:0000000000000000 clock_datetime
+     /tmp/ccdCA7Gd.s:63     .text.clock_init:0000000000000000 clock_init
+     /tmp/ccdCA7Gd.s:89     .text.clock_time:0000000000000000 clock_time
+
+UNDEFINED SYMBOLS
+__do_clear_bss

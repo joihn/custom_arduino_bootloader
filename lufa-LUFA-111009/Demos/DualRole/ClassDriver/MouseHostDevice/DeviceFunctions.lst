@@ -1,0 +1,1071 @@
+   1               		.file	"DeviceFunctions.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.LEDs_SetAllLEDs,"ax",@progbits
+  13               	LEDs_SetAllLEDs:
+  14               	.LFB32:
+  15               		.file 1 "../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h"
+   1:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /*
+   2:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+   5:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** */
+   8:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+   9:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /*
+  10:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  12:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  21:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****   this software.
+  29:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** */
+  30:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  31:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /** \file
+  32:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \brief Board specific LED driver header for the Atmel USBKEY.
+  33:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \copydetails Group_LEDs_USBKEY
+  34:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *
+  35:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  36:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *        dispatch header located in LUFA/Drivers/Board/LEDs.h.
+  37:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  */
+  38:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  39:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** /** \ingroup Group_LEDs
+  40:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \defgroup Group_LEDs_USBKEY USBKEY
+  41:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  \brief Board specific LED driver header for the Atmel USBKEY.
+  42:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *
+  43:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  Board specific LED driver header for the Atmel USBKEY.
+  44:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *
+  45:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  *  @{
+  46:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h ****  */
+  47:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  48:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** #ifndef __LEDS_USBKEY_H__
+  49:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** #define __LEDS_USBKEY_H__
+  50:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  51:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Includes: */
+  52:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#include "../../../../Common/Common.h"
+  53:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  54:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Enable C linkage for C++ Compilers: */
+  55:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#if defined(__cplusplus)
+  56:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			extern "C" {
+  57:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#endif
+  58:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  59:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Preprocessor Checks: */
+  60:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#if !defined(__INCLUDE_FROM_LEDS_H)
+  61:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#error Do not include this file directly. Include LUFA/Drivers/Board/LEDS.h instead.
+  62:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#endif
+  63:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  64:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 	/* Public Interface - May be used in end-application: */
+  65:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		/* Macros: */
+  66:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the first LED on the board. */
+  67:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED1        (1 << 4)
+  68:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  69:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the second LED on the board. */
+  70:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED2        (1 << 5)
+  71:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  72:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the third LED on the board. */
+  73:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED3        (1 << 7)
+  74:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  75:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for the fourth LED on the board. */
+  76:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_LED4        (1 << 6)
+  77:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  78:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for all the LEDs on the board. */
+  79:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_ALL_LEDS    (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
+  80:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  81:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			/** LED mask for none of the board LEDs. */
+  82:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			#define LEDS_NO_LEDS     0
+  83:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  84:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		/* Inline Functions: */
+  85:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 		#if !defined(__DOXYGEN__)
+  86:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_Init(void)
+  87:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  88:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				DDRD  |=  LEDS_ALL_LEDS;
+  89:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD &= ~LEDS_ALL_LEDS;
+  90:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			}
+  91:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  92:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_TurnOnLEDs(const uint8_t LEDMask)
+  93:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  94:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD |= LEDMask;
+  95:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			}
+  96:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+  97:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_TurnOffLEDs(const uint8_t LEDMask)
+  98:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  99:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD &= ~LEDMask;
+ 100:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			}
+ 101:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 
+ 102:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			static inline void LEDs_SetAllLEDs(const uint8_t LEDMask)
+ 103:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 			{
+  16               		.loc 1 103 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+ 104:../../../../LUFA/Drivers/Board/AVR8/USBKEY/LEDs.h **** 				PORTD = ((PORTD & ~LEDS_ALL_LEDS) | LEDMask);
+  23               		.loc 1 104 0
+  24 0000 9BB1      		in r25,0xb
+  25 0002 9F70      		andi r25,lo8(15)
+  26 0004 892B      		or r24,r25
+  27               	.LVL1:
+  28 0006 8BB9      		out 0xb,r24
+  29 0008 0895      		ret
+  30               		.cfi_endproc
+  31               	.LFE32:
+  33               		.section	.text.EVENT_USB_Device_Connect,"ax",@progbits
+  34               	.global	EVENT_USB_Device_Connect
+  36               	EVENT_USB_Device_Connect:
+  37               	.LFB211:
+  38               		.file 2 "DeviceFunctions.c"
+   1:DeviceFunctions.c **** /*
+   2:DeviceFunctions.c ****              LUFA Library
+   3:DeviceFunctions.c ****      Copyright (C) Dean Camera, 2011.
+   4:DeviceFunctions.c **** 
+   5:DeviceFunctions.c ****   dean [at] fourwalledcubicle [dot] com
+   6:DeviceFunctions.c ****            www.lufa-lib.org
+   7:DeviceFunctions.c **** */
+   8:DeviceFunctions.c **** 
+   9:DeviceFunctions.c **** /*
+  10:DeviceFunctions.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:DeviceFunctions.c **** 
+  12:DeviceFunctions.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:DeviceFunctions.c ****   software and its documentation for any purpose is hereby granted
+  14:DeviceFunctions.c ****   without fee, provided that the above copyright notice appear in
+  15:DeviceFunctions.c ****   all copies and that both that the copyright notice and this
+  16:DeviceFunctions.c ****   permission notice and warranty disclaimer appear in supporting
+  17:DeviceFunctions.c ****   documentation, and that the name of the author not be used in
+  18:DeviceFunctions.c ****   advertising or publicity pertaining to distribution of the
+  19:DeviceFunctions.c ****   software without specific, written prior permission.
+  20:DeviceFunctions.c **** 
+  21:DeviceFunctions.c ****   The author disclaim all warranties with regard to this
+  22:DeviceFunctions.c ****   software, including all implied warranties of merchantability
+  23:DeviceFunctions.c ****   and fitness.  In no event shall the author be liable for any
+  24:DeviceFunctions.c ****   special, indirect or consequential damages or any damages
+  25:DeviceFunctions.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:DeviceFunctions.c ****   in an action of contract, negligence or other tortious action,
+  27:DeviceFunctions.c ****   arising out of or in connection with the use or performance of
+  28:DeviceFunctions.c ****   this software.
+  29:DeviceFunctions.c **** */
+  30:DeviceFunctions.c **** 
+  31:DeviceFunctions.c **** /** \file
+  32:DeviceFunctions.c ****  *
+  33:DeviceFunctions.c ****  *  Device Mode USB Mouse functionality for the MouseHostDevice demo. This file contains the Device
+  34:DeviceFunctions.c ****  *  USB Mouse related code of the demo and is responsible for all the Device mode Mouse functionali
+  35:DeviceFunctions.c ****  */
+  36:DeviceFunctions.c **** 
+  37:DeviceFunctions.c **** #include "DeviceFunctions.h"
+  38:DeviceFunctions.c **** 
+  39:DeviceFunctions.c **** /** Buffer to hold the previously generated Mouse Device HID report, for comparison purposes inside
+  40:DeviceFunctions.c **** static uint8_t PrevMouseHIDReportBuffer[sizeof(USB_MouseReport_Data_t)];
+  41:DeviceFunctions.c **** 
+  42:DeviceFunctions.c **** /** LUFA HID Class driver interface configuration and state information. This structure is
+  43:DeviceFunctions.c ****  *  passed to all HID Class driver functions, so that multiple instances of the same class
+  44:DeviceFunctions.c ****  *  within a device can be differentiated from one another.
+  45:DeviceFunctions.c ****  */
+  46:DeviceFunctions.c **** USB_ClassInfo_HID_Device_t Mouse_HID_Device_Interface =
+  47:DeviceFunctions.c **** 	{
+  48:DeviceFunctions.c **** 		.Config =
+  49:DeviceFunctions.c **** 			{
+  50:DeviceFunctions.c **** 				.InterfaceNumber            = 0,
+  51:DeviceFunctions.c **** 
+  52:DeviceFunctions.c **** 				.ReportINEndpointNumber     = MOUSE_EPNUM,
+  53:DeviceFunctions.c **** 				.ReportINEndpointSize       = MOUSE_EPSIZE,
+  54:DeviceFunctions.c **** 				.ReportINEndpointDoubleBank = false,
+  55:DeviceFunctions.c **** 
+  56:DeviceFunctions.c **** 				.PrevReportINBuffer         = PrevMouseHIDReportBuffer,
+  57:DeviceFunctions.c **** 				.PrevReportINBufferSize     = sizeof(PrevMouseHIDReportBuffer),
+  58:DeviceFunctions.c **** 			},
+  59:DeviceFunctions.c **** 	};
+  60:DeviceFunctions.c **** 
+  61:DeviceFunctions.c **** 
+  62:DeviceFunctions.c **** /** Event handler for the library USB WakeUp event. */
+  63:DeviceFunctions.c **** void EVENT_USB_Device_Connect(void)
+  64:DeviceFunctions.c **** {
+  39               		.loc 2 64 0
+  40               		.cfi_startproc
+  41               	/* prologue: function */
+  42               	/* frame size = 0 */
+  43               	/* stack size = 0 */
+  44               	.L__stack_usage = 0
+  65:DeviceFunctions.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_ENUMERATING);
+  45               		.loc 2 65 0
+  46 0000 80EA      		ldi r24,lo8(-96)
+  47 0002 0C94 0000 		jmp LEDs_SetAllLEDs
+  48               	.LVL2:
+  49               		.cfi_endproc
+  50               	.LFE211:
+  52               		.section	.text.EVENT_USB_Device_Disconnect,"ax",@progbits
+  53               	.global	EVENT_USB_Device_Disconnect
+  55               	EVENT_USB_Device_Disconnect:
+  56               	.LFB212:
+  66:DeviceFunctions.c **** }
+  67:DeviceFunctions.c **** 
+  68:DeviceFunctions.c **** /** Event handler for the library USB Suspend event. */
+  69:DeviceFunctions.c **** void EVENT_USB_Device_Disconnect(void)
+  70:DeviceFunctions.c **** {
+  57               		.loc 2 70 0
+  58               		.cfi_startproc
+  59               	/* prologue: function */
+  60               	/* frame size = 0 */
+  61               	/* stack size = 0 */
+  62               	.L__stack_usage = 0
+  71:DeviceFunctions.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
+  63               		.loc 2 71 0
+  64 0000 80E1      		ldi r24,lo8(16)
+  65 0002 0C94 0000 		jmp LEDs_SetAllLEDs
+  66               	.LVL3:
+  67               		.cfi_endproc
+  68               	.LFE212:
+  70               		.section	.text.EVENT_USB_Device_ConfigurationChanged,"ax",@progbits
+  71               	.global	EVENT_USB_Device_ConfigurationChanged
+  73               	EVENT_USB_Device_ConfigurationChanged:
+  74               	.LFB213:
+  72:DeviceFunctions.c **** }
+  73:DeviceFunctions.c **** 
+  74:DeviceFunctions.c **** /** Event handler for the library USB Configuration Changed event. */
+  75:DeviceFunctions.c **** void EVENT_USB_Device_ConfigurationChanged(void)
+  76:DeviceFunctions.c **** {
+  75               		.loc 2 76 0
+  76               		.cfi_startproc
+  77               	/* prologue: function */
+  78               	/* frame size = 0 */
+  79               	/* stack size = 0 */
+  80               	.L__stack_usage = 0
+  77:DeviceFunctions.c **** 	LEDs_SetAllLEDs(LEDMASK_USB_READY);
+  81               		.loc 2 77 0
+  82 0000 80E6      		ldi r24,lo8(96)
+  83 0002 0E94 0000 		call LEDs_SetAllLEDs
+  84               	.LVL4:
+  78:DeviceFunctions.c **** 
+  79:DeviceFunctions.c **** 	if (!(HID_Device_ConfigureEndpoints(&Mouse_HID_Device_Interface)))
+  85               		.loc 2 79 0
+  86 0006 80E0      		ldi r24,lo8(Mouse_HID_Device_Interface)
+  87 0008 90E0      		ldi r25,hi8(Mouse_HID_Device_Interface)
+  88 000a 0E94 0000 		call HID_Device_ConfigureEndpoints
+  89               	.LVL5:
+  90 000e 8111      		cpse r24,__zero_reg__
+  91 0010 00C0      		rjmp .L5
+  80:DeviceFunctions.c **** 	  LEDs_SetAllLEDs(LEDMASK_USB_ERROR);
+  92               		.loc 2 80 0
+  93 0012 80E9      		ldi r24,lo8(-112)
+  94 0014 0E94 0000 		call LEDs_SetAllLEDs
+  95               	.LVL6:
+  96               	.L5:
+  97               	.LBB10:
+  98               	.LBB11:
+  99               	.LBB12:
+ 100               		.file 3 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h"
+   1:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** /*
+   2:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 
+   5:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** */
+   8:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 
+   9:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** /*
+  10:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 
+  12:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 
+  21:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****   this software.
+  29:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** */
+  30:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 
+  31:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** /** \file
+  32:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****  *  \brief USB Controller Interrupt definitions for the AVR8 microcontrollers.
+  33:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****  *
+  34:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****  *  This file contains definitions required for the correct handling of low level USB service routi
+  35:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****  *  from the USB controller.
+  36:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****  *
+  37:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  38:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****  *        dispatch header located in LUFA/Drivers/USB/USB.h.
+  39:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h ****  */
+  40:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 
+  41:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** #ifndef __USBINTERRUPT_AVR8_H__
+  42:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** #define __USBINTERRUPT_AVR8_H__
+  43:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 
+  44:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 	/* Includes: */
+  45:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 		#include "../../../../Common/Common.h"
+  46:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 
+  47:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 	/* Enable C linkage for C++ Compilers: */
+  48:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 		#if defined(__cplusplus)
+  49:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 			extern "C" {
+  50:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 		#endif
+  51:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 
+  52:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 	/* Preprocessor Checks: */
+  53:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 		#if !defined(__INCLUDE_FROM_USB_DRIVER)
+  54:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
+  55:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 		#endif
+  56:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 
+  57:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 	/* Private Interface - For use in library only: */
+  58:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 	#if !defined(__DOXYGEN__)
+  59:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 		/* Enums: */
+  60:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 			enum USB_Interrupts_t
+  61:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 			{
+  62:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				#if (defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR) || def
+  63:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_VBUSTI  = 0,
+  64:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				#endif
+  65:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				#if (defined(USB_CAN_BE_BOTH) || defined(__DOXYGEN__))
+  66:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_IDTI    = 1,
+  67:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				#endif
+  68:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				#if (defined(USB_CAN_BE_DEVICE) || defined(__DOXYGEN__))
+  69:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_WAKEUPI = 2,
+  70:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_SUSPI   = 3,
+  71:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_EORSTI  = 4,
+  72:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_SOFI    = 5,
+  73:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_RXSTPI  = 6,
+  74:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				#endif
+  75:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				#if (defined(USB_CAN_BE_HOST) || defined(__DOXYGEN__))
+  76:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_HSOFI   = 7,
+  77:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_DCONNI  = 8,
+  78:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_DDISCI  = 9,
+  79:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_RSTI    = 10,
+  80:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_BCERRI  = 11,
+  81:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_VBERRI  = 12,
+  82:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				USB_INT_SRPI    = 13,
+  83:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				#endif
+  84:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 			};
+  85:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 
+  86:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 		/* Inline Functions: */
+  87:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 			static inline void USB_INT_Enable(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
+  88:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 			static inline void USB_INT_Enable(const uint8_t Interrupt)
+  89:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 			{
+  90:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				switch (Interrupt)
+  91:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 				{
+  92:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 					#if (defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR))
+  93:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 					case USB_INT_VBUSTI:
+  94:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 						USBCON |= (1 << VBUSTE);
+  95:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 						break;
+  96:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 					#endif
+  97:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 					#if defined(USB_CAN_BE_BOTH)
+  98:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 					case USB_INT_IDTI:
+  99:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 						USBCON |= (1 << IDTE);
+ 100:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 						break;
+ 101:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 					#endif
+ 102:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 					#if defined(USB_CAN_BE_DEVICE)
+ 103:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 					case USB_INT_WAKEUPI:
+ 104:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 						UDIEN  |= (1 << WAKEUPE);
+ 105:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 						break;
+ 106:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 					case USB_INT_SUSPI:
+ 107:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 						UDIEN  |= (1 << SUSPE);
+ 108:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 						break;
+ 109:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 					case USB_INT_EORSTI:
+ 110:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 						UDIEN  |= (1 << EORSTE);
+ 111:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 						break;
+ 112:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 					case USB_INT_SOFI:
+ 113:../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h **** 						UDIEN  |= (1 << SOFE);
+ 101               		.loc 3 113 0
+ 102 0018 8091 E200 		lds r24,226
+ 103 001c 8460      		ori r24,lo8(4)
+ 104 001e 8093 E200 		sts 226,r24
+ 105               	.LVL7:
+ 106 0022 0895      		ret
+ 107               	.LBE12:
+ 108               	.LBE11:
+ 109               	.LBE10:
+ 110               		.cfi_endproc
+ 111               	.LFE213:
+ 113               		.section	.text.EVENT_USB_Device_ControlRequest,"ax",@progbits
+ 114               	.global	EVENT_USB_Device_ControlRequest
+ 116               	EVENT_USB_Device_ControlRequest:
+ 117               	.LFB214:
+  81:DeviceFunctions.c **** 
+  82:DeviceFunctions.c **** 	USB_Device_EnableSOFEvents();
+  83:DeviceFunctions.c **** }
+  84:DeviceFunctions.c **** 
+  85:DeviceFunctions.c **** /** Event handler for the library USB Control Request reception event. */
+  86:DeviceFunctions.c **** void EVENT_USB_Device_ControlRequest(void)
+  87:DeviceFunctions.c **** {
+ 118               		.loc 2 87 0
+ 119               		.cfi_startproc
+ 120               	/* prologue: function */
+ 121               	/* frame size = 0 */
+ 122               	/* stack size = 0 */
+ 123               	.L__stack_usage = 0
+  88:DeviceFunctions.c **** 	HID_Device_ProcessControlRequest(&Mouse_HID_Device_Interface);
+ 124               		.loc 2 88 0
+ 125 0000 80E0      		ldi r24,lo8(Mouse_HID_Device_Interface)
+ 126 0002 90E0      		ldi r25,hi8(Mouse_HID_Device_Interface)
+ 127 0004 0C94 0000 		jmp HID_Device_ProcessControlRequest
+ 128               	.LVL8:
+ 129               		.cfi_endproc
+ 130               	.LFE214:
+ 132               		.section	.text.EVENT_USB_Device_StartOfFrame,"ax",@progbits
+ 133               	.global	EVENT_USB_Device_StartOfFrame
+ 135               	EVENT_USB_Device_StartOfFrame:
+ 136               	.LFB215:
+  89:DeviceFunctions.c **** }
+  90:DeviceFunctions.c **** 
+  91:DeviceFunctions.c **** /** Event handler for the USB device Start Of Frame event. */
+  92:DeviceFunctions.c **** void EVENT_USB_Device_StartOfFrame(void)
+  93:DeviceFunctions.c **** {
+ 137               		.loc 2 93 0
+ 138               		.cfi_startproc
+ 139               	/* prologue: function */
+ 140               	/* frame size = 0 */
+ 141               	/* stack size = 0 */
+ 142               	.L__stack_usage = 0
+ 143               	.LVL9:
+ 144               	.LBB13:
+ 145               	.LBB14:
+ 146               		.file 4 "../../../../LUFA/Drivers/USB/Class/Device/HID.h"
+   1:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** /*
+   2:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+   5:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** */
+   8:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+   9:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** /*
+  10:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+  12:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+  21:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****   this software.
+  29:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** */
+  30:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+  31:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** /** \file
+  32:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *  \brief Device mode driver for the library USB HID Class driver.
+  33:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *
+  34:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *  Device mode driver for the library USB HID Class driver.
+  35:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *
+  36:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  37:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *        dispatch header located in LUFA/Drivers/USB.h.
+  38:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  */
+  39:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+  40:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** /** \ingroup Group_USBClassHID
+  41:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *  \defgroup Group_USBClassHIDDevice HID Class Device Mode Driver
+  42:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *
+  43:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *  \section Sec_Dependencies Module Source Dependencies
+  44:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *  The following files must be built with any user project that uses this module:
+  45:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *    - LUFA/Drivers/USB/Class/Device/HID.c <i>(Makefile source module name: LUFA_SRC_USBCLASS)</i>
+  46:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *
+  47:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *  \section Sec_ModDescription Module Description
+  48:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *  Device Mode USB Class driver framework interface, for the HID USB Class driver.
+  49:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *
+  50:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  *  @{
+  51:../../../../LUFA/Drivers/USB/Class/Device/HID.h ****  */
+  52:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+  53:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** #ifndef _HID_CLASS_DEVICE_H_
+  54:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** #define _HID_CLASS_DEVICE_H_
+  55:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+  56:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 	/* Includes: */
+  57:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 		#include "../../USB.h"
+  58:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 		#include "../Common/HID.h"
+  59:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+  60:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 	/* Enable C linkage for C++ Compilers: */
+  61:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 		#if defined(__cplusplus)
+  62:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			extern "C" {
+  63:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 		#endif
+  64:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+  65:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 	/* Preprocessor Checks: */
+  66:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 		#if !defined(__INCLUDE_FROM_HID_DRIVER)
+  67:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			#error Do not include this file directly. Include LUFA/Drivers/USB.h instead.
+  68:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 		#endif
+  69:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+  70:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 	/* Public Interface - May be used in end-application: */
+  71:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 		/* Type Defines: */
+  72:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			/** \brief HID Class Device Mode Configuration and State Structure.
+  73:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *
+  74:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  Class state structure. An instance of this structure should be made for each HID interface
+  75:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  within the user application, and passed to each of the HID class driver functions as the
+  76:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \c HIDInterfaceInfo parameter. This stores each HID interface's configuration and state info
+  77:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *
+  78:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \note Due to technical limitations, the HID device class driver does not utilize a separate 
+  79:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *        endpoint for host->device communications. Instead, the host->device data (if any) is s
+  80:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *        the device via the control endpoint.
+  81:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 */
+  82:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			typedef struct
+  83:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			{
+  84:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 				const struct
+  85:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 				{
+  86:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					uint8_t  InterfaceNumber; /**< Interface number of the HID interface within the device. */
+  87:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+  88:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					uint8_t  ReportINEndpointNumber; /**< Endpoint number of the HID interface's IN report endpoin
+  89:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					uint16_t ReportINEndpointSize; /**< Size in bytes of the HID interface's IN report endpoint. *
+  90:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					bool     ReportINEndpointDoubleBank; /**< Indicates if the HID interface's IN report endpoint 
+  91:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+  92:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					void*    PrevReportINBuffer; /**< Pointer to a buffer where the previously created HID input r
+  93:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					                              *  stored by the driver, for comparison purposes to detect repor
+  94:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					                              *  must be sent immediately to the host. This should point to a 
+  95:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					                              *  to hold the largest HID input report sent from the HID interf
+  96:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 												  *  to \c NULL, it is up to the user to force transfers when needed in the
+  97:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 												  *  \ref CALLBACK_HID_Device_CreateHIDReport() callback function.
+  98:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 												  *
+  99:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 												  *  \note Due to the single buffer, the internal driver can only correctly compare
+ 100:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 												  *        subsequent reports with identical report IDs. In multiple report devices,
+ 101:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 												  *        this buffer should be set to \c NULL and the decision to send reports made
+ 102:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 												  *        by the user application instead.
+ 103:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					                              */
+ 104:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					uint8_t  PrevReportINBufferSize; /**< Size in bytes of the given input report buffer. This is 
+ 105:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					                                  *  second buffer of the same size within the driver so that 
+ 106:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					                                  *  can be compared. If the user app is to determine when rep
+ 107:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					                                  *  exclusively (i.e. \ref PrevReportINBuffer is \c NULL) thi
+ 108:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 													  *  set to the size of the largest report the device can issue to the host.
+ 109:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					                                  */
+ 110:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 				} Config; /**< Config data for the USB class interface within the device. All elements in this 
+ 111:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 				           *   <b>must</b> be set or the interface will fail to enumerate and operate correctly
+ 112:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 				           */
+ 113:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 				struct
+ 114:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 				{
+ 115:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					bool     UsingReportProtocol; /**< Indicates if the HID interface is set to Boot or Report pro
+ 116:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					uint16_t IdleCount; /**< Report idle period, in milliseconds, set by the host. */
+ 117:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 					uint16_t IdleMSRemaining; /**< Total number of milliseconds remaining before the idle period e
+ 118:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 											   *   should be decremented by the user application if non-zero each millisecond. */
+ 119:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 				} State; /**< State data for the USB class interface within the device. All elements in this se
+ 120:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 				          *   are reset to their defaults when the interface is enumerated.
+ 121:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 				          */
+ 122:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			} USB_ClassInfo_HID_Device_t;
+ 123:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+ 124:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 		/* Function Prototypes: */
+ 125:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			/** Configures the endpoints of a given HID interface, ready for use. This should be linked to t
+ 126:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \ref EVENT_USB_Device_ConfigurationChanged() event so that the endpoints are configured when
+ 127:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  containing the given HID interface is selected.
+ 128:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *
+ 129:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[in,out] HIDInterfaceInfo  Pointer to a structure containing a HID Class configuration
+ 130:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *
+ 131:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \return Boolean \c true if the endpoints were successfully configured, \c false otherwise.
+ 132:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 */
+ 133:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			bool HID_Device_ConfigureEndpoints(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo) ATTR_NON_
+ 134:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+ 135:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			/** Processes incoming control requests from the host, that are directed to the given HID class 
+ 136:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  linked to the library \ref EVENT_USB_Device_ControlRequest() event.
+ 137:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *
+ 138:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[in,out] HIDInterfaceInfo  Pointer to a structure containing a HID Class configuration
+ 139:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 */
+ 140:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			void HID_Device_ProcessControlRequest(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo) ATTR_N
+ 141:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+ 142:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			/** General management task for a given HID class interface, required for the correct operation 
+ 143:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  be called frequently in the main program loop, before the master USB management task \ref US
+ 144:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *
+ 145:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[in,out] HIDInterfaceInfo  Pointer to a structure containing a HID Class configuration
+ 146:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 */
+ 147:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			void HID_Device_USBTask(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo) ATTR_NON_NULL_PTR_AR
+ 148:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+ 149:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			/** HID class driver callback for the user creation of a HID IN report. This callback may fire i
+ 150:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  HID class control requests from the host, or by the normal HID endpoint polling procedure. I
+ 151:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  user is responsible for the creation of the next HID input report to be sent to the host.
+ 152:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *
+ 153:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[in,out] HIDInterfaceInfo  Pointer to a structure containing a HID Class configuration
+ 154:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[in,out] ReportID          If preset to a non-zero value, this is the report ID being 
+ 155:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *                                   this should be set to the report ID of the generated HID in
+ 156:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *                                   reports are not sent via the given HID interface, this para
+ 157:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[in]     ReportType        Type of HID report to generate, either \ref HID_REPORT_ITEM
+ 158:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[out]    ReportData        Pointer to a buffer where the generated HID report should b
+ 159:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[out]    ReportSize        Number of bytes in the generated input report, or zero if n
+ 160:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *
+ 161:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \return Boolean \c true to force the sending of the report even if it is identical to the pr
+ 162:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *          the idle period (useful for devices which report relative movement), \c false otherw
+ 163:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 */
+ 164:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
+ 165:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			                                         uint8_t* const ReportID,
+ 166:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			                                         const uint8_t ReportType,
+ 167:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			                                         void* ReportData,
+ 168:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			                                         uint16_t* const ReportSize) ATTR_NON_NULL_PTR_ARG(1)
+ 169:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			                                         ATTR_NON_NULL_PTR_ARG(2) ATTR_NON_NULL_PTR_ARG(4) ATTR_
+ 170:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+ 171:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			/** HID class driver callback for the user processing of a received HID OUT report. This callbac
+ 172:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  either HID class control requests from the host, or by the normal HID endpoint polling proce
+ 173:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  the user is responsible for the processing of the received HID output report from the host.
+ 174:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *
+ 175:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[in,out] HIDInterfaceInfo  Pointer to a structure containing a HID Class configuration
+ 176:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[in]     ReportID          Report ID of the received output report. If multiple report
+ 177:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *                                   interface, this parameter should be ignored.
+ 178:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[in]     ReportType        Type of received HID report, either \ref HID_REPORT_ITEM_Ou
+ 179:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[in]     ReportData        Pointer to a buffer where the received HID report is stored
+ 180:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[in]     ReportSize        Size in bytes of the received report from the host.
+ 181:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 */
+ 182:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
+ 183:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			                                          const uint8_t ReportID,
+ 184:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			                                          const uint8_t ReportType,
+ 185:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			                                          const void* ReportData,
+ 186:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			                                          const uint16_t ReportSize) ATTR_NON_NULL_PTR_ARG(1) AT
+ 187:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 
+ 188:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 		/* Inline Functions: */
+ 189:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			/** Indicates that a millisecond of idle time has elapsed on the given HID interface, and the in
+ 190:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  decremented. This should be called once per millisecond so that hardware key-repeats functio
+ 191:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  that this be called by the \ref EVENT_USB_Device_StartOfFrame() event, once SOF events have 
+ 192:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \ref USB_Device_EnableSOFEvents().
+ 193:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *
+ 194:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 *  \param[in,out] HIDInterfaceInfo  Pointer to a structure containing a HID Class configuration
+ 195:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			 */
+ 196:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			static inline void HID_Device_MillisecondElapsed(USB_ClassInfo_HID_Device_t* const HIDInterfaceI
+ 197:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			static inline void HID_Device_MillisecondElapsed(USB_ClassInfo_HID_Device_t* const HIDInterfaceI
+ 198:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 			{
+ 199:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 				if (HIDInterfaceInfo->State.IdleMSRemaining)
+ 147               		.loc 4 199 0
+ 148 0000 8091 0000 		lds r24,Mouse_HID_Device_Interface+11
+ 149 0004 9091 0000 		lds r25,Mouse_HID_Device_Interface+11+1
+ 150 0008 0097      		sbiw r24,0
+ 151 000a 01F0      		breq .L8
+ 200:../../../../LUFA/Drivers/USB/Class/Device/HID.h **** 				  HIDInterfaceInfo->State.IdleMSRemaining--;
+ 152               		.loc 4 200 0
+ 153 000c 0197      		sbiw r24,1
+ 154 000e 9093 0000 		sts Mouse_HID_Device_Interface+11+1,r25
+ 155 0012 8093 0000 		sts Mouse_HID_Device_Interface+11,r24
+ 156               	.LVL10:
+ 157               	.L8:
+ 158 0016 0895      		ret
+ 159               	.LBE14:
+ 160               	.LBE13:
+ 161               		.cfi_endproc
+ 162               	.LFE215:
+ 164               		.section	.text.CALLBACK_HID_Device_CreateHIDReport,"ax",@progbits
+ 165               	.global	CALLBACK_HID_Device_CreateHIDReport
+ 167               	CALLBACK_HID_Device_CreateHIDReport:
+ 168               	.LFB216:
+  94:DeviceFunctions.c **** 	HID_Device_MillisecondElapsed(&Mouse_HID_Device_Interface);
+  95:DeviceFunctions.c **** }
+  96:DeviceFunctions.c **** 
+  97:DeviceFunctions.c **** /** HID class driver callback function for the creation of HID reports to the host.
+  98:DeviceFunctions.c ****  *
+  99:DeviceFunctions.c ****  *  \param[in] HIDInterfaceInfo  Pointer to the HID class interface configuration structure being r
+ 100:DeviceFunctions.c ****  *  \param[in,out] ReportID  Report ID requested by the host if non-zero, otherwise callback should
+ 101:DeviceFunctions.c ****  *  \param[in] ReportType  Type of the report to create, either HID_REPORT_ITEM_In or HID_REPORT_IT
+ 102:DeviceFunctions.c ****  *  \param[out] ReportData  Pointer to a buffer where the created report should be stored
+ 103:DeviceFunctions.c ****  *  \param[out] ReportSize  Number of bytes written in the report (or zero if no report is to be se
+ 104:DeviceFunctions.c ****  *
+ 105:DeviceFunctions.c ****  *  \return Boolean true to force the sending of the report, false to let the library determine if 
+ 106:DeviceFunctions.c ****  */
+ 107:DeviceFunctions.c **** bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
+ 108:DeviceFunctions.c ****                                          uint8_t* const ReportID,
+ 109:DeviceFunctions.c ****                                          const uint8_t ReportType,
+ 110:DeviceFunctions.c ****                                          void* ReportData,
+ 111:DeviceFunctions.c ****                                          uint16_t* const ReportSize)
+ 112:DeviceFunctions.c **** {
+ 169               		.loc 2 112 0
+ 170               		.cfi_startproc
+ 171               	.LVL11:
+ 172 0000 0F93      		push r16
+ 173               	.LCFI0:
+ 174               		.cfi_def_cfa_offset 3
+ 175               		.cfi_offset 16, -2
+ 176 0002 1F93      		push r17
+ 177               	.LCFI1:
+ 178               		.cfi_def_cfa_offset 4
+ 179               		.cfi_offset 17, -3
+ 180               	/* prologue: function */
+ 181               	/* frame size = 0 */
+ 182               	/* stack size = 2 */
+ 183               	.L__stack_usage = 2
+ 184 0004 F901      		movw r30,r18
+ 185               	.LVL12:
+ 186               	.LBB19:
+ 187               	.LBB20:
+ 188               		.file 5 "../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h"
+   1:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** /*
+   2:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+   5:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** */
+   8:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+   9:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** /*
+  10:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  12:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  21:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****   this software.
+  29:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** */
+  30:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  31:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** /** \file
+  32:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****  *  \brief Board specific joystick driver header for the Atmel USBKEY.
+  33:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****  *  \copydetails Group_Joystick_USBKEY
+  34:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****  *
+  35:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  36:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****  *        dispatch header located in LUFA/Drivers/Board/Joystick.h.
+  37:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****  */
+  38:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  39:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** /** \ingroup Group_Joystick
+  40:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****  *  \defgroup Group_Joystick_USBKEY USBKEY
+  41:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****  *  \brief Board specific joystick driver header for the Atmel USBKEY.
+  42:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****  *
+  43:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****  *  Board specific joystick driver header for the Atmel USBKEY.
+  44:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****  *
+  45:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****  *  @{
+  46:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h ****  */
+  47:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  48:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** #ifndef __JOYSTICK_USBKEY_H__
+  49:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** #define __JOYSTICK_USBKEY_H__
+  50:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  51:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 	/* Includes: */
+  52:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 		#include "../../../../Common/Common.h"
+  53:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  54:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 	/* Enable C linkage for C++ Compilers: */
+  55:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 		#if defined(__cplusplus)
+  56:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			extern "C" {
+  57:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 		#endif
+  58:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  59:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 	/* Preprocessor Checks: */
+  60:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 		#if !defined(__INCLUDE_FROM_JOYSTICK_H)
+  61:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			#error Do not include this file directly. Include LUFA/Drivers/Board/Joystick.h instead.
+  62:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 		#endif
+  63:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  64:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 	/* Private Interface - For use in library only: */
+  65:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 	#if !defined(__DOXYGEN__)
+  66:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 		/* Macros: */
+  67:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			#define JOY_BMASK                 ((1 << 5) | (1 << 6) | (1 << 7))
+  68:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			#define JOY_EMASK                 ((1 << 4) | (1 << 5))
+  69:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			
+  70:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			#define JOY_PORTE_MASK_SHIFT      1
+  71:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 	#endif
+  72:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  73:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 	/* Public Interface - May be used in end-application: */
+  74:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 		/* Macros: */
+  75:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			/** Mask for the joystick being pushed in the left direction. */
+  76:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			#define JOY_LEFT                  (1 << 6)
+  77:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  78:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			/** Mask for the joystick being pushed in the right direction. */
+  79:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			#define JOY_RIGHT                ((1 << 4) >> JOY_PORTE_MASK_SHIFT)
+  80:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  81:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			/** Mask for the joystick being pushed in the upward direction. */
+  82:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			#define JOY_UP                    (1 << 7)
+  83:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  84:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			/** Mask for the joystick being pushed in the downward direction. */
+  85:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			#define JOY_DOWN                 ((1 << 5) >> JOY_PORTE_MASK_SHIFT)
+  86:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  87:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			/** Mask for the joystick being pushed inward. */
+  88:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			#define JOY_PRESS                 (1 << 5)
+  89:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  90:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 		/* Inline Functions: */
+  91:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 		#if !defined(__DOXYGEN__)
+  92:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			static inline void Joystick_Init(void)
+  93:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			{
+  94:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 				DDRB  &= ~(JOY_BMASK);
+  95:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 				DDRE  &= ~(JOY_EMASK);
+  96:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+  97:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 				PORTB |= JOY_BMASK;
+  98:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 				PORTE |= JOY_EMASK;
+  99:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			}
+ 100:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 
+ 101:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			static inline uint8_t Joystick_GetStatus(void) ATTR_WARN_UNUSED_RESULT;
+ 102:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			static inline uint8_t Joystick_GetStatus(void)
+ 103:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 			{
+ 104:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Joystick.h **** 				return (((uint8_t)~PINB & JOY_BMASK) | (((uint8_t)~PINE & JOY_EMASK) >> JOY_PORTE_MASK_SHIFT));
+ 189               		.loc 5 104 0
+ 190 0006 83B1      		in r24,0x3
+ 191               	.LVL13:
+ 192 0008 9CB1      		in r25,0xc
+ 193 000a 9095      		com r25
+ 194 000c 9073      		andi r25,lo8(48)
+ 195 000e 9695      		lsr r25
+ 196 0010 8095      		com r24
+ 197 0012 807E      		andi r24,lo8(-32)
+ 198 0014 892B      		or r24,r25
+ 199               	.LBE20:
+ 200               	.LBE19:
+ 201               	.LBB21:
+ 202               	.LBB22:
+ 203               		.file 6 "../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h"
+   1:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** /*
+   2:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****              LUFA Library
+   3:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****      Copyright (C) Dean Camera, 2011.
+   4:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 
+   5:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****            www.lufa-lib.org
+   7:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** */
+   8:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 
+   9:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** /*
+  10:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 
+  12:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   Permission to use, copy, modify, distribute, and sell this
+  13:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   software and its documentation for any purpose is hereby granted
+  14:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   without fee, provided that the above copyright notice appear in
+  15:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   all copies and that both that the copyright notice and this
+  16:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   permission notice and warranty disclaimer appear in supporting
+  17:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   documentation, and that the name of the author not be used in
+  18:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   advertising or publicity pertaining to distribution of the
+  19:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   software without specific, written prior permission.
+  20:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 
+  21:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   The author disclaim all warranties with regard to this
+  22:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   software, including all implied warranties of merchantability
+  23:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   special, indirect or consequential damages or any damages
+  25:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   in an action of contract, negligence or other tortious action,
+  27:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   arising out of or in connection with the use or performance of
+  28:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****   this software.
+  29:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** */
+  30:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 
+  31:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** /** \file
+  32:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****  *  \brief Board specific Buttons driver header for the Atmel USBKEY.
+  33:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****  *  \copydetails Group_Buttons_USBKEY
+  34:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****  *
+  35:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****  *  \note This file should not be included directly. It is automatically included as needed by the 
+  36:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****  *        dispatch header located in LUFA/Drivers/Board/Buttons.h.
+  37:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****  */
+  38:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 
+  39:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** /** \ingroup Group_Buttons
+  40:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****  *  \defgroup Group_Buttons_USBKEY USBKEY
+  41:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****  *  \brief Board specific Buttons driver header for the Atmel USBKEY.
+  42:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****  *
+  43:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****  *  Board specific Buttons driver header for the Atmel USBKEY.
+  44:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****  *
+  45:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****  *  @{
+  46:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h ****  */
+  47:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 
+  48:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** #ifndef __BUTTONS_USBKEY_H__
+  49:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** #define __BUTTONS_USBKEY_H__
+  50:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 
+  51:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 	/* Includes: */
+  52:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 		#include "../../../../Common/Common.h"
+  53:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 
+  54:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 	/* Enable C linkage for C++ Compilers: */
+  55:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 		#if defined(__cplusplus)
+  56:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 			extern "C" {
+  57:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 		#endif
+  58:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 
+  59:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 	/* Preprocessor Checks: */
+  60:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 		#if !defined(__INCLUDE_FROM_BUTTONS_H)
+  61:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 			#error Do not include this file directly. Include LUFA/Drivers/Board/Buttons.h instead.
+  62:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 		#endif
+  63:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 
+  64:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 	/* Public Interface - May be used in end-application: */
+  65:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 		/* Macros: */
+  66:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 			/** Button mask for the first button on the board. */
+  67:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 			#define BUTTONS_BUTTON1      (1 << 2)
+  68:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 
+  69:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 		/* Inline Functions: */
+  70:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 		#if !defined(__DOXYGEN__)
+  71:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 			static inline void Buttons_Init(void)
+  72:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 			{
+  73:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 				DDRE  &= ~BUTTONS_BUTTON1;
+  74:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 				PORTE |=  BUTTONS_BUTTON1;
+  75:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 			}
+  76:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 
+  77:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 			static inline uint8_t Buttons_GetStatus(void) ATTR_WARN_UNUSED_RESULT;
+  78:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 			static inline uint8_t Buttons_GetStatus(void)
+  79:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 			{
+  80:../../../../LUFA/Drivers/Board/AVR8/USBKEY/Buttons.h **** 				return ((PINE & BUTTONS_BUTTON1) ^ BUTTONS_BUTTON1);
+ 204               		.loc 6 80 0
+ 205 0016 9CB1      		in r25,0xc
+ 206 0018 9095      		com r25
+ 207               	.LBE22:
+ 208               	.LBE21:
+ 113:DeviceFunctions.c **** 	USB_MouseReport_Data_t* MouseReport = (USB_MouseReport_Data_t*)ReportData;
+ 114:DeviceFunctions.c **** 
+ 115:DeviceFunctions.c **** 	uint8_t JoyStatus_LCL    = Joystick_GetStatus();
+ 116:DeviceFunctions.c **** 	uint8_t ButtonStatus_LCL = Buttons_GetStatus();
+ 117:DeviceFunctions.c **** 
+ 118:DeviceFunctions.c **** 	if (JoyStatus_LCL & JOY_UP)
+ 209               		.loc 2 118 0
+ 210 001a 87FF      		sbrs r24,7
+ 211 001c 00C0      		rjmp .L14
+ 119:DeviceFunctions.c **** 	  MouseReport->Y = -1;
+ 212               		.loc 2 119 0
+ 213 001e 2FEF      		ldi r18,lo8(-1)
+ 214               	.LVL14:
+ 215 0020 00C0      		rjmp .L32
+ 216               	.LVL15:
+ 217               	.L14:
+ 120:DeviceFunctions.c **** 	else if (JoyStatus_LCL & JOY_DOWN)
+ 218               		.loc 2 120 0
+ 219 0022 84FF      		sbrs r24,4
+ 220 0024 00C0      		rjmp .L15
+ 121:DeviceFunctions.c **** 	  MouseReport->Y =  1;
+ 221               		.loc 2 121 0
+ 222 0026 21E0      		ldi r18,lo8(1)
+ 223               	.LVL16:
+ 224               	.L32:
+ 225 0028 2283      		std Z+2,r18
+ 226               	.L15:
+ 122:DeviceFunctions.c **** 
+ 123:DeviceFunctions.c **** 	if (JoyStatus_LCL & JOY_RIGHT)
+ 227               		.loc 2 123 0
+ 228 002a 83FF      		sbrs r24,3
+ 229 002c 00C0      		rjmp .L16
+ 124:DeviceFunctions.c **** 	  MouseReport->X =  1;
+ 230               		.loc 2 124 0
+ 231 002e 21E0      		ldi r18,lo8(1)
+ 232 0030 00C0      		rjmp .L33
+ 233               	.L16:
+ 125:DeviceFunctions.c **** 	else if (JoyStatus_LCL & JOY_LEFT)
+ 234               		.loc 2 125 0
+ 235 0032 86FF      		sbrs r24,6
+ 236 0034 00C0      		rjmp .L17
+ 126:DeviceFunctions.c **** 	  MouseReport->X = -1;
+ 237               		.loc 2 126 0
+ 238 0036 2FEF      		ldi r18,lo8(-1)
+ 239               	.L33:
+ 240 0038 2183      		std Z+1,r18
+ 241               	.L17:
+ 127:DeviceFunctions.c **** 
+ 128:DeviceFunctions.c **** 	if (JoyStatus_LCL & JOY_PRESS)
+ 242               		.loc 2 128 0
+ 243 003a 85FF      		sbrs r24,5
+ 244 003c 00C0      		rjmp .L18
+ 129:DeviceFunctions.c **** 	  MouseReport->Button |= (1 << 0);
+ 245               		.loc 2 129 0
+ 246 003e 8081      		ld r24,Z
+ 247 0040 8160      		ori r24,lo8(1)
+ 248 0042 8083      		st Z,r24
+ 249               	.L18:
+ 130:DeviceFunctions.c **** 
+ 131:DeviceFunctions.c **** 	if (ButtonStatus_LCL & BUTTONS_BUTTON1)
+ 250               		.loc 2 131 0
+ 251 0044 92FF      		sbrs r25,2
+ 252 0046 00C0      		rjmp .L19
+ 132:DeviceFunctions.c **** 	  MouseReport->Button |= (1 << 1);
+ 253               		.loc 2 132 0
+ 254 0048 8081      		ld r24,Z
+ 255 004a 8260      		ori r24,lo8(2)
+ 256 004c 8083      		st Z,r24
+ 257               	.L19:
+ 133:DeviceFunctions.c **** 
+ 134:DeviceFunctions.c **** 	*ReportSize = sizeof(USB_MouseReport_Data_t);
+ 258               		.loc 2 134 0
+ 259 004e 83E0      		ldi r24,lo8(3)
+ 260 0050 90E0      		ldi r25,0
+ 261 0052 F801      		movw r30,r16
+ 262               	.LVL17:
+ 263 0054 9183      		std Z+1,r25
+ 264 0056 8083      		st Z,r24
+ 135:DeviceFunctions.c **** 	return true;
+ 136:DeviceFunctions.c **** }
+ 265               		.loc 2 136 0
+ 266 0058 81E0      		ldi r24,lo8(1)
+ 267               	/* epilogue start */
+ 268 005a 1F91      		pop r17
+ 269 005c 0F91      		pop r16
+ 270               	.LVL18:
+ 271 005e 0895      		ret
+ 272               		.cfi_endproc
+ 273               	.LFE216:
+ 275               		.section	.text.CALLBACK_HID_Device_ProcessHIDReport,"ax",@progbits
+ 276               	.global	CALLBACK_HID_Device_ProcessHIDReport
+ 278               	CALLBACK_HID_Device_ProcessHIDReport:
+ 279               	.LFB217:
+ 137:DeviceFunctions.c **** 
+ 138:DeviceFunctions.c **** /** HID class driver callback function for the processing of HID reports from the host.
+ 139:DeviceFunctions.c ****  *
+ 140:DeviceFunctions.c ****  *  \param[in] HIDInterfaceInfo  Pointer to the HID class interface configuration structure being r
+ 141:DeviceFunctions.c ****  *  \param[in] ReportID    Report ID of the received report from the host
+ 142:DeviceFunctions.c ****  *  \param[in] ReportType  The type of report that the host has sent, either HID_REPORT_ITEM_Out or
+ 143:DeviceFunctions.c ****  *  \param[in] ReportData  Pointer to a buffer where the received report has been stored
+ 144:DeviceFunctions.c ****  *  \param[in] ReportSize  Size in bytes of the received HID report
+ 145:DeviceFunctions.c ****  */
+ 146:DeviceFunctions.c **** void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
+ 147:DeviceFunctions.c ****                                           const uint8_t ReportID,
+ 148:DeviceFunctions.c ****                                           const uint8_t ReportType,
+ 149:DeviceFunctions.c ****                                           const void* ReportData,
+ 150:DeviceFunctions.c ****                                           const uint16_t ReportSize)
+ 151:DeviceFunctions.c **** {
+ 280               		.loc 2 151 0
+ 281               		.cfi_startproc
+ 282               	.LVL19:
+ 283               	/* prologue: function */
+ 284               	/* frame size = 0 */
+ 285               	/* stack size = 0 */
+ 286               	.L__stack_usage = 0
+ 287 0000 0895      		ret
+ 288               		.cfi_endproc
+ 289               	.LFE217:
+ 291               	.global	Mouse_HID_Device_Interface
+ 292               		.data
+ 295               	Mouse_HID_Device_Interface:
+ 296 0000 00        		.byte	0
+ 297 0001 01        		.byte	1
+ 298 0002 0800      		.word	8
+ 299 0004 00        		.byte	0
+ 300 0005 0000      		.word	PrevMouseHIDReportBuffer
+ 301 0007 03        		.byte	3
+ 302 0008 0000 0000 		.zero	5
+ 302      00
+ 303               		.local	PrevMouseHIDReportBuffer
+ 304               		.comm	PrevMouseHIDReportBuffer,3,1
+ 305               		.text
+ 306               	.Letext0:
+ 307               		.file 7 "/usr/lib/avr/include/stdint.h"
+ 308               		.file 8 "/usr/lib/avr/include/stdio.h"
+ 309               		.file 9 "../../../../LUFA/Drivers/USB/Class/Device/../Common/HID.h"
+ 310               		.file 10 "../../../../LUFA/Drivers/USB/Core/AVR8/../AVR8/Device_AVR8.h"
+ 311               		.file 11 "../../../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+ 312               		.file 12 "../../../../LUFA/Drivers/USB/Core/USBTask.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 DeviceFunctions.c
+     /tmp/cc6erc5Y.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc6erc5Y.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc6erc5Y.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc6erc5Y.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc6erc5Y.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc6erc5Y.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc6erc5Y.s:13     .text.LEDs_SetAllLEDs:0000000000000000 LEDs_SetAllLEDs
+     /tmp/cc6erc5Y.s:36     .text.EVENT_USB_Device_Connect:0000000000000000 EVENT_USB_Device_Connect
+     /tmp/cc6erc5Y.s:55     .text.EVENT_USB_Device_Disconnect:0000000000000000 EVENT_USB_Device_Disconnect
+     /tmp/cc6erc5Y.s:73     .text.EVENT_USB_Device_ConfigurationChanged:0000000000000000 EVENT_USB_Device_ConfigurationChanged
+     /tmp/cc6erc5Y.s:295    .data:0000000000000000 Mouse_HID_Device_Interface
+     /tmp/cc6erc5Y.s:116    .text.EVENT_USB_Device_ControlRequest:0000000000000000 EVENT_USB_Device_ControlRequest
+     /tmp/cc6erc5Y.s:135    .text.EVENT_USB_Device_StartOfFrame:0000000000000000 EVENT_USB_Device_StartOfFrame
+     /tmp/cc6erc5Y.s:167    .text.CALLBACK_HID_Device_CreateHIDReport:0000000000000000 CALLBACK_HID_Device_CreateHIDReport
+     /tmp/cc6erc5Y.s:278    .text.CALLBACK_HID_Device_ProcessHIDReport:0000000000000000 CALLBACK_HID_Device_ProcessHIDReport
+                             .bss:0000000000000000 PrevMouseHIDReportBuffer
+
+UNDEFINED SYMBOLS
+HID_Device_ConfigureEndpoints
+HID_Device_ProcessControlRequest
+__do_copy_data
+__do_clear_bss

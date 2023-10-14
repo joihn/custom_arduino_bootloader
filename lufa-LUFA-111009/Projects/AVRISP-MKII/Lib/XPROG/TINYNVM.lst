@@ -1,0 +1,928 @@
+   1               		.file	"TINYNVM.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               		.section	.text.TINYNVM_SendWriteNVMRegister,"ax",@progbits
+  13               	TINYNVM_SendWriteNVMRegister:
+  14               	.LFB119:
+  15               		.file 1 "../AVRISP-MKII/Lib/XPROG/TINYNVM.c"
+   1:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** /*
+   2:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****              LUFA Library
+   3:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****      Copyright (C) Dean Camera, 2011.
+   4:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+   5:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   dean [at] fourwalledcubicle [dot] com
+   6:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****            www.lufa-lib.org
+   7:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** */
+   8:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+   9:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** /*
+  10:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   Copyright 2011  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  12:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   Permission to use, copy, modify, distribute, and sell this
+  13:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   software and its documentation for any purpose is hereby granted
+  14:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   without fee, provided that the above copyright notice appear in
+  15:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   all copies and that both that the copyright notice and this
+  16:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   permission notice and warranty disclaimer appear in supporting
+  17:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   documentation, and that the name of the author not be used in
+  18:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   advertising or publicity pertaining to distribution of the
+  19:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   software without specific, written prior permission.
+  20:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  21:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   The author disclaim all warranties with regard to this
+  22:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   software, including all implied warranties of merchantability
+  23:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   and fitness.  In no event shall the author be liable for any
+  24:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   special, indirect or consequential damages or any damages
+  25:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   in an action of contract, negligence or other tortious action,
+  27:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   arising out of or in connection with the use or performance of
+  28:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****   this software.
+  29:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** */
+  30:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  31:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** /** \file
+  32:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *
+  33:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  Target-related functions for the TINY target's NVM module.
+  34:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  */
+  35:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  36:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** #define  INCLUDE_FROM_TINYNVM_C
+  37:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** #include "TINYNVM.h"
+  38:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  39:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** #if defined(ENABLE_XPROG_PROTOCOL) || defined(__DOXYGEN__)
+  40:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  41:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** /** Sends the given pointer address to the target's TPI pointer register */
+  42:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** static void TINYNVM_SendPointerAddress(const uint16_t AbsoluteAddress)
+  43:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** {
+  44:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Send the given 16-bit address to the target, LSB first */
+  45:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(TPI_CMD_SSTPR | 0);
+  46:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(AbsoluteAddress & 0xFF);
+  47:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(TPI_CMD_SSTPR | 1);
+  48:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(AbsoluteAddress >> 8);
+  49:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+  50:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  51:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** /** Sends a SIN command to the target with the specified I/O address, ready for the data byte to be
+  52:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *
+  53:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \param[in] Address  6-bit I/O address to write to in the target's I/O memory space
+  54:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  */
+  55:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** static void TINYNVM_SendReadNVMRegister(const uint8_t Address)
+  56:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** {
+  57:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* The TPI command for reading from the I/O space uses strange addressing, where the I/O address's
+  58:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	 * two bits of the 6-bit address are shifted left once */
+  59:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(TPI_CMD_SIN | ((Address & 0x30) << 1) | (Address & 0x0F));
+  60:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+  61:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  62:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** /** Sends a SOUT command to the target with the specified I/O address, ready for the data byte to b
+  63:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *
+  64:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \param[in] Address  6-bit I/O address to read from in the target's I/O memory space
+  65:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  */
+  66:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** static void TINYNVM_SendWriteNVMRegister(const uint8_t Address)
+  67:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** {
+  16               		.loc 1 67 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+  68:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* The TPI command for reading from the I/O space uses strange addressing, where the I/O address's
+  69:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	 * two bits of the 6-bit address are shifted left once */
+  70:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(TPI_CMD_SOUT | ((Address & 0x30) << 1) | (Address & 0x0F));
+  23               		.loc 1 70 0
+  24 0000 982F      		mov r25,r24
+  25 0002 9073      		andi r25,lo8(48)
+  26 0004 990F      		lsl r25
+  27 0006 8F70      		andi r24,lo8(15)
+  28               	.LVL1:
+  29 0008 8069      		ori r24,lo8(-112)
+  30 000a 892B      		or r24,r25
+  31 000c 0C94 0000 		jmp XPROGTarget_SendByte
+  32               	.LVL2:
+  33               		.cfi_endproc
+  34               	.LFE119:
+  36               		.section	.text.TINYNVM_SendPointerAddress,"ax",@progbits
+  38               	TINYNVM_SendPointerAddress:
+  39               	.LFB117:
+  43:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Send the given 16-bit address to the target, LSB first */
+  40               		.loc 1 43 0
+  41               		.cfi_startproc
+  42               	.LVL3:
+  43 0000 CF93      		push r28
+  44               	.LCFI0:
+  45               		.cfi_def_cfa_offset 3
+  46               		.cfi_offset 28, -2
+  47 0002 DF93      		push r29
+  48               	.LCFI1:
+  49               		.cfi_def_cfa_offset 4
+  50               		.cfi_offset 29, -3
+  51               	/* prologue: function */
+  52               	/* frame size = 0 */
+  53               	/* stack size = 2 */
+  54               	.L__stack_usage = 2
+  55 0004 EC01      		movw r28,r24
+  45:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(AbsoluteAddress & 0xFF);
+  56               		.loc 1 45 0
+  57 0006 88E6      		ldi r24,lo8(104)
+  58               	.LVL4:
+  59 0008 0E94 0000 		call XPROGTarget_SendByte
+  60               	.LVL5:
+  46:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(TPI_CMD_SSTPR | 1);
+  61               		.loc 1 46 0
+  62 000c 8C2F      		mov r24,r28
+  63 000e 0E94 0000 		call XPROGTarget_SendByte
+  64               	.LVL6:
+  47:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(AbsoluteAddress >> 8);
+  65               		.loc 1 47 0
+  66 0012 89E6      		ldi r24,lo8(105)
+  67 0014 0E94 0000 		call XPROGTarget_SendByte
+  68               	.LVL7:
+  48:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+  69               		.loc 1 48 0
+  70 0018 8D2F      		mov r24,r29
+  71               	/* epilogue start */
+  49:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  72               		.loc 1 49 0
+  73 001a DF91      		pop r29
+  74 001c CF91      		pop r28
+  75               	.LVL8:
+  48:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+  76               		.loc 1 48 0
+  77 001e 0C94 0000 		jmp XPROGTarget_SendByte
+  78               	.LVL9:
+  79               		.cfi_endproc
+  80               	.LFE117:
+  82               		.section	.text.TINYNVM_WaitWhileNVMBusBusy,"ax",@progbits
+  83               	.global	TINYNVM_WaitWhileNVMBusBusy
+  85               	TINYNVM_WaitWhileNVMBusBusy:
+  86               	.LFB120:
+  71:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+  72:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  73:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** /** Busy-waits while the NVM controller is busy performing a NVM operation, such as a FLASH page re
+  74:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *
+  75:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \return Boolean true if the NVM controller became ready within the timeout period, false otherw
+  76:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  */
+  77:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** bool TINYNVM_WaitWhileNVMBusBusy(void)
+  78:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** {
+  87               		.loc 1 78 0
+  88               		.cfi_startproc
+  89               	/* prologue: function */
+  90               	/* frame size = 0 */
+  91               	/* stack size = 0 */
+  92               	.L__stack_usage = 0
+  93               	.L5:
+  94               	.LBB2:
+  79:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Poll the STATUS register to check to see if NVM access has been enabled */
+  80:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	for (;;)
+  81:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	{
+  82:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		/* Send the SLDCS command to read the TPI STATUS register to see the NVM bus is active */
+  83:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		XPROGTarget_SendByte(TPI_CMD_SLDCS | TPI_STATUS_REG);
+  95               		.loc 1 83 0
+  96 0000 80E8      		ldi r24,lo8(-128)
+  97 0002 0E94 0000 		call XPROGTarget_SendByte
+  98               	.LVL10:
+  84:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  85:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		uint8_t StatusRegister = XPROGTarget_ReceiveByte();
+  99               		.loc 1 85 0
+ 100 0006 0E94 0000 		call XPROGTarget_ReceiveByte
+ 101               	.LVL11:
+  86:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  87:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		/* We might have timed out waiting for the status register read response, check here */
+  88:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		if (TimeoutExpired)
+ 102               		.loc 1 88 0
+ 103 000a 9AB5      		in r25,0x2a
+ 104 000c 9111      		cpse r25,__zero_reg__
+ 105 000e 00C0      		rjmp .L6
+  89:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		  return false;
+  90:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  91:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		/* Check the status register read response to see if the NVM bus is enabled */
+  92:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		if (StatusRegister & TPI_STATUS_NVM)
+ 106               		.loc 1 92 0
+ 107 0010 81FF      		sbrs r24,1
+ 108 0012 00C0      		rjmp .L5
+  93:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		  return true;
+ 109               		.loc 1 93 0
+ 110 0014 81E0      		ldi r24,lo8(1)
+ 111               	.LVL12:
+ 112 0016 0895      		ret
+ 113               	.LVL13:
+ 114               	.L6:
+  89:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		  return false;
+ 115               		.loc 1 89 0
+ 116 0018 80E0      		ldi r24,0
+ 117               	.LVL14:
+ 118               	.LBE2:
+  94:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	}
+  95:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+ 119               		.loc 1 95 0
+ 120 001a 0895      		ret
+ 121               		.cfi_endproc
+ 122               	.LFE120:
+ 124               		.section	.text.TINYNVM_WaitWhileNVMControllerBusy,"ax",@progbits
+ 125               	.global	TINYNVM_WaitWhileNVMControllerBusy
+ 127               	TINYNVM_WaitWhileNVMControllerBusy:
+ 128               	.LFB121:
+  96:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+  97:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** /** Waits while the target's NVM controller is busy performing an operation, exiting if the
+  98:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  timeout period expires.
+  99:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *
+ 100:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \return Boolean true if the NVM controller became ready within the timeout period, false otherw
+ 101:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  */
+ 102:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** bool TINYNVM_WaitWhileNVMControllerBusy(void)
+ 103:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** {
+ 129               		.loc 1 103 0
+ 130               		.cfi_startproc
+ 131               	/* prologue: function */
+ 132               	/* frame size = 0 */
+ 133               	/* stack size = 0 */
+ 134               	.L__stack_usage = 0
+ 135               	.L12:
+ 136               	.LBB6:
+ 104:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Poll the STATUS register to check to see if NVM access has been enabled */
+ 105:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	for (;;)
+ 106:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	{
+ 107:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		/* Send the SIN command to read the TPI STATUS register to see the NVM bus is busy */
+ 108:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		TINYNVM_SendReadNVMRegister(XPROG_Param_NVMCSRRegAddr);
+ 137               		.loc 1 108 0
+ 138 0000 9091 0000 		lds r25,XPROG_Param_NVMCSRRegAddr
+ 139               	.LVL15:
+ 140               	.LBB7:
+ 141               	.LBB8:
+  59:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+ 142               		.loc 1 59 0
+ 143 0004 892F      		mov r24,r25
+ 144 0006 8073      		andi r24,lo8(48)
+ 145 0008 880F      		lsl r24
+ 146 000a 9F70      		andi r25,lo8(15)
+ 147               	.LVL16:
+ 148 000c 9061      		ori r25,lo8(16)
+ 149 000e 892B      		or r24,r25
+ 150 0010 0E94 0000 		call XPROGTarget_SendByte
+ 151               	.LVL17:
+ 152               	.LBE8:
+ 153               	.LBE7:
+ 109:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 110:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		uint8_t StatusRegister = XPROGTarget_ReceiveByte();
+ 154               		.loc 1 110 0
+ 155 0014 0E94 0000 		call XPROGTarget_ReceiveByte
+ 156               	.LVL18:
+ 111:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 112:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		/* We might have timed out waiting for the status register read response, check here */
+ 113:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		if (TimeoutExpired)
+ 157               		.loc 1 113 0
+ 158 0018 9AB5      		in r25,0x2a
+ 159 001a 9111      		cpse r25,__zero_reg__
+ 160 001c 00C0      		rjmp .L13
+ 114:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		  return false;
+ 115:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 116:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		/* Check to see if the BUSY flag is still set */
+ 117:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		if (!(StatusRegister & (1 << 7)))
+ 161               		.loc 1 117 0
+ 162 001e 87FD      		sbrc r24,7
+ 163 0020 00C0      		rjmp .L12
+ 118:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		  return true;
+ 164               		.loc 1 118 0
+ 165 0022 81E0      		ldi r24,lo8(1)
+ 166               	.LVL19:
+ 167 0024 0895      		ret
+ 168               	.LVL20:
+ 169               	.L13:
+ 114:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		  return false;
+ 170               		.loc 1 114 0
+ 171 0026 80E0      		ldi r24,0
+ 172               	.LVL21:
+ 173               	.LBE6:
+ 119:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	}
+ 120:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+ 174               		.loc 1 120 0
+ 175 0028 0895      		ret
+ 176               		.cfi_endproc
+ 177               	.LFE121:
+ 179               		.section	.rodata
+ 180               	.LC0:
+ 181 0000 12        		.byte	18
+ 182 0001 89        		.byte	-119
+ 183 0002 AB        		.byte	-85
+ 184 0003 45        		.byte	69
+ 185 0004 CD        		.byte	-51
+ 186 0005 D8        		.byte	-40
+ 187 0006 88        		.byte	-120
+ 188 0007 FF        		.byte	-1
+ 189               		.section	.text.TINYNVM_EnableTPI,"ax",@progbits
+ 190               	.global	TINYNVM_EnableTPI
+ 192               	TINYNVM_EnableTPI:
+ 193               	.LFB122:
+ 121:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 122:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** /** Enables the physical TPI interface on the target and enables access to the internal NVM control
+ 123:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *
+ 124:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \return Boolean true if the TPI interface was enabled successfully, false otherwise
+ 125:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  */
+ 126:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** bool TINYNVM_EnableTPI(void)
+ 127:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** {
+ 194               		.loc 1 127 0
+ 195               		.cfi_startproc
+ 196 0000 EF92      		push r14
+ 197               	.LCFI2:
+ 198               		.cfi_def_cfa_offset 3
+ 199               		.cfi_offset 14, -2
+ 200 0002 FF92      		push r15
+ 201               	.LCFI3:
+ 202               		.cfi_def_cfa_offset 4
+ 203               		.cfi_offset 15, -3
+ 204 0004 0F93      		push r16
+ 205               	.LCFI4:
+ 206               		.cfi_def_cfa_offset 5
+ 207               		.cfi_offset 16, -4
+ 208 0006 1F93      		push r17
+ 209               	.LCFI5:
+ 210               		.cfi_def_cfa_offset 6
+ 211               		.cfi_offset 17, -5
+ 212 0008 CF93      		push r28
+ 213               	.LCFI6:
+ 214               		.cfi_def_cfa_offset 7
+ 215               		.cfi_offset 28, -6
+ 216 000a DF93      		push r29
+ 217               	.LCFI7:
+ 218               		.cfi_def_cfa_offset 8
+ 219               		.cfi_offset 29, -7
+ 220 000c CDB7      		in r28,__SP_L__
+ 221 000e DEB7      		in r29,__SP_H__
+ 222               	.LCFI8:
+ 223               		.cfi_def_cfa_register 28
+ 224 0010 2897      		sbiw r28,8
+ 225               	.LCFI9:
+ 226               		.cfi_def_cfa_offset 16
+ 227 0012 0FB6      		in __tmp_reg__,__SREG__
+ 228 0014 F894      		cli
+ 229 0016 DEBF      		out __SP_H__,r29
+ 230 0018 0FBE      		out __SREG__,__tmp_reg__
+ 231 001a CDBF      		out __SP_L__,r28
+ 232               	/* prologue: function */
+ 233               	/* frame size = 8 */
+ 234               	/* stack size = 14 */
+ 235               	.L__stack_usage = 14
+ 128:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Enable TPI programming mode with the attached target */
+ 129:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_EnableTargetTPI();
+ 236               		.loc 1 129 0
+ 237 001c 0E94 0000 		call XPROGTarget_EnableTargetTPI
+ 238               	.LVL22:
+ 130:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 131:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Lower direction change guard time to 0 USART bits */
+ 132:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(TPI_CMD_SSTCS | TPI_CTRL_REG);
+ 239               		.loc 1 132 0
+ 240 0020 82EC      		ldi r24,lo8(-62)
+ 241 0022 0E94 0000 		call XPROGTarget_SendByte
+ 242               	.LVL23:
+ 133:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(0x07);
+ 243               		.loc 1 133 0
+ 244 0026 87E0      		ldi r24,lo8(7)
+ 245 0028 0E94 0000 		call XPROGTarget_SendByte
+ 246               	.LVL24:
+ 134:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 135:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Enable access to the XPROG NVM bus by sending the documented NVM access key to the device */
+ 136:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(TPI_CMD_SKEY);
+ 247               		.loc 1 136 0
+ 248 002c 80EE      		ldi r24,lo8(-32)
+ 249 002e 0E94 0000 		call XPROGTarget_SendByte
+ 250               	.LVL25:
+ 251 0032 8E01      		movw r16,r28
+ 252 0034 075F      		subi r16,-9
+ 253 0036 1F4F      		sbci r17,-1
+ 254 0038 CE01      		movw r24,r28
+ 255 003a 0196      		adiw r24,1
+ 256 003c 7C01      		movw r14,r24
+ 257               	.LVL26:
+ 258               	.L16:
+ 259               	.LBB9:
+ 137:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	for (uint8_t i = sizeof(TPI_NVMENABLE_KEY); i > 0; i--)
+ 138:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	  XPROGTarget_SendByte(TPI_NVMENABLE_KEY[i - 1]);
+ 260               		.loc 1 138 0 discriminator 3
+ 261 003e 88E0      		ldi r24,lo8(8)
+ 262 0040 E0E0      		ldi r30,lo8(.LC0)
+ 263 0042 F0E0      		ldi r31,hi8(.LC0)
+ 264 0044 D701      		movw r26,r14
+ 265               		0:
+ 266 0046 0190      		ld r0,Z+
+ 267 0048 0D92      		st X+,r0
+ 268 004a 8A95      		dec r24
+ 269 004c 01F4      		brne 0b
+ 270 004e F801      		movw r30,r16
+ 271 0050 8291      		ld r24,-Z
+ 272 0052 8F01      		movw r16,r30
+ 273 0054 0E94 0000 		call XPROGTarget_SendByte
+ 274               	.LVL27:
+ 137:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	for (uint8_t i = sizeof(TPI_NVMENABLE_KEY); i > 0; i--)
+ 275               		.loc 1 137 0 discriminator 3
+ 276 0058 0E15      		cp r16,r14
+ 277 005a 1F05      		cpc r17,r15
+ 278 005c 01F4      		brne .L16
+ 279               	/* epilogue start */
+ 280               	.LBE9:
+ 139:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 140:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Wait until the NVM bus becomes active */
+ 141:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	return TINYNVM_WaitWhileNVMBusBusy();
+ 142:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+ 281               		.loc 1 142 0
+ 282 005e 2896      		adiw r28,8
+ 283 0060 0FB6      		in __tmp_reg__,__SREG__
+ 284 0062 F894      		cli
+ 285 0064 DEBF      		out __SP_H__,r29
+ 286 0066 0FBE      		out __SREG__,__tmp_reg__
+ 287 0068 CDBF      		out __SP_L__,r28
+ 288 006a DF91      		pop r29
+ 289 006c CF91      		pop r28
+ 290 006e 1F91      		pop r17
+ 291 0070 0F91      		pop r16
+ 292 0072 FF90      		pop r15
+ 293 0074 EF90      		pop r14
+ 141:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+ 294               		.loc 1 141 0
+ 295 0076 0C94 0000 		jmp TINYNVM_WaitWhileNVMBusBusy
+ 296               	.LVL28:
+ 297               		.cfi_endproc
+ 298               	.LFE122:
+ 300               		.section	.text.TINYNVM_DisableTPI,"ax",@progbits
+ 301               	.global	TINYNVM_DisableTPI
+ 303               	TINYNVM_DisableTPI:
+ 304               	.LFB123:
+ 143:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 144:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** /** Removes access to the target's NVM controller and physically disables the target's physical TPI
+ 145:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** void TINYNVM_DisableTPI(void)
+ 146:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** {
+ 305               		.loc 1 146 0
+ 306               		.cfi_startproc
+ 307               	/* prologue: function */
+ 308               	/* frame size = 0 */
+ 309               	/* stack size = 0 */
+ 310               	.L__stack_usage = 0
+ 147:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	TINYNVM_WaitWhileNVMBusBusy();
+ 311               		.loc 1 147 0
+ 312 0000 0E94 0000 		call TINYNVM_WaitWhileNVMBusBusy
+ 313               	.LVL29:
+ 148:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 149:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Clear the NVMEN bit in the TPI STATUS register to disable TPI mode */
+ 150:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(TPI_CMD_SSTCS | TPI_STATUS_REG);
+ 314               		.loc 1 150 0
+ 315 0004 80EC      		ldi r24,lo8(-64)
+ 316 0006 0E94 0000 		call XPROGTarget_SendByte
+ 317               	.LVL30:
+ 151:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(0x00);
+ 318               		.loc 1 151 0
+ 319 000a 80E0      		ldi r24,0
+ 320 000c 0E94 0000 		call XPROGTarget_SendByte
+ 321               	.LVL31:
+ 152:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 153:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_DisableTargetTPI();
+ 322               		.loc 1 153 0
+ 323 0010 0C94 0000 		jmp XPROGTarget_DisableTargetTPI
+ 324               	.LVL32:
+ 325               		.cfi_endproc
+ 326               	.LFE123:
+ 328               		.section	.text.TINYNVM_ReadMemory,"ax",@progbits
+ 329               	.global	TINYNVM_ReadMemory
+ 331               	TINYNVM_ReadMemory:
+ 332               	.LFB124:
+ 154:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+ 155:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 156:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** /** Reads memory from the target's memory spaces.
+ 157:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *
+ 158:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \param[in]  ReadAddress  Start address to read from within the target's address space
+ 159:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \param[out] ReadBuffer   Buffer to store read data into
+ 160:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \param[in]  ReadSize     Length of the data to read from the device
+ 161:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *
+ 162:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \return Boolean true if the command sequence complete successfully
+ 163:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  */
+ 164:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** bool TINYNVM_ReadMemory(const uint16_t ReadAddress,
+ 165:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****                         uint8_t* ReadBuffer,
+ 166:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****                         uint16_t ReadSize)
+ 167:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** {
+ 333               		.loc 1 167 0
+ 334               		.cfi_startproc
+ 335               	.LVL33:
+ 336 0000 EF92      		push r14
+ 337               	.LCFI10:
+ 338               		.cfi_def_cfa_offset 3
+ 339               		.cfi_offset 14, -2
+ 340 0002 FF92      		push r15
+ 341               	.LCFI11:
+ 342               		.cfi_def_cfa_offset 4
+ 343               		.cfi_offset 15, -3
+ 344 0004 0F93      		push r16
+ 345               	.LCFI12:
+ 346               		.cfi_def_cfa_offset 5
+ 347               		.cfi_offset 16, -4
+ 348 0006 1F93      		push r17
+ 349               	.LCFI13:
+ 350               		.cfi_def_cfa_offset 6
+ 351               		.cfi_offset 17, -5
+ 352 0008 CF93      		push r28
+ 353               	.LCFI14:
+ 354               		.cfi_def_cfa_offset 7
+ 355               		.cfi_offset 28, -6
+ 356 000a DF93      		push r29
+ 357               	.LCFI15:
+ 358               		.cfi_def_cfa_offset 8
+ 359               		.cfi_offset 29, -7
+ 360               	/* prologue: function */
+ 361               	/* frame size = 0 */
+ 362               	/* stack size = 6 */
+ 363               	.L__stack_usage = 6
+ 364 000c 7C01      		movw r14,r24
+ 365 000e EB01      		movw r28,r22
+ 366 0010 8A01      		movw r16,r20
+ 168:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Wait until the NVM controller is no longer busy */
+ 169:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	if (!(TINYNVM_WaitWhileNVMControllerBusy()))
+ 367               		.loc 1 169 0
+ 368 0012 0E94 0000 		call TINYNVM_WaitWhileNVMControllerBusy
+ 369               	.LVL34:
+ 370 0016 8823      		tst r24
+ 371 0018 01F0      		breq .L20
+ 170:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	  return false;
+ 171:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 172:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Set the NVM control register to the NO OP command for memory reading */
+ 173:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	TINYNVM_SendWriteNVMRegister(XPROG_Param_NVMCMDRegAddr);
+ 372               		.loc 1 173 0
+ 373 001a 8091 0000 		lds r24,XPROG_Param_NVMCMDRegAddr
+ 374 001e 0E94 0000 		call TINYNVM_SendWriteNVMRegister
+ 375               	.LVL35:
+ 174:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(TINY_NVM_CMD_NOOP);
+ 376               		.loc 1 174 0
+ 377 0022 80E0      		ldi r24,0
+ 378 0024 0E94 0000 		call XPROGTarget_SendByte
+ 379               	.LVL36:
+ 175:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 176:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Send the address of the location to read from */
+ 177:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	TINYNVM_SendPointerAddress(ReadAddress);
+ 380               		.loc 1 177 0
+ 381 0028 C701      		movw r24,r14
+ 382 002a 0E94 0000 		call TINYNVM_SendPointerAddress
+ 383               	.LVL37:
+ 384 002e 0C0F      		add r16,r28
+ 385 0030 1D1F      		adc r17,r29
+ 386               	.LVL38:
+ 387               	.L21:
+ 178:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 179:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	while (ReadSize-- && !(TimeoutExpired))
+ 388               		.loc 1 179 0
+ 389 0032 C017      		cp r28,r16
+ 390 0034 D107      		cpc r29,r17
+ 391 0036 01F0      		breq .L22
+ 392               		.loc 1 179 0 is_stmt 0 discriminator 1
+ 393 0038 8AB5      		in r24,0x2a
+ 394 003a 8111      		cpse r24,__zero_reg__
+ 395 003c 00C0      		rjmp .L22
+ 180:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	{
+ 181:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		/* Read the byte of data from the target */
+ 182:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		XPROGTarget_SendByte(TPI_CMD_SLD | TPI_POINTER_INDIRECT_PI);
+ 396               		.loc 1 182 0 is_stmt 1
+ 397 003e 84E2      		ldi r24,lo8(36)
+ 398 0040 0E94 0000 		call XPROGTarget_SendByte
+ 399               	.LVL39:
+ 183:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		*(ReadBuffer++) = XPROGTarget_ReceiveByte();
+ 400               		.loc 1 183 0
+ 401 0044 0E94 0000 		call XPROGTarget_ReceiveByte
+ 402               	.LVL40:
+ 403 0048 8993      		st Y+,r24
+ 404               	.LVL41:
+ 405 004a 00C0      		rjmp .L21
+ 406               	.LVL42:
+ 407               	.L22:
+ 184:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	}
+ 185:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 186:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	return (TimeoutExpired == false);
+ 408               		.loc 1 186 0
+ 409 004c 9AB5      		in r25,0x2a
+ 410 004e 81E0      		ldi r24,lo8(1)
+ 411 0050 9111      		cpse r25,__zero_reg__
+ 412 0052 80E0      		ldi r24,0
+ 413               	.LVL43:
+ 414               	.L20:
+ 415               	/* epilogue start */
+ 187:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+ 416               		.loc 1 187 0
+ 417 0054 DF91      		pop r29
+ 418 0056 CF91      		pop r28
+ 419               	.LVL44:
+ 420 0058 1F91      		pop r17
+ 421 005a 0F91      		pop r16
+ 422 005c FF90      		pop r15
+ 423 005e EF90      		pop r14
+ 424               	.LVL45:
+ 425 0060 0895      		ret
+ 426               		.cfi_endproc
+ 427               	.LFE124:
+ 429               		.section	.text.TINYNVM_WriteMemory,"ax",@progbits
+ 430               	.global	TINYNVM_WriteMemory
+ 432               	TINYNVM_WriteMemory:
+ 433               	.LFB125:
+ 188:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 189:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** /** Writes word addressed memory to the target's memory spaces.
+ 190:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *
+ 191:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \param[in] WriteAddress  Start address to write to within the target's address space
+ 192:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \param[in] WriteBuffer   Buffer to source data from
+ 193:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \param[in] WriteLength   Total number of bytes to write to the device (must be an integer multi
+ 194:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *
+ 195:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \return Boolean true if the command sequence complete successfully
+ 196:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  */
+ 197:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** bool TINYNVM_WriteMemory(const uint16_t WriteAddress,
+ 198:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****                          uint8_t* WriteBuffer,
+ 199:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****                          uint16_t WriteLength)
+ 200:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** {
+ 434               		.loc 1 200 0
+ 435               		.cfi_startproc
+ 436               	.LVL46:
+ 437 0000 CF92      		push r12
+ 438               	.LCFI16:
+ 439               		.cfi_def_cfa_offset 3
+ 440               		.cfi_offset 12, -2
+ 441 0002 DF92      		push r13
+ 442               	.LCFI17:
+ 443               		.cfi_def_cfa_offset 4
+ 444               		.cfi_offset 13, -3
+ 445 0004 FF92      		push r15
+ 446               	.LCFI18:
+ 447               		.cfi_def_cfa_offset 5
+ 448               		.cfi_offset 15, -4
+ 449 0006 0F93      		push r16
+ 450               	.LCFI19:
+ 451               		.cfi_def_cfa_offset 6
+ 452               		.cfi_offset 16, -5
+ 453 0008 1F93      		push r17
+ 454               	.LCFI20:
+ 455               		.cfi_def_cfa_offset 7
+ 456               		.cfi_offset 17, -6
+ 457 000a CF93      		push r28
+ 458               	.LCFI21:
+ 459               		.cfi_def_cfa_offset 8
+ 460               		.cfi_offset 28, -7
+ 461 000c DF93      		push r29
+ 462               	.LCFI22:
+ 463               		.cfi_def_cfa_offset 9
+ 464               		.cfi_offset 29, -8
+ 465               	/* prologue: function */
+ 466               	/* frame size = 0 */
+ 467               	/* stack size = 7 */
+ 468               	.L__stack_usage = 7
+ 469 000e 6C01      		movw r12,r24
+ 470 0010 8B01      		movw r16,r22
+ 471 0012 EA01      		movw r28,r20
+ 201:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Wait until the NVM controller is no longer busy */
+ 202:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	if (!(TINYNVM_WaitWhileNVMControllerBusy()))
+ 472               		.loc 1 202 0
+ 473 0014 0E94 0000 		call TINYNVM_WaitWhileNVMControllerBusy
+ 474               	.LVL47:
+ 475 0018 F82E      		mov r15,r24
+ 476 001a 8111      		cpse r24,__zero_reg__
+ 477 001c 00C0      		rjmp .L32
+ 478               	.LVL48:
+ 479               	.L36:
+ 203:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	  return false;
+ 480               		.loc 1 203 0
+ 481 001e F12C      		mov r15,__zero_reg__
+ 482 0020 00C0      		rjmp .L33
+ 483               	.LVL49:
+ 484               	.L32:
+ 204:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 205:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Must have an integer number of words to write - if extra byte, word-align via a dummy high byte
+ 206:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	if (WriteLength & 0x01)
+ 485               		.loc 1 206 0
+ 486 0022 C0FF      		sbrs r28,0
+ 487 0024 00C0      		rjmp .L34
+ 488               	.LVL50:
+ 207:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	  WriteBuffer[WriteLength++] = 0xFF;
+ 489               		.loc 1 207 0
+ 490 0026 F801      		movw r30,r16
+ 491 0028 EC0F      		add r30,r28
+ 492 002a FD1F      		adc r31,r29
+ 493 002c 8FEF      		ldi r24,lo8(-1)
+ 494 002e 8083      		st Z,r24
+ 495 0030 2196      		adiw r28,1
+ 496               	.LVL51:
+ 497               	.L34:
+ 208:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 209:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Set the NVM control register to the WORD WRITE command for memory writing */
+ 210:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	TINYNVM_SendWriteNVMRegister(XPROG_Param_NVMCMDRegAddr);
+ 498               		.loc 1 210 0
+ 499 0032 8091 0000 		lds r24,XPROG_Param_NVMCMDRegAddr
+ 500 0036 0E94 0000 		call TINYNVM_SendWriteNVMRegister
+ 501               	.LVL52:
+ 211:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(TINY_NVM_CMD_WORDWRITE);
+ 502               		.loc 1 211 0
+ 503 003a 8DE1      		ldi r24,lo8(29)
+ 504 003c 0E94 0000 		call XPROGTarget_SendByte
+ 505               	.LVL53:
+ 212:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 213:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Send the address of the location to write to */
+ 214:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	TINYNVM_SendPointerAddress(WriteAddress);
+ 506               		.loc 1 214 0
+ 507 0040 C601      		movw r24,r12
+ 508 0042 0E94 0000 		call TINYNVM_SendPointerAddress
+ 509               	.LVL54:
+ 510               	.L35:
+ 215:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 216:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	while (WriteLength)
+ 511               		.loc 1 216 0
+ 512 0046 2097      		sbiw r28,0
+ 513 0048 01F0      		breq .L33
+ 217:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	{
+ 218:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		/* Wait until the NVM controller is no longer busy */
+ 219:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		if (!(TINYNVM_WaitWhileNVMControllerBusy()))
+ 514               		.loc 1 219 0
+ 515 004a 0E94 0000 		call TINYNVM_WaitWhileNVMControllerBusy
+ 516               	.LVL55:
+ 517 004e 8823      		tst r24
+ 518 0050 01F0      		breq .L36
+ 220:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		  return false;
+ 221:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 222:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		/* Write the low byte of data to the target */
+ 223:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		XPROGTarget_SendByte(TPI_CMD_SST | TPI_POINTER_INDIRECT_PI);
+ 519               		.loc 1 223 0
+ 520 0052 84E6      		ldi r24,lo8(100)
+ 521 0054 0E94 0000 		call XPROGTarget_SendByte
+ 522               	.LVL56:
+ 224:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		XPROGTarget_SendByte(*(WriteBuffer++));
+ 523               		.loc 1 224 0
+ 524 0058 F801      		movw r30,r16
+ 525 005a 8081      		ld r24,Z
+ 526 005c 0E94 0000 		call XPROGTarget_SendByte
+ 527               	.LVL57:
+ 225:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 226:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		/* Write the high byte of data to the target */
+ 227:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		XPROGTarget_SendByte(TPI_CMD_SST | TPI_POINTER_INDIRECT_PI);
+ 528               		.loc 1 227 0
+ 529 0060 84E6      		ldi r24,lo8(100)
+ 530 0062 0E94 0000 		call XPROGTarget_SendByte
+ 531               	.LVL58:
+ 228:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		XPROGTarget_SendByte(*(WriteBuffer++));
+ 532               		.loc 1 228 0
+ 533 0066 F801      		movw r30,r16
+ 534 0068 8181      		ldd r24,Z+1
+ 535 006a 0E94 0000 		call XPROGTarget_SendByte
+ 536               	.LVL59:
+ 229:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 230:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		/* Need to decrement the write length twice, since we wrote a whole two-byte word */
+ 231:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 		WriteLength -= 2;
+ 537               		.loc 1 231 0
+ 538 006e 2297      		sbiw r28,2
+ 539               	.LVL60:
+ 540 0070 0E5F      		subi r16,-2
+ 541 0072 1F4F      		sbci r17,-1
+ 542               	.LVL61:
+ 543 0074 00C0      		rjmp .L35
+ 544               	.LVL62:
+ 545               	.L33:
+ 232:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	}
+ 233:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 234:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	return true;
+ 235:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+ 546               		.loc 1 235 0
+ 547 0076 8F2D      		mov r24,r15
+ 548               	/* epilogue start */
+ 549 0078 DF91      		pop r29
+ 550 007a CF91      		pop r28
+ 551               	.LVL63:
+ 552 007c 1F91      		pop r17
+ 553 007e 0F91      		pop r16
+ 554 0080 FF90      		pop r15
+ 555 0082 DF90      		pop r13
+ 556 0084 CF90      		pop r12
+ 557               	.LVL64:
+ 558 0086 0895      		ret
+ 559               		.cfi_endproc
+ 560               	.LFE125:
+ 562               		.section	.text.TINYNVM_EraseMemory,"ax",@progbits
+ 563               	.global	TINYNVM_EraseMemory
+ 565               	TINYNVM_EraseMemory:
+ 566               	.LFB126:
+ 236:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 237:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** /** Erases the target's memory space.
+ 238:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *
+ 239:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \param[in] EraseCommand  NVM erase command to send to the device
+ 240:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \param[in] Address       Address inside the memory space to erase
+ 241:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *
+ 242:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  *  \return Boolean true if the command sequence complete successfully
+ 243:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****  */
+ 244:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** bool TINYNVM_EraseMemory(const uint8_t EraseCommand,
+ 245:../AVRISP-MKII/Lib/XPROG/TINYNVM.c ****                          const uint16_t Address)
+ 246:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** {
+ 567               		.loc 1 246 0
+ 568               		.cfi_startproc
+ 569               	.LVL65:
+ 570 0000 1F93      		push r17
+ 571               	.LCFI23:
+ 572               		.cfi_def_cfa_offset 3
+ 573               		.cfi_offset 17, -2
+ 574 0002 CF93      		push r28
+ 575               	.LCFI24:
+ 576               		.cfi_def_cfa_offset 4
+ 577               		.cfi_offset 28, -3
+ 578 0004 DF93      		push r29
+ 579               	.LCFI25:
+ 580               		.cfi_def_cfa_offset 5
+ 581               		.cfi_offset 29, -4
+ 582               	/* prologue: function */
+ 583               	/* frame size = 0 */
+ 584               	/* stack size = 3 */
+ 585               	.L__stack_usage = 3
+ 586 0006 182F      		mov r17,r24
+ 587 0008 EB01      		movw r28,r22
+ 247:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Wait until the NVM controller is no longer busy */
+ 248:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	if (!(TINYNVM_WaitWhileNVMControllerBusy()))
+ 588               		.loc 1 248 0
+ 589 000a 0E94 0000 		call TINYNVM_WaitWhileNVMControllerBusy
+ 590               	.LVL66:
+ 591 000e 8823      		tst r24
+ 592 0010 01F0      		breq .L45
+ 249:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	  return false;
+ 250:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 251:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Set the NVM control register to the target memory erase command */
+ 252:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	TINYNVM_SendWriteNVMRegister(XPROG_Param_NVMCMDRegAddr);
+ 593               		.loc 1 252 0
+ 594 0012 8091 0000 		lds r24,XPROG_Param_NVMCMDRegAddr
+ 595 0016 0E94 0000 		call TINYNVM_SendWriteNVMRegister
+ 596               	.LVL67:
+ 253:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(EraseCommand);
+ 597               		.loc 1 253 0
+ 598 001a 812F      		mov r24,r17
+ 599 001c 0E94 0000 		call XPROGTarget_SendByte
+ 600               	.LVL68:
+ 254:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 255:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Write to a high byte location within the target address space to start the erase process */
+ 256:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	TINYNVM_SendPointerAddress(Address | 0x0001);
+ 601               		.loc 1 256 0
+ 602 0020 CE01      		movw r24,r28
+ 603 0022 8160      		ori r24,1
+ 604 0024 0E94 0000 		call TINYNVM_SendPointerAddress
+ 605               	.LVL69:
+ 257:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(TPI_CMD_SST | TPI_POINTER_INDIRECT);
+ 606               		.loc 1 257 0
+ 607 0028 80E6      		ldi r24,lo8(96)
+ 608 002a 0E94 0000 		call XPROGTarget_SendByte
+ 609               	.LVL70:
+ 258:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	XPROGTarget_SendByte(0x00);
+ 610               		.loc 1 258 0
+ 611 002e 80E0      		ldi r24,0
+ 612 0030 0E94 0000 		call XPROGTarget_SendByte
+ 613               	.LVL71:
+ 614               	/* epilogue start */
+ 259:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 260:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	/* Wait until the NVM controller is no longer busy */
+ 261:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	if (!(TINYNVM_WaitWhileNVMControllerBusy()))
+ 262:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	  return false;
+ 263:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 
+ 264:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	return true;
+ 265:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** }
+ 615               		.loc 1 265 0
+ 616 0034 DF91      		pop r29
+ 617 0036 CF91      		pop r28
+ 618               	.LVL72:
+ 619 0038 1F91      		pop r17
+ 620               	.LVL73:
+ 261:../AVRISP-MKII/Lib/XPROG/TINYNVM.c **** 	  return false;
+ 621               		.loc 1 261 0
+ 622 003a 0C94 0000 		jmp TINYNVM_WaitWhileNVMControllerBusy
+ 623               	.LVL74:
+ 624               	.L45:
+ 625               		.loc 1 265 0
+ 626 003e 80E0      		ldi r24,0
+ 627               	/* epilogue start */
+ 628 0040 DF91      		pop r29
+ 629 0042 CF91      		pop r28
+ 630               	.LVL75:
+ 631 0044 1F91      		pop r17
+ 632               	.LVL76:
+ 633 0046 0895      		ret
+ 634               		.cfi_endproc
+ 635               	.LFE126:
+ 637               		.text
+ 638               	.Letext0:
+ 639               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 640               		.file 3 "../AVRISP-MKII/Lib/XPROG/../ISP/ISPTarget.h"
+ 641               		.file 4 "../AVRISP-MKII/Lib/XPROG/XPROGProtocol.h"
+ 642               		.file 5 "../AVRISP-MKII/Lib/XPROG/XPROGTarget.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 TINYNVM.c
+     /tmp/ccDjpmh2.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccDjpmh2.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccDjpmh2.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccDjpmh2.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccDjpmh2.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccDjpmh2.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccDjpmh2.s:13     .text.TINYNVM_SendWriteNVMRegister:0000000000000000 TINYNVM_SendWriteNVMRegister
+     /tmp/ccDjpmh2.s:38     .text.TINYNVM_SendPointerAddress:0000000000000000 TINYNVM_SendPointerAddress
+     /tmp/ccDjpmh2.s:85     .text.TINYNVM_WaitWhileNVMBusBusy:0000000000000000 TINYNVM_WaitWhileNVMBusBusy
+     /tmp/ccDjpmh2.s:127    .text.TINYNVM_WaitWhileNVMControllerBusy:0000000000000000 TINYNVM_WaitWhileNVMControllerBusy
+     /tmp/ccDjpmh2.s:192    .text.TINYNVM_EnableTPI:0000000000000000 TINYNVM_EnableTPI
+     /tmp/ccDjpmh2.s:303    .text.TINYNVM_DisableTPI:0000000000000000 TINYNVM_DisableTPI
+     /tmp/ccDjpmh2.s:331    .text.TINYNVM_ReadMemory:0000000000000000 TINYNVM_ReadMemory
+     /tmp/ccDjpmh2.s:432    .text.TINYNVM_WriteMemory:0000000000000000 TINYNVM_WriteMemory
+     /tmp/ccDjpmh2.s:565    .text.TINYNVM_EraseMemory:0000000000000000 TINYNVM_EraseMemory
+
+UNDEFINED SYMBOLS
+XPROGTarget_SendByte
+XPROGTarget_ReceiveByte
+XPROG_Param_NVMCSRRegAddr
+XPROGTarget_EnableTargetTPI
+XPROGTarget_DisableTargetTPI
+XPROG_Param_NVMCMDRegAddr
+__do_copy_data
