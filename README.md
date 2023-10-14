@@ -1,8 +1,6 @@
 # Arduino AVR Boards
 
-[![Check Arduino status](https://github.com/arduino/ArduinoCore-avr/actions/workflows/check-arduino.yml/badge.svg)](https://github.com/arduino/ArduinoCore-avr/actions/workflows/check-arduino.yml)
-[![Compile Examples status](https://github.com/arduino/ArduinoCore-avr/actions/workflows/compile-platform-examples.yml/badge.svg)](https://github.com/arduino/ArduinoCore-avr/actions/workflows/compile-platform-examples.yml)
-[![Spell Check status](https://github.com/arduino/ArduinoCore-avr/actions/workflows/spell-check.yml/badge.svg)](https://github.com/arduino/ArduinoCore-avr/actions/workflows/spell-check.yml)
+This is a customized version of arduino catherina bootloader to prevent any attacker dumping the firmware via USB.
+Side effect: after flashing, arduino IDE won't be able to verify the firmware and reset the board, one has to reset manually
 
-This repository contains the source code and configuration files of the Arduino AVR Boards
-[platform](https://arduino.github.io/arduino-cli/latest/platform-specification/).
+PS: to prevent firware dump via an SPI programmer, one should also set the lock bit via avrdude.
