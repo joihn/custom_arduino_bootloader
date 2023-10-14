@@ -303,36 +303,37 @@ static void ReadWriteMemoryBlock(const uint8_t Command)
 
 	/* Check if command is to read memory */
 	if (Command == 'g')
-	{		
-		/* Re-enable RWW section */
-		boot_rww_enable();
-
-		while (BlockSize--)
-		{
-			if (MemoryType == 'F')
-			{
-				/* Read the next FLASH byte from the current FLASH page */
-				#if (FLASHEND > 0xFFFF)
-				WriteNextResponseByte(pgm_read_byte_far(CurrAddress | HighByte));
-				#else
-				WriteNextResponseByte(pgm_read_byte(CurrAddress | HighByte));
-				#endif
-
-				/* If both bytes in current word have been read, increment the address counter */
-				if (HighByte)
-				  CurrAddress += 2;
-
-				HighByte = !HighByte;
-			}
-			else
-			{
-				/* Read the next EEPROM byte into the endpoint */
-				WriteNextResponseByte(eeprom_read_byte((uint8_t*)(intptr_t)(CurrAddress >> 1)));
-
-				/* Increment the address counter after use */
-				CurrAddress += 2;
-			}
-		}
+	{
+        ; //do nothing
+//		/* Re-enable RWW section */
+//		boot_rww_enable();
+//
+//		while (BlockSize--)
+//		{
+//			if (MemoryType == 'F')
+//			{
+//				/* Read the next FLASH byte from the current FLASH page */
+//				#if (FLASHEND > 0xFFFF)
+//				WriteNextResponseByte(pgm_read_byte_far(CurrAddress | HighByte));
+//				#else
+//				WriteNextResponseByte(pgm_read_byte(CurrAddress | HighByte));
+//				#endif
+//
+//				/* If both bytes in current word have been read, increment the address counter */
+//				if (HighByte)
+//				  CurrAddress += 2;
+//
+//				HighByte = !HighByte;
+//			}
+//			else
+//			{
+//				/* Read the next EEPROM byte into the endpoint */
+//				WriteNextResponseByte(eeprom_read_byte((uint8_t*)(intptr_t)(CurrAddress >> 1)));
+//
+//				/* Increment the address counter after use */
+//				CurrAddress += 2;
+//			}
+//		}
 	}
 	else
 	{
